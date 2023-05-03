@@ -1,0 +1,21 @@
+{
+    "schemaVersion": 1,
+    "id": "chattriggers",
+    "name": "ChatTriggers",
+    "version": "${version}",
+    "description": "A framework for Minecraft that allows for live scripting and client modification using JavaScript",
+    "authors": ["Ecolsson", "FalseHonesty", "kerbybit"],
+    "contributors": ["Squagward", "Debuggings", "DJtheRedstoner"],
+    "icon": "assets/chattriggers/logo.png",
+    "license": ["MIT"],
+    "contact": {
+        "homepage": "https://chattriggers.com",
+        "sources": "https://github.com/ChatTriggers/ChatTriggers",
+        "issues": "https://github.com/ChatTriggers/ChatTriggers/issues"
+    },
+    "environment": "client",
+    "entrypoints": {
+        "client": ["com.chattriggers.ctjs.CTJS"]
+    },
+    "mixins": ["chattriggers.mixins.json"]
+}
