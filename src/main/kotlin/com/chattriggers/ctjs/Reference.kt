@@ -6,6 +6,8 @@ object Reference {
     const val MOD_NAME = "ChatTriggers"
     const val MOD_VERSION = "3.0.0"
 
+    const val DEFAULT_MODULES_FOLDER = "./config/ChatTriggers/modules"
+
     var isLoaded = true
 
     @JvmStatic

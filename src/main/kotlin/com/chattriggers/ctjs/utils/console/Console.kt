@@ -2,6 +2,7 @@ package com.chattriggers.ctjs.utils.console
 
 import com.chattriggers.ctjs.Reference
 import com.chattriggers.ctjs.engine.ILoader
+import com.chattriggers.ctjs.engine.module.ModuleManager
 import com.chattriggers.ctjs.utils.Config
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants
@@ -293,5 +294,11 @@ class Console(val loader: ILoader?) {
         init {
             GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(FIRA_FONT)
         }
+
+        fun Any.printToConsole(console: Console = ModuleManager.generalConsole, logType: LogType = LogType.INFO) {
+            console.println(this, logType)
+        }
+
+        fun Throwable.printTraceToConsole(console: Console = ModuleManager.generalConsole) = console.printStackTrace(this)
     }
 }
