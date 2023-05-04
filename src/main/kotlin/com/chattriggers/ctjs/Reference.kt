@@ -1,5 +1,7 @@
 package com.chattriggers.ctjs
 
+import com.chattriggers.ctjs.minecraft.libs.renderer.Image
+
 object Reference {
     // TODO: Figure out how to substitute these at build time
     const val MOD_ID = "chattriggers"
@@ -13,6 +15,8 @@ object Reference {
     @JvmStatic
     fun unloadCT() {
         isLoaded = false
+
+        CTJS.images.forEach(Image::destroy)
     }
 
     @JvmStatic

@@ -1,5 +1,6 @@
 package com.chattriggers.ctjs
 
+import com.chattriggers.ctjs.minecraft.libs.renderer.Image
 import com.chattriggers.ctjs.utils.Initializer
 import com.google.gson.Gson
 import net.fabricmc.api.ClientModInitializer
@@ -16,6 +17,7 @@ class CTJS : ClientModInitializer {
     companion object {
         const val modulesFolder = "./config/ChatTriggers/modules"
         const val WEBSITE_ROOT = "https://www.chattriggers.com"
+        internal val images = mutableListOf<Image>()
 
         val configLocation = File("./config")
         val assetsDir = File(configLocation, "ChatTriggers/images/").apply { mkdirs() }
