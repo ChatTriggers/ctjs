@@ -1,6 +1,7 @@
 package com.chattriggers.ctjs
 
 import com.chattriggers.ctjs.minecraft.libs.renderer.Image
+import com.chattriggers.ctjs.minecraft.objects.Sound
 
 object Reference {
     // TODO: Figure out how to substitute these at build time
@@ -17,6 +18,7 @@ object Reference {
         isLoaded = false
 
         CTJS.images.forEach(Image::destroy)
+        CTJS.sounds.forEach(Sound::destroy)
     }
 
     @JvmStatic
