@@ -82,7 +82,7 @@ class Image(var image: BufferedImage?) {
     @Suppress("DEPRECATION")
     companion object : Initializer {
         override fun init() {
-            CTEvents.POST_RENDER_OVERLAY.register {
+            CTEvents.POST_RENDER_OVERLAY.register { _, _, _, _, _ ->
                 for (image in CTJS.images) {
                     if (image.image != null) {
                         image.texture = image.image!!.toNativeTexture()
