@@ -1,7 +1,10 @@
 package com.chattriggers.ctjs.minecraft.libs
 
+import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer
+import gg.essential.universal.UMinecraft
 import gg.essential.universal.wrappers.message.UMessage
 import gg.essential.universal.wrappers.message.UTextComponent
+import kotlin.math.roundToInt
 
 object ChatLib {
     /**
@@ -86,99 +89,96 @@ object ChatLib {
     //     if (clientSide) ClientCommandHandler.instance.executeCommand(Player.getPlayer(), "/$text")
     //     else say("/$text")
     // }
-    //
-    // /**
-    //  * Clear chat messages with the specified message ID, or all chat messages if no ID is specified
-    //  *
-    //  * @param chatLineIDs the id(s) to be cleared
-    //  */
-    // @JvmStatic
-    // fun clearChat(vararg chatLineIDs: Int) {
-    //     if (chatLineIDs.isEmpty()) {
-    //         //#if MC<=10809
-    //         Client.getChatGUI()?.clearChatMessages()
-    //         //#else
-    //         //$$ Client.getChatGUI()?.clearChatMessages(false)
-    //         //#endif
-    //         return
-    //     }
-    //     for (chatLineID in chatLineIDs)
-    //         Client.getChatGUI()?.deleteChatLine(chatLineID)
-    // }
-    //
-    // /**
-    //  * Get a message that will be perfectly one line of chat,
-    //  * the separator repeated as many times as necessary.
-    //  * The separator defaults to "-"
-    //  *
-    //  * @param separator the message to split chat with
-    //  * @return the message that would split chat
-    //  */
-    // @JvmOverloads
-    // @JvmStatic
-    // fun getChatBreak(separator: String = "-"): String {
-    //     val len = Renderer.getStringWidth(separator)
-    //     val times = getChatWidth() / len
-    //
-    //     return separator * times
-    // }
-    //
-    // /**
-    //  * Gets the width of Minecraft's chat
-    //  *
-    //  * @return the width of chat
-    //  */
-    // @JvmStatic
-    // fun getChatWidth(): Int {
-    //     return Client.getChatGUI()?.chatWidth ?: 0
-    // }
-    //
-    // /**
-    //  * Remove all formatting
-    //  *
-    //  * @param text the string to un-format
-    //  * @return the unformatted string
-    //  */
-    // @JvmStatic
-    // fun removeFormatting(text: String): String {
-    //     return text.replace("[\u00a7&][0-9a-fk-or]".toRegex(), "")
-    // }
-    //
-    // /**
-    //  * Replaces Minecraft formatted text with normal formatted text
-    //  *
-    //  * @param text the formatted string
-    //  * @return the unformatted string
-    //  */
-    // @JvmStatic
-    // fun replaceFormatting(text: String): String {
-    //     return text.replace("\u00a7(?![^0-9a-fk-or]|$)".toRegex(), "&")
-    // }
-    //
-    // /**
-    //  * Get a message that will be perfectly centered in chat.
-    //  *
-    //  * @param text the text to be centered
-    //  * @return the centered message
-    //  */
-    // @JvmStatic
-    // fun getCenteredText(text: String): String {
-    //     val textWidth = Renderer.getStringWidth(addColor(text))
-    //     val chatWidth = getChatWidth()
-    //
-    //     if (textWidth >= chatWidth)
-    //         return text
-    //
-    //     val spaceWidth = (chatWidth - textWidth) / 2f
-    //     val spaceBuilder = StringBuilder().apply {
-    //         repeat((spaceWidth / Renderer.getStringWidth(" ")).roundToInt()) {
-    //             append(' ')
-    //         }
-    //     }
-    //
-    //     return spaceBuilder.append(text).toString()
-    // }
-    //
+    /**
+     * Clear chat messages with the specified message ID, or all chat messages if no ID is specified
+     *
+     * @param chatLineIDs the id(s) to be cleared
+     */
+    @JvmStatic
+    fun clearChat(vararg chatLineIDs: Int) {
+        if (chatLineIDs.isEmpty()) {
+            UMinecraft.getChatGUI()?.clear(false)
+            return
+        }
+
+        TODO()
+        // for (chatLineID in chatLineIDs)
+        //     Client.getChatGUI()?.deleteChatLine(chatLineID)
+    }
+
+    /**
+     * Get a message that will be perfectly one line of chat,
+     * the separator repeated as many times as necessary.
+     * The separator defaults to "-"
+     *
+     * @param separator the message to split chat with
+     * @return the message that would split chat
+     */
+    @JvmOverloads
+    @JvmStatic
+    fun getChatBreak(separator: String = "-"): String {
+        val len = Renderer.getStringWidth(separator)
+        val times = getChatWidth() / len
+
+        return separator.repeat(times)
+    }
+
+    /**
+     * Gets the width of Minecraft's chat
+     *
+     * @return the width of chat
+     */
+    @JvmStatic
+    fun getChatWidth(): Int {
+        return UMinecraft.getChatGUI()?.width ?: 0
+    }
+
+    /**
+     * Remove all formatting
+     *
+     * @param text the string to un-format
+     * @return the unformatted string
+     */
+    @JvmStatic
+    fun removeFormatting(text: String): String {
+        return text.replace("[\u00a7&][0-9a-fk-or]".toRegex(), "")
+    }
+
+    /**
+     * Replaces Minecraft formatted text with normal formatted text
+     *
+     * @param text the formatted string
+     * @return the unformatted string
+     */
+    @JvmStatic
+    fun replaceFormatting(text: String): String {
+        return text.replace("\u00a7(?![^0-9a-fk-or]|$)".toRegex(), "&")
+    }
+
+    /**
+     * Get a message that will be perfectly centered in chat.
+     *
+     * @param text the text to be centered
+     * @return the centered message
+     */
+    @JvmStatic
+    fun getCenteredText(text: String): String {
+        val textWidth = Renderer.getStringWidth(addColor(text))
+        val chatWidth = getChatWidth()
+
+        if (textWidth >= chatWidth)
+            return text
+
+        val spaceWidth = (chatWidth - textWidth) / 2f
+        val spaceBuilder = StringBuilder().apply {
+            repeat((spaceWidth / Renderer.getStringWidth(" ")).roundToInt()) {
+                append(' ')
+            }
+        }
+
+        return spaceBuilder.append(text).toString()
+    }
+
     // /**
     //  * Edits an already sent chat message matched by [regexp].
     //  *
