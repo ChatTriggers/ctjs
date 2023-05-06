@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm") version "1.8.21"
-	id("fabric-loom") version "1.2-SNAPSHOT"
+    id("fabric-loom") version "1.2-SNAPSHOT"
+    id("io.github.juuxel.loom-quiltflower") version "1.8.0"
 }
 
 version = property("mod_version")!!
