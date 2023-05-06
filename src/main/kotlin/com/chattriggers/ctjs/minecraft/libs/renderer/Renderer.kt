@@ -19,6 +19,11 @@ object Renderer {
     // The currently-active matrix stack
     internal lateinit var matrixStack: UMatrixStack
 
+    // The current partialTicks value
+    @JvmStatic
+    var partialTicks = 0f
+        internal set
+
     @JvmStatic
     val BLACK = color(0, 0, 0, 255)
 
@@ -129,6 +134,59 @@ object Renderer {
     fun retainTransforms(retain: Boolean) {
         retainTransforms = retain
         finishDraw()
+    }
+
+    @JvmStatic
+    fun disableAlpha() = apply { UGraphics.disableAlpha() }
+
+    @JvmStatic
+    fun enableAlpha() = apply { UGraphics.enableAlpha() }
+
+    @JvmStatic
+    fun enableLighting() = apply { UGraphics.enableLighting() }
+
+    @JvmStatic
+    fun disableLighting() = apply { UGraphics.disableLighting() }
+
+    @JvmStatic
+    fun enableDepth() = apply { UGraphics.enableDepth() }
+
+    @JvmStatic
+    fun disableDepth() = apply { UGraphics.disableDepth() }
+
+    @JvmStatic
+    fun depthFunc(func: Int) = apply { UGraphics.depthFunc(func) }
+
+    @JvmStatic
+    fun depthMask(flag: Boolean) = apply { UGraphics.depthMask(flag) }
+
+    @JvmStatic
+    fun blendFunc(func: Int) = apply { UGraphics.blendEquation(func) }
+
+    @JvmStatic
+    fun tryBlendFuncSeparate(sourceFactor: Int, destFactor: Int, sourceFactorAlpha: Int, destFactorAlpha: Int) = apply {
+        UGraphics.tryBlendFuncSeparate(sourceFactor, destFactor, sourceFactorAlpha, destFactorAlpha)
+    }
+
+    @JvmStatic
+    @JvmOverloads
+    fun bindTexture(texture: Image, textureIndex: Int = 0) = apply {
+        UGraphics.bindTexture(textureIndex, texture.getTexture().glId)
+    }
+
+    @JvmStatic
+    fun deleteTexture(texture: Image) = apply {
+        UGraphics.deleteTexture(texture.getTexture().glId)
+    }
+
+    @JvmStatic
+    fun pushMatrix() = apply {
+        matrixStack.push()
+    }
+
+    @JvmStatic
+    fun popMatrix() = apply {
+        matrixStack.pop()
     }
 
     @JvmStatic
