@@ -197,9 +197,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerNoteBlockPlay(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.NoteBlockPlay, getImplementationLoader())
-    // }
+    fun registerNoteBlockPlay(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.NoteBlockPlay, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs before a noteblock is changed.
@@ -216,9 +216,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerNoteBlockChange(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.NoteBlockChange, getImplementationLoader())
-    // }
+    fun registerNoteBlockChange(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.NoteBlockChange, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs before every game tick.
@@ -284,9 +284,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerRenderOverlay(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.RenderOverlay, getImplementationLoader())
-    // }
+    fun registerRenderOverlay(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.RenderOverlay, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs before the player list is being drawn.
@@ -301,9 +301,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerRenderPlayerList(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.RenderPlayerList, getImplementationLoader())
-    // }
+    fun registerRenderPlayerList(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.RenderPlayerList, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs before the crosshair is being drawn.
@@ -318,9 +318,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerRenderCrosshair(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.RenderCrosshair, getImplementationLoader())
-    // }
+    fun registerRenderCrosshair(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.RenderCrosshair, getImplementationLoader())
+    }
 
     /**
      * Registers a trigger that runs before the debug screen is being drawn.
@@ -335,9 +335,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerRenderDebug(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.RenderDebug, getImplementationLoader())
-    // }
+    fun registerRenderDebug(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.RenderDebug, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs before the boss health bar is being drawn.
@@ -352,9 +352,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerRenderBossHealth(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.RenderBossHealth, getImplementationLoader())
-    // }
+    fun registerRenderBossHealth(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.RenderBossHealth, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs before the player's health is being drawn.
@@ -369,9 +369,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerRenderHealth(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.RenderHealth, getImplementationLoader())
-    // }
+    fun registerRenderHealth(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.RenderHealth, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs before the player's armor bar is drawn.
@@ -386,9 +386,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerRenderArmor(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.RenderArmor, getImplementationLoader())
-    // }
+    fun registerRenderArmor(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.RenderArmor, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs before the player's food is being drawn.
@@ -403,9 +403,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerRenderFood(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.RenderFood, getImplementationLoader())
-    // }
+    fun registerRenderFood(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.RenderFood, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs before the player's mount's health is being drawn.
@@ -420,9 +420,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerRenderMountHealth(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.RenderMountHealth, getImplementationLoader())
-    // }
+    fun registerRenderMountHealth(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.RenderMountHealth, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs before the player's experience is being drawn.
@@ -438,9 +438,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerRenderExperience(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.RenderExperience, getImplementationLoader())
-    // }
+    fun registerRenderExperience(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.RenderExperience, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs before the player's hotbar is drawn.
@@ -455,9 +455,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerRenderHotbar(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.RenderHotbar, getImplementationLoader())
-    // }
+    fun registerRenderHotbar(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.RenderHotbar, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs before the player's air level is drawn.
@@ -472,9 +472,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerRenderAir(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.RenderAir, getImplementationLoader())
-    // }
+    fun registerRenderAir(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.RenderAir, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs before the portal effect is drawn.
@@ -489,9 +489,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerRenderPortal(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.RenderPortal, getImplementationLoader())
-    // }
+    fun registerRenderPortal(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.RenderPortal, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs before the jump bar is drawn.
@@ -506,9 +506,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerRenderJumpBar(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.RenderJumpBar, getImplementationLoader())
-    // }
+    fun registerRenderJumpBar(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.RenderJumpBar, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs before the chat is drawn.
@@ -523,9 +523,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerRenderChat(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.RenderChat, getImplementationLoader())
-    // }
+    fun registerRenderChat(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.RenderChat, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs before the player's helmet overlay is drawn.
@@ -541,9 +541,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerRenderHelmet(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.RenderHelmet, getImplementationLoader())
-    // }
+    fun registerRenderHelmet(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.RenderHelmet, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs before the player's hand is drawn.
@@ -557,9 +557,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerRenderHand(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.RenderHand, getImplementationLoader())
-    // }
+    fun registerRenderHand(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.RenderHand, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs before the scoreboard is drawn.
@@ -573,9 +573,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerRenderScoreboard(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.RenderScoreboard, getImplementationLoader())
-    // }
+    fun registerRenderScoreboard(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.RenderScoreboard, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs before the title and subtitle are drawn.
@@ -591,9 +591,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerRenderTitle(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.RenderTitle, getImplementationLoader())
-    // }
+    fun registerRenderTitle(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.RenderTitle, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs before the block highlight box is drawn.
@@ -608,9 +608,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerDrawBlockHighlight(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.BlockHighlight, getImplementationLoader())
-    // }
+    fun registerDrawBlockHighlight(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.BlockHighlight, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs after the game loads.
@@ -672,9 +672,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerGuiOpened(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.GuiOpened, getImplementationLoader())
-    // }
+    fun registerGuiOpened(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.GuiOpened, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs when a gui is closed.
@@ -746,9 +746,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerPickupItem(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.PickupItem, getImplementationLoader())
-    // }
+    fun registerPickupItem(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.PickupItem, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs before an item is dropped.
@@ -766,9 +766,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerDropItem(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.DropItem, getImplementationLoader())
-    // }
+    fun registerDropItem(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.DropItem, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs before a screenshot is taken.
@@ -783,9 +783,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerScreenshotTaken(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.ScreenshotTaken, getImplementationLoader())
-    // }
+    fun registerScreenshotTaken(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.ScreenshotTaken, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs before a message is sent in chat.
@@ -800,9 +800,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerMessageSent(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.MessageSent, getImplementationLoader())
-    // }
+    fun registerMessageSent(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.MessageSent, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs when a tooltip is being rendered.
@@ -820,9 +820,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerItemTooltip(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.Tooltip, getImplementationLoader())
-    // }
+    fun registerItemTooltip(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.Tooltip, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs before the player interacts.
@@ -850,9 +850,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerPlayerInteract(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.PlayerInteract, getImplementationLoader())
-    // }
+    fun registerPlayerInteract(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.PlayerInteract, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs before the player breaks a block
@@ -905,9 +905,9 @@ interface IRegister {
      * - The [net.minecraft.client.gui.GuiScreen] that is being drawn
      *
      */
-    // fun registerGuiDrawBackground(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.GuiDrawBackground, getImplementationLoader())
-    // }
+    fun registerGuiDrawBackground(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.GuiDrawBackground, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs as a gui is rendered
@@ -942,9 +942,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerGuiKey(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.GuiKey, getImplementationLoader())
-    // }
+    fun registerGuiKey(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.GuiKey, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs whenever the mouse is clicked with a
@@ -963,9 +963,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerGuiMouseClick(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.GuiMouseClick, getImplementationLoader())
-    // }
+    fun registerGuiMouseClick(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.GuiMouseClick, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs whenever a mouse button is released
@@ -984,9 +984,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerGuiMouseRelease(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.GuiMouseRelease, getImplementationLoader())
-    // }
+    fun registerGuiMouseRelease(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.GuiMouseRelease, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs whenever a mouse button held and dragged
@@ -1005,9 +1005,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerGuiMouseDrag(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.GuiMouseDrag, getImplementationLoader())
-    // }
+    fun registerGuiMouseDrag(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.GuiMouseDrag, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs whenever a packet is sent from the client to the server
@@ -1059,9 +1059,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerServerConnect(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.ServerConnect, getImplementationLoader())
-    // }
+    fun registerServerConnect(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.ServerConnect, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs whenever the player disconnects from a server
@@ -1093,9 +1093,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerChatComponentClicked(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.ChatComponentClicked, getImplementationLoader())
-    // }
+    fun registerChatComponentClicked(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.ChatComponentClicked, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs whenever the user hovers over a
@@ -1111,9 +1111,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerChatComponentHovered(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.ChatComponentHovered, getImplementationLoader())
-    // }
+    fun registerChatComponentHovered(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.ChatComponentHovered, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs whenever an entity is rendered
@@ -1246,9 +1246,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerRenderSlot(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.RenderSlot, getImplementationLoader())
-    // }
+    fun registerRenderSlot(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.RenderSlot, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs before each item is drawn into a GUI.
@@ -1262,9 +1262,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerRenderItemIntoGui(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.RenderItemIntoGui, getImplementationLoader())
-    // }
+    fun registerRenderItemIntoGui(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.RenderItemIntoGui, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs before each item overlay (stack size and damage bar) is drawn.
@@ -1278,9 +1278,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerRenderItemOverlayIntoGui(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.RenderItemOverlayIntoGui, getImplementationLoader())
-    // }
+    fun registerRenderItemOverlayIntoGui(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.RenderItemOverlayIntoGui, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs before the hovered slot square is drawn.
@@ -1298,9 +1298,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerRenderSlotHighlight(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.RenderSlotHighlight, getImplementationLoader())
-    // }
+    fun registerRenderSlotHighlight(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.RenderSlotHighlight, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs whenever a particle is spawned
@@ -1316,9 +1316,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerSpawnParticle(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.SpawnParticle, getImplementationLoader())
-    // }
+    fun registerSpawnParticle(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.SpawnParticle, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs whenever the player has left clicked on an entity
@@ -1333,9 +1333,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerAttackEntity(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.AttackEntity, getImplementationLoader())
-    // }
+    fun registerAttackEntity(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.AttackEntity, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs whenever a block is left clicked
@@ -1353,9 +1353,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerHitBlock(method: Any): EventTrigger {
-    //     return EventTrigger(method, TriggerType.HitBlock, getImplementationLoader())
-    // }
+    fun registerHitBlock(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.HitBlock, getImplementationLoader())
+    }
 
     fun getImplementationLoader(): ILoader
 }
