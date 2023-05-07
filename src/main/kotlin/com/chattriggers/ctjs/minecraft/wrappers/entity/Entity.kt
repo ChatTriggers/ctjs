@@ -3,6 +3,7 @@ package com.chattriggers.ctjs.minecraft.wrappers.entity
 import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer
 import com.chattriggers.ctjs.minecraft.wrappers.World
 import com.chattriggers.ctjs.minecraft.wrappers.world.Chunk
+import com.chattriggers.ctjs.minecraft.wrappers.world.block.BlockPos
 import com.chattriggers.ctjs.utils.vec.Vec3f
 import gg.essential.universal.wrappers.message.UTextComponent
 import net.minecraft.entity.MovementType
@@ -18,7 +19,7 @@ open class Entity(val entity: MCEntity) {
 
     fun getZ() = entity.pos.z
 
-    fun getPos() = Vec3f(getX().toFloat(), getY().toFloat(), getZ().toFloat())
+    fun getPos() = BlockPos(getX(), getY(), getZ())
 
     fun getLastX() = entity.lastRenderX
 
