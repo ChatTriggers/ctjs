@@ -1,6 +1,6 @@
 package com.chattriggers.ctjs.minecraft.listeners
 
-class CancellableEvent {
+open class CancellableEvent {
     private var cancelled = false
 
     @JvmOverloads

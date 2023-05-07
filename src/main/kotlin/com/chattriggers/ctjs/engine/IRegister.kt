@@ -53,9 +53,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerChat(method: Any): ChatTrigger {
-    //     return ChatTrigger(method, TriggerType.Chat, getImplementationLoader())
-    // }
+    fun registerChat(method: Any): ChatTrigger {
+        return ChatTrigger(method, TriggerType.Chat, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs before an action bar message is received.
@@ -73,9 +73,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerActionBar(method: Any): ChatTrigger {
-    //     return ChatTrigger(method, TriggerType.ActionBar, getImplementationLoader())
-    // }
+    fun registerActionBar(method: Any): ChatTrigger {
+        return ChatTrigger(method, TriggerType.ActionBar, getImplementationLoader())
+    }
 
     /**
      * Registers a trigger that runs before the world loads.

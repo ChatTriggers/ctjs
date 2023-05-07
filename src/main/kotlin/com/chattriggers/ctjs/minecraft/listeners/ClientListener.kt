@@ -6,6 +6,7 @@ import com.chattriggers.ctjs.minecraft.CTEvents
 import com.chattriggers.ctjs.minecraft.libs.ChatLib
 import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer
 import com.chattriggers.ctjs.minecraft.wrappers.World
+import com.chattriggers.ctjs.triggers.ChatTrigger
 import com.chattriggers.ctjs.triggers.TriggerType
 import com.chattriggers.ctjs.utils.Config
 import com.chattriggers.ctjs.utils.Initializer
@@ -20,7 +21,6 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents
 import net.minecraft.network.packet.Packet
-import net.minecraft.util.hit.BlockHitResult
 import org.mozilla.javascript.Context
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -37,14 +37,16 @@ object ClientListener : Initializer {
         packetContext = JSContextFactory.enterContext()
         Context.exit()
 
+        // TODO(breaking): Users now get the full message from the event by doing
+        //                 "event.message" instead of "EventLib.getMessage(message)"
         ClientReceiveMessageEvents.ALLOW_CHAT.register { message, _, _, _, _ ->
             val textComponent = UTextComponent(message)
             chatHistory += textComponent
             if (chatHistory.size > 1000)
                 chatHistory.removeAt(0)
 
-            val event = CancellableEvent()
-            TriggerType.Chat.triggerAll(textComponent, event)
+            val event = ChatTrigger.Event(textComponent)
+            TriggerType.Chat.triggerAll(event)
 
             // print to console
             if (Config.printChatToConsole)
@@ -62,8 +64,8 @@ object ClientListener : Initializer {
             if (actionBarHistory.size > 1000)
                 actionBarHistory.removeAt(0)
 
-            val event = CancellableEvent()
-            TriggerType.ActionBar.triggerAll(textComponent, event)
+            val event = ChatTrigger.Event(textComponent)
+            TriggerType.ActionBar.triggerAll(event)
             !event.isCancelled()
         }
 
