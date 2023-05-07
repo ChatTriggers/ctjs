@@ -1,6 +1,6 @@
 package com.chattriggers.ctjs.minecraft.libs.renderer
 
-import gg.essential.elementa.utils.Vector2f
+import com.chattriggers.ctjs.utils.vec.Vec2f
 
 class Rectangle(
     private var color: Long,
@@ -37,19 +37,19 @@ class Rectangle(
 
     fun setShadow(shadow: Boolean) = apply { this.shadow.on = shadow }
 
-    fun getShadowOffset(): Vector2f = shadow.offset
+    fun getShadowOffset(): Vec2f = shadow.offset
 
     fun getShadowOffsetX(): Float = shadow.offset.x
 
     fun getShadowOffsetY(): Float = shadow.offset.y
 
     fun setShadowOffset(x: Float, y: Float) = apply {
-        shadow.offset = Vector2f(x, y)
+        shadow.offset = Vec2f(x, y)
     }
 
-    fun setShadowOffsetX(x: Float) = apply { shadow.offset = Vector2f(x, shadow.offset.y) }
+    fun setShadowOffsetX(x: Float) = apply { shadow.offset = Vec2f(x, shadow.offset.y) }
 
-    fun setShadowOffsetY(y: Float) = apply { shadow.offset = Vector2f(shadow.offset.y, y) }
+    fun setShadowOffsetY(y: Float) = apply { shadow.offset = Vec2f(shadow.offset.y, y) }
 
     fun getShadowColor(): Long = shadow.color
 
@@ -89,7 +89,7 @@ class Rectangle(
         val rect: Rectangle,
         var on: Boolean = false,
         var color: Long = 0x50000000,
-        var offset: Vector2f = Vector2f(5f, 5f)
+        var offset: Vec2f = Vec2f(5f, 5f)
     ) {
         fun draw() {
             if (!on) return

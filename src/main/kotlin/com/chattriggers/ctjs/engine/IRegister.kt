@@ -186,7 +186,7 @@ interface IRegister {
      * Registers a new trigger that runs before a noteblock is played.
      *
      * Passes through four arguments:
-     * - The note block play event's Vector3f position
+     * - The note block play event's [com.chattriggers.ctjs.utils.vec.Vec3f] position
      * - The note block play event's note's name
      * - The note block play event's octave
      * - The note block play event, which can be cancelled
@@ -205,7 +205,7 @@ interface IRegister {
      * Registers a new trigger that runs before a noteblock is changed.
      *
      * Passes through four arguments:
-     * - The note block change event's Vector3f position
+     * - The note block change event's [com.chattriggers.ctjs.utils.vec.Vec3f] position
      * - The note block change event's note's name
      * - The note block change event's octave
      * - The note block change event, which can be cancelled
@@ -841,7 +841,7 @@ interface IRegister {
      *
      * Passes through three arguments:
      * - The [ClientListener.PlayerInteractAction]
-     * - The position of the target as a Vector3f
+     * - The position of the target as a [com.chattriggers.ctjs.utils.vec.Vec3f]
      * - The event, which can be cancelled
      *
      * Available modifications:
@@ -1120,7 +1120,7 @@ interface IRegister {
      *
      * Passes through four arguments:
      * - The [com.chattriggers.ctjs.minecraft.wrappers.entity.Entity]
-     * - The position as a Vector3f
+     * - The position as a [com.chattriggers.ctjs.utils.vec.Vec3f]
      * - The partial ticks
      * - The event, which can be cancelled
      *
@@ -1141,7 +1141,7 @@ interface IRegister {
      *
      * Passes through three arguments:
      * - The [com.chattriggers.ctjs.minecraft.wrappers.entity.Entity]
-     * - The position as a Vector3f
+     * - The position as a [com.chattriggers.ctjs.utils.vec.Vec3f]
      * - The partial ticks
      *
      * Available modifications:
@@ -1161,7 +1161,7 @@ interface IRegister {
      *
      * Passes through four arguments:
      * - The TileEntity
-     * - The position as a Vector3f
+     * - The position as a [com.chattriggers.ctjs.utils.vec.Vec3f]
      * - The partial ticks
      * - The event, which can be cancelled
      *
@@ -1182,7 +1182,7 @@ interface IRegister {
      *
      * Passes through three arguments:
      * - The TileEntity
-     * - The position as a Vector3f
+     * - The position as a [com.chattriggers.ctjs.utils.vec.Vec3f]
      * - The partial ticks
      *
      * Available modifications:
