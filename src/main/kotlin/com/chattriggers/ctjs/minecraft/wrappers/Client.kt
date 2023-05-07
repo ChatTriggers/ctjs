@@ -255,6 +255,13 @@ abstract class Client {
             @JvmStatic
             fun get(): Screen? = getMinecraft().currentScreen
 
+            @JvmStatic
+            fun set(screen: Screen) {
+                scheduleTask {
+                    getMinecraft().setScreen(screen)
+                }
+            }
+
             // TODO:
             // /**
             //  * Gets the slot under the mouse in the current gui, if one exists.

@@ -2,6 +2,9 @@ package com.chattriggers.ctjs
 
 import com.chattriggers.ctjs.minecraft.libs.renderer.Image
 import com.chattriggers.ctjs.minecraft.objects.Sound
+import com.chattriggers.ctjs.utils.Config
+import com.chattriggers.ctjs.utils.console.Console.Companion.printTraceToConsole
+import kotlin.concurrent.thread
 
 object Reference {
     // TODO: Figure out how to substitute these at build time
@@ -24,5 +27,20 @@ object Reference {
     @JvmStatic
     fun loadCT() {
         isLoaded = true
+    }
+
+    @JvmStatic
+    fun conditionalThread(block: () -> Unit) {
+        if (Config.threadedLoading) {
+            thread {
+                try {
+                    block()
+                } catch (e: Throwable) {
+                    e.printTraceToConsole()
+                }
+            }
+        } else {
+            block()
+        }
     }
 }

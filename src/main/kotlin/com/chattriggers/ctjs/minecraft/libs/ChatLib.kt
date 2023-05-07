@@ -4,6 +4,8 @@ import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer
 import gg.essential.universal.UMinecraft
 import gg.essential.universal.wrappers.message.UMessage
 import gg.essential.universal.wrappers.message.UTextComponent
+import java.awt.Toolkit
+import java.awt.datatransfer.StringSelection
 import kotlin.math.roundToInt
 
 object ChatLib {
@@ -177,6 +179,16 @@ object ChatLib {
         }
 
         return spaceBuilder.append(text).toString()
+    }
+
+    /**
+     * Copies the given String to the user's clipboard
+     *
+     * @param text the text to copy
+     */
+    @JvmStatic
+    fun copyToClipboard(text: String) {
+        Toolkit.getDefaultToolkit().systemClipboard.setContents(StringSelection(text), null)
     }
 
     // /**

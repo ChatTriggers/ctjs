@@ -1,18 +1,25 @@
 package com.chattriggers.ctjs
 
+import com.chattriggers.ctjs.commands.CTCommand
 import com.chattriggers.ctjs.minecraft.libs.renderer.Image
 import com.chattriggers.ctjs.minecraft.objects.Sound
 import com.chattriggers.ctjs.utils.Initializer
 import com.google.gson.Gson
+import com.mojang.brigadier.CommandDispatcher
 import net.fabricmc.api.ClientModInitializer
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
 import java.io.File
 import java.net.URL
 import java.net.URLConnection
 
 class CTJS : ClientModInitializer {
     override fun onInitializeClient() {
-        println("initialized!")
         Initializer.initializers.forEach(Initializer::init)
+
+        CommandRegistrationCallback.EVENT.register { dispatcher, _, _ ->
+            CTCommand.register(dispatcher)
+        }
     }
 
     companion object {
