@@ -252,9 +252,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerStep(method: Any): StepTrigger {
-    //     return StepTrigger(method, getImplementationLoader())
-    // }
+    fun registerStep(method: Any): StepTrigger {
+        return StepTrigger(method, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs before the world is drawn.
