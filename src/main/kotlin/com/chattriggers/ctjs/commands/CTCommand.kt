@@ -30,8 +30,8 @@ object CTCommand {
     fun register(dispatcher: CommandDispatcher<ServerCommandSource>) {
         // TODO(breaking): Remove copy command and a bunch of aliases
         val command = CommandManager.literal("ct")
-            .then(CommandManager.literal("load").onExecute { Reference.loadCT() })
-            .then(CommandManager.literal("unload").onExecute { Reference.unloadCT() })
+            .then(CommandManager.literal("load").onExecute { Reference.loadCT(asCommand = true) })
+            .then(CommandManager.literal("unload").onExecute { Reference.unloadCT(asCommand = true) })
             .then(CommandManager.literal("files").onExecute { openFileLocation() })
             .then(
                 CommandManager.literal("import")

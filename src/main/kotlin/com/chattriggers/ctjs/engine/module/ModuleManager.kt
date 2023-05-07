@@ -50,6 +50,7 @@ object ModuleManager {
     }
     val pendingOldModules = mutableListOf<Module>()
 
+    @JvmStatic
     fun setup() {
         modulesFolder.mkdirs()
 
@@ -100,6 +101,7 @@ object ModuleManager {
         }
     }
 
+    @JvmStatic
     fun asmPass() {
         loaders.forEach(ILoader::asmSetup)
 

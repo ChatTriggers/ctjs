@@ -1,5 +1,6 @@
 package com.chattriggers.ctjs.mixins;
 
+import com.chattriggers.ctjs.engine.module.ModuleManager;
 import com.chattriggers.ctjs.triggers.TriggerType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
@@ -27,5 +28,10 @@ public class MinecraftClientMixin {
     void injectScreenOpened(Screen screen, CallbackInfo ci) {
         if (screen != null)
             TriggerType.GuiOpened.triggerAll(screen, ci);
+    }
+
+    @Inject(method = "run", at = @At("HEAD"))
+    void injectRun(CallbackInfo ci) {
+        TriggerType.GameLoad.triggerAll();
     }
 }

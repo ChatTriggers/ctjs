@@ -1,7 +1,13 @@
 package com.chattriggers.ctjs
 
+import com.chattriggers.ctjs.engine.langs.js.JSLoader
+import com.chattriggers.ctjs.engine.module.ModuleManager
+import com.chattriggers.ctjs.minecraft.libs.ChatLib
 import com.chattriggers.ctjs.minecraft.libs.renderer.Image
 import com.chattriggers.ctjs.minecraft.objects.Sound
+import com.chattriggers.ctjs.minecraft.wrappers.Client
+import com.chattriggers.ctjs.minecraft.wrappers.World
+import com.chattriggers.ctjs.triggers.TriggerType
 import com.chattriggers.ctjs.utils.Config
 import com.chattriggers.ctjs.utils.console.printTraceToConsole
 import kotlin.concurrent.thread
@@ -17,16 +23,44 @@ object Reference {
     var isLoaded = true
 
     @JvmStatic
-    fun unloadCT() {
+    fun unloadCT(asCommand: Boolean = true) {
+        TriggerType.WorldUnload.triggerAll()
+        TriggerType.GameUnload.triggerAll()
+
         isLoaded = false
 
-        CTJS.images.forEach(Image::destroy)
-        CTJS.sounds.forEach(Sound::destroy)
+        ModuleManager.teardown()
+
+        Client.scheduleTask {
+            CTJS.images.forEach(Image::destroy)
+            CTJS.sounds.forEach(Sound::destroy)
+        }
+
+        if (asCommand)
+            ChatLib.chat("&7Unloaded ChatTriggers")
     }
 
     @JvmStatic
-    fun loadCT() {
-        isLoaded = true
+    fun loadCT(asCommand: Boolean = true) {
+        Client.getMinecraft().options.write()
+        unloadCT(asCommand = false)
+
+        if (asCommand)
+            ChatLib.chat("&cReloading ChatTriggers...")
+
+        conditionalThread {
+            ModuleManager.setup()
+            ModuleManager.entryPass()
+
+            Client.getMinecraft().options.load()
+            if (asCommand)
+                ChatLib.chat("&aDone reloading!")
+            isLoaded = true
+
+            TriggerType.GameLoad.triggerAll()
+            if (World.isLoaded())
+                TriggerType.WorldLoad.triggerAll()
+        }
     }
 
     @JvmStatic
