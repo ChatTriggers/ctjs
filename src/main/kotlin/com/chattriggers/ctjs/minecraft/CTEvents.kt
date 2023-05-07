@@ -1,9 +1,13 @@
 package com.chattriggers.ctjs.minecraft
 
-import io.netty.channel.ChannelHandlerContext
+import com.chattriggers.ctjs.minecraft.CTEvents.PacketReceivedCallback
+import com.chattriggers.ctjs.minecraft.CTEvents.RenderCallback
+import com.chattriggers.ctjs.minecraft.CTEvents.VoidCallback
 import net.fabricmc.fabric.api.event.EventFactory
 import net.minecraft.client.gui.Drawable
 import net.minecraft.client.util.math.MatrixStack
+import net.minecraft.network.packet.Packet
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 
 internal object CTEvents {
     fun interface VoidCallback {
@@ -14,8 +18,8 @@ internal object CTEvents {
         fun render(matrixStack: MatrixStack, mouseX: Int, mouseY: Int, drawable: Drawable, partialTicks: Float)
     }
 
-    fun interface ConnectionCallback {
-        fun connect(context: ChannelHandlerContext)
+    fun interface PacketReceivedCallback {
+        fun receive(packet: Packet<*>, cb: CallbackInfo)
     }
 
     @JvmField
@@ -40,8 +44,8 @@ internal object CTEvents {
     }
 
     @JvmField
-    val CONNECTION_CREATED = EventFactory.createArrayBacked(ConnectionCallback::class.java) { listeners ->
-        ConnectionCallback { ctx -> listeners.forEach { it.connect(ctx) } }
+    val PACKET_RECECIVED = EventFactory.createArrayBacked(PacketReceivedCallback::class.java) { listeners ->
+        PacketReceivedCallback { packet, cb -> listeners.forEach { it.receive(packet, cb) } }
     }
 
     @JvmField

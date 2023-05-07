@@ -1024,9 +1024,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerPacketSent(method: Any): PacketTrigger {
-    //     return PacketTrigger(method, TriggerType.PacketSent, getImplementationLoader())
-    // }
+    fun registerPacketSent(method: Any): PacketTrigger {
+        return PacketTrigger(method, TriggerType.PacketSent, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs whenever a packet is sent to the client from the server
@@ -1043,9 +1043,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerPacketReceived(method: Any): PacketTrigger {
-    //     return PacketTrigger(method, TriggerType.PacketReceived, getImplementationLoader())
-    // }
+    fun registerPacketReceived(method: Any): PacketTrigger {
+        return PacketTrigger(method, TriggerType.PacketReceived, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs whenever the player connects to a server

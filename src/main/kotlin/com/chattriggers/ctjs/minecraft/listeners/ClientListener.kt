@@ -16,6 +16,7 @@ import gg.essential.universal.UMinecraft
 import gg.essential.universal.wrappers.message.UTextComponent
 import io.netty.channel.ChannelDuplexHandler
 import io.netty.channel.ChannelHandlerContext
+import io.netty.channel.ChannelInboundHandlerAdapter
 import io.netty.channel.ChannelPromise
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
@@ -86,34 +87,10 @@ object ClientListener : Initializer {
             }
         }
 
-        CTEvents.CONNECTION_CREATED.register { ctx ->
-            ctx.channel().pipeline().addAfter("packet_handler", "ct:packet_handler", object : ChannelDuplexHandler() {
-                override fun channelRead(ctx: ChannelHandlerContext, msg: Any) {
-                    val packetReceivedEvent = CancellableEvent()
-
-                    if (msg is Packet<*>) {
-                        JSLoader.wrapInContext(packetContext) {
-                            TriggerType.PacketReceived.triggerAll(msg, packetReceivedEvent)
-                        }
-                    }
-
-                    if (!packetReceivedEvent.isCancelled())
-                        super.channelRead(ctx, msg)
-                }
-
-                override fun write(ctx: ChannelHandlerContext?, msg: Any?, promise: ChannelPromise?) {
-                    val packetSentEvent = CancellableEvent()
-
-                    if (msg is Packet<*>) {
-                        JSLoader.wrapInContext(packetContext) {
-                            TriggerType.PacketSent.triggerAll(msg, packetSentEvent)
-                        }
-                    }
-
-                    if (!packetSentEvent.isCancelled())
-                        ctx?.write(msg, promise)
-                }
-            })
+        CTEvents.PACKET_RECECIVED.register { packet, ctx ->
+            JSLoader.wrapInContext(packetContext) {
+                TriggerType.PacketReceived.triggerAll(packet, ctx)
+            }
         }
 
         CTEvents.RENDER_TICK.register {
