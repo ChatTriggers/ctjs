@@ -12,7 +12,8 @@
         "RenderTickCounterMixin",
         "ScreenMixin",
         "SoundAccessor",
-        "SoundManagerAccessor"
+        "SoundManagerAccessor",
+        "SoundSystemMixin"
     ],
     "injectors": {
         "defaultRequire": 1

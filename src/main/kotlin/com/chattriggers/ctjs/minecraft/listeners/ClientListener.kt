@@ -157,15 +157,6 @@ object ClientListener : Initializer {
 
             Renderer.popMatrix()
         }
-
-        WorldRenderEvents.BLOCK_OUTLINE.register { _, ctx ->
-            val event = CancellableEvent()
-            // TODO: Use a BlockPos wrapper for this
-            TriggerType.BlockHighlight.triggerAll(ctx.blockPos(), event)
-            !event.isCancelled()
-        }
-
-
     }
 
     fun addTask(delay: Int, callback: () -> Unit) {

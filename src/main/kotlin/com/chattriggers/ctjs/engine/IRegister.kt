@@ -178,9 +178,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerSoundPlay(method: Any): SoundPlayTrigger {
-    //     return SoundPlayTrigger(method, getImplementationLoader())
-    // }
+    fun registerSoundPlay(method: Any): SoundPlayTrigger {
+        return SoundPlayTrigger(method, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs before a noteblock is played.
