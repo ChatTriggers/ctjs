@@ -66,7 +66,7 @@ object JSLoader : ILoader {
 
         wrapInContext {
             val asmProvidedLibs = saveResource(
-                "/js/asmProvidedLibs.js",
+                "/assets/chattriggers/js/asmProvidedLibs.js",
                 File(modulesFolder.parentFile, "chattriggers-asm-provided-libs.js"),
                 true
             )
@@ -87,7 +87,7 @@ object JSLoader : ILoader {
     override fun asmSetup() = wrapInContext {
         val asmLibFile = File(modulesFolder.parentFile, "chattriggers-asmLib.js")
 
-        saveResource("/js/asmLib.js", asmLibFile, true)
+        saveResource("/assets/chattriggers/js/asmLib.js", asmLibFile, true)
 
         try {
             val returned = require.loadCTModule("ASMLib", asmLibFile.toURI())
@@ -124,7 +124,7 @@ object JSLoader : ILoader {
 
     override fun entrySetup(): Unit = wrapInContext {
         val moduleProvidedLibs = saveResource(
-            "/js/moduleProvidedLibs.js",
+            "/assets/chattriggers/js/moduleProvidedLibs.js",
             File(modulesFolder.parentFile, "chattriggers-modules-provided-libs.js"),
             true
         )
