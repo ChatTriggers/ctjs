@@ -2,6 +2,7 @@ package com.chattriggers.ctjs.minecraft.wrappers.entity
 
 import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer
 import com.chattriggers.ctjs.mixins.ParticleAccessor
+import com.chattriggers.ctjs.utils.Color
 import com.chattriggers.ctjs.utils.asMixin
 import net.minecraft.client.particle.Particle as MCParticle
 
@@ -80,15 +81,16 @@ class Particle(val particle: MCParticle) {
     /**
      * Returns the color of the Particle
      *
-     * @return A [java.awt.Color] with the R, G, B and A values
+     * @return A [Color] with the R, G, B and A values
      */
-    // TODO: Color wrapper
-    // fun getColor(): Color = Color(
-    //     underlyingEntity.redColorF,
-    //     underlyingEntity.greenColorF,
-    //     underlyingEntity.blueColorF,
-    //     underlyingEntity.alpha
-    // )
+    fun getColor(): Color = Color(red, green, blue, alpha)
+
+    fun setColor(color: Color) = apply {
+        red = color.redF
+        green = color.greenF
+        blue = color.blueF
+        alpha = color.alphaF
+    }
 
     /**
      * Sets the amount of ticks this particle will live for

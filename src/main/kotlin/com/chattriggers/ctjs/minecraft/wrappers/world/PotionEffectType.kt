@@ -1,5 +1,6 @@
 package com.chattriggers.ctjs.minecraft.wrappers.world
 
+import com.chattriggers.ctjs.utils.Color
 import gg.essential.universal.wrappers.message.UTextComponent
 import net.minecraft.entity.effect.StatusEffect
 
@@ -29,9 +30,8 @@ class PotionEffectType(val type: StatusEffect) {
      */
     val category get() = type.category
 
-    // TODO: Color wrapper (java.awt.Color can't be used because of HeadlessException)
     /**
      * The color of this type
      */
-    val color get() = type.color
+    val color get() = Color(type.color)
 }
