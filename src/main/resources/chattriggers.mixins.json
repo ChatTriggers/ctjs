@@ -21,6 +21,7 @@
     "mixins": [
         "ClientConnectionMixin",
         "ItemEntityMixin",
+        "ParticleAccessor",
         "PlayerEntityMixin"
     ]
 }
