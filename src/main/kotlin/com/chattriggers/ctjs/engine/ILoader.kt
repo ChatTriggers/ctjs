@@ -16,7 +16,7 @@ import java.nio.charset.Charset
  * @suppress This is internal and should not show in userdocs
  */
 interface ILoader {
-    val console: Console
+    var console: Console
 
     /**
      * Performs initial engine setup given a list of jars. Note that

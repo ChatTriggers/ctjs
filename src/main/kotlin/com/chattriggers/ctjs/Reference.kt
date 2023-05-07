@@ -3,7 +3,7 @@ package com.chattriggers.ctjs
 import com.chattriggers.ctjs.minecraft.libs.renderer.Image
 import com.chattriggers.ctjs.minecraft.objects.Sound
 import com.chattriggers.ctjs.utils.Config
-import com.chattriggers.ctjs.utils.console.Console.Companion.printTraceToConsole
+import com.chattriggers.ctjs.utils.console.printTraceToConsole
 import kotlin.concurrent.thread
 
 object Reference {

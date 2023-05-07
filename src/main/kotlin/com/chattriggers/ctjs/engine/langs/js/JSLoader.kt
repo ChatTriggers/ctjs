@@ -6,10 +6,7 @@ import com.chattriggers.ctjs.engine.module.Module
 import com.chattriggers.ctjs.engine.module.ModuleManager.modulesFolder
 import com.chattriggers.ctjs.triggers.Trigger
 import com.chattriggers.ctjs.triggers.TriggerType
-import com.chattriggers.ctjs.utils.console.Console
-import com.chattriggers.ctjs.utils.console.Console.Companion.printToConsole
-import com.chattriggers.ctjs.utils.console.Console.Companion.printTraceToConsole
-import com.chattriggers.ctjs.utils.console.LogType
+import com.chattriggers.ctjs.utils.console.*
 import org.mozilla.javascript.*
 import org.mozilla.javascript.Function
 import org.mozilla.javascript.commonjs.module.ModuleScriptProvider
@@ -32,7 +29,7 @@ import kotlin.contracts.contract
 @OptIn(ExperimentalContracts::class)
 object JSLoader : ILoader {
     private val triggers = ConcurrentHashMap<TriggerType, ConcurrentSkipListSet<Trigger>>()
-    override val console by lazy { Console(this) }
+    override var console: Console = DummyConsole()
 
     private lateinit var moduleContext: Context
     private lateinit var evalContext: Context
@@ -82,7 +79,6 @@ object JSLoader : ILoader {
                     1, null
                 )
             } catch (e: Throwable) {
-                e.printStackTrace()
                 e.printTraceToConsole(console)
             }
         }
@@ -99,7 +95,6 @@ object JSLoader : ILoader {
             // Get the default export, the ASM Helper
             ASMLib = ScriptableObject.getProperty(returned, "default")
         } catch (e: Throwable) {
-            e.printStackTrace()
             e.printTraceToConsole(console)
         }
     }
@@ -122,7 +117,6 @@ object JSLoader : ILoader {
             asmFunction.call(moduleContext, scope, scope, arrayOf(ASMLib))
         } catch (e: Throwable) {
             println("Error loading asm entry for module ${module.name}")
-            e.printStackTrace()
             e.printTraceToConsole(console)
             "Error loading asm entry for module ${module.name}".printToConsole(console, LogType.ERROR)
         }
@@ -143,7 +137,6 @@ object JSLoader : ILoader {
                 1, null
             )
         } catch (e: Throwable) {
-            e.printStackTrace()
             e.printTraceToConsole(console)
         }
     }
@@ -153,8 +146,6 @@ object JSLoader : ILoader {
             require.loadCTModule(module.name, entryURI)
         } catch (e: Throwable) {
             println("Error loading module ${module.name}")
-            e.printStackTrace()
-
             "Error loading module ${module.name}".printToConsole(console, LogType.ERROR)
             e.printTraceToConsole(console)
         }
@@ -171,8 +162,6 @@ object JSLoader : ILoader {
                 INVOKE_JS_CALL.bindTo(func)
             } catch (e: Throwable) {
                 println("Error loading asm function $functionURI in module ${module.name}.")
-                e.printStackTrace()
-
                 "Error loading asm function $functionURI in module ${module.name}.".printToConsole(
                     console,
                     LogType.ERROR,

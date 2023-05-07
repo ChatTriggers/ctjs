@@ -3,14 +3,16 @@ package com.chattriggers.ctjs.engine.module
 import com.chattriggers.ctjs.CTJS
 import com.chattriggers.ctjs.Reference
 import com.chattriggers.ctjs.engine.ILoader
+import com.chattriggers.ctjs.engine.langs.Lang
 import com.chattriggers.ctjs.engine.langs.js.JSContextFactory
 import com.chattriggers.ctjs.engine.langs.js.JSLoader
 import com.chattriggers.ctjs.minecraft.libs.ChatLib
 import com.chattriggers.ctjs.triggers.TriggerType
 import com.chattriggers.ctjs.utils.Config
 import com.chattriggers.ctjs.utils.console.Console
-import com.chattriggers.ctjs.utils.console.Console.Companion.printToConsole
+import com.chattriggers.ctjs.utils.console.DummyConsole
 import com.chattriggers.ctjs.utils.console.LogType
+import com.chattriggers.ctjs.utils.console.printToConsole
 import gg.essential.vigilance.impl.nightconfig.core.file.FileConfig
 import org.apache.commons.io.FileUtils
 import org.mozilla.javascript.Context
@@ -20,7 +22,9 @@ import java.net.URLClassLoader
 
 object ModuleManager {
     private val loaders = listOf(JSLoader)
-    val generalConsole by lazy { Console(null) }
+    var generalConsole: Console = DummyConsole()
+        private set
+
     val cachedModules = mutableListOf<Module>()
     val modulesFolder = run {
         // We can't use vigilance here as calling loadData starts another thread, which
@@ -239,12 +243,12 @@ object ModuleManager {
             it.clearTriggers()
 
             if (Config.clearConsoleOnLoad) {
-                it.console.clearConsole()
+                it.console.clear()
             }
         }
 
         if (Config.clearConsoleOnLoad)
-            generalConsole.clearConsole()
+            generalConsole.clear()
     }
 
     fun trigger(type: TriggerType, arguments: Array<out Any?>) {
@@ -257,5 +261,18 @@ object ModuleManager {
         return loaders.firstOrNull {
             it.getLanguage().langName == language
         }?.console ?: generalConsole
+    }
+
+    fun installConsole(lang: Lang?, console: Console) {
+        if (lang != null) {
+            loaders.first { it.getLanguage() == lang }.console = console
+        } else {
+            generalConsole = console
+        }
+    }
+
+    fun onConsoleSettingsChanged() {
+        generalConsole.onConsoleSettingsChanged()
+        loaders.forEach { it.console.onConsoleSettingsChanged() }
     }
 }

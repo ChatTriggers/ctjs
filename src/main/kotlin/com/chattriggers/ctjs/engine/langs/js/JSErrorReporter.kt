@@ -1,10 +1,11 @@
 package com.chattriggers.ctjs.engine.langs.js
 
+import com.chattriggers.ctjs.utils.console.Console
 import org.mozilla.javascript.ErrorReporter
 import org.mozilla.javascript.EvaluatorException
 import java.io.PrintWriter
 
-class JSErrorReporter(private val outputStream: PrintWriter) : ErrorReporter {
+class JSErrorReporter(private val console: Console) : ErrorReporter {
     override fun warning(message: String?, sourceName: String?, line: Int, lineSource: String?, lineOffset: Int) {
         reportErrorMessage(message, sourceName, line, lineSource, lineOffset, isWarning = true)
     }
@@ -30,10 +31,10 @@ class JSErrorReporter(private val outputStream: PrintWriter) : ErrorReporter {
         if (isWarning)
             message = "warning: $message"
 
-        outputStream.println(MESSAGE_PREFIX + message)
+        console.println(MESSAGE_PREFIX + message)
         if (lineSource != null) {
-            outputStream.println(MESSAGE_PREFIX + lineSource)
-            outputStream.println(MESSAGE_PREFIX + buildIndicator(lineOffset))
+            console.println(MESSAGE_PREFIX + lineSource)
+            console.println(MESSAGE_PREFIX + buildIndicator(lineOffset))
         }
     }
 

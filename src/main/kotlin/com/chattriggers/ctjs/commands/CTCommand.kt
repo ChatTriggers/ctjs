@@ -6,7 +6,7 @@ import com.chattriggers.ctjs.minecraft.libs.ChatLib
 import com.chattriggers.ctjs.minecraft.listeners.ClientListener
 import com.chattriggers.ctjs.minecraft.wrappers.Client
 import com.chattriggers.ctjs.utils.Config
-import com.chattriggers.ctjs.utils.console.Console.Companion.printTraceToConsole
+import com.chattriggers.ctjs.utils.console.printTraceToConsole
 import com.chattriggers.ctjs.utils.toVersion
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.arguments.IntegerArgumentType
@@ -53,9 +53,9 @@ object CTCommand {
                 CommandManager.literal("console")
                     .then(CommandManager.argument("type", StringArgumentType.word())
                         .onExecute {
-                            ModuleManager.getConsole(StringArgumentType.getString(it, "type")).showConsole()
+                            ModuleManager.getConsole(StringArgumentType.getString(it, "type")).show()
                         })
-                    .onExecute { ModuleManager.generalConsole.showConsole() }
+                    .onExecute { ModuleManager.generalConsole.show() }
             )
             .then(CommandManager.literal("config").onExecute { Client.Companion.currentGui.set(Config.gui()!!) })
             .then(
