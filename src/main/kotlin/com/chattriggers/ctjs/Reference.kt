@@ -9,6 +9,7 @@ import com.chattriggers.ctjs.minecraft.wrappers.Client
 import com.chattriggers.ctjs.minecraft.wrappers.World
 import com.chattriggers.ctjs.triggers.TriggerType
 import com.chattriggers.ctjs.utils.Config
+import com.chattriggers.ctjs.utils.console.ConsoleManager
 import com.chattriggers.ctjs.utils.console.printTraceToConsole
 import kotlin.concurrent.thread
 
@@ -30,6 +31,7 @@ object Reference {
         isLoaded = false
 
         ModuleManager.teardown()
+        ConsoleManager.clearConsoles()
 
         Client.scheduleTask {
             CTJS.images.forEach(Image::destroy)

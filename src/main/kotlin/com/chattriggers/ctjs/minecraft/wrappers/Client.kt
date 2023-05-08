@@ -256,7 +256,7 @@ abstract class Client {
             fun get(): Screen? = getMinecraft().currentScreen
 
             @JvmStatic
-            fun set(screen: Screen) {
+            fun set(screen: Screen?) {
                 scheduleTask {
                     getMinecraft().setScreen(screen)
                 }

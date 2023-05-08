@@ -2,6 +2,7 @@ package com.chattriggers.ctjs.utils
 
 import com.chattriggers.ctjs.CTJS
 import com.chattriggers.ctjs.engine.module.ModuleManager
+import com.chattriggers.ctjs.utils.console.ConsoleManager
 import gg.essential.vigilance.Vigilant
 import gg.essential.vigilance.data.Property
 import gg.essential.vigilance.data.PropertyType
@@ -158,16 +159,16 @@ object Config : Vigilant(File(CTJS.configLocation, "ChatTriggers.toml"), sorting
             javaClass.getDeclaredField("consoleErrorAndWarningColors"),
         )
 
-        registerListener<Boolean>("clearConsoleOnLoad") { ModuleManager.onConsoleSettingsChanged() }
-        registerListener<Boolean>("openConsoleOnError") { ModuleManager.onConsoleSettingsChanged() }
-        registerListener<Boolean>("consoleFiraCodeFont") { ModuleManager.onConsoleSettingsChanged() }
-        registerListener<Int>("consoleFontSize") { ModuleManager.onConsoleSettingsChanged() }
-        registerListener<Boolean>("customTheme") { ModuleManager.onConsoleSettingsChanged() }
-        registerListener<String>("consoleTheme") { ModuleManager.onConsoleSettingsChanged() }
-        registerListener<Color>("consoleForegroundColor") { ModuleManager.onConsoleSettingsChanged() }
-        registerListener<Color>("consoleBackgroundColor") { ModuleManager.onConsoleSettingsChanged() }
-        registerListener<Boolean>("consoleErrorAndWarningColors") { ModuleManager.onConsoleSettingsChanged() }
-        registerListener<Color>("consoleErrorColor") { ModuleManager.onConsoleSettingsChanged() }
-        registerListener<Color>("consoleWarningColor") { ModuleManager.onConsoleSettingsChanged() }
+        registerListener<Boolean>("clearConsoleOnLoad") { ConsoleManager.onConsoleSettingsChanged() }
+        registerListener<Boolean>("openConsoleOnError") { ConsoleManager.onConsoleSettingsChanged() }
+        registerListener<Boolean>("consoleFiraCodeFont") { ConsoleManager.onConsoleSettingsChanged() }
+        registerListener<Int>("consoleFontSize") { ConsoleManager.onConsoleSettingsChanged() }
+        registerListener<Boolean>("customTheme") { ConsoleManager.onConsoleSettingsChanged() }
+        registerListener<String>("consoleTheme") { ConsoleManager.onConsoleSettingsChanged() }
+        registerListener<Color>("consoleForegroundColor") { ConsoleManager.onConsoleSettingsChanged() }
+        registerListener<Color>("consoleBackgroundColor") { ConsoleManager.onConsoleSettingsChanged() }
+        registerListener<Boolean>("consoleErrorAndWarningColors") { ConsoleManager.onConsoleSettingsChanged() }
+        registerListener<Color>("consoleErrorColor") { ConsoleManager.onConsoleSettingsChanged() }
+        registerListener<Color>("consoleWarningColor") { ConsoleManager.onConsoleSettingsChanged() }
     }
 }

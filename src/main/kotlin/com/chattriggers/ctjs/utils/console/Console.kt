@@ -1,6 +1,5 @@
 package com.chattriggers.ctjs.utils.console
 
-import com.chattriggers.ctjs.engine.module.ModuleManager
 import java.awt.Color
 
 interface Console {
@@ -17,35 +16,15 @@ interface Console {
 
     fun show()
 
-    fun hide()
-
     // Invoked when the user changes any Console-related settings in the Config
     fun onConsoleSettingsChanged()
 }
 
-fun Any.printToConsole(console: Console = ModuleManager.generalConsole, logType: LogType = LogType.INFO) {
+fun Any.printToConsole(console: Console = ConsoleManager.getConsole(), logType: LogType = LogType.INFO) {
     console.println(this, logType)
 }
 
-fun Throwable.printTraceToConsole(console: Console = ModuleManager.generalConsole) {
+fun Throwable.printTraceToConsole(console: Console = ConsoleManager.getConsole()) {
     console.printStackTrace(this)
     this.printStackTrace()
-}
-
-class DummyConsole : Console {
-    override fun clear() {}
-
-    override fun println(obj: Any, logType: LogType, end: String, customColor: Color?) {
-        kotlin.io.println("$obj$end")
-    }
-
-    override fun printStackTrace(error: Throwable) {
-        error.printStackTrace()
-    }
-
-    override fun show() {}
-
-    override fun hide() {}
-
-    override fun onConsoleSettingsChanged() {}
 }

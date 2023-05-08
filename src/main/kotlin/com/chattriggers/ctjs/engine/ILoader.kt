@@ -5,6 +5,7 @@ import com.chattriggers.ctjs.engine.module.Module
 import com.chattriggers.ctjs.triggers.Trigger
 import com.chattriggers.ctjs.triggers.TriggerType
 import com.chattriggers.ctjs.utils.console.Console
+import com.chattriggers.ctjs.utils.console.ConsoleManager
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.lang.invoke.MethodHandle
@@ -16,7 +17,8 @@ import java.nio.charset.Charset
  * @suppress This is internal and should not show in userdocs
  */
 interface ILoader {
-    var console: Console
+    val console: Console
+        get() = ConsoleManager.getConsole(getLanguage())
 
     /**
      * Performs initial engine setup given a list of jars. Note that

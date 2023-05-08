@@ -29,7 +29,6 @@ import kotlin.contracts.contract
 @OptIn(ExperimentalContracts::class)
 object JSLoader : ILoader {
     private val triggers = ConcurrentHashMap<TriggerType, ConcurrentSkipListSet<Trigger>>()
-    override var console: Console = DummyConsole()
 
     private lateinit var moduleContext: Context
     private lateinit var evalContext: Context
