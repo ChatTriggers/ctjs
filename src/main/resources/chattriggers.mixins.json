@@ -6,9 +6,13 @@
     "client": [
         "AbstractSoundInstanceAccessor",
         "ChatScreenAccessor",
+        "ClientConnectionMixin",
         "ClientPlayerInteractionManagerMixin",
         "GameRendererMixin",
+        "ItemEntityMixin",
         "MinecraftClientMixin",
+        "ParticleAccessor",
+        "PlayerEntityMixin",
         "RenderTickCounterMixin",
         "ScreenMixin",
         "SoundAccessor",
@@ -17,11 +21,5 @@
     ],
     "injectors": {
         "defaultRequire": 1
-    },
-    "mixins": [
-        "ClientConnectionMixin",
-        "ItemEntityMixin",
-        "ParticleAccessor",
-        "PlayerEntityMixin"
-    ]
+    }
 }
