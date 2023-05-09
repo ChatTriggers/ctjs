@@ -323,23 +323,6 @@ interface IRegister {
     }
 
     /**
-     * Registers a trigger that runs before the debug screen is being drawn.
-     *
-     * Passes through one argument:
-     * - The render event, which can be cancelled
-     *
-     * Available modifications:
-     * - [EventTrigger.triggerIfCanceled] Sets if triggered if event is already cancelled
-     * - [Trigger.setPriority] Sets the priority
-     *
-     * @param method The method to call when the event is fired
-     * @return The trigger for additional modification
-     */
-    fun registerRenderDebug(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.RenderDebug, getImplementationLoader())
-    }
-
-    /**
      * Registers a new trigger that runs before the boss health bar is being drawn.
      *
      * Passes through one argument:

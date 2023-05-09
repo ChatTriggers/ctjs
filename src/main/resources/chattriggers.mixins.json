@@ -8,6 +8,7 @@
         "ChatScreenAccessor",
         "ClientConnectionMixin",
         "ClientPlayerInteractionManagerMixin",
+        "DebugHudMixin",
         "GameRendererMixin",
         "ItemEntityMixin",
         "MinecraftClientMixin",

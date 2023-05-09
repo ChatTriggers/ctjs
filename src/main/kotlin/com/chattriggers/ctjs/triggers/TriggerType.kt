@@ -38,12 +38,12 @@ enum class TriggerType {
     GuiDrawBackground,
 
     // rendering
+    // TODO(breaking): Removed RenderDebug (same as RenderOverlay)
     RenderWorld,
     BlockHighlight,
     RenderOverlay,
     RenderPlayerList,
     RenderBossHealth,
-    RenderDebug,
     RenderCrosshair,
     RenderHotbar,
     RenderExperience,
