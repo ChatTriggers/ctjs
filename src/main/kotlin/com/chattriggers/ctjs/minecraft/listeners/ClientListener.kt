@@ -95,10 +95,6 @@ object ClientListener : Initializer {
 
         CTEvents.RENDER_TICK.register {
             TriggerType.Step.triggerAll()
-
-            // TODO:
-            // if (World.isLoaded())
-            //     MouseListener.handleDragged()
         }
 
         CTEvents.POST_RENDER_SCREEN.register { stack, mouseX, mouseY, screen, partialTicks ->

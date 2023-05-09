@@ -1,6 +1,5 @@
 package com.chattriggers.ctjs.mixins;
 
-import com.chattriggers.ctjs.engine.module.ModuleManager;
 import com.chattriggers.ctjs.triggers.TriggerType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;

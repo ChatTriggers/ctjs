@@ -11,6 +11,7 @@
         "GameRendererMixin",
         "ItemEntityMixin",
         "MinecraftClientMixin",
+        "MouseMixin",
         "ParticleAccessor",
         "PlayerEntityMixin",
         "RenderTickCounterMixin",

@@ -1,0 +1,85 @@
+package com.chattriggers.ctjs.minecraft.listeners
+
+import com.chattriggers.ctjs.minecraft.CTEvents
+import com.chattriggers.ctjs.minecraft.wrappers.Client
+import com.chattriggers.ctjs.minecraft.wrappers.World
+import com.chattriggers.ctjs.triggers.TriggerType
+import com.chattriggers.ctjs.utils.Initializer
+import org.lwjgl.glfw.GLFW
+
+internal object MouseListener : Initializer {
+    private val mouseState = mutableMapOf<Int, Int>()
+    private val draggedState = mutableMapOf<Int, State>()
+
+    private class State(val x: Double, val y: Double)
+
+    override fun init() {
+        CTEvents.RENDER_TICK.register {
+            if (!World.isLoaded())
+                return@register
+
+            for (button in 0..4) {
+                if (button !in draggedState)
+                    continue
+
+                val x = Client.getMouseX()
+                val y = Client.getMouseY()
+
+                if (x == draggedState[button]?.x && y == draggedState[button]?.y)
+                    continue
+    
+                CTEvents.MOUSE_DRAGGED.invoker().process(
+                    x - (draggedState[button]?.x ?: 0.0),
+                    y - (draggedState[button]?.y ?: 0.0),
+                    x,
+                    y,
+                    button,
+                )
+
+                // update dragged
+                draggedState[button] = State(x, y)
+            }
+        }
+
+        CTEvents.MOUSE_CLICKED.register(TriggerType.Clicked::triggerAll)
+        CTEvents.MOUSE_SCROLLED.register(TriggerType.Scrolled::triggerAll)
+        CTEvents.MOUSE_DRAGGED.register(TriggerType.Dragged::triggerAll)
+    }
+
+    @JvmStatic
+    fun onRawMouseInput(button: Int, action: Int, modifiers: Int) {
+        // TODO: use modifiers?
+
+        if (!World.isLoaded()) {
+            mouseState.clear()
+            draggedState.clear()
+            return
+        }
+
+        if (button == -1 || action == mouseState[button])
+            return
+
+        val x = Client.getMouseX()
+        val y = Client.getMouseY()
+
+        CTEvents.MOUSE_CLICKED.invoker().process(x, y, button, action == GLFW.GLFW_PRESS)
+        mouseState[button] = action
+
+        if (action == GLFW.GLFW_PRESS) {
+            draggedState[button] = State(x, y)
+        } else {
+            draggedState.remove(button)
+        }
+    }
+
+    @JvmStatic
+    fun onRawMouseScroll(dx: Double, dy: Double) {
+        // TODO: Use dx?
+
+        CTEvents.MOUSE_SCROLLED.invoker().process(
+            Client.getMouseX(),
+            Client.getMouseY(),
+            if (dy < 0) -1 else 1, // TODO: Maybe pass in raw amount?
+        )
+    }
+}
