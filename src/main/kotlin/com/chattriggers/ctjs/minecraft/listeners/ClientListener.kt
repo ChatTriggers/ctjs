@@ -6,6 +6,7 @@ import com.chattriggers.ctjs.minecraft.CTEvents
 import com.chattriggers.ctjs.minecraft.libs.ChatLib
 import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer
 import com.chattriggers.ctjs.minecraft.wrappers.World
+import com.chattriggers.ctjs.minecraft.wrappers.entity.Entity
 import com.chattriggers.ctjs.triggers.ChatTrigger
 import com.chattriggers.ctjs.triggers.TriggerType
 import com.chattriggers.ctjs.utils.Config
@@ -21,6 +22,7 @@ import io.netty.channel.ChannelPromise
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents
+import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.network.packet.Packet
 import org.mozilla.javascript.Context
 import java.util.concurrent.CopyOnWriteArrayList
@@ -98,40 +100,49 @@ object ClientListener : Initializer {
         }
 
         CTEvents.POST_RENDER_SCREEN.register { stack, mouseX, mouseY, screen, partialTicks ->
-            Renderer.matrixStack = UMatrixStack(stack)
-            Renderer.partialTicks = partialTicks
-            TriggerType.PostGuiRender.triggerAll(mouseX, mouseY, screen)
+            renderTrigger(stack, partialTicks) {
+                TriggerType.PostGuiRender.triggerAll(mouseX, mouseY, screen, partialTicks)
+            }
         }
 
-        CTEvents.PRE_RENDER_OVERLAY.register { stack, _, _, _, partialTicks ->
-            Renderer.partialTicks = partialTicks
+        CTEvents.RENDER_OVERLAY.register { stack ->
             Renderer.matrixStack = UMatrixStack(stack)
-
             Renderer.pushMatrix()
-
-            // TODO: Handle the following events. Will most likely require separate injections in
-            //       the respective Screen classes
-            // RenderGameOverlayEvent.ElementType.PLAYER_LIST -> TriggerType.RenderPlayerList.triggerAll(event)
-            // RenderGameOverlayEvent.ElementType.CROSSHAIRS -> TriggerType.RenderCrosshair.triggerAll(event)
-            // RenderGameOverlayEvent.ElementType.BOSSHEALTH -> TriggerType.RenderBossHealth.triggerAll(event)
-            // RenderGameOverlayEvent.ElementType.HEALTH -> TriggerType.RenderHealth.triggerAll(event)
-            // RenderGameOverlayEvent.ElementType.ARMOR -> TriggerType.RenderArmor.triggerAll(event)
-            // RenderGameOverlayEvent.ElementType.FOOD -> TriggerType.RenderFood.triggerAll(event)
-            // RenderGameOverlayEvent.ElementType.HEALTHMOUNT -> TriggerType.RenderMountHealth.triggerAll(event)
-            // RenderGameOverlayEvent.ElementType.EXPERIENCE -> TriggerType.RenderExperience.triggerAll(event)
-            // RenderGameOverlayEvent.ElementType.HOTBAR -> TriggerType.RenderHotbar.triggerAll(event)
-            // RenderGameOverlayEvent.ElementType.AIR -> TriggerType.RenderAir.triggerAll(event)
-            // RenderGameOverlayEvent.ElementType.PORTAL -> TriggerType.RenderPortal.triggerAll(event)
-            // RenderGameOverlayEvent.ElementType.JUMPBAR -> TriggerType.RenderJumpBar.triggerAll(event)
-            // RenderGameOverlayEvent.ElementType.CHAT -> TriggerType.RenderChat.triggerAll(event)
-            // RenderGameOverlayEvent.ElementType.HELMET -> TriggerType.RenderHelmet.triggerAll(event)
-
+            TriggerType.RenderOverlay.triggerAll()
             Renderer.popMatrix()
+        }
+
+        CTEvents.PRE_RENDER_WORLD.register { stack, partialTicks ->
+            renderTrigger(stack, partialTicks) {
+                TriggerType.PreRenderWorld.triggerAll(partialTicks)
+            }
+        }
+
+        CTEvents.POST_RENDER_WORLD.register { stack, partialTicks ->
+            renderTrigger(stack, partialTicks) {
+                TriggerType.PreRenderWorld.triggerAll(partialTicks)
+            }
+        }
+
+        CTEvents.RENDER_ENTITY.register { stack, entity, partialTicks, ci ->
+            renderTrigger(stack, partialTicks) {
+                // TODO(breaking): Don't pass the position into the trigger (they can get it
+                //                 from the entity if its needed)
+                TriggerType.RenderEntity.triggerAll(Entity(entity), partialTicks, ci)
+            }
         }
     }
 
     fun addTask(delay: Int, callback: () -> Unit) {
         tasks.add(Task(delay, callback))
+    }
+
+    fun renderTrigger(stack: MatrixStack, partialTicks: Float, block: () -> Unit) {
+        Renderer.partialTicks = partialTicks
+        Renderer.matrixStack = UMatrixStack(stack)
+        Renderer.pushMatrix()
+        block()
+        Renderer.popMatrix()
     }
 
     // TODO

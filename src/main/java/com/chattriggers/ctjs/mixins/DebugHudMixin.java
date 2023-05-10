@@ -1,5 +1,6 @@
 package com.chattriggers.ctjs.mixins;
 
+import com.chattriggers.ctjs.minecraft.CTEvents;
 import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer;
 import com.chattriggers.ctjs.minecraft.listeners.CancellableEvent;
 import com.chattriggers.ctjs.triggers.TriggerType;
@@ -13,12 +14,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(DebugHud.class)
 public class DebugHudMixin {
-    @Inject(method = "render", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "render", at = @At("HEAD"))
     void injectRender(MatrixStack matrices, CallbackInfo ci) {
-        Renderer.matrixStack = new UMatrixStack(matrices);
-        CancellableEvent event = new CancellableEvent();
-        TriggerType.RenderOverlay.triggerAll(event);
-        if (event.isCanceled())
-            ci.cancel();
+        CTEvents.RENDER_OVERLAY.invoker().render(matrices);
     }
 }

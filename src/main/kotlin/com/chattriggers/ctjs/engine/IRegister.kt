@@ -183,44 +183,6 @@ interface IRegister {
     }
 
     /**
-     * Registers a new trigger that runs before a noteblock is played.
-     *
-     * Passes through four arguments:
-     * - The note block play event's [com.chattriggers.ctjs.utils.vec.Vec3f] position
-     * - The note block play event's note's name
-     * - The note block play event's octave
-     * - The note block play event, which can be cancelled
-     *
-     * Available modifications:
-     * - [Trigger.setPriority] Sets the priority
-     *
-     * @param method The method to call when the event is fired
-     * @return The trigger for additional modification
-     */
-    fun registerNoteBlockPlay(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.NoteBlockPlay, getImplementationLoader())
-    }
-
-    /**
-     * Registers a new trigger that runs before a noteblock is changed.
-     *
-     * Passes through four arguments:
-     * - The note block change event's [com.chattriggers.ctjs.utils.vec.Vec3f] position
-     * - The note block change event's note's name
-     * - The note block change event's octave
-     * - The note block change event, which can be cancelled
-     *
-     * Available modifications:
-     * - [Trigger.setPriority] Sets the priority
-     *
-     * @param method The method to call when the event is fired
-     * @return The trigger for additional modification
-     */
-    fun registerNoteBlockChange(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.NoteBlockChange, getImplementationLoader())
-    }
-
-    /**
      * Registers a new trigger that runs before every game tick.
      *
      * Passes through one argument:
@@ -256,6 +218,9 @@ interface IRegister {
         return StepTrigger(method, getImplementationLoader())
     }
 
+    @Deprecated("Use renderPreWorld", ReplaceWith("registerPreRenderWorld"))
+    fun registerRenderWorld(method: Any) = registerPreRenderWorld(method)
+
     /**
      * Registers a new trigger that runs before the world is drawn.
      *
@@ -268,8 +233,24 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    fun registerRenderWorld(method: Any): RegularTrigger {
-        return RegularTrigger(method, TriggerType.RenderWorld, getImplementationLoader())
+    fun registerPreRenderWorld(method: Any): RegularTrigger {
+        return RegularTrigger(method, TriggerType.PreRenderWorld, getImplementationLoader())
+    }
+
+    /**
+     * Registers a new trigger that runs after the world is drawn.
+     *
+     * Passes through one argument:
+     * - Partial ticks elapsed
+     *
+     * Available modifications:
+     * - [Trigger.setPriority] Sets the priority
+     *
+     * @param method The method to call when the event is fired
+     * @return The trigger for additional modification
+     */
+    fun registerPostRenderWorld(method: Any): RegularTrigger {
+        return RegularTrigger(method, TriggerType.PostRenderWorld, getImplementationLoader())
     }
 
     /**
@@ -303,279 +284,6 @@ interface IRegister {
      */
     fun registerRenderPlayerList(method: Any): EventTrigger {
         return EventTrigger(method, TriggerType.RenderPlayerList, getImplementationLoader())
-    }
-
-    /**
-     * Registers a new trigger that runs before the crosshair is being drawn.
-     *
-     * Passes through one argument:
-     * - The render event, which can be cancelled
-     *
-     * Available modifications:
-     * - [EventTrigger.triggerIfCanceled] Sets if triggered if event is already cancelled
-     * - [Trigger.setPriority] Sets the priority
-     *
-     * @param method The method to call when the event is fired
-     * @return The trigger for additional modification
-     */
-    fun registerRenderCrosshair(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.RenderCrosshair, getImplementationLoader())
-    }
-
-    /**
-     * Registers a new trigger that runs before the boss health bar is being drawn.
-     *
-     * Passes through one argument:
-     * - The render event, which can be cancelled
-     *
-     * Available modifications:
-     * - [EventTrigger.triggerIfCanceled] Sets if triggered if event is already cancelled
-     * - [Trigger.setPriority] Sets the priority
-     *
-     * @param method The method to call when the event is fired
-     * @return The trigger for additional modification
-     */
-    fun registerRenderBossHealth(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.RenderBossHealth, getImplementationLoader())
-    }
-
-    /**
-     * Registers a new trigger that runs before the player's health is being drawn.
-     *
-     * Passes through one argument:
-     * - The render event, which can be cancelled
-     *
-     * Available modifications:
-     * - [EventTrigger.triggerIfCanceled] Sets if triggered if event is already cancelled
-     * - [Trigger.setPriority] Sets the priority
-     *
-     * @param method The method to call when the event is fired
-     * @return The trigger for additional modification
-     */
-    fun registerRenderHealth(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.RenderHealth, getImplementationLoader())
-    }
-
-    /**
-     * Registers a new trigger that runs before the player's armor bar is drawn.
-     *
-     * Passes through one argument:
-     * - The render event, which can be cancelled
-     *
-     * Available modifications:
-     * - [EventTrigger.triggerIfCanceled] Sets if triggered if event is already cancelled
-     * - [Trigger.setPriority] Sets the priority
-     *
-     * @param method The method to call when the event is fired
-     * @return The trigger for additional modification
-     */
-    fun registerRenderArmor(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.RenderArmor, getImplementationLoader())
-    }
-
-    /**
-     * Registers a new trigger that runs before the player's food is being drawn.
-     *
-     * Passes through one argument:
-     * - The render event, which can be cancelled
-     *
-     * Available modifications:
-     * - [EventTrigger.triggerIfCanceled] Sets if triggered if event is already cancelled
-     * - [Trigger.setPriority] Sets the priority
-     *
-     * @param method The method to call when the event is fired
-     * @return The trigger for additional modification
-     */
-    fun registerRenderFood(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.RenderFood, getImplementationLoader())
-    }
-
-    /**
-     * Registers a new trigger that runs before the player's mount's health is being drawn.
-     *
-     * Passes through one argument:
-     * - The render event, which can be cancelled
-     *
-     * Available modifications:
-     * - [EventTrigger.triggerIfCanceled] Sets if triggered if event is already cancelled
-     * - [Trigger.setPriority] Sets the priority
-     *
-     * @param method The method to call when the event is fired
-     * @return The trigger for additional modification
-     */
-    fun registerRenderMountHealth(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.RenderMountHealth, getImplementationLoader())
-    }
-
-    /**
-     * Registers a new trigger that runs before the player's experience is being drawn.
-     *
-     *
-     * Passes through one argument:
-     * - The render event, which can be cancelled
-     *
-     * Available modifications:
-     * - [EventTrigger.triggerIfCanceled] Sets if triggered if event is already cancelled
-     * - [Trigger.setPriority] Sets the priority
-     *
-     * @param method The method to call when the event is fired
-     * @return The trigger for additional modification
-     */
-    fun registerRenderExperience(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.RenderExperience, getImplementationLoader())
-    }
-
-    /**
-     * Registers a new trigger that runs before the player's hotbar is drawn.
-     *
-     * Passes through one argument:
-     * - The render event, which can be cancelled
-     *
-     * Available modifications:
-     * - [EventTrigger.triggerIfCanceled] Sets if triggered if event is already cancelled
-     * - [Trigger.setPriority] Sets the priority
-     *
-     * @param method The method to call when the event is fired
-     * @return The trigger for additional modification
-     */
-    fun registerRenderHotbar(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.RenderHotbar, getImplementationLoader())
-    }
-
-    /**
-     * Registers a new trigger that runs before the player's air level is drawn.
-     *
-     * Passes through one argument:
-     * - The render event, which can be cancelled
-     *
-     * Available modifications:
-     * - [EventTrigger.triggerIfCanceled] Sets if triggered if event is already cancelled
-     * - [Trigger.setPriority] Sets the priority
-     *
-     * @param method The method to call when the event is fired
-     * @return The trigger for additional modification
-     */
-    fun registerRenderAir(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.RenderAir, getImplementationLoader())
-    }
-
-    /**
-     * Registers a new trigger that runs before the portal effect is drawn.
-     *
-     * Passes through one argument:
-     * - The render event, which can be cancelled
-     *
-     * Available modifications:
-     * - [EventTrigger.triggerIfCanceled] Sets if triggered if event is already cancelled
-     * - [Trigger.setPriority] Sets the priority
-     *
-     * @param method The method to call when the event is fired
-     * @return The trigger for additional modification
-     */
-    fun registerRenderPortal(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.RenderPortal, getImplementationLoader())
-    }
-
-    /**
-     * Registers a new trigger that runs before the jump bar is drawn.
-     *
-     * Passes through one argument:
-     * - The render event, which can be cancelled
-     *
-     * Available modifications:
-     * - [EventTrigger.triggerIfCanceled] Sets if triggered if event is already cancelled
-     * - [Trigger.setPriority] Sets the priority
-     *
-     * @param method The method to call when the event is fired
-     * @return The trigger for additional modification
-     */
-    fun registerRenderJumpBar(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.RenderJumpBar, getImplementationLoader())
-    }
-
-    /**
-     * Registers a new trigger that runs before the chat is drawn.
-     *
-     * Passes through one argument:
-     * - The render event, which can be cancelled
-     *
-     * Available modifications:
-     * - [EventTrigger.triggerIfCanceled] Sets if triggered if event is already cancelled
-     * - [Trigger.setPriority] Sets the priority
-     *
-     * @param method The method to call when the event is fired
-     * @return The trigger for additional modification
-     */
-    fun registerRenderChat(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.RenderChat, getImplementationLoader())
-    }
-
-    /**
-     * Registers a new trigger that runs before the player's helmet overlay is drawn.
-     * This triggers when a pumpkin is on the player's head
-     *
-     * Passes through one argument:
-     * - The render event, which can be cancelled
-     *
-     * Available modifications:
-     * - [EventTrigger.triggerIfCanceled] Sets if triggered if event is already cancelled
-     * - [Trigger.setPriority] Sets the priority
-     *
-     * @param method The method to call when the event is fired
-     * @return The trigger for additional modification
-     */
-    fun registerRenderHelmet(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.RenderHelmet, getImplementationLoader())
-    }
-
-    /**
-     * Registers a new trigger that runs before the player's hand is drawn.
-     *
-     * Passes through one argument:
-     * - The event, which can be cancelled
-     *
-     * Available modifications:
-     * - [Trigger.setPriority] Sets the priority
-     *
-     * @param method The method to call when the event is fired
-     * @return The trigger for additional modification
-     */
-    fun registerRenderHand(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.RenderHand, getImplementationLoader())
-    }
-
-    /**
-     * Registers a new trigger that runs before the scoreboard is drawn.
-     *
-     * Passes through one argument:
-     * - The event, which can be cancelled
-     *
-     * Available modifications:
-     * - [Trigger.setPriority] Sets the priority
-     *
-     * @param method The method to call when the event is fired
-     * @return The trigger for additional modification
-     */
-    fun registerRenderScoreboard(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.RenderScoreboard, getImplementationLoader())
-    }
-
-    /**
-     * Registers a new trigger that runs before the title and subtitle are drawn.
-     *
-     * Passes through three arguments:
-     * - The title
-     * - The subtitle
-     * - The event, which can be cancelled
-     *
-     * Available modifications:
-     * - [Trigger.setPriority] Sets the priority
-     *
-     * @param method The method to call when the event is fired
-     * @return The trigger for additional modification
-     */
-    fun registerRenderTitle(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.RenderTitle, getImplementationLoader())
     }
 
     /**
@@ -673,101 +381,6 @@ interface IRegister {
      */
     fun registerGuiClosed(method: Any): RegularTrigger {
         return RegularTrigger(method, TriggerType.GuiClosed, getImplementationLoader())
-    }
-
-    /**
-     * Registers a new trigger that runs when a player joins the world.
-     *
-     * Maximum is one per tick. Any extras will queue and run in later ticks.
-     * This trigger is asynchronous.
-     *
-     * Passes through one argument:
-     * - The [com.chattriggers.ctjs.minecraft.wrappers.entity.PlayerMP] object
-     *
-     * Available modifications:
-     * - [Trigger.setPriority] Sets the priority
-     *
-     * @param method The method to call when the event is fired
-     * @return The trigger for additional modification
-     */
-    fun registerPlayerJoined(method: Any): RegularTrigger {
-        return RegularTrigger(method, TriggerType.PlayerJoin, getImplementationLoader())
-    }
-
-    /**
-     * Registers a new trigger that runs when a player leaves the world.
-     *
-     * Maximum is one per tick. Any extras will queue and run in later ticks.
-     * This trigger is asynchronous.
-     *
-     * Passes through one argument:
-     * - The name of the player that left
-     *
-     * Available modifications:
-     * - [Trigger.setPriority] Sets the priority
-     *
-     * @param method The method to call when the event is fired
-     * @return The trigger for additional modification
-     */
-    fun registerPlayerLeft(method: Any): RegularTrigger {
-        return RegularTrigger(method, TriggerType.PlayerLeave, getImplementationLoader())
-    }
-
-    /**
-     * Registers a new trigger that runs before an item is picked up.
-     *
-     * Passes through five arguments:
-     * - The [Item] that is picked up
-     * - The [com.chattriggers.ctjs.minecraft.wrappers.entity.PlayerMP] that picked up the item
-     * - The item's position vector
-     * - The item's motion vector
-     * - The event, which can be cancelled
-     *
-     * Available modifications:
-     * - [Trigger.setPriority] Sets the priority
-     *
-     * @param method The method to call when the event is fired
-     * @return The trigger for additional modification
-     */
-    fun registerPickupItem(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.PickupItem, getImplementationLoader())
-    }
-
-    /**
-     * Registers a new trigger that runs before an item is dropped.
-     *
-     * Passes through five arguments:
-     * - The [Item] that is dropped up
-     * - The [com.chattriggers.ctjs.minecraft.wrappers.entity.PlayerMP] that dropped the item
-     * - The item's position vector
-     * - The item's motion vector
-     * - The event, which can be cancelled
-     *
-     * Available modifications:
-     * - [Trigger.setPriority] Sets the priority
-     *
-     * @param method The method to call when the event is fired
-     * @return The trigger for additional modification
-     */
-    fun registerDropItem(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.DropItem, getImplementationLoader())
-    }
-
-    /**
-     * Registers a new trigger that runs before a screenshot is taken.
-     *
-     * Passes through two arguments:
-     * - The name of the screenshot
-     * - The screenshot event, which can be cancelled
-     *
-     * Available modifications:
-     * - [Trigger.setPriority] Sets the priority
-     *
-     * @param method The method to call when the event is fired
-     * @return The trigger for additional modification
-     */
-    fun registerScreenshotTaken(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.ScreenshotTaken, getImplementationLoader())
     }
 
     /**
@@ -878,18 +491,6 @@ interface IRegister {
      */
     fun registerEntityDeath(method: Any): RegularTrigger {
         return RegularTrigger(method, TriggerType.EntityDeath, getImplementationLoader())
-    }
-
-    /**
-     * Registers a new trigger that runs before the gui background is drawn
-     * This is useful for drawing custom backgrounds.
-     *
-     * Passes through one argument:
-     * - The [net.minecraft.client.gui.GuiScreen] that is being drawn
-     *
-     */
-    fun registerGuiDrawBackground(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.GuiDrawBackground, getImplementationLoader())
     }
 
     /**
@@ -1063,42 +664,6 @@ interface IRegister {
     }
 
     /**
-     * Registers a new trigger that runs whenever the user clicks on a clickable
-     * chat component
-     *
-     * Passes through two arguments:
-     * - The [com.chattriggers.ctjs.minecraft.objects.message.TextComponent]
-     * - The event, which can be cancelled
-     *
-     * Available modifications:
-     * - [Trigger.setPriority] Sets the priority
-     *
-     * @param method The method to call when the event is fired
-     * @return The trigger for additional modification
-     */
-    fun registerChatComponentClicked(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.ChatComponentClicked, getImplementationLoader())
-    }
-
-    /**
-     * Registers a new trigger that runs whenever the user hovers over a
-     * hoverable chat component
-     *
-     * Passes through two arguments:
-     * - The [com.chattriggers.ctjs.minecraft.objects.message.TextComponent]
-     * - The event, which can be cancelled
-     *
-     * Available modifications:
-     * - [Trigger.setPriority] Sets the priority
-     *
-     * @param method The method to call when the event is fired
-     * @return The trigger for additional modification
-     */
-    fun registerChatComponentHovered(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.ChatComponentHovered, getImplementationLoader())
-    }
-
-    /**
      * Registers a new trigger that runs whenever an entity is rendered
      *
      * Passes through four arguments:
@@ -1199,93 +764,6 @@ interface IRegister {
     }
 
     /**
-     * Registers a new trigger that runs before the items in the gui are drawn
-     *
-     * Passes through five arguments:
-     * - The mouseX position
-     * - The mouseY position
-     * - The MC Slot
-     * - The GuiContainer
-     *
-     * Available modifications:
-     * - [Trigger.setPriority] Sets the priority
-     *
-     * @param method The method to call when the event is fired
-     * @return The trigger for additional modification
-     */
-    fun registerPreItemRender(method: Any): RegularTrigger {
-        return RegularTrigger(method, TriggerType.PreItemRender, getImplementationLoader())
-    }
-
-    /**
-     * Registers a new trigger that runs before a slot is drawn in a container
-     * This is useful for hiding "background" items in containers used as GUIs.
-     *
-     * Passes through three arguments:
-     * - The [Slot] being drawn
-     * - The MC GUIScreen that is being drawn
-     * - The event, which can be cancelled
-     *
-     * @param method The method to call when the event is fired
-     * @return The trigger for additional modification
-     */
-    fun registerRenderSlot(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.RenderSlot, getImplementationLoader())
-    }
-
-    /**
-     * Registers a new trigger that runs before each item is drawn into a GUI.
-     *
-     * Passes through four arguments:
-     * - The [Item]
-     * - The x position
-     * - The y position
-     * - The event, which can be cancelled.
-     *
-     * @param method The method to call when the event is fired
-     * @return The trigger for additional modification
-     */
-    fun registerRenderItemIntoGui(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.RenderItemIntoGui, getImplementationLoader())
-    }
-
-    /**
-     * Registers a new trigger that runs before each item overlay (stack size and damage bar) is drawn.
-     *
-     * Passes through four arguments:
-     * - The [Item]
-     * - The x position
-     * - The y position
-     * - The event, which can be cancelled.
-     *
-     * @param method The method to call when the event is fired
-     * @return The trigger for additional modification
-     */
-    fun registerRenderItemOverlayIntoGui(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.RenderItemOverlayIntoGui, getImplementationLoader())
-    }
-
-    /**
-     * Registers a new trigger that runs before the hovered slot square is drawn.
-     *
-     * Passes through six arguments:
-     * - The mouseX position
-     * - The mouseY position
-     * - The MC Slot
-     * - The GuiContainer
-     * - The event, which can be cancelled
-     *
-     * Available modifications:
-     * - [Trigger.setPriority] Sets the priority
-     *
-     * @param method The method to call when the event is fired
-     * @return The trigger for additional modification
-     */
-    fun registerRenderSlotHighlight(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.RenderSlotHighlight, getImplementationLoader())
-    }
-
-    /**
      * Registers a new trigger that runs whenever a particle is spawned
      *
      * Passes through three arguments:
@@ -1301,23 +779,6 @@ interface IRegister {
      */
     fun registerSpawnParticle(method: Any): EventTrigger {
         return EventTrigger(method, TriggerType.SpawnParticle, getImplementationLoader())
-    }
-
-    /**
-     * Registers a new trigger that runs whenever the player has left clicked on an entity
-     *
-     * Passes through three arguments:
-     * - The [com.chattriggers.ctjs.minecraft.wrappers.entity.Entity] that is being hit
-     * - The event, which can be cancelled
-     *
-     * Available modifications:
-     * - [Trigger.setPriority] Sets the priority
-     *
-     * @param method The method to call when the event is fired
-     * @return The trigger for additional modification
-     */
-    fun registerAttackEntity(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.AttackEntity, getImplementationLoader())
     }
 
     /**

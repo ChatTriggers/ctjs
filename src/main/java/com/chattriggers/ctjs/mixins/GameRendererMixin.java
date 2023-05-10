@@ -1,6 +1,9 @@
 package com.chattriggers.ctjs.mixins;
 
 import com.chattriggers.ctjs.minecraft.CTEvents;
+import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer;
+import com.chattriggers.ctjs.triggers.TriggerType;
+import gg.essential.universal.UMatrixStack;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Overlay;
 import net.minecraft.client.gui.screen.Screen;
@@ -63,5 +66,15 @@ public class GameRendererMixin {
         MinecraftClient client = MinecraftClient.getInstance();
         Screen screen = Objects.requireNonNull(client.currentScreen);
         CTEvents.POST_RENDER_SCREEN.invoker().render(matrixStack2, i, j, screen, client.getLastFrameDuration());
+    }
+
+    @Inject(method = "renderWorld", at = @At("HEAD"))
+    private void injectPreRenderWorld(float tickDelta, long limitTime, MatrixStack matrices, CallbackInfo ci) {
+        CTEvents.PRE_RENDER_WORLD.invoker().render(matrices, tickDelta);
+    }
+
+    @Inject(method = "renderWorld", at = @At("TAIL"))
+    private void injectPostRenderWorld(float tickDelta, long limitTime, MatrixStack matrices, CallbackInfo ci) {
+        CTEvents.POST_RENDER_WORLD.invoker().render(matrices, tickDelta);
     }
 }

@@ -19,7 +19,8 @@
         "ScreenMixin",
         "SoundAccessor",
         "SoundManagerAccessor",
-        "SoundSystemMixin"
+        "SoundSystemMixin",
+        "WorldRendererMixin"
     ],
     "injectors": {
         "defaultRequire": 1

@@ -1,11 +1,13 @@
 package com.chattriggers.ctjs.minecraft
 
 import com.chattriggers.ctjs.minecraft.CTEvents.PacketReceivedCallback
-import com.chattriggers.ctjs.minecraft.CTEvents.RenderCallback
+import com.chattriggers.ctjs.minecraft.CTEvents.RenderScreenCallback
 import com.chattriggers.ctjs.minecraft.CTEvents.VoidCallback
+import com.chattriggers.ctjs.utils.vec.Vec3f
 import net.fabricmc.fabric.api.event.EventFactory
 import net.minecraft.client.gui.Drawable
 import net.minecraft.client.util.math.MatrixStack
+import net.minecraft.entity.Entity
 import net.minecraft.network.packet.Packet
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 
@@ -14,8 +16,20 @@ internal object CTEvents {
         fun invoke()
     }
 
-    fun interface RenderCallback {
+    fun interface RenderScreenCallback {
         fun render(matrixStack: MatrixStack, mouseX: Int, mouseY: Int, drawable: Drawable, partialTicks: Float)
+    }
+
+    fun interface RenderWorldCallback {
+        fun render(matrixStack: MatrixStack, partialTicks: Float)
+    }
+
+    fun interface RenderEntityCallback {
+        fun render(matrixStack: MatrixStack, entity: Entity, partialTicks: Float, ci: CallbackInfo)
+    }
+
+    fun interface RenderOverlayCallback {
+        fun render(matrixStack: MatrixStack)
     }
 
     fun interface PacketReceivedCallback {
@@ -35,23 +49,51 @@ internal object CTEvents {
     }
 
     @JvmField
-    val PRE_RENDER_OVERLAY = make<RenderCallback> { listeners ->
-        RenderCallback { stack, mouseX, mouseY, drawable, partialTicks ->
+    val PRE_RENDER_OVERLAY = make<RenderScreenCallback> { listeners ->
+        RenderScreenCallback { stack, mouseX, mouseY, drawable, partialTicks ->
             listeners.forEach { it.render(stack, mouseX, mouseY, drawable, partialTicks) }
         }
     }
 
     @JvmField
-    val POST_RENDER_OVERLAY = make<RenderCallback> { listeners ->
-        RenderCallback { stack, mouseX, mouseY, drawable, partialTicks ->
+    val POST_RENDER_OVERLAY = make<RenderScreenCallback> { listeners ->
+        RenderScreenCallback { stack, mouseX, mouseY, drawable, partialTicks ->
             listeners.forEach { it.render(stack, mouseX, mouseY, drawable, partialTicks) }
         }
     }
 
     @JvmField
-    val POST_RENDER_SCREEN = make<RenderCallback> { listeners ->
-        RenderCallback { stack, mouseX, mouseY, drawable, partialTicks ->
+    val POST_RENDER_SCREEN = make<RenderScreenCallback> { listeners ->
+        RenderScreenCallback { stack, mouseX, mouseY, drawable, partialTicks ->
             listeners.forEach { it.render(stack, mouseX, mouseY, drawable, partialTicks) }
+        }
+    }
+
+    @JvmField
+    val RENDER_OVERLAY = make<RenderOverlayCallback> { listeners ->
+        RenderOverlayCallback { stack ->
+            listeners.forEach { it.render(stack) }
+        }
+    }
+
+    @JvmField
+    val PRE_RENDER_WORLD = make<RenderWorldCallback> { listeners ->
+        RenderWorldCallback { stack, partialTicks ->
+            listeners.forEach { it.render(stack, partialTicks) }
+        }
+    }
+
+    @JvmField
+    val POST_RENDER_WORLD = make<RenderWorldCallback> { listeners ->
+        RenderWorldCallback { stack, partialTicks ->
+            listeners.forEach { it.render(stack, partialTicks) }
+        }
+    }
+
+    @JvmField
+    val RENDER_ENTITY = make<RenderEntityCallback> { listeners ->
+        RenderEntityCallback { stack, entity, partialTicks, ci ->
+            listeners.forEach { it.render(stack, entity, partialTicks, ci) }
         }
     }
 
