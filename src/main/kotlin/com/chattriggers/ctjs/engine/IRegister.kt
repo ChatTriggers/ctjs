@@ -420,24 +420,16 @@ interface IRegister {
         return EventTrigger(method, TriggerType.Tooltip, getImplementationLoader())
     }
 
+    // TODO(breaking): Changes second argument
     /**
      * Registers a new trigger that runs before the player interacts.
      *
-     * In 1.8.9, the following events will activate this trigger:
-     * - Right clicking a block
-     * - Right clicking the air
-     *
-     * In 1.12.2, the following events will activate this trigger:
-     * - Left clicking a block
-     * - Left clicking air
-     * - Right clicking an entity
-     * - Right clicking a block
-     * - Right clicking an item
-     * - Right clicking air
-     *
      * Passes through three arguments:
-     * - The [ClientListener.PlayerInteractAction]
-     * - The position of the target as a [com.chattriggers.ctjs.utils.vec.Vec3f]
+     * - The [ClientListener.PlayerInteraction]
+     * - The object of interaction, depending on the interaction type. Either a
+     *   [com.chattriggers.ctjs.minecraft.wrappers.entity.Entity],
+     *   [com.chattriggers.ctjs.minecraft.wrappers.world.block.Block], or
+     *   [com.chattriggers.ctjs.minecraft.wrappers.inventory.Item],
      * - The event, which can be cancelled
      *
      * Available modifications:

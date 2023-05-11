@@ -7,6 +7,10 @@ import com.chattriggers.ctjs.minecraft.libs.ChatLib
 import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer
 import com.chattriggers.ctjs.minecraft.wrappers.World
 import com.chattriggers.ctjs.minecraft.wrappers.entity.Entity
+import com.chattriggers.ctjs.minecraft.wrappers.world.block.Block
+import com.chattriggers.ctjs.minecraft.wrappers.world.block.BlockFace
+import com.chattriggers.ctjs.minecraft.wrappers.world.block.BlockPos
+import com.chattriggers.ctjs.minecraft.wrappers.world.block.BlockType
 import com.chattriggers.ctjs.triggers.ChatTrigger
 import com.chattriggers.ctjs.triggers.TriggerType
 import com.chattriggers.ctjs.utils.Config
@@ -22,8 +26,16 @@ import io.netty.channel.ChannelPromise
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents
+import net.fabricmc.fabric.api.event.player.AttackBlockCallback
+import net.fabricmc.fabric.api.event.player.AttackEntityCallback
+import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents
+import net.fabricmc.fabric.api.event.player.UseBlockCallback
+import net.fabricmc.fabric.api.event.player.UseEntityCallback
+import net.fabricmc.fabric.api.event.player.UseItemCallback
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.network.packet.Packet
+import net.minecraft.util.ActionResult
+import net.minecraft.util.TypedActionResult
 import org.mozilla.javascript.Context
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -131,13 +143,85 @@ object ClientListener : Initializer {
                 TriggerType.RenderEntity.triggerAll(Entity(entity), partialTicks, ci)
             }
         }
+
+        AttackBlockCallback.EVENT.register { _, _, _, pos, direction ->
+            val event = CancellableEvent()
+
+            TriggerType.PlayerInteract.triggerAll(
+                PlayerInteraction.AttackBlock,
+                World.getBlockAt(BlockPos(pos)).withFace(BlockFace.fromMC(direction)),
+                event,
+            )
+
+            if (event.isCancelled()) ActionResult.FAIL else ActionResult.PASS
+        }
+
+        AttackEntityCallback.EVENT.register { _, _, _, entity, _ ->
+            val event = CancellableEvent()
+
+            TriggerType.PlayerInteract.triggerAll(
+                PlayerInteraction.AttackEntity,
+                Entity(entity),
+                event,
+            )
+
+            if (event.isCancelled()) ActionResult.FAIL else ActionResult.PASS
+        }
+
+        PlayerBlockBreakEvents.BEFORE.register { _, _, pos, state, _ ->
+            val event = CancellableEvent()
+
+            TriggerType.PlayerInteract.triggerAll(
+                PlayerInteraction.BreakBlock,
+                Block(BlockType(state.block), BlockPos(pos)),
+                event,
+            )
+
+            !event.isCancelled()
+        }
+
+        UseBlockCallback.EVENT.register { _, _, _, hitResult ->
+            val event = CancellableEvent()
+
+            TriggerType.PlayerInteract.triggerAll(
+                PlayerInteraction.UseBlock,
+                World.getBlockAt(BlockPos(hitResult.blockPos)).withFace(BlockFace.fromMC(hitResult.side)),
+                event,
+            )
+
+            if (event.isCancelled()) ActionResult.FAIL else ActionResult.PASS
+        }
+
+        UseEntityCallback.EVENT.register { _, _, _, entity, _ ->
+            val event = CancellableEvent()
+
+            TriggerType.PlayerInteract.triggerAll(
+                PlayerInteraction.UseEntity,
+                Entity(entity),
+                event
+            )
+
+            if (event.isCancelled()) ActionResult.FAIL else ActionResult.PASS
+        }
+
+        UseItemCallback.EVENT.register { _, _, _ ->
+            val event = CancellableEvent()
+
+            TriggerType.PlayerInteract.triggerAll(
+                PlayerInteraction.UseItem,
+                // TODO,
+                event
+            )
+
+            if (event.isCancelled()) TypedActionResult.fail(null) else TypedActionResult.success(null)
+        }
     }
 
     fun addTask(delay: Int, callback: () -> Unit) {
         tasks.add(Task(delay, callback))
     }
 
-    fun renderTrigger(stack: MatrixStack, partialTicks: Float, block: () -> Unit) {
+    private fun renderTrigger(stack: MatrixStack, partialTicks: Float, block: () -> Unit) {
         Renderer.partialTicks = partialTicks
         Renderer.matrixStack = UMatrixStack(stack)
         Renderer.pushMatrix()
@@ -145,42 +229,12 @@ object ClientListener : Initializer {
         Renderer.popMatrix()
     }
 
-    // TODO
-    // fun onLeftClick(e: PlayerInteractEvent) {
-    //     val action = when (e) {
-    //         is PlayerInteractEvent.EntityInteract, is PlayerInteractEvent.EntityInteractSpecific ->
-    //             PlayerInteractAction.RIGHT_CLICK_ENTITY
-    //         is PlayerInteractEvent.RightClickBlock -> PlayerInteractAction.RIGHT_CLICK_BLOCK
-    //         is PlayerInteractEvent.RightClickItem -> PlayerInteractAction.RIGHT_CLICK_ITEM
-    //         is PlayerInteractEvent.RightClickEmpty -> PlayerInteractAction.RIGHT_CLICK_EMPTY
-    //         is PlayerInteractEvent.LeftClickBlock -> PlayerInteractAction.LEFT_CLICK_BLOCK
-    //         is PlayerInteractEvent.LeftClickEmpty -> PlayerInteractAction.LEFT_CLICK_EMPTY
-    //         else -> PlayerInteractAction.UNKNOWN
-    //     }
-    //
-    //     TriggerType.PLAYER_INTERACT.triggerAll(
-    //             action,
-    //             World.getBlockAt(e.pos.x, e.pos.y, e.pos.z),
-    //             e
-    //     )
-    // }
-    //
-    // @SubscribeEvent
-    // fun onHandRender(e: RenderHandEvent) {
-    //     TriggerType.RenderHand.triggerAll(e)
-    // }
-    //
-    // /**
-    //  * Used as a pass through argument in [com.chattriggers.ctjs.engine.IRegister.registerPlayerInteract].\n
-    //  * Exposed in providedLibs as InteractAction.
-    //  */
-    // enum class PlayerInteractAction {
-    //     RIGHT_CLICK_BLOCK,
-    //     RIGHT_CLICK_EMPTY,
-    //
-    //     RIGHT_CLICK_ENTITY,
-    //     RIGHT_CLICK_ITEM,
-    //     LEFT_CLICK_EMPTY,
-    //     UNKNOWN
-    // }
+    enum class PlayerInteraction(val isLeftHand: Boolean) {
+        AttackBlock(true),
+        AttackEntity(true),
+        BreakBlock(true),
+        UseBlock(false),
+        UseEntity(false),
+        UseItem(false),
+    }
 }
