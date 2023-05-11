@@ -62,6 +62,10 @@ class Command(
 
     private fun hasConflict(name: String) = !overrideExisting && CTJS.commandDispatcher!!.root.getChild(name) != null
 
+    object ArgTypes {
+
+    }
+
     companion object {
         internal val activeCommands = mutableSetOf<Command>()
         internal val pendingCommands = mutableSetOf<Command>()
