@@ -1,6 +1,7 @@
 package com.chattriggers.ctjs.commands
 
 import com.chattriggers.ctjs.Reference
+import com.chattriggers.ctjs.commands.Command.Companion.onExecute
 import com.chattriggers.ctjs.engine.langs.Lang
 import com.chattriggers.ctjs.engine.module.ModuleManager
 import com.chattriggers.ctjs.minecraft.libs.ChatLib
@@ -17,7 +18,8 @@ import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
 import gg.essential.universal.wrappers.message.UMessage
 import gg.essential.universal.wrappers.message.UTextComponent
-import net.minecraft.server.command.CommandManager
+import net.minecraft.server.command.CommandManager.argument
+import net.minecraft.server.command.CommandManager.literal
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.text.ClickEvent
 import net.minecraft.text.HoverEvent
@@ -31,18 +33,18 @@ object CTCommand {
 
     fun register(dispatcher: CommandDispatcher<ServerCommandSource>) {
         // TODO(breaking): Remove copy command and a bunch of aliases
-        val command = CommandManager.literal("ct")
-            .then(CommandManager.literal("load").onExecute { Reference.loadCT(asCommand = true) })
-            .then(CommandManager.literal("unload").onExecute { Reference.unloadCT(asCommand = true) })
-            .then(CommandManager.literal("files").onExecute { openFileLocation() })
+        val command = literal("ct")
+            .then(literal("load").onExecute { Reference.loadCT(asCommand = true) })
+            .then(literal("unload").onExecute { Reference.unloadCT(asCommand = true) })
+            .then(literal("files").onExecute { openFileLocation() })
             .then(
-                CommandManager.literal("import")
-                    .then(CommandManager.argument("module", StringArgumentType.string())
+                literal("import")
+                    .then(argument("module", StringArgumentType.string())
                         .onExecute { import(StringArgumentType.getString(it, "module")) })
             )
             .then(
-                CommandManager.literal("delete")
-                    .then(CommandManager.argument("module", StringArgumentType.string())
+                literal("delete")
+                    .then(argument("module", StringArgumentType.string())
                         .onExecute {
                             val module = StringArgumentType.getString(it, "module")
                             if (ModuleManager.deleteModule(module)) {
@@ -50,10 +52,10 @@ object CTCommand {
                             } else ChatLib.chat("&cFailed to delete $module")
                         })
             )
-            .then(CommandManager.literal("modules").onExecute { TODO() })
+            .then(literal("modules").onExecute { TODO() })
             .then(
-                CommandManager.literal("console")
-                    .then(CommandManager.argument("type", StringArgumentType.word())
+                literal("console")
+                    .then(argument("type", StringArgumentType.word())
                         .onExecute {
                             val type = StringArgumentType.getString(it, "type")
                             val lang = if (type != null) {
@@ -68,20 +70,20 @@ object CTCommand {
                         })
                     .onExecute { ConsoleManager.getConsole().show() }
             )
-            .then(CommandManager.literal("config").onExecute { Client.Companion.currentGui.set(Config.gui()!!) })
+            .then(literal("config").onExecute { Client.Companion.currentGui.set(Config.gui()!!) })
             .then(
-                CommandManager.literal("simulate")
+                literal("simulate")
                     .then(
-                        CommandManager.argument("message", StringArgumentType.greedyString())
+                        argument("message", StringArgumentType.greedyString())
                             .onExecute { ChatLib.simulateChat(StringArgumentType.getString(it, "message")) }
                     )
             )
             .then(
-                CommandManager.literal("dump")
+                literal("dump")
                     .then(
-                        CommandManager.argument("type", StringArgumentType.word())
+                        argument("type", StringArgumentType.word())
                             .then(
-                                CommandManager.argument("amount", IntegerArgumentType.integer(0))
+                                argument("amount", IntegerArgumentType.integer(0))
                                     .onExecute {
                                         dump(
                                             DumpType.fromString(StringArgumentType.getString(it, "type")),
@@ -180,14 +182,6 @@ object CTCommand {
             ChatLib.clearChat(idFixedOffset--)
         idFixedOffset = -1
     }
-
-    private fun <S, T : ArgumentBuilder<S, T>> ArgumentBuilder<S, T>.onExecute(block: (CommandContext<S>) -> Unit) =
-        apply {
-            this.executes {
-                block(it)
-                1
-            }
-        }
 
     enum class DumpType(val messageList: () -> List<UTextComponent>) {
         Chat(ClientListener::chatHistory),

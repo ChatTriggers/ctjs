@@ -347,9 +347,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerCommand(method: Any): CommandTrigger {
-    //     return CommandTrigger(method, getImplementationLoader())
-    // }
+    fun registerCommand(method: Any): CommandTrigger {
+        return CommandTrigger(method, getImplementationLoader())
+    }
 
     /**
      * Registers a new trigger that runs when a new gui is first opened.

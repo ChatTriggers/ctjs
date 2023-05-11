@@ -1,6 +1,7 @@
 package com.chattriggers.ctjs
 
 import com.chattriggers.ctjs.commands.CTCommand
+import com.chattriggers.ctjs.commands.Command
 import com.chattriggers.ctjs.engine.module.ModuleManager
 import com.chattriggers.ctjs.minecraft.libs.renderer.Image
 import com.chattriggers.ctjs.minecraft.objects.Sound
@@ -10,8 +11,10 @@ import com.chattriggers.ctjs.utils.Config
 import com.chattriggers.ctjs.utils.Initializer
 import com.chattriggers.ctjs.utils.console.printTraceToConsole
 import com.google.gson.Gson
+import com.mojang.brigadier.CommandDispatcher
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
+import net.minecraft.server.command.ServerCommandSource
 import java.io.File
 import java.net.URL
 import java.net.URLConnection
@@ -25,30 +28,25 @@ class CTJS : ClientModInitializer {
 
         CommandRegistrationCallback.EVENT.register { dispatcher, _, _ ->
             CTCommand.register(dispatcher)
-        }
+            commandDispatcher = dispatcher
 
-        Config.loadData()
+            Command.pendingCommands.forEach(Command::register)
+            Command.pendingCommands.clear()
+        }
 
         // Ensure that reportHashedUUID always runs on a separate thread
         // TODO: Do we still need an option to disable threaded loading?
-        // TODO: Put setup/asmPass somewhere else
         if (Config.threadedLoading) {
             thread {
-                try {
-                    ModuleManager.setup()
-                    ModuleManager.asmPass()
-                    ModuleManager.entryPass()
-                    reportHashedUUID()
-                } catch (e: Throwable) {
-                    e.printTraceToConsole()
-                }
+                initModuleManager()
+                reportHashedUUID()
             }
         } else {
-            ModuleManager.setup()
-            ModuleManager.asmPass()
-            ModuleManager.entryPass()
+            initModuleManager()
             thread { reportHashedUUID() }
         }
+
+        Config.loadData()
 
         Runtime.getRuntime().addShutdownHook(Thread(TriggerType.GameLoad::triggerAll))
     }
@@ -66,11 +64,23 @@ class CTJS : ClientModInitializer {
         connection.getInputStream()
     }
 
+    private fun initModuleManager() {
+        // TODO: Put setup/asmPass somewhere else
+        try {
+            ModuleManager.setup()
+            ModuleManager.asmPass()
+            ModuleManager.entryPass()
+        } catch (e: Throwable) {
+            e.printTraceToConsole()
+        }
+    }
+
     companion object {
         const val DEFAULT_MODULES_FOLDER = "./config/ChatTriggers/modules"
         const val WEBSITE_ROOT = "https://www.chattriggers.com"
         internal val images = mutableListOf<Image>()
         internal val sounds = mutableListOf<Sound>()
+        internal var commandDispatcher: CommandDispatcher<ServerCommandSource>? = null
 
         val configLocation = File("./config")
         val assetsDir = File(configLocation, "ChatTriggers/images/").apply { mkdirs() }
