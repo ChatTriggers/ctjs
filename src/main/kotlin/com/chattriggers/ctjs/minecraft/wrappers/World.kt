@@ -1,9 +1,17 @@
 package com.chattriggers.ctjs.minecraft.wrappers
 
 import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer
+import com.chattriggers.ctjs.minecraft.wrappers.entity.Entity
+import com.chattriggers.ctjs.minecraft.wrappers.entity.PlayerMP
+import com.chattriggers.ctjs.minecraft.wrappers.world.Chunk
+import com.chattriggers.ctjs.minecraft.wrappers.world.block.Block
+import com.chattriggers.ctjs.minecraft.wrappers.world.block.BlockPos
+import com.chattriggers.ctjs.minecraft.wrappers.world.block.BlockType
 import gg.essential.universal.UMinecraft
+import net.minecraft.block.BlockState
 import net.minecraft.client.world.ClientWorld
 import net.minecraft.registry.Registries
+import net.minecraft.util.math.BlockPos as MCBlockPos
 
 object World {
     /**
@@ -48,89 +56,78 @@ object World {
     //     //#endif
     // }
 
-    // TODO: Add these back once the wrappers are added
-    // /**
-    //  * Gets the [Block] at a location in the world.
-    //  *
-    //  * @param x the x position
-    //  * @param y the y position
-    //  * @param z the z position
-    //  * @return the [Block] at the location
-    //  */
-    // @JvmStatic
-    // fun getBlockAt(x: Number, y: Number, z: Number) = getBlockAt(BlockPos(x, y, z))
-    //
-    // /**
-    //  * Gets the [Block] at a location in the world.
-    //  *
-    //  * @param pos The block position
-    //  * @return the [Block] at the location
-    //  */
-    // @JvmStatic
-    // fun getBlockAt(pos: BlockPos): Block {
-    //     return Block(BlockType(getBlockStateAt(pos).block), pos)
-    // }
-    //
-    // /**
-    //  * Gets the [IBlockState] at a location in the world.
-    //  *
-    //  * @param pos The block position
-    //  * @return the [IBlockState] at the location
-    //  */
-    // @JvmStatic
-    // fun getBlockStateAt(pos: BlockPos): IBlockState {
-    //     return getWorld()!!.getBlockState(pos.toMCBlock())
-    // }
-    //
-    // /**
-    //  * Gets all of the players in the world, and returns their wrapped versions.
-    //  *
-    //  * @return the players
-    //  */
-    // @JvmStatic
-    // fun getAllPlayers(): List<PlayerMP> = getWorld()?.playerEntities?.map(::PlayerMP) ?: listOf()
-    //
-    // /**
-    //  * Gets a player by their username, must be in the currently loaded chunks!
-    //  *
-    //  * @param name the username
-    //  * @return the player with said username, or null if they don't exist.
-    //  */
-    // @JvmStatic
-    // fun getPlayerByName(name: String): PlayerMP? {
-    //     return getWorld()?.getPlayerEntityByName(name)?.let(::PlayerMP)
-    // }
-    //
-    // @JvmStatic
-    // fun hasPlayer(name: String): Boolean = getWorld()?.getPlayerEntityByName(name) != null
-    //
-    // @JvmStatic
-    // fun getChunk(x: Int, y: Int, z: Int): Chunk {
-    //     return Chunk(
-    //         getWorld()!!.getChunkFromBlockCoords(
-    //             MCBlockPos(x, y, z)
-    //         )
-    //     )
-    // }
-    //
-    // @JvmStatic
-    // fun getAllEntities(): List<Entity> {
-    //     return getWorld()?.loadedEntityList?.map(::Entity) ?: listOf()
-    // }
-    //
-    // /**
-    //  * Gets every entity loaded in the world of a certain class
-    //  *
-    //  * @param clazz the class to filter for (Use `Java.type().class` to get this)
-    //  * @return the entity list
-    //  */
-    // @JvmStatic
-    // fun getAllEntitiesOfType(clazz: Class<*>): List<Entity> {
-    //     return getAllEntities().filter {
-    //         clazz.isInstance(it.entity)
-    //     }
-    // }
-    //
+    /**
+     * Gets the [Block] at a location in the world.
+     *
+     * @param x the x position
+     * @param y the y position
+     * @param z the z position
+     * @return the [Block] at the location
+     */
+    @JvmStatic
+    fun getBlockAt(x: Number, y: Number, z: Number) = getBlockAt(BlockPos(x, y, z))
+
+    /**
+     * Gets the [Block] at a location in the world.
+     *
+     * @param pos The block position
+     * @return the [Block] at the location
+     */
+    @JvmStatic
+    fun getBlockAt(pos: BlockPos): Block {
+        return Block(BlockType(getBlockStateAt(pos).block), pos)
+    }
+
+    /**
+     * Gets the [IBlockState] at a location in the world.
+     *
+     * @param pos The block position
+     * @return the [IBlockState] at the location
+     */
+    @JvmStatic
+    fun getBlockStateAt(pos: BlockPos): BlockState {
+        return getWorld()!!.getBlockState(pos.toMC())
+    }
+
+    /**
+     * Gets all of the players in the world, and returns their wrapped versions.
+     *
+     * @return the players
+     */
+    @JvmStatic
+    fun getAllPlayers(): List<PlayerMP> = getWorld()?.players?.map(::PlayerMP) ?: listOf()
+
+    /**
+     * Gets a player by their username, must be in the currently loaded chunks!
+     *
+     * @param name the username
+     * @return the player with said username, or null if they don't exist.
+     */
+    @JvmStatic
+    fun getPlayerByName(name: String) = getAllPlayers().firstOrNull { it.getName() == name }
+
+    @JvmStatic
+    fun hasPlayer(name: String) = getPlayerByName(name) != null
+
+    @JvmStatic
+    fun getChunk(x: Int, y: Int, z: Int) = Chunk(getWorld()!!.getWorldChunk(MCBlockPos(x, y, z)))
+
+    @JvmStatic
+    fun getAllEntities() = getWorld()?.entities?.map(::Entity) ?: listOf()
+
+    /**
+     * Gets every entity loaded in the world of a certain class
+     *
+     * @param clazz the class to filter for (Use `Java.type().class` to get this)
+     * @return the entity list
+     */
+    @JvmStatic
+    fun getAllEntitiesOfType(clazz: Class<*>): List<Entity> {
+        return getAllEntities().filter {
+            clazz.isInstance(it.entity)
+        }
+    }
+
     // @JvmStatic
     // fun getAllTileEntities(): List<TileEntity> {
     //     return getWorld()?.loadedTileEntityList?.map(::TileEntity) ?: listOf()
