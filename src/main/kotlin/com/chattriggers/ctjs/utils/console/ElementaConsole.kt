@@ -199,7 +199,7 @@ class ElementaConsole(private val loader: ILoader?) : Console {
 
     override fun show() {
         ensureInitialized()
-        Client.Companion.currentGui.set(component)
+        Client.currentGui.set(component)
     }
 
     override fun onConsoleSettingsChanged() {

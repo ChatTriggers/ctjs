@@ -237,63 +237,63 @@ abstract class Client {
                     setSubtitle(UTextComponent(subtitle))
             }
         }
+    }
 
-        object currentGui {
-            /**
-             * Gets the Java class name of the currently open gui, for example, "GuiChest"
-             *
-             * @return the class name of the current gui
-             */
-            @JvmStatic
-            fun getClassName(): String = get()?.javaClass?.simpleName ?: "null"
+    object currentGui {
+        /**
+         * Gets the Java class name of the currently open gui, for example, "GuiChest"
+         *
+         * @return the class name of the current gui
+         */
+        @JvmStatic
+        fun getClassName(): String = get()?.javaClass?.simpleName ?: "null"
 
-            /**
-             * Gets the Minecraft gui class that is currently open
-             *
-             * @return the Minecraft gui
-             */
-            @JvmStatic
-            fun get(): Screen? = getMinecraft().currentScreen
+        /**
+         * Gets the Minecraft gui class that is currently open
+         *
+         * @return the Minecraft gui
+         */
+        @JvmStatic
+        fun get(): Screen? = getMinecraft().currentScreen
 
-            @JvmStatic
-            fun set(screen: Screen?) {
-                scheduleTask {
-                    getMinecraft().setScreen(screen)
-                }
-            }
-
-            // TODO:
-            // /**
-            //  * Gets the slot under the mouse in the current gui, if one exists.
-            //  *
-            //  * @return the [Slot] under the mouse
-            //  */
-            // @JvmStatic
-            // fun getSlotUnderMouse(): Slot? {
-            //     val screen: Screen? = get()
-            //     return if ((screen is GuiContainer) && (screen.slotUnderMouse != null)) {
-            //         Slot(screen.slotUnderMouse)
-            //     } else null
-            // }
-
-            /**
-             * Closes the currently open gui
-             */
-            @JvmStatic
-            fun close() {
-                Player.getPlayer()?.closeScreen()
+        @JvmStatic
+        fun set(screen: Screen?) {
+            scheduleTask {
+                getMinecraft().setScreen(screen)
             }
         }
 
-        object camera {
-            @JvmStatic
-            fun getX(): Double = getMinecraft().gameRenderer.camera.pos.x
+        // TODO:
+        // /**
+        //  * Gets the slot under the mouse in the current gui, if one exists.
+        //  *
+        //  * @return the [Slot] under the mouse
+        //  */
+        // @JvmStatic
+        // fun getSlotUnderMouse(): Slot? {
+        //     val screen: Screen? = get()
+        //     return if ((screen is GuiContainer) && (screen.slotUnderMouse != null)) {
+        //         Slot(screen.slotUnderMouse)
+        //     } else null
+        // }
 
-            @JvmStatic
-            fun getY(): Double = getMinecraft().gameRenderer.camera.pos.y
-
-            @JvmStatic
-            fun getZ(): Double = getMinecraft().gameRenderer.camera.pos.z
+        /**
+         * Closes the currently open gui
+         */
+        @JvmStatic
+        fun close() {
+            Player.getPlayer()?.closeScreen()
         }
+    }
+
+    object camera {
+        @JvmStatic
+        fun getX(): Double = getMinecraft().gameRenderer.camera.pos.x
+
+        @JvmStatic
+        fun getY(): Double = getMinecraft().gameRenderer.camera.pos.y
+
+        @JvmStatic
+        fun getZ(): Double = getMinecraft().gameRenderer.camera.pos.z
     }
 }

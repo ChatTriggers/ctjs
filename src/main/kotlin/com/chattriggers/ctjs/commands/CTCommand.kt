@@ -70,7 +70,7 @@ object CTCommand {
                         })
                     .onExecute { ConsoleManager.getConsole().show() }
             )
-            .then(literal("config").onExecute { Client.Companion.currentGui.set(Config.gui()!!) })
+            .then(literal("config").onExecute { Client.currentGui.set(Config.gui()!!) })
             .then(
                 literal("simulate")
                     .then(
