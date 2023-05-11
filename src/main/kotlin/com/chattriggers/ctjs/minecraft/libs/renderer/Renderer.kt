@@ -1,6 +1,9 @@
 package com.chattriggers.ctjs.minecraft.libs.renderer
 
 import com.chattriggers.ctjs.minecraft.libs.ChatLib
+import com.chattriggers.ctjs.minecraft.wrappers.Client
+import com.chattriggers.ctjs.minecraft.wrappers.Player
+import com.chattriggers.ctjs.utils.vec.Vec3f
 import gg.essential.universal.UGraphics
 import gg.essential.universal.UMatrixStack
 import gg.essential.universal.UMinecraft
@@ -12,6 +15,8 @@ object Renderer {
     var colorized: Long? = null
     private var retainTransforms = false
     private var drawMode: UGraphics.DrawMode? = null
+    private var firstVertex = true
+    private var began = false
 
     private val tessellator = Tessellator.getInstance()
     private val worldRenderer = UGraphics(tessellator.buffer)
@@ -161,6 +166,12 @@ object Renderer {
     fun depthMask(flag: Boolean) = apply { UGraphics.depthMask(flag) }
 
     @JvmStatic
+    fun disableBlend() = apply { UGraphics.disableBlend() }
+
+    @JvmStatic
+    fun enableBlend() = apply { UGraphics.enableBlend() }
+
+    @JvmStatic
     fun blendFunc(func: Int) = apply { UGraphics.blendEquation(func) }
 
     @JvmStatic
@@ -187,6 +198,63 @@ object Renderer {
     @JvmStatic
     fun popMatrix() = apply {
         matrixStack.pop()
+    }
+
+    /**
+     * Begin drawing with the Renderer with default draw mode of quads and textured
+     *
+     * @param drawMode the GL draw mode
+     * @param textured if the Renderer is textured
+     * @return the Renderer to allow for method chaining
+     * @see com.chattriggers.ctjs.minecraft.libs.renderer.Shape.setDrawMode
+     */
+    @JvmStatic
+    @JvmOverloads
+    fun begin(drawMode: Int = 7, textured: Boolean = true) = apply {
+        pushMatrix()
+        enableBlend()
+        tryBlendFuncSeparate(770, 771, 1, 0)
+
+        translate(-Client.camera.getX().toFloat(), -Client.camera.getY().toFloat(), -Client.camera.getZ().toFloat())
+
+        worldRenderer.beginWithDefaultShader(
+            Renderer.drawMode ?: UGraphics.DrawMode.QUADS,
+            if (textured) UGraphics.CommonVertexFormats.POSITION_TEXTURE else UGraphics.CommonVertexFormats.POSITION,
+        )
+
+        firstVertex = true
+        began = true
+    }
+
+    /**
+     * Sets a new vertex in the Tessellator.
+     *
+     * @param x the x position
+     * @param y the y position
+     * @param z the z position
+     * @return the Tessellator to allow for method chaining
+     */
+    @JvmStatic
+    fun pos(x: Float, y: Float, z: Float) = apply {
+        if (!began)
+            begin()
+        if (!firstVertex)
+            worldRenderer.endVertex()
+        worldRenderer.pos(matrixStack, x.toDouble(), y.toDouble(), z.toDouble())
+        firstVertex = false
+    }
+
+    /**
+     * Sets the texture location on the last defined vertex.
+     * Use directly after using [Tessellator.pos]
+     *
+     * @param u the u position in the texture
+     * @param v the v position in the texture
+     * @return the Tessellator to allow for method chaining
+     */
+    @JvmStatic
+    fun tex(u: Float, v: Float) = apply {
+        worldRenderer.tex(u.toDouble(), v.toDouble())
     }
 
     @JvmStatic
@@ -234,6 +302,42 @@ object Renderer {
         return if (alpha < 10)
             (color and 0xFF_FF_FF) or 0xA_FF_FF_FF
         else color
+    }
+
+    /**
+     * Finalizes and draws the Tessellator.
+     */
+    @JvmStatic
+    fun draw() {
+        if (!began)
+            return
+
+        worldRenderer.endVertex()
+
+        tessellator.draw()
+
+        colorize(1f, 1f, 1f, 1f)
+
+        began = false
+
+        disableBlend()
+        popMatrix()
+    }
+
+    /**
+     * Gets a fixed render position from x, y, and z inputs adjusted with partial ticks
+     * @param x the X coordinate
+     * @param y the Y coordinate
+     * @param z the Z coordinate
+     * @return the Vec3f position to render at
+     */
+    @JvmStatic
+    fun getRenderPos(x: Float, y: Float, z: Float): Vec3f {
+        return Vec3f(
+            x - Player.getRenderX().toFloat(),
+            y - Player.getRenderY().toFloat(),
+            z - Player.getRenderZ().toFloat()
+        )
     }
 
     @JvmStatic
