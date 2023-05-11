@@ -65,9 +65,6 @@ object ModuleManager {
         }
 
         loadAssetsAndJars(cachedModules)
-
-        // TODO:
-        // IndySupport.invalidateInvocations()
     }
 
     private fun loadAssetsAndJars(modules: List<Module>) {
@@ -94,20 +91,6 @@ object ModuleManager {
         }
     }
 
-    @JvmStatic
-    fun asmPass() {
-        loaders.forEach(ILoader::asmSetup)
-
-        // Load the modules
-        loaders.forEach { loader ->
-            cachedModules.filter {
-                File(it.folder, it.metadata.asmEntry ?: return@filter false).extension == loader.getLanguage().extension
-            }.forEach {
-                loader.asmPass(it, File(it.folder, it.metadata.asmEntry!!).toURI())
-            }
-        }
-    }
-
     fun entryPass(modules: List<Module> = cachedModules, completionListener: (percentComplete: Float) -> Unit = {}) {
         loaders.forEach(ILoader::entrySetup)
 
@@ -125,22 +108,6 @@ object ModuleManager {
                 completionListener(completed.toFloat() / total)
             }
         }
-    }
-
-    fun asmInvokeLookup(moduleName: String, functionID: String): MethodHandle {
-        // Find the targeted module
-        val module = cachedModules.first { it.name == moduleName }
-
-        // Get the target function file from the metadata lookup table
-        val funcPath = module.metadata.asmExposedFunctions?.get(functionID) ?: throw IllegalArgumentException(
-            "Module $module contains no asm exported function with id $functionID"
-        )
-
-        val funcFile = File(module.folder, funcPath.replace('/', File.separatorChar).replace('\\', File.separatorChar))
-
-        return loaders.first {
-            it.getLanguage().extension == funcFile.extension
-        }.asmInvokeLookup(module, funcFile.toURI())
     }
 
     private fun getFoldersInDir(dir: File): List<File> {
