@@ -1,5 +1,6 @@
 package com.chattriggers.ctjs.utils.console
 
+import com.chattriggers.ctjs.Reference
 import com.chattriggers.ctjs.engine.ILoader
 import com.chattriggers.ctjs.minecraft.wrappers.Client
 import gg.essential.elementa.ElementaVersion
@@ -185,28 +186,33 @@ class ElementaConsole(private val loader: ILoader?) : Console {
     private lateinit var component: ConsoleComponent
 
     override fun clear() {
-        ensureInitialized()
-        component.clear()
+        if (ensureInitialized())
+            component.clear()
     }
 
     override fun println(obj: Any, logType: LogType, end: String, customColor: Color?) {
     }
 
     override fun printStackTrace(error: Throwable) {
-        ensureInitialized()
-        component.printStackTrace(error)
+        if (ensureInitialized())
+            component.printStackTrace(error)
     }
 
     override fun show() {
-        ensureInitialized()
-        Client.currentGui.set(component)
+        if (ensureInitialized())
+            Client.currentGui.set(component)
     }
 
     override fun onConsoleSettingsChanged() {
     }
 
-    private fun ensureInitialized() {
+    private fun ensureInitialized(): Boolean {
+        if (!Reference.isLoaded)
+            return false
+
         if (!::component.isInitialized)
             component = ConsoleComponent(loader)
+
+        return true
     }
 }

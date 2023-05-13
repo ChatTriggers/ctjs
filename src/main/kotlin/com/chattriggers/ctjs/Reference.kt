@@ -1,6 +1,5 @@
 package com.chattriggers.ctjs
 
-import com.chattriggers.ctjs.engine.langs.js.JSLoader
 import com.chattriggers.ctjs.engine.module.ModuleManager
 import com.chattriggers.ctjs.minecraft.libs.ChatLib
 import com.chattriggers.ctjs.minecraft.libs.renderer.Image
