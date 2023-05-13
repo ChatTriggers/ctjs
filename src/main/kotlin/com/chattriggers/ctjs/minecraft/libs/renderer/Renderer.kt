@@ -265,8 +265,8 @@ object Renderer {
 
     @JvmStatic
     @JvmOverloads
-    fun scale(scaleX: Float, scaleY: Float = scaleX) {
-        matrixStack.scale(scaleX, scaleY, 1f)
+    fun scale(scaleX: Float, scaleY: Float = scaleX, scaleZ: Float = 1f) {
+        matrixStack.scale(scaleX, scaleY, scaleZ)
     }
 
     @JvmStatic
