@@ -1,6 +1,8 @@
 package com.chattriggers.ctjs.minecraft.wrappers
 
 import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer
+import com.chattriggers.ctjs.minecraft.wrappers.inventory.Inventory
+import com.chattriggers.ctjs.minecraft.wrappers.inventory.Item
 import gg.essential.universal.UMath
 import gg.essential.universal.UMinecraft
 import net.minecraft.client.network.ClientPlayerEntity
@@ -213,7 +215,9 @@ object Player {
     }
 
     @JvmStatic
-    fun getHeldItem(): Unit = TODO()
+    fun getHeldItem(): Item? = getPlayer()?.inventory?.selectedSlot?.let {
+        getInventory()?.getStackInSlot(it)
+    }
 
     @JvmStatic
     fun setHeldItemIndex(index: Int) {
@@ -223,15 +227,14 @@ object Player {
     @JvmStatic
     fun getHeldItemIndex(): Int = getPlayer()?.inventory?.selectedSlot ?: -1
 
-    // TODO
-    // /**
-    //  * Gets the inventory of the player, i.e. the inventory accessed by 'e'.
-    //  *
-    //  * @return the player's inventory
-    //  */
-    // @JvmStatic
-    // fun getInventory(): Inventory? = getPlayer()?.inventory?.let(::Inventory)
-    //
+    /**
+     * Gets the inventory of the player, i.e. the inventory accessed by 'e'.
+     *
+     * @return the player's inventory
+     */
+    @JvmStatic
+    fun getInventory(): Inventory? = getPlayer()?.inventory?.let(::Inventory)
+
     // /**
     //  * Gets the display name for the player,
     //  * i.e. the name shown in tab list and in the player's nametag.
@@ -262,7 +265,8 @@ object Player {
     // fun setNametagName(textComponent: TextComponent) {
     //     asPlayerMP()?.setNametagName(textComponent)
     // }
-    //
+
+    // TODO:
     // @Deprecated("Use the better named method", ReplaceWith("getContainer()"))
     // @JvmStatic
     // fun getOpenedInventory(): Inventory? = getContainer()
@@ -274,7 +278,7 @@ object Player {
     //  */
     // @JvmStatic
     // fun getContainer(): Inventory? = getPlayer()?.openContainer?.let(::Inventory)
-    //
+
     // /**
     //  * Draws the player in the GUI
     //  */
@@ -292,30 +296,30 @@ object Player {
     // ) = apply {
     //     Renderer.drawPlayer(this, x, y, rotate, showNametag, showArmor, showCape, showHeldItem, showArrows)
     // }
-    //
-    // object armor {
-    //     /**
-    //      * @return the item in the player's helmet slot
-    //      */
-    //     @JvmStatic
-    //     fun getHelmet(): Item? = getInventory()?.getStackInSlot(39)
-    //
-    //     /**
-    //      * @return the item in the player's chestplate slot
-    //      */
-    //     @JvmStatic
-    //     fun getChestplate(): Item? = getInventory()?.getStackInSlot(38)
-    //
-    //     /**
-    //      * @return the item in the player's leggings slot
-    //      */
-    //     @JvmStatic
-    //     fun getLeggings(): Item? = getInventory()?.getStackInSlot(37)
-    //
-    //     /**
-    //      * @return the item in the player's boots slot
-    //      */
-    //     @JvmStatic
-    //     fun getBoots(): Item? = getInventory()?.getStackInSlot(36)
-    // }
+
+    object armor {
+        /**
+         * @return the item in the player's helmet slot
+         */
+        @JvmStatic
+        fun getHelmet(): Item? = getInventory()?.getStackInSlot(39)
+
+        /**
+         * @return the item in the player's chestplate slot
+         */
+        @JvmStatic
+        fun getChestplate(): Item? = getInventory()?.getStackInSlot(38)
+
+        /**
+         * @return the item in the player's leggings slot
+         */
+        @JvmStatic
+        fun getLeggings(): Item? = getInventory()?.getStackInSlot(37)
+
+        /**
+         * @return the item in the player's boots slot
+         */
+        @JvmStatic
+        fun getBoots(): Item? = getInventory()?.getStackInSlot(36)
+    }
 }
