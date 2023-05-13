@@ -9,6 +9,7 @@ import com.chattriggers.ctjs.minecraft.libs.ChatLib
 import com.chattriggers.ctjs.triggers.TriggerType
 import com.chattriggers.ctjs.utils.console.*
 import gg.essential.vigilance.impl.nightconfig.core.file.FileConfig
+import kotlinx.serialization.json.Json
 import org.apache.commons.io.FileUtils
 import org.mozilla.javascript.Context
 import java.io.File
@@ -124,9 +125,18 @@ object ModuleManager {
 
         if (metadataFile.exists()) {
             try {
-                metadata = CTJS.gson.fromJson(metadataFile.readText(), ModuleMetadata::class.java)
-            } catch (exception: Exception) {
+                metadata = Json.decodeFromString(metadataFile.readText())
+            } catch (e: Exception) {
                 "Module $directory has invalid metadata.json".printToConsole(logType = LogType.ERROR)
+            }
+        }
+
+        val mixinsFile = File(directory, "mixins.json")
+        if (mixinsFile.exists()) {
+            try {
+                metadata.mixins = Json.decodeFromString(mixinsFile.readText())
+            } catch (e: Exception) {
+                "Module $directory has invalid mixins.json".printToConsole(logType = LogType.ERROR)
             }
         }
 

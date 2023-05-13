@@ -793,5 +793,21 @@ interface IRegister {
         return EventTrigger(method, TriggerType.HitBlock, getImplementationLoader())
     }
 
+    /**
+     * Registers a new trigger that runs on a mixin event
+     *
+     * Passes through all of the argument to the method being injected into.
+     * See the wiki for more information (TODO)
+     *
+     * Available modifications:
+     * - [Trigger.setPriority] Sets the priority
+     *
+     * @param method The method to call when the event is fired
+     * @return The trigger for additional modification
+     */
+    fun registerMixin(method: Any): MixinTrigger {
+        return MixinTrigger(method, getImplementationLoader())
+    }
+
     fun getImplementationLoader(): ILoader
 }

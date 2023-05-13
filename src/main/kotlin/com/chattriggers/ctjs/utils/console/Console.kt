@@ -25,6 +25,6 @@ fun Any.printToConsole(console: Console = ConsoleManager.getConsole(), logType: 
 }
 
 fun Throwable.printTraceToConsole(console: Console = ConsoleManager.getConsole()) {
-    console.printStackTrace(this)
     this.printStackTrace()
+    console.printStackTrace(this)
 }

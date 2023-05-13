@@ -2,7 +2,7 @@
     "schemaVersion": 1,
     "id": "chattriggers",
     "name": "ChatTriggers",
-    "version": "${version}",
+    "version": "$version",
     "description": "A framework for Minecraft that allows for live scripting and client modification using JavaScript",
     "authors": ["Ecolsson", "FalseHonesty", "kerbybit"],
     "contributors": ["Squagward", "Debuggings", "DJtheRedstoner"],
@@ -15,7 +15,14 @@
     },
     "environment": "client",
     "entrypoints": {
+        "preLaunch": ["com.chattriggers.ctjs.launch.CTJSPreLaunch"],
         "client": ["com.chattriggers.ctjs.CTJS"]
     },
-    "mixins": ["chattriggers.mixins.json"]
+    "mixins": ["chattriggers.mixins.json"],
+    "depends": {
+        "fabric-language-kotlin": ">=1.9.4+kotlin.1.8.21"
+    },
+    "custom": {
+        "ctjs:yarn-mappings": "$yarn_mappings"
+    }
 }

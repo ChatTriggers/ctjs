@@ -49,6 +49,7 @@ enum class TriggerType {
     EntityDamage,
 
     // misc
+    Mixin,
     Command,
     Other;
 

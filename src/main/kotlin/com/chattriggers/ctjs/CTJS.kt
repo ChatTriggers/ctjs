@@ -65,9 +65,7 @@ class CTJS : ClientModInitializer {
     }
 
     private fun initModuleManager() {
-        // TODO: Put setup/asmPass somewhere else
         try {
-            ModuleManager.setup()
             ModuleManager.entryPass()
         } catch (e: Throwable) {
             e.printTraceToConsole()
