@@ -2,6 +2,7 @@ package com.chattriggers.ctjs.utils
 
 import com.fasterxml.jackson.core.Version
 import net.minecraft.util.Identifier
+import org.mozilla.javascript.NativeObject
 
 fun String.toVersion(): Version {
     val split = this.split(".").map(String::toInt)
@@ -14,3 +15,7 @@ fun String.toIdentifier(): Identifier {
 
 // A helper function that makes the intent explicit and reduces parens
 inline fun <reified T> Any.asMixin() = this as T
+
+fun NativeObject?.getOption(key: String, default: Any): String {
+    return (this?.get(key) ?: default).toString()
+}

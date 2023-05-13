@@ -4,13 +4,17 @@ import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer
 import com.chattriggers.ctjs.minecraft.wrappers.Client
 import com.chattriggers.ctjs.minecraft.wrappers.World
 import com.chattriggers.ctjs.minecraft.wrappers.entity.Entity
+import com.chattriggers.ctjs.minecraft.wrappers.inventory.nbt.NBTTagCompound
+import com.chattriggers.ctjs.minecraft.wrappers.inventory.nbt.NBTTagList
 import com.chattriggers.ctjs.minecraft.wrappers.world.block.Block
 import com.chattriggers.ctjs.minecraft.wrappers.world.block.BlockPos
 import com.chattriggers.ctjs.mixins.ItemStackMixin
+import com.chattriggers.ctjs.utils.MCNbtCompound
 import com.chattriggers.ctjs.utils.asMixin
 import gg.essential.universal.wrappers.message.UTextComponent
 import net.minecraft.block.pattern.CachedBlockPosition
 import net.minecraft.client.item.TooltipContext
+import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemStack
 import net.minecraft.registry.Registries
@@ -23,8 +27,10 @@ class Item(val stack: ItemStack) {
 
     fun getStackSize(): Int = stack.count
 
-    // TODO: nbt
-    // fun getEnchantments() = stack.enchantments
+    // TODO: Api that returns the Enchantment object?
+    fun getEnchantments() = EnchantmentHelper.get(stack).mapKeys {
+        EnchantmentHelper.getEnchantmentId(it.key)!!.toTranslationKey()?.replace("enchantment.", "")
+    }
 
     fun isEnchantable() = stack.isEnchantable
 
@@ -61,6 +67,10 @@ class Item(val stack: ItemStack) {
     fun resetLore() {
         stack.asMixin<ItemStackMixin>().overrideTooltip = false
     }
+
+    fun getRawNBT() = getNBT().toString()
+
+    fun getNBT() = stack.nbt?.let(::NBTTagCompound) ?: NBTTagCompound(MCNbtCompound())
 
     /**
      * Renders the item icon to the client's overlay, with customizable overlay information.

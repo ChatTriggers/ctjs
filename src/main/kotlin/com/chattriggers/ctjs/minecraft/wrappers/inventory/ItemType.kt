@@ -23,9 +23,4 @@ class ItemType(private val item: MCItem) {
     fun getTranslationKey() = item.translationKey
 
     fun getRegistryName() = Registries.ITEM.getId(item)
-
-    // TODO:
-    // fun getRawNBT() = itemStack.serializeNBT().toString()
-    //
-    // fun getNBT() = NBTTagCompound(itemStack.serializeNBT())
 }

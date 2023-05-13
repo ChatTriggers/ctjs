@@ -10,3 +10,6 @@ typealias MCParticle = net.minecraft.client.particle.Particle
 typealias MCTeam = net.minecraft.scoreboard.Team
 typealias MCInventory = net.minecraft.inventory.Inventory
 typealias MCItem = net.minecraft.item.Item
+typealias MCNbtBase = net.minecraft.nbt.NbtElement
+typealias MCNbtCompound = net.minecraft.nbt.NbtCompound
+typealias MCNbtList = net.minecraft.nbt.NbtList
