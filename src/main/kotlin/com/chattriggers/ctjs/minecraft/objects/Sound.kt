@@ -6,11 +6,12 @@ import com.chattriggers.ctjs.minecraft.wrappers.World
 import com.chattriggers.ctjs.mixins.AbstractSoundInstanceAccessor
 import com.chattriggers.ctjs.mixins.SoundAccessor
 import com.chattriggers.ctjs.mixins.SoundManagerAccessor
+import com.chattriggers.ctjs.utils.MCSound
 import com.chattriggers.ctjs.utils.asMixin
 import gg.essential.universal.UMinecraft
 import net.minecraft.client.sound.MovingSoundInstance
+import net.minecraft.client.sound.Sound.RegistrationType
 import net.minecraft.client.sound.SoundInstance.AttenuationType
-import net.minecraft.client.sound.Sound as MCSound
 import net.minecraft.client.sound.SoundSystem
 import net.minecraft.client.sound.WeightedSoundSet
 import net.minecraft.sound.SoundCategory
@@ -98,7 +99,7 @@ class Sound(private val config: NativeObject) {
             { this.volume },
             { this.pitch },
             1,
-            MCSound.RegistrationType.FILE,
+            RegistrationType.FILE,
             stream,
             false,
             attenuation,

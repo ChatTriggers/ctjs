@@ -4,12 +4,11 @@ import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer
 import com.chattriggers.ctjs.minecraft.wrappers.World
 import com.chattriggers.ctjs.minecraft.wrappers.world.Chunk
 import com.chattriggers.ctjs.minecraft.wrappers.world.block.BlockPos
-import com.chattriggers.ctjs.utils.vec.Vec3f
+import com.chattriggers.ctjs.utils.MCEntity
 import gg.essential.universal.wrappers.message.UTextComponent
 import net.minecraft.entity.MovementType
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
-import net.minecraft.entity.Entity as MCEntity
 import java.util.*
 
 open class Entity(val entity: MCEntity) {

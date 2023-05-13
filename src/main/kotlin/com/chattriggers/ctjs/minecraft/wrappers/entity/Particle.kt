@@ -3,8 +3,8 @@ package com.chattriggers.ctjs.minecraft.wrappers.entity
 import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer
 import com.chattriggers.ctjs.mixins.ParticleAccessor
 import com.chattriggers.ctjs.utils.Color
+import com.chattriggers.ctjs.utils.MCParticle
 import com.chattriggers.ctjs.utils.asMixin
-import net.minecraft.client.particle.Particle as MCParticle
 
 class Particle(val particle: MCParticle) {
     private val mixed: ParticleAccessor = particle.asMixin()

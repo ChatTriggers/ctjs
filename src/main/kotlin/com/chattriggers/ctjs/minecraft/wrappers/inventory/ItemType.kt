@@ -1,10 +1,10 @@
 package com.chattriggers.ctjs.minecraft.wrappers.inventory
 
 import com.chattriggers.ctjs.minecraft.wrappers.world.block.BlockType
+import com.chattriggers.ctjs.utils.MCItem
 import com.chattriggers.ctjs.utils.toIdentifier
 import gg.essential.universal.wrappers.message.UTextComponent
 import net.minecraft.registry.Registries
-import net.minecraft.item.Item as MCItem
 
 // TODO(breaking): Completely redid this API
 class ItemType(private val item: MCItem) {

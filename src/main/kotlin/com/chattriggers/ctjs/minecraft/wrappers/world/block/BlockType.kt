@@ -1,7 +1,7 @@
 package com.chattriggers.ctjs.minecraft.wrappers.world.block
 
+import com.chattriggers.ctjs.utils.MCBlock
 import gg.essential.universal.wrappers.message.UTextComponent
-import net.minecraft.block.Block as MCBlock
 
 /**
  * An immutable wrapper around Minecraft's Block object. Note
@@ -12,6 +12,7 @@ import net.minecraft.block.Block as MCBlock
 class BlockType(val mcBlock: MCBlock) {
     constructor(block: BlockType) : this(block.mcBlock)
 
+    // TODO:
     // constructor(blockName: String) : this(MCBlock.getBlockFromName(blockName)!!)
     //
     // constructor(blockID: Int) : this(MCBlock.getBlockById(blockID))
@@ -27,6 +28,7 @@ class BlockType(val mcBlock: MCBlock) {
      */
     fun withBlockPos(blockPos: BlockPos) = Block(this, blockPos)
 
+    // TODO:
     // fun getID(): Int = MCBlock.getIdFromBlock(mcBlock)
 
     /**

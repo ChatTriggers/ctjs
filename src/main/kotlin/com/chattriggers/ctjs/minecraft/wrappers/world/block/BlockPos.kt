@@ -1,8 +1,8 @@
 package com.chattriggers.ctjs.minecraft.wrappers.world.block
 
 import com.chattriggers.ctjs.minecraft.wrappers.entity.Entity
+import com.chattriggers.ctjs.utils.MCBlockPos
 import com.chattriggers.ctjs.utils.vec.Vec3i
-import net.minecraft.util.math.BlockPos as MCBlockPos
 
 class BlockPos(x: Int, y: Int, z: Int) : Vec3i(x, y, z) {
     constructor(x: Number, y: Number, z: Number) : this(x.toInt(), y.toInt(), z.toInt())

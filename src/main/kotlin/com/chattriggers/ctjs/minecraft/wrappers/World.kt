@@ -7,11 +7,11 @@ import com.chattriggers.ctjs.minecraft.wrappers.world.Chunk
 import com.chattriggers.ctjs.minecraft.wrappers.world.block.Block
 import com.chattriggers.ctjs.minecraft.wrappers.world.block.BlockPos
 import com.chattriggers.ctjs.minecraft.wrappers.world.block.BlockType
+import com.chattriggers.ctjs.utils.MCBlockPos
 import gg.essential.universal.UMinecraft
 import net.minecraft.block.BlockState
 import net.minecraft.client.world.ClientWorld
 import net.minecraft.registry.Registries
-import net.minecraft.util.math.BlockPos as MCBlockPos
 
 object World {
     /**

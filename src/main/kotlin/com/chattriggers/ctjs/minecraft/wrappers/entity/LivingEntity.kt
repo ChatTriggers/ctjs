@@ -2,9 +2,9 @@ package com.chattriggers.ctjs.minecraft.wrappers.entity
 
 import com.chattriggers.ctjs.minecraft.wrappers.world.PotionEffect
 import com.chattriggers.ctjs.minecraft.wrappers.world.PotionEffectType
+import com.chattriggers.ctjs.utils.MCEntity
+import com.chattriggers.ctjs.utils.MCLivingEntity
 import net.minecraft.entity.effect.StatusEffect
-import net.minecraft.entity.Entity as MCEntity
-import net.minecraft.entity.LivingEntity as MCLivingEntity
 
 // TODO(breaking): Rename from EntityLivingBase
 open class LivingEntity(val livingEntity: MCLivingEntity) : Entity(livingEntity) {

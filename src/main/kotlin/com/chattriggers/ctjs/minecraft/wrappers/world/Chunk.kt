@@ -1,9 +1,9 @@
 package com.chattriggers.ctjs.minecraft.wrappers.world
 
+import com.chattriggers.ctjs.utils.MCChunk
 import gg.essential.universal.UMinecraft
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.LightType
-import net.minecraft.world.chunk.Chunk as MCChunk
 
 // TODO: Add more methods here?
 class Chunk(val chunk: MCChunk) {

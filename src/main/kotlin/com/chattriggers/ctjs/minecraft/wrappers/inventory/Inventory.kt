@@ -3,10 +3,10 @@ package com.chattriggers.ctjs.minecraft.wrappers.inventory
 import com.chattriggers.ctjs.minecraft.wrappers.inventory.action.ClickAction
 import com.chattriggers.ctjs.minecraft.wrappers.inventory.action.DragAction
 import com.chattriggers.ctjs.minecraft.wrappers.inventory.action.DropAction
+import com.chattriggers.ctjs.utils.MCInventory
 import gg.essential.universal.wrappers.message.UTextComponent
 import net.minecraft.client.gui.screen.ingame.HandledScreen
 import net.minecraft.util.Nameable
-import net.minecraft.inventory.Inventory as MCInventory
 
 class Inventory {
     val inventory: MCInventory?

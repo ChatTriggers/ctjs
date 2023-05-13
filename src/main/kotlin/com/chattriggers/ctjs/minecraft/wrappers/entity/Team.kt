@@ -1,8 +1,7 @@
 package com.chattriggers.ctjs.minecraft.wrappers.entity
 
-import com.chattriggers.ctjs.minecraft.libs.ChatLib
+import com.chattriggers.ctjs.utils.MCTeam
 import gg.essential.universal.wrappers.message.UTextComponent
-import net.minecraft.scoreboard.Team as MCTeam
 
 class Team(val team: MCTeam) {
     /**
