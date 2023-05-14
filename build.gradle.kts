@@ -10,7 +10,6 @@ group = property("mod_group")!!
 val yarnMappings = property("yarn_mappings")!!
 
 repositories {
-    // TODO: Host Rhino elsewhere
     maven("https://repo.essential.gg/repository/maven-public")
     maven("https://jitpack.io")
 }
@@ -23,7 +22,7 @@ dependencies {
     include(modImplementation("net.fabricmc.fabric-api:fabric-api:${property("fabric_version")}")!!)
 
     include(modImplementation("net.fabricmc:fabric-language-kotlin:1.9.4+kotlin.1.8.21")!!)
-    include(modImplementation("com.chattriggers:rhino:1.8.6")!!)
+    include(modImplementation("com.github.ChatTriggers:rhino:7f04f3c01f")!!)
     include(modImplementation("com.fasterxml.jackson.core:jackson-core:2.13.2")!!)
     include(modImplementation("com.fifesoft:rsyntaxtextarea:3.2.0")!!)
     include(modImplementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")!!)

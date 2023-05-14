@@ -5,10 +5,15 @@ import net.fabricmc.loader.impl.launch.FabricLauncherBase
 import net.fabricmc.mapping.tree.Descriptored
 import net.fabricmc.mapping.tree.Mapped
 import net.fabricmc.mapping.tree.TinyMappingFactory
+import org.mozilla.javascript.JavaObjectMappingProvider
+import org.mozilla.javascript.JavaObjectMappingProvider.MethodSignature
+import org.mozilla.javascript.JavaObjectMappingProvider.RenameableField
+import org.mozilla.javascript.JavaObjectMappingProvider.RenameableMethod
 import org.objectweb.asm.Type
 import org.objectweb.asm.tree.ClassNode
 import org.spongepowered.asm.service.MixinService
 import java.io.ByteArrayInputStream
+import java.lang.reflect.Modifier
 import java.net.URL
 import java.net.URLEncoder
 import java.nio.charset.Charset
@@ -22,11 +27,13 @@ object Mappings {
     private val unmappedClasses = mutableMapOf<String, MappedClass>()
     private val mappedToUnmappedClassNames = mutableMapOf<String, String>()
 
+    var rhinoProvider: JavaObjectMappingProvider? = null
+
     fun initialize() {
+        // TODO: Change modid to ctjs
         val container = FabricLoader.getInstance().getModContainer("chattriggers")
         val mappingVersion = container.get().metadata.getCustomValue("ctjs:yarn-mappings").asString
 
-        // TODO: Change modid to ctjs
         val mappingUrlSuffix =
             URLEncoder.encode("$mappingVersion/yarn-$mappingVersion-v2.jar", Charset.defaultCharset())
         val jarBytes = URL(YARN_MAPPINGS_URL_PREFIX + mappingUrlSuffix).readBytes()
@@ -49,19 +56,19 @@ object Mappings {
                 )
             }
 
-            val methods = mutableMapOf<String, MappedMethod>()
+            val methods = mutableMapOf<String, MutableList<MappedMethod>>()
 
             clazz.methods.forEach { method ->
                 val unmappedType = method.unmappedType
                 val mappedType = method.mappedType
 
-                methods[method.unmappedName] = MappedMethod(
+                methods.getOrPut(method.unmappedName, ::mutableListOf).add(MappedMethod(
                     name = Mapping.fromMapped(method),
                     parameterTypes = unmappedType.argumentTypes.zip(mappedType.argumentTypes).map {
                         Mapping(it.first.descriptor, it.second.descriptor)
                     },
                     returnType = Mapping(unmappedType.returnType.descriptor, mappedType.returnType.descriptor)
-                )
+                ))
             }
 
             unmappedClasses[clazz.unmappedName] = MappedClass(
@@ -76,9 +83,93 @@ object Mappings {
                 mappedToUnmappedClassNames[clazz.mappedName] = clazz.unmappedName
             }
         }
+
+        // Create a remapper for Rhino
+        if (isDevelopment)
+            return
+
+        rhinoProvider = object : JavaObjectMappingProvider {
+            override fun findExtraMethods(
+                clazz: Class<*>,
+                map: MutableMap<MethodSignature, RenameableMethod>,
+                includeProtected: Boolean,
+                includePrivate: Boolean
+            ) {
+                var current: Class<*>? = clazz
+                while (current != null) {
+                    findRemappedMethods(current, map, includeProtected, includePrivate)
+                    current = current.superclass
+                }
+            }
+
+            override fun findExtraFields(
+                clazz: Class<*>,
+                list: MutableList<RenameableField>,
+                includeProtected: Boolean,
+                includePrivate: Boolean
+            ) {
+                var current: Class<*>? = clazz
+                while (current != null) {
+                    // TODO: Why do I need the null assertion here but not above? Compiler bug?
+                    findRemappedFields(current!!, list, includeProtected, includePrivate)
+                    current = current!!.superclass
+                }
+            }
+
+            private fun findRemappedMethods(
+                clazz: Class<*>,
+                map: MutableMap<MethodSignature, RenameableMethod>,
+                includeProtected: Boolean,
+                includePrivate: Boolean,
+            ) {
+                val mappedClass = getMappedClassFromObject(clazz) ?: return
+
+                for ((unmappedMethodName, mappedMethods) in mappedClass.methods) {
+                    for (mappedMethod in mappedMethods) {
+                        val method = clazz.methods.find {
+                            when {
+                                it.name != mappedMethod.name.value -> false
+                                Modifier.isProtected(it.modifiers) && !includeProtected -> false
+                                Modifier.isPrivate(it.modifiers) && !includePrivate -> false
+                                else -> true
+                            }
+                        } ?: continue
+
+                        map[MethodSignature(unmappedMethodName, method.parameterTypes)] = RenameableMethod(method, unmappedMethodName)
+                    }
+                }
+            }
+
+            private fun findRemappedFields(
+                clazz: Class<*>,
+                list: MutableList<RenameableField>,
+                includeProtected: Boolean,
+                includePrivate: Boolean
+            ) {
+                val mappedClass = getMappedClassFromObject(clazz) ?: return
+
+                for ((unmappedFieldName, mappedField) in mappedClass.fields) {
+                    val field = clazz.fields.find {
+                        when {
+                            it.name != mappedField.name.value -> false
+                            Modifier.isProtected(it.modifiers) && !includeProtected -> false
+                            Modifier.isPrivate(it.modifiers) && !includePrivate -> false
+                            else -> true
+                        }
+                    } ?: continue
+
+                    list.add(RenameableField(field, unmappedFieldName))
+                }
+            }
+
+            private fun getMappedClassFromObject(clazz: Class<*>): MappedClass? {
+                val unmappedClassName = mappedToUnmappedClassNames[clazz.name.replace('.', '/')] ?: return null
+                return getMappedClass(unmappedClassName)
+            }
+        }
     }
 
-    fun getMappedClass(name: String) = unmappedClasses[name]!!
+    fun getMappedClass(name: String) = unmappedClasses[name]
 
     data class Mapping(val original: String, val mapped: String) {
         val value: String
@@ -100,14 +191,14 @@ object Mappings {
     class MappedClass(
         val name: Mapping,
         val fields: Map<String, MappedField>,
-        val methods: Map<String, MappedMethod>,
+        val methods: Map<String, List<MappedMethod>>,
     ) {
-        fun findMethod(name: String, classNode: ClassNode): MappedMethod? {
+        fun findMethods(name: String, classNode: ClassNode): List<MappedMethod>? {
             if (name in methods)
                 return methods[name]
 
             val unmappedSuperClass = mappedToUnmappedClassNames[classNode.superName]!!
-            return unmappedClasses[unmappedSuperClass]?.findMethod(
+            return unmappedClasses[unmappedSuperClass]?.findMethods(
                 name,
                 MixinService.getService().bytecodeProvider.getClassNode(classNode.superName)
             )

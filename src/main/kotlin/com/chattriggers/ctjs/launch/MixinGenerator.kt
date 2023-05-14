@@ -21,9 +21,14 @@ import java.lang.reflect.Modifier
 
 class MixinGenerator(private val className: String, private val eventName: String, private val mixin: ModuleMixin) {
     fun generate(): ByteArray {
-        val mappedClass = Mappings.getMappedClass(mixin.className.replace('.', '/'))
+        val mappedClass = Mappings.getMappedClass(mixin.className.replace('.', '/'))!!
         val classNode = MixinService.getService().bytecodeProvider.getClassNode(mappedClass.name.value)
-        val mappedMethod = mappedClass.findMethod(mixin.method, classNode)!!
+
+        // TODO: Allow the user to provide a descriptor for handling overloads
+        val mappedMethods = mappedClass.findMethods(mixin.method, classNode)!!
+        require(mappedMethods.size == 1)
+
+        val mappedMethod = mappedMethods[0]
         val methodNode = classNode.methods.first { it.name == mappedMethod.name.value }
 
         val methodType = Type.getType(methodNode.desc)

@@ -1,5 +1,6 @@
 (function(global) {
     global.Java = {
+        // TODO: Use our runtime mappings to automatically remap class names
         type: clazz => Packages[clazz]
     };
 
