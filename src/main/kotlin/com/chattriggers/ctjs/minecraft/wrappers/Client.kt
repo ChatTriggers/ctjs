@@ -20,6 +20,7 @@ import net.minecraft.client.network.ServerAddress
 import net.minecraft.client.network.ServerInfo
 import net.minecraft.client.option.KeyBinding
 import net.minecraft.network.packet.Packet
+import net.minecraft.util.Util
 import kotlin.math.roundToInt
 
 abstract class Client {
@@ -176,7 +177,7 @@ abstract class Client {
         fun getMemoryUsage(): Int = ((getTotalMemory() - getFreeMemory()) * 100 / getMaxMemory().toFloat()).roundToInt()
 
         @JvmStatic
-        fun getSystemTime(): Long = getMinecraft().renderTime / 1_000_000
+        fun getSystemTime(): Long = Util.getMeasuringTimeMs()
 
         @JvmStatic
         fun getMouseX() = UMouse.Scaled.x
