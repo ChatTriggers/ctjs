@@ -213,7 +213,7 @@ object ClientListener : Initializer {
                 event
             )
 
-            if (event.isCancelled()) TypedActionResult.fail(null) else TypedActionResult.success(null)
+            if (event.isCancelled()) TypedActionResult.fail(null) else TypedActionResult.pass(null)
         }
     }
 
