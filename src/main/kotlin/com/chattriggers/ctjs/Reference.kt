@@ -5,6 +5,7 @@ import com.chattriggers.ctjs.minecraft.libs.ChatLib
 import com.chattriggers.ctjs.minecraft.libs.renderer.Image
 import com.chattriggers.ctjs.minecraft.objects.KeyBind
 import com.chattriggers.ctjs.minecraft.objects.Sound
+import com.chattriggers.ctjs.minecraft.objects.display.Display
 import com.chattriggers.ctjs.minecraft.wrappers.Client
 import com.chattriggers.ctjs.minecraft.wrappers.World
 import com.chattriggers.ctjs.triggers.TriggerType
@@ -33,6 +34,7 @@ object Reference {
         ModuleManager.teardown()
         KeyBind.clearKeyBinds()
         ConsoleManager.clearConsoles()
+        Display.clearDisplays()
 
         Client.scheduleTask {
             CTJS.images.forEach(Image::destroy)
