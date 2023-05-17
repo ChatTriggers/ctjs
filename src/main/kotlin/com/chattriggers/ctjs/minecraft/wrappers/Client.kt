@@ -1,7 +1,10 @@
 package com.chattriggers.ctjs.minecraft.wrappers
 
+import com.chattriggers.ctjs.engine.langs.js.JSClient
 import com.chattriggers.ctjs.minecraft.listeners.ClientListener
+import com.chattriggers.ctjs.minecraft.objects.KeyBind
 import com.chattriggers.ctjs.mixins.ChatScreenAccessor
+import com.chattriggers.ctjs.mixins.KeyBindingAccessor
 import com.chattriggers.ctjs.utils.asMixin
 import gg.essential.universal.UKeyboard
 import gg.essential.universal.UMinecraft
@@ -31,7 +34,12 @@ abstract class Client {
      * @return the [KeyBinding] from a Minecraft KeyBinding, or null if one doesn't exist
      * @see [org.lwjgl.input.Keyboard](http://legacy.lwjgl.org/javadoc/org/lwjgl/input/Keyboard.html)
      */
-    abstract fun getKeyBindFromKey(keyCode: Int): KeyBinding?
+    fun getKeyBindFromKey(keyCode: Int): KeyBind? {
+        return KeyBind.getKeyBinds().find { it.getKeyCode() == keyCode }
+            ?: getMinecraft().options.allKeys
+                .find { it.asMixin<KeyBindingAccessor>().boundKey.code == keyCode }
+                ?.let(::makeKeyBind)
+    }
 
     /**
      * Get the [KeyBinding] from an already existing Minecraft KeyBinding, else, return a new one.
@@ -42,7 +50,9 @@ abstract class Client {
      * @return the [KeyBinding] from a Minecraft KeyBinding, or a new one if one doesn't exist
      * @see [org.lwjgl.input.Keyboard](http://legacy.lwjgl.org/javadoc/org/lwjgl/input/Keyboard.html)
      */
-    abstract fun getKeyBindFromKey(keyCode: Int, description: String, category: String): KeyBinding
+    fun getKeyBindFromKey(keyCode: Int, description: String, category: String): KeyBind {
+        return getKeyBindFromKey(keyCode) ?: makeKeyBind(description, keyCode, category)
+    }
 
     /**
      * Get the [KeyBinding] from an already existing Minecraft KeyBinding, else, return a new one.
@@ -53,7 +63,9 @@ abstract class Client {
      * @return the [KeyBinding] from a Minecraft KeyBinding, or a new one if one doesn't exist
      * @see [org.lwjgl.input.Keyboard](http://legacy.lwjgl.org/javadoc/org/lwjgl/input/Keyboard.html)
      */
-    abstract fun getKeyBindFromKey(keyCode: Int, description: String): KeyBinding
+    fun getKeyBindFromKey(keyCode: Int, description: String): KeyBind {
+        return getKeyBindFromKey(keyCode, description, "ChatTriggers")
+    }
 
     /**
      * Get the [KeyBinding] from an already existing
@@ -62,7 +74,17 @@ abstract class Client {
      * @param description the description of the keybind
      * @return the [KeyBinding], or null if one doesn't exist
      */
-    abstract fun getKeyBindFromDescription(description: String): KeyBinding?
+    fun getKeyBindFromDescription(description: String): KeyBind? {
+        return KeyBind.getKeyBinds()
+            .find { it.getDescription() == description }
+            ?: getMinecraft().options.allKeys
+                .find { it.translationKey == description }
+                ?.let(::makeKeyBind)
+    }
+
+    protected abstract fun makeKeyBind(category: String, key: Int, description: String): KeyBind
+
+    protected abstract fun makeKeyBind(keyBinding: KeyBinding): KeyBind
 
     companion object {
         @JvmStatic

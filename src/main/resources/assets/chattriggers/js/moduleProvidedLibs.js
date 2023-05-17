@@ -4,7 +4,7 @@
         type: clazz => Packages[clazz]
     };
 
-    global.Thread = Java.type("com.chattriggers.ctjs.minecraft.wrappers.utils.WrappedThread");
+    global.Thread = Java.type("com.chattriggers.ctjs.engine.langs.js.WrappedThread");
     global.Console = Java.type("com.chattriggers.ctjs.engine.langs.js.JSLoader").INSTANCE.getConsole();
 
     global.sync = (func, lock) => new org.mozilla.javascript.Synchronizer(func, lock);
@@ -58,8 +58,8 @@
     // loadClass("com.chattriggers.ctjs.minecraft.libs.renderer.Text");
 
     // Objects
-    // loadClass("com.chattriggers.ctjs.minecraft.objects.Book");
-    // loadClass("com.chattriggers.ctjs.engine.langs.js.JSKeyBind", "KeyBind");
+    loadClass("com.chattriggers.ctjs.minecraft.objects.Book");
+    loadClass("com.chattriggers.ctjs.engine.langs.js.JSKeyBind", "KeyBind");
     loadClass("com.chattriggers.ctjs.minecraft.objects.Sound");
 
     // loadClass("com.chattriggers.ctjs.engine.langs.js.JSDisplay", "Display");
@@ -73,7 +73,7 @@
     // loadClass("com.chattriggers.ctjs.minecraft.objects.message.TextComponent");
 
     // Wrappers
-    // loadInstance("com.chattriggers.ctjs.engine.langs.js.JSClient", "Client");
+    loadInstance("com.chattriggers.ctjs.engine.langs.js.JSClient", "Client");
     // loadClass("com.chattriggers.ctjs.minecraft.wrappers.CPS");
     loadClass("com.chattriggers.ctjs.minecraft.wrappers.Player");
     // loadClass("com.chattriggers.ctjs.minecraft.wrappers.Scoreboard");

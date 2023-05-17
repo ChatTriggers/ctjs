@@ -166,6 +166,8 @@ abstract class KeyBind {
         private val uniqueCategories = mutableMapOf<String, Int>()
         private val keyBinds = CopyOnWriteArrayList<KeyBind>()
 
+        fun getKeyBinds() = keyBinds
+
         override fun init() {
             ClientTickEvents.START_CLIENT_TICK.register {
                 if (!World.isLoaded())
