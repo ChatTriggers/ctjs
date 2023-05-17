@@ -207,7 +207,7 @@ class ElementaConsole(private val loader: ILoader?) : Console {
     }
 
     private fun ensureInitialized(): Boolean {
-        if (!Reference.isLoaded)
+        if (Client.getMinecraft().window == null)
             return false
 
         if (!::component.isInitialized)

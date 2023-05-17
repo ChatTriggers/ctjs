@@ -2,6 +2,7 @@ package com.chattriggers.ctjs.utils.console
 
 import com.chattriggers.ctjs.engine.langs.Lang
 import com.chattriggers.ctjs.engine.langs.js.JSLoader
+import com.chattriggers.ctjs.minecraft.wrappers.Client
 import com.chattriggers.ctjs.utils.Config
 import com.chattriggers.ctjs.utils.Initializer
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
@@ -53,7 +54,10 @@ object ConsoleManager : Initializer {
     fun getConsole(lang: Lang? = null) = consoles[lang]!!
 
     fun clearConsoles() {
-        if (Config.clearConsoleOnLoad)
-            consoles.values.forEach(Console::clear)
+        if (Config.clearConsoleOnLoad) {
+            Client.scheduleTask {
+                consoles.values.forEach(Console::clear)
+            }
+        }
     }
 }
