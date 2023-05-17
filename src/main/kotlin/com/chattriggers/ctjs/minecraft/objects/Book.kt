@@ -8,7 +8,7 @@ import net.minecraft.client.gui.screen.ingame.BookScreen
 import net.minecraft.text.StringVisitable
 
 // TODO(breaking): Changes UMessage usages to UText
-class Book(bookName: String) {
+class Book {
     private var screen: BookScreen? = null
     private val customContents = CustomBookContents()
 
@@ -71,8 +71,10 @@ class Book(bookName: String) {
     @JvmOverloads
     fun display(pageIndex: Int = 0) {
         screen = BookScreen(customContents)
-        screen!!.setPage(pageIndex)
-        Client.currentGui.set(screen)
+        Client.scheduleTask {
+            Client.getMinecraft().setScreen(screen)
+            screen!!.setPage(pageIndex)
+        }
     }
 
     fun isOpen(): Boolean {
