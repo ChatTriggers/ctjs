@@ -1,5 +1,6 @@
 package com.chattriggers.ctjs
 
+import com.chattriggers.ctjs.commands.Command
 import com.chattriggers.ctjs.engine.module.ModuleManager
 import com.chattriggers.ctjs.minecraft.libs.ChatLib
 import com.chattriggers.ctjs.minecraft.libs.renderer.Image
@@ -35,6 +36,8 @@ object Reference {
         KeyBind.clearKeyBinds()
         ConsoleManager.clearConsoles()
         Display.clearDisplays()
+
+        Command.activeCommands.toList().forEach(Command::unregister)
 
         Client.scheduleTask {
             CTJS.images.forEach(Image::destroy)

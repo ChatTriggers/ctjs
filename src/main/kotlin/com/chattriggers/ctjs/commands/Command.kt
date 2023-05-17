@@ -62,18 +62,14 @@ class Command(
 
     private fun hasConflict(name: String) = !overrideExisting && CTJS.commandDispatcher!!.root.getChild(name) != null
 
-    object ArgTypes {
-
-    }
-
     companion object {
         internal val activeCommands = mutableSetOf<Command>()
         internal val pendingCommands = mutableSetOf<Command>()
 
         private fun existingCommandWarning(name: String) =
             """
-                Command with name $name already exists! This will not override the
-                other command with the same name. To override the other command, set the
+                Command with name $name already exists! This will not override the 
+                other command with the same name. To override the other command, set the 
                 overrideExisting flag in setName() (the second argument) to true.
             """.trimIndent().replace("\n", "")
 
