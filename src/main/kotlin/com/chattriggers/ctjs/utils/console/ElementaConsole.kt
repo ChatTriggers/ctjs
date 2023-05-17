@@ -191,6 +191,7 @@ class ElementaConsole(private val loader: ILoader?) : Console {
     }
 
     override fun println(obj: Any, logType: LogType, end: String, customColor: Color?) {
+        kotlin.io.println(obj)
     }
 
     override fun printStackTrace(error: Throwable) {
