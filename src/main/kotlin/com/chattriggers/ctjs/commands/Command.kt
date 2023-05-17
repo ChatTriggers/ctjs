@@ -7,15 +7,17 @@ import com.chattriggers.ctjs.utils.console.printToConsole
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
+import net.minecraft.command.CommandSource
 import net.minecraft.server.command.CommandManager.argument
 import net.minecraft.server.command.CommandManager.literal
 
-// TODO: Tab completions
 class Command(
     val trigger: CommandTrigger,
     val name: String,
     private val aliases: Set<String>,
     private val overrideExisting: Boolean,
+    private val staticSuggestions: List<String>,
+    private val dynamicSuggestions: ((List<String>) -> List<String>)?,
 ) {
     private val registeredAliases = mutableSetOf<String>()
 
@@ -28,6 +30,25 @@ class Command(
 
         val command = literal(name)
             .then(argument("args", StringArgumentType.greedyString())
+                .suggests { ctx, builder ->
+                    val suggestions = if (dynamicSuggestions != null) {
+                        val args = try {
+                            StringArgumentType.getString(ctx, "args").split(" ")
+                        } catch (e: IllegalArgumentException) {
+                            emptyList()
+                        }
+
+                        // Kotlin compiler bug: Without this null assert, it complains that the receiver is
+                        // nullable, but with it, it says it's unnecessary.
+                        @Suppress("UNNECESSARY_NOT_NULL_ASSERTION")
+                        dynamicSuggestions!!(args)
+                    } else staticSuggestions
+
+                    for (suggestion in suggestions)
+                        builder.suggest(suggestion)
+
+                    builder.buildFuture()
+                }
                 .onExecute {
                     trigger.trigger(StringArgumentType.getString(it, "args").split(" ").toTypedArray())
                 })

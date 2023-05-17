@@ -6,10 +6,10 @@ import com.chattriggers.ctjs.engine.ILoader
 class CommandTrigger(method: Any, loader: ILoader) : Trigger(method, TriggerType.Command, loader) {
     private lateinit var commandName: String
     private var overrideExisting: Boolean = false
-    private val tabCompletions = mutableListOf<String>()
+    private val staticCompletions = mutableListOf<String>()
     private val aliases = mutableSetOf<String>()
     private var command: Command? = null
-    private var callback: ((Array<out String>) -> MutableList<String>)? = null
+    private var dynamicCompletions: ((List<String>) -> List<String>)? = null
 
     override fun trigger(args: Array<out Any?>) {
         callMethod(args)
@@ -22,7 +22,8 @@ class CommandTrigger(method: Any, loader: ILoader) : Trigger(method, TriggerType
      * @param args all the tab completion options.
      */
     fun setTabCompletions(vararg args: String) = apply {
-        tabCompletions.addAll(args)
+        staticCompletions.clear()
+        staticCompletions.addAll(args)
     }
 
     /**
@@ -46,8 +47,8 @@ class CommandTrigger(method: Any, loader: ILoader) : Trigger(method, TriggerType
      * The return value of the callback **must be an array of strings**, and in this case will always return the 2
      * options in the array.
      */
-    fun setTabCompletions(callback: (Array<out String>) -> MutableList<String>) = apply {
-        this.callback = callback
+    fun setTabCompletions(callback: (List<String>) -> List<String>) = apply {
+        this.dynamicCompletions = callback
     }
 
     /**
@@ -91,7 +92,7 @@ class CommandTrigger(method: Any, loader: ILoader) : Trigger(method, TriggerType
 
     private fun reInstance() {
         command?.unregister()
-        command = Command(this, commandName, aliases, overrideExisting)
+        command = Command(this, commandName, aliases, overrideExisting, staticCompletions, dynamicCompletions)
         command!!.register()
     }
 }
