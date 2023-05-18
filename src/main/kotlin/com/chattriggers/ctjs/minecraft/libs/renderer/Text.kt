@@ -2,9 +2,7 @@ package com.chattriggers.ctjs.minecraft.libs.renderer
 
 import com.chattriggers.ctjs.minecraft.libs.ChatLib
 import com.chattriggers.ctjs.minecraft.objects.display.Display
-import com.chattriggers.ctjs.minecraft.objects.display.DisplayHandler
 import com.chattriggers.ctjs.utils.getOption
-import gg.essential.universal.wrappers.message.UTextComponent
 import net.minecraft.text.Style
 import org.mozilla.javascript.NativeObject
 

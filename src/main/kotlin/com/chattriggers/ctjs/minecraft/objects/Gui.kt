@@ -14,7 +14,7 @@ import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.gui.widget.ButtonWidget
 import net.minecraft.client.util.math.MatrixStack
 
-// TODO(breaking): Remove GuiHandler (does the same thing as Client.currentGui.set())
+// TODO(breaking): Removed GuiHandler (does the same thing as Client.currentGui.set())
 abstract class Gui(title: UTextComponent) : Screen(title) {
     private var onDraw: RegularTrigger? = null
     private var onClick: RegularTrigger? = null

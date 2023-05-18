@@ -46,28 +46,23 @@
 
     // Libraries
     loadClass("com.chattriggers.ctjs.minecraft.libs.ChatLib");
-    // loadClass("com.chattriggers.ctjs.minecraft.libs.EventLib");
-    // loadClass("com.chattriggers.ctjs.minecraft.libs.FileLib");
-    // loadClass("com.chattriggers.ctjs.minecraft.libs.MathLib");
-    // loadClass("com.chattriggers.ctjs.minecraft.libs.Tessellator");
+    loadClass("com.chattriggers.ctjs.minecraft.libs.FileLib");
+    loadClass("com.chattriggers.ctjs.minecraft.libs.MathLib");
 
     loadClass("com.chattriggers.ctjs.minecraft.libs.renderer.Image");
     loadClass("com.chattriggers.ctjs.minecraft.libs.renderer.Rectangle");
     loadClass("com.chattriggers.ctjs.minecraft.libs.renderer.Renderer");
     // loadClass("com.chattriggers.ctjs.minecraft.libs.renderer.Shape");
-    // loadClass("com.chattriggers.ctjs.minecraft.libs.renderer.Text");
+    loadClass("com.chattriggers.ctjs.minecraft.libs.renderer.Text");
 
     // Objects
     loadClass("com.chattriggers.ctjs.minecraft.objects.Book");
     loadClass("com.chattriggers.ctjs.engine.langs.js.JSKeyBind", "KeyBind");
     loadClass("com.chattriggers.ctjs.minecraft.objects.Sound");
 
-    // loadClass("com.chattriggers.ctjs.engine.langs.js.JSDisplay", "Display");
-    // loadClass("com.chattriggers.ctjs.engine.langs.js.JSDisplayLine", "DisplayLine");
-    // loadClass("com.chattriggers.ctjs.minecraft.objects.display.DisplayHandler");
-
-    // loadClass("com.chattriggers.ctjs.engine.langs.js.JSGui", "Gui");
-    // loadInstance("com.chattriggers.ctjs.minecraft.objects.gui.GuiHandler");
+    loadClass("com.chattriggers.ctjs.engine.langs.js.JSDisplay", "Display");
+    loadClass("com.chattriggers.ctjs.engine.langs.js.JSDisplayLine", "DisplayLine");
+    loadClass("com.chattriggers.ctjs.engine.langs.js.JSGui", "Gui");
 
     // loadClass("com.chattriggers.ctjs.minecraft.objects.message.Message");
     // loadClass("com.chattriggers.ctjs.minecraft.objects.message.TextComponent");
@@ -81,47 +76,50 @@
     // loadClass("com.chattriggers.ctjs.minecraft.wrappers.TabList");
     loadClass("com.chattriggers.ctjs.minecraft.wrappers.World");
 
-    // loadClass("com.chattriggers.ctjs.minecraft.wrappers.world.Chunk");
+    loadClass("com.chattriggers.ctjs.minecraft.wrappers.world.Chunk");
     // loadClass("com.chattriggers.ctjs.minecraft.wrappers.entity.Particle");
-    // loadClass("com.chattriggers.ctjs.minecraft.wrappers.world.PotionEffect");
+    loadClass("com.chattriggers.ctjs.minecraft.wrappers.world.PotionEffect");
+    loadClass("com.chattriggers.ctjs.minecraft.wrappers.world.PotionEffectType");
 
-    // loadClass("com.chattriggers.ctjs.minecraft.wrappers.world.block.Block");
-    // loadClass("com.chattriggers.ctjs.minecraft.wrappers.world.block.BlockFace");
-    // loadClass("com.chattriggers.ctjs.minecraft.wrappers.world.block.BlockPos");
-    // loadClass("com.chattriggers.ctjs.minecraft.wrappers.world.block.BlockType");
+    loadClass("com.chattriggers.ctjs.minecraft.wrappers.world.block.Block");
+    loadClass("com.chattriggers.ctjs.minecraft.wrappers.world.block.BlockFace");
+    loadClass("com.chattriggers.ctjs.minecraft.wrappers.world.block.BlockPos");
+    loadClass("com.chattriggers.ctjs.minecraft.wrappers.world.block.BlockType");
     // loadClass("com.chattriggers.ctjs.minecraft.wrappers.world.block.Sign");
-    // loadClass("com.chattriggers.ctjs.minecraft.wrappers.utils.Vec3i");
+    loadClass("com.chattriggers.ctjs.utils.vec.Vec2f");
+    loadClass("com.chattriggers.ctjs.utils.vec.Vec3f");
+    loadClass("com.chattriggers.ctjs.utils.vec.Vec3i");
 
-    // loadClass("com.chattriggers.ctjs.minecraft.wrappers.entity.Entity");
-    // loadClass("com.chattriggers.ctjs.minecraft.wrappers.entity.EntityLivingBase");
-    // loadClass("com.chattriggers.ctjs.minecraft.wrappers.entity.PlayerMP");
+    loadClass("com.chattriggers.ctjs.minecraft.wrappers.entity.Entity");
+    loadClass("com.chattriggers.ctjs.minecraft.wrappers.entity.LivingEntity");
+    loadClass("com.chattriggers.ctjs.minecraft.wrappers.entity.PlayerMP");
 
-    // loadClass("com.chattriggers.ctjs.minecraft.wrappers.inventory.Inventory");
-    // loadClass("com.chattriggers.ctjs.minecraft.wrappers.inventory.Item");
+    loadClass("com.chattriggers.ctjs.minecraft.wrappers.inventory.Inventory");
+    loadClass("com.chattriggers.ctjs.minecraft.wrappers.inventory.Item");
     // loadClass("com.chattriggers.ctjs.minecraft.wrappers.inventory.Slot");
 
-    // loadClass("com.chattriggers.ctjs.minecraft.wrappers.inventory.action.Action");
-    // loadClass("com.chattriggers.ctjs.minecraft.wrappers.inventory.action.ClickAction");
-    // loadClass("com.chattriggers.ctjs.minecraft.wrappers.inventory.action.DragAction");
-    // loadClass("com.chattriggers.ctjs.minecraft.wrappers.inventory.action.DropAction");
-    // loadClass("com.chattriggers.ctjs.minecraft.wrappers.inventory.action.KeyAction");
+    loadClass("com.chattriggers.ctjs.minecraft.wrappers.inventory.action.Action");
+    loadClass("com.chattriggers.ctjs.minecraft.wrappers.inventory.action.ClickAction");
+    loadClass("com.chattriggers.ctjs.minecraft.wrappers.inventory.action.DragAction");
+    loadClass("com.chattriggers.ctjs.minecraft.wrappers.inventory.action.DropAction");
+    loadClass("com.chattriggers.ctjs.minecraft.wrappers.inventory.action.KeyAction");
 
-    // loadInstance("com.chattriggers.ctjs.minecraft.wrappers.inventory.nbt.NBT");
-    // loadClass("com.chattriggers.ctjs.minecraft.wrappers.inventory.nbt.NBTBase");
-    // loadClass("com.chattriggers.ctjs.minecraft.wrappers.inventory.nbt.NBTTagCompound");
-    // loadClass("com.chattriggers.ctjs.minecraft.wrappers.inventory.nbt.NBTTagList");
+    loadInstance("com.chattriggers.ctjs.minecraft.wrappers.inventory.nbt.NBT");
+    loadClass("com.chattriggers.ctjs.minecraft.wrappers.inventory.nbt.NBTBase");
+    loadClass("com.chattriggers.ctjs.minecraft.wrappers.inventory.nbt.NBTTagCompound");
+    loadClass("com.chattriggers.ctjs.minecraft.wrappers.inventory.nbt.NBTTagList");
 
     // Triggers
     loadInstance("com.chattriggers.ctjs.engine.langs.js.JSRegister", "TriggerRegister");
 
-    // loadClass("com.chattriggers.ctjs.triggers.ChatTrigger", "OnChatTrigger");
-    // loadClass("com.chattriggers.ctjs.triggers.CommandTrigger", "OnCommandTrigger");
-    // loadClass("com.chattriggers.ctjs.triggers.RegularTrigger", "OnRegularTrigger");
-    // loadClass("com.chattriggers.ctjs.triggers.EventTrigger", "OnRenderTrigger");
-    // loadClass("com.chattriggers.ctjs.triggers.SoundPlayTrigger", "OnSoundPlayTrigger");
-    // loadClass("com.chattriggers.ctjs.triggers.StepTrigger", "OnStepTrigger");
-    // loadClass("com.chattriggers.ctjs.triggers.Trigger", "OnTrigger");
-    // global.Priority = OnTrigger.Priority;
+    loadClass("com.chattriggers.ctjs.triggers.ChatTrigger", "OnChatTrigger");
+    loadClass("com.chattriggers.ctjs.triggers.CommandTrigger", "OnCommandTrigger");
+    loadClass("com.chattriggers.ctjs.triggers.RegularTrigger", "OnRegularTrigger");
+    loadClass("com.chattriggers.ctjs.triggers.EventTrigger", "OnRenderTrigger");
+    loadClass("com.chattriggers.ctjs.triggers.SoundPlayTrigger", "OnSoundPlayTrigger");
+    loadClass("com.chattriggers.ctjs.triggers.StepTrigger", "OnStepTrigger");
+    loadClass("com.chattriggers.ctjs.triggers.Trigger", "OnTrigger");
+    global.Priority = OnTrigger.Priority;
 
     // Misc
     loadInstance("com.chattriggers.ctjs.utils.Config");
