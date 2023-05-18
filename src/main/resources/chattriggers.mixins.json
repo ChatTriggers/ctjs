@@ -12,6 +12,7 @@
         "DebugHudMixin",
         "GameOptionsAccessor",
         "GameRendererMixin",
+        "InGameHudMixin",
         "ItemEntityMixin",
         "KeyBindingAccessor",
         "MinecraftClientMixin",

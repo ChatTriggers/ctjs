@@ -71,7 +71,7 @@
     loadInstance("com.chattriggers.ctjs.engine.langs.js.JSClient", "Client");
     loadClass("com.chattriggers.ctjs.minecraft.wrappers.CPS");
     loadClass("com.chattriggers.ctjs.minecraft.wrappers.Player");
-    // loadClass("com.chattriggers.ctjs.minecraft.wrappers.Scoreboard");
+    loadClass("com.chattriggers.ctjs.minecraft.wrappers.Scoreboard");
     // loadClass("com.chattriggers.ctjs.minecraft.wrappers.Server");
     // loadClass("com.chattriggers.ctjs.minecraft.wrappers.TabList");
     loadClass("com.chattriggers.ctjs.minecraft.wrappers.World");
