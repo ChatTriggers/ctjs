@@ -171,6 +171,10 @@ object Mappings {
 
     fun getMappedClass(name: String) = unmappedClasses[name]
 
+    fun getMappedClassName(unmappedClassName: String) = if (!isDevelopment) {
+        unmappedClasses[unmappedClassName.replace('.', '/')]?.name?.mapped?.replace('/', '.')
+    } else null
+
     data class Mapping(val original: String, val mapped: String) {
         val value: String
             get() = if (isDevelopment) original else mapped

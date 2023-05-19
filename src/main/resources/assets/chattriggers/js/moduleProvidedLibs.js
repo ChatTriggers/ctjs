@@ -1,7 +1,25 @@
 (function(global) {
+    const Mappings = com.chattriggers.ctjs.launch.Mappings.INSTANCE
+
+    function getJavaType(clazz) {
+        const mappedName = Mappings.getMappedClassName(clazz);
+        if (mappedName)
+            return Packages[mappedName.replace('/', '.')]
+        return Packages[clazz];
+    }
+
+    const Class = getJavaType('java.lang.Class');
+
+    function getJavaClass(clazz) {
+        const type = getJavaType(clazz);
+        if (!(type.class instanceof Class))
+            throw new Error(`Unknown class: ${clazz}`);
+        return type;
+    }
+
     global.Java = {
-        // TODO: Use our runtime mappings to automatically remap class names
-        type: clazz => Packages[clazz]
+        type: getJavaType,
+        class: getJavaClass,
     };
 
     global.Thread = Java.type("com.chattriggers.ctjs.engine.langs.js.WrappedThread");
@@ -16,26 +34,14 @@
         }).start();
     };
 
-    // Helpers to load classes which throws if the class isn't found. This
-    // helps spot refactoring bugs early!
-
-    const Class = Java.type('java.lang.Class');
-
     const getClassName = path => path.substring(path.lastIndexOf('.') + 1)
 
-    function getClass(path) {
-        const clazz = Java.type(path);
-        if (clazz.class instanceof Class)
-            return clazz;
-        throw new Error(`moduleProvidedLibs: Could not load class "${path}"`);
-    }
-
     function loadClass(path, className = getClassName(path)) {
-        global[className] = getClass(path);
+        global[className] = Java.class(path);
     }
 
     function loadInstance(path, className = getClassName(path)) {
-        global[className] = getClass(path).INSTANCE;
+        global[className] = Java.class(path).INSTANCE;
     }
 
     // Extra libs
