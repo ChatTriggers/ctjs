@@ -139,6 +139,8 @@ class ConsoleComponent(private val loader: ILoader?) : WindowScreen(ElementaVers
             }
         }
 
+        textInput.grabWindowFocus()
+
         window.onMouseClick {
             if (it.target == window)
                 close()
