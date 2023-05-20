@@ -5,6 +5,7 @@ import com.chattriggers.ctjs.minecraft.wrappers.Client
 import com.chattriggers.ctjs.minecraft.wrappers.World
 import com.chattriggers.ctjs.triggers.TriggerType
 import com.chattriggers.ctjs.utils.Initializer
+import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents
 import org.lwjgl.glfw.GLFW
 
 internal object MouseListener : Initializer {
@@ -44,6 +45,22 @@ internal object MouseListener : Initializer {
         CTEvents.MOUSE_CLICKED.register(TriggerType.Clicked::triggerAll)
         CTEvents.MOUSE_SCROLLED.register(TriggerType.Scrolled::triggerAll)
         CTEvents.MOUSE_DRAGGED.register(TriggerType.Dragged::triggerAll)
+
+        ScreenMouseEvents.AllowMouseClick { screen, mouseX, mouseY, button ->
+            val event = CancellableEvent()
+            TriggerType.GuiMouseClick.triggerAll(mouseX, mouseY, button, screen, true, event)
+
+            !event.isCanceled()
+        }
+
+        ScreenMouseEvents.AllowMouseRelease { screen, mouseX, mouseY, button ->
+            val event = CancellableEvent()
+            TriggerType.GuiMouseClick.triggerAll(mouseX, mouseY, button, screen, false, event)
+
+            !event.isCanceled()
+        }
+
+        CTEvents.GUI_MOUSE_DRAG.register(TriggerType.GuiMouseDrag::triggerAll)
     }
 
     @JvmStatic

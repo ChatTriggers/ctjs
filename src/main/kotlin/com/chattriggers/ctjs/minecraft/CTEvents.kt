@@ -3,9 +3,9 @@ package com.chattriggers.ctjs.minecraft
 import com.chattriggers.ctjs.minecraft.CTEvents.PacketReceivedCallback
 import com.chattriggers.ctjs.minecraft.CTEvents.RenderScreenCallback
 import com.chattriggers.ctjs.minecraft.CTEvents.VoidCallback
-import com.chattriggers.ctjs.utils.vec.Vec3f
 import net.fabricmc.fabric.api.event.EventFactory
 import net.minecraft.client.gui.Drawable
+import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.entity.Entity
 import net.minecraft.network.packet.Packet
@@ -46,6 +46,10 @@ internal object CTEvents {
 
     fun interface MouseDraggedCallback {
         fun process(dx: Double, dy: Double, mouseX: Double, mouseY: Double, button: Int)
+    }
+
+    fun interface GuiMouseDragCallback {
+        fun process(dx: Double, dy: Double, mouseX: Double, mouseY: Double, button: Int, gui: Screen, ci: CallbackInfo)
     }
 
     @JvmField
@@ -125,6 +129,13 @@ internal object CTEvents {
     val MOUSE_DRAGGED = make<MouseDraggedCallback> { listeners ->
         MouseDraggedCallback { dx, dy, mouseX, mouseY, button ->
             listeners.forEach { it.process(dx, dy, mouseX, mouseY, button) }
+        }
+    }
+
+    @JvmField
+    val GUI_MOUSE_DRAG = make<GuiMouseDragCallback> { listeners ->
+        GuiMouseDragCallback { dx, dy, mouseX, mouseY, button, screen, ci ->
+            listeners.forEach { it.process(dx, dy, mouseX, mouseY, button, screen, ci) }
         }
     }
 

@@ -22,7 +22,6 @@ enum class TriggerType {
     GuiRender,
     GuiKey,
     GuiMouseClick,
-    GuiMouseRelease,
     GuiMouseDrag,
     PacketSent,
     PacketReceived,

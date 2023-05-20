@@ -23,7 +23,7 @@ interface IRegister {
      */
     fun register(triggerType: Any, method: Any): Trigger {
         require(triggerType is String) {
-            "register() expects a String or Class as its first argument"
+            "register() expects a String as its first argument"
         }
 
         val func = methodMap.getOrPut(triggerType) {
@@ -522,6 +522,9 @@ interface IRegister {
         return EventTrigger(method, TriggerType.GuiKey, getImplementationLoader())
     }
 
+    // TODO(breaking): Remove guiMouseRelease
+
+    // TODO(breaking): Add mouse button state arg
     /**
      * Registers a new trigger that runs whenever the mouse is clicked with a
      * gui open
@@ -531,6 +534,7 @@ interface IRegister {
      * - The mouse y position
      * - The mouse button
      * - The gui
+     * - The mouse button state (true if button is pressed, false otherwise)
      * - The event, which can be cancelled
      *
      * Available modifications:
@@ -543,32 +547,14 @@ interface IRegister {
         return EventTrigger(method, TriggerType.GuiMouseClick, getImplementationLoader())
     }
 
-    /**
-     * Registers a new trigger that runs whenever a mouse button is released
-     * with a gui open
-     *
-     * Passes through five arguments:
-     * - The mouse x position
-     * - The mouse y position
-     * - The mouse button
-     * - The gui
-     * - The event, which can be cancelled
-     *
-     * Available modifications:
-     * - [Trigger.setPriority] Sets the priority
-     *
-     * @param method The method to call when the event is fired
-     * @return The trigger for additional modification
-     */
-    fun registerGuiMouseRelease(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.GuiMouseRelease, getImplementationLoader())
-    }
-
+    // TODO(breaking): Add delta x and delta y args
     /**
      * Registers a new trigger that runs whenever a mouse button held and dragged
      * with a gui open
      *
-     * Passes through five arguments:
+     * Passes through seven arguments:
+     * - The mouse delta x position (relative to last frame)
+     * - The mouse delta y position (relative to last frame)
      * - The mouse x position
      * - The mouse y position
      * - The mouse button
