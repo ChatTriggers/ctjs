@@ -1,13 +1,18 @@
 package com.chattriggers.ctjs.minecraft.wrappers
 
 import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer
+import com.chattriggers.ctjs.minecraft.wrappers.entity.BlockEntity
 import com.chattriggers.ctjs.minecraft.wrappers.entity.Entity
 import com.chattriggers.ctjs.minecraft.wrappers.entity.PlayerMP
 import com.chattriggers.ctjs.minecraft.wrappers.world.Chunk
 import com.chattriggers.ctjs.minecraft.wrappers.world.block.Block
 import com.chattriggers.ctjs.minecraft.wrappers.world.block.BlockPos
 import com.chattriggers.ctjs.minecraft.wrappers.world.block.BlockType
+import com.chattriggers.ctjs.mixins.ClientChunkManagerAccessor
+import com.chattriggers.ctjs.mixins.ClientChunkMapAccessor
+import com.chattriggers.ctjs.mixins.ClientWorldAccessor
 import com.chattriggers.ctjs.utils.MCBlockPos
+import com.chattriggers.ctjs.utils.asMixin
 import gg.essential.universal.UMinecraft
 import net.minecraft.block.BlockState
 import net.minecraft.client.world.ClientWorld
@@ -128,17 +133,31 @@ object World {
         }
     }
 
-    // @JvmStatic
-    // fun getAllTileEntities(): List<TileEntity> {
-    //     return getWorld()?.loadedTileEntityList?.map(::TileEntity) ?: listOf()
-    // }
-    //
-    // @JvmStatic
-    // fun getAllTileEntitiesOfType(clazz: Class<*>): List<TileEntity> {
-    //     return getAllTileEntities().filter {
-    //         clazz.isInstance(it.tileEntity)
-    //     }
-    // }
+    // TODO(breaking): Rename to getAllBlockEntities
+    @JvmStatic
+    fun getAllBlockEntities(): List<BlockEntity> {
+        val chunks = getWorld()
+            ?.asMixin<ClientWorldAccessor>()
+            ?.chunkManager?.asMixin<ClientChunkManagerAccessor>()
+            ?.chunks?.asMixin<ClientChunkMapAccessor>()
+            ?.chunks ?: return emptyList()
+
+        val blockEntities = mutableListOf<BlockEntity>()
+
+        for (i in 0 until chunks.length()) {
+            blockEntities += Chunk(chunks.getPlain(i) ?: continue).getAllBlockEntities()
+        }
+
+        return blockEntities
+    }
+
+    // TODO(breaking): Rename to getAllBlockEntitiesOfType
+     @JvmStatic
+     fun getAllBlockEntitiesOfType(clazz: Class<*>): List<BlockEntity> {
+         return getAllBlockEntities().filter {
+             clazz.isInstance(it.blockEntity)
+         }
+     }
 
     /**
      * World border object to get border parameters

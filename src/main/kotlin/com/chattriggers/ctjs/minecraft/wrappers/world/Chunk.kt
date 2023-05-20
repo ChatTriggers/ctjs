@@ -1,7 +1,10 @@
 package com.chattriggers.ctjs.minecraft.wrappers.world
 
+import com.chattriggers.ctjs.mixins.ChunkAccessor
 import com.chattriggers.ctjs.utils.MCChunk
+import com.chattriggers.ctjs.utils.asMixin
 import gg.essential.universal.UMinecraft
+import com.chattriggers.ctjs.minecraft.wrappers.entity.BlockEntity
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.LightType
 
@@ -78,25 +81,27 @@ class Chunk(val chunk: MCChunk) {
     //         clazz.isInstance(it.entity)
     //     }
     // }
-    //
-    // /**
-    //  * Gets every tile entity in this chunk
-    //  *
-    //  * @return the tile entity list
-    //  */
-    // fun getAllTileEntities(): List<TileEntity> {
-    //     return chunk.tileEntityMap.values.map(::TileEntity)
-    // }
-    //
-    // /**
-    //  * Gets every tile entity in this chunk of a certain class
-    //  *
-    //  * @param clazz the class to filter for (Use `Java.type().class` to get this)
-    //  * @return the tile entity list
-    //  */
-    // fun getAllTileEntitiesOfType(clazz: Class<*>): List<TileEntity> {
-    //     return getAllTileEntities().filter {
-    //         clazz.isInstance(it.tileEntity)
-    //     }
-    // }
+
+    // TODO(breaking): Rename to getAllBlockEntities
+     /**
+      * Gets every block entity in this chunk
+      *
+      * @return the block entity list
+      */
+     fun getAllBlockEntities(): List<BlockEntity> {
+         return chunk.asMixin<ChunkAccessor>().blockEntities.values.map(::BlockEntity)
+     }
+
+    // TODO(breaking): Rename to getAllBlockEntitiesOfType
+     /**
+      * Gets every block entity in this chunk of a certain class
+      *
+      * @param clazz the class to filter for (Use `Java.type().class` to get this)
+      * @return the block entity list
+      */
+     fun getAllBlockEntitiesOfType(clazz: Class<*>): List<BlockEntity> {
+         return getAllBlockEntities().filter {
+             clazz.isInstance(it.blockEntity)
+         }
+     }
 }

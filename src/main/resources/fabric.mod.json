@@ -24,5 +24,6 @@
     },
     "custom": {
         "ctjs:yarn-mappings": "$yarn_mappings"
-    }
+    },
+    "accessWidener": "chattriggers.accesswidener"
 }
