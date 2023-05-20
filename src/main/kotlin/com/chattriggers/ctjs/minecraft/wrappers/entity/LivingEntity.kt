@@ -8,13 +8,9 @@ import net.minecraft.entity.effect.StatusEffect
 
 // TODO(breaking): Rename from EntityLivingBase
 open class LivingEntity(val livingEntity: MCLivingEntity) : Entity(livingEntity) {
-    fun addPotionEffect(effect: PotionEffect) {
-        livingEntity.addStatusEffect(effect.effect)
-    }
+    // TODO(breaking): Remove addPotionEffect
 
-    fun clearPotionEffects() {
-        livingEntity.clearStatusEffects()
-    }
+    // TODO(breaking): Remove clearPotionEffects
 
     fun getActivePotionEffects(): List<PotionEffect> {
         return livingEntity.statusEffects.map(::PotionEffect)
@@ -32,23 +28,19 @@ open class LivingEntity(val livingEntity: MCLivingEntity) : Entity(livingEntity)
      * @param slot the slot to access
      * @return the item in said slot
      */
-    // fun getItemInSlot(slot: Int): Item? {
-    //     return entityLivingBase.getItemStackFromSlot(EntityEquipmentSlot.values()[slot])?.let(::Item)
-    // }
+//     fun getItemInSlot(slot: Int): Item? {
+//         return livingEntity.getItemStackFromSlot(EntityEquipmentSlot.values()[slot])?.let(::Item)
+//     }
 
     fun getHP() = livingEntity.health
 
-    fun setHP(health: Float) = apply {
-        livingEntity.health = health
-    }
+    // TODO(breaking): Remove setHP
 
     fun getMaxHP() = livingEntity.maxHealth
 
     fun getAbsorption() = livingEntity.absorptionAmount
 
-    fun setAbsorption(absorption: Float) = apply {
-        livingEntity.absorptionAmount = absorption
-    }
+    // TODO(breaking): Remove setAbsorption
 
     fun getAge() = livingEntity.age
 
