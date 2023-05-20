@@ -3,6 +3,7 @@ package com.chattriggers.ctjs.minecraft.wrappers.inventory.nbt
 import com.chattriggers.ctjs.mixins.NbtCompoundAccessor
 import com.chattriggers.ctjs.utils.MCNbtBase
 import com.chattriggers.ctjs.utils.MCNbtCompound
+import com.chattriggers.ctjs.utils.MCNbtList
 import com.chattriggers.ctjs.utils.asMixin
 import net.minecraft.nbt.NbtByteArray
 import net.minecraft.nbt.NbtElement
@@ -34,11 +35,8 @@ class NBTTagCompound(override val rawNBT: MCNbtCompound) : NBTBase(rawNBT) {
         TAG_LIST,
     }
 
-    fun getTag(key: String) = when (val tag = rawNBT.get(key)) {
-        is MCNbtCompound -> NBTTagCompound(tag)
-        is MCNbtBase -> NBTBase(tag)
-        else -> null
-    }
+    // TODO(breaking): Wrap MCNbtLists to NBTTagLists
+    fun getTag(key: String): NBTBase? = rawNBT.get(key)?.let(::fromMC)
 
     fun getTagId(key: String) = rawNBT.getType(key)
 
@@ -64,7 +62,8 @@ class NBTTagCompound(override val rawNBT: MCNbtCompound) : NBTBase(rawNBT) {
 
     fun getCompoundTag(key: String) = NBTTagCompound(rawNBT.getCompound(key))
 
-    fun getTagList(key: String, type: Int) = rawNBT.getList(key, type)
+    // TODO(breaking): Return wrapped NBTTagList
+    fun getTagList(key: String, type: Int) = NBTTagList(rawNBT.getList(key, type))
 
     fun get(key: String, type: NBTDataType, tagType: Int?): Any? {
         return when (type) {

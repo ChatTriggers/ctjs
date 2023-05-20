@@ -37,6 +37,13 @@ open class NBTBase(open val rawNBT: MCNbtBase) {
     override fun toString() = rawNBT.toString()
 
     companion object {
+        @JvmStatic
+        fun fromMC(nbt: MCNbtBase): NBTBase = when (nbt) {
+            is MCNbtCompound -> NBTTagCompound(nbt)
+            is MCNbtList -> NBTTagList(nbt)
+            else -> NBTBase(nbt)
+        }
+
         fun MCNbtBase.toObject(): Any? {
             return when (this) {
                 is NbtString -> asString()
