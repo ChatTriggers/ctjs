@@ -50,7 +50,8 @@ class Item(val stack: ItemStack) {
 
     fun getDamage() = stack.damage
 
-    fun isDamagable() = stack.isDamageable
+    // TODO(breaking): Rename isDamagable to isDamageable
+    fun isDamageable() = stack.isDamageable
 
     @JvmOverloads
     fun getLore(advanced: Boolean = false): List<UTextComponent>? = (getHolder()?.entity as? PlayerEntity)?.let {
