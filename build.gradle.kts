@@ -37,6 +37,10 @@ dependencies {
     include(modImplementation("gg.essential:elementa-1.18.1-fabric:587")!!)
 }
 
+loom {
+    accessWidenerPath.set(file("src/main/resources/chattriggers.accesswidener"))
+}
+
 base {
     archivesName.set(property("archives_base_name") as String)
 }

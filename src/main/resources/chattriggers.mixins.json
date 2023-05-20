@@ -7,8 +7,11 @@
         "AbstractSoundInstanceAccessor",
         "BookScreenAccessor",
         "ChatScreenAccessor",
+        "ClientChunkManagerAccessor",
+        "ClientChunkMapAccessor",
         "ClientConnectionMixin",
         "ClientPlayerInteractionManagerMixin",
+        "ClientWorldAccessor",
         "DebugHudMixin",
         "GameOptionsAccessor",
         "GameRendererMixin",
@@ -30,6 +33,7 @@
         "defaultRequire": 1
     },
     "mixins": [
+        "ChunkAccessor",
         "ClickableWidgetAccessor",
         "ItemStackMixin",
         "NbtCompoundAccessor",

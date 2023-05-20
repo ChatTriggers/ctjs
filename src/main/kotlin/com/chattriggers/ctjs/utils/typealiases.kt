@@ -14,3 +14,4 @@ typealias MCNbtBase = net.minecraft.nbt.NbtElement
 typealias MCNbtCompound = net.minecraft.nbt.NbtCompound
 typealias MCNbtList = net.minecraft.nbt.NbtList
 typealias MCScoreboard = net.minecraft.scoreboard.Scoreboard
+typealias MCBlockEntity = net.minecraft.block.entity.BlockEntity
