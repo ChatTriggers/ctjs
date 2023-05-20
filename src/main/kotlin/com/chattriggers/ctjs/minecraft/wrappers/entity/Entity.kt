@@ -5,8 +5,10 @@ import com.chattriggers.ctjs.minecraft.wrappers.World
 import com.chattriggers.ctjs.minecraft.wrappers.world.Chunk
 import com.chattriggers.ctjs.minecraft.wrappers.world.block.BlockPos
 import com.chattriggers.ctjs.utils.MCEntity
+import com.chattriggers.ctjs.utils.MCLivingEntity
 import gg.essential.universal.wrappers.message.UTextComponent
 import net.minecraft.entity.MovementType
+import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.registry.RegistryKey
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
@@ -299,5 +301,14 @@ open class Entity(val entity: MCEntity) {
         NETHER(DimensionTypes.THE_NETHER),
         END(DimensionTypes.THE_END),
         OVERWORLD_CAVES(DimensionTypes.OVERWORLD_CAVES),
+    }
+
+    companion object {
+        @JvmStatic
+        fun fromMC(entity: MCEntity): Entity = when (entity) {
+            is PlayerEntity -> PlayerMP(entity)
+            is MCLivingEntity -> LivingEntity(entity)
+            else -> Entity(entity)
+        }
     }
 }

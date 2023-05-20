@@ -118,7 +118,7 @@ object World {
     fun getChunk(x: Int, y: Int, z: Int) = Chunk(getWorld()!!.getWorldChunk(MCBlockPos(x, y, z)))
 
     @JvmStatic
-    fun getAllEntities() = getWorld()?.entities?.map(::Entity) ?: listOf()
+    fun getAllEntities() = getWorld()?.entities?.map(Entity::fromMC) ?: listOf()
 
     /**
      * Gets every entity loaded in the world of a certain class
