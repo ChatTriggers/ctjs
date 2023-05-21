@@ -29,7 +29,7 @@ internal object CTEvents {
     }
 
     fun interface RenderOverlayCallback {
-        fun render(matrixStack: MatrixStack)
+        fun render(matrixStack: MatrixStack, partialTicks: Float)
     }
 
     fun interface PacketReceivedCallback {
@@ -71,8 +71,8 @@ internal object CTEvents {
 
     @JvmField
     val RENDER_OVERLAY = make<RenderOverlayCallback> { listeners ->
-        RenderOverlayCallback { stack ->
-            listeners.forEach { it.render(stack) }
+        RenderOverlayCallback { stack, partialTicks ->
+            listeners.forEach { it.render(stack, partialTicks) }
         }
     }
 

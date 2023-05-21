@@ -117,11 +117,10 @@ object ClientListener : Initializer {
             }
         }
 
-        CTEvents.RENDER_OVERLAY.register { stack ->
-            Renderer.matrixStack = UMatrixStack(stack)
-            Renderer.pushMatrix()
-            TriggerType.RenderOverlay.triggerAll()
-            Renderer.popMatrix()
+        CTEvents.RENDER_OVERLAY.register { stack, partialTicks ->
+            renderTrigger(stack, partialTicks) {
+                TriggerType.RenderOverlay.triggerAll(CancellableEvent())
+            }
         }
 
         CTEvents.PRE_RENDER_WORLD.register { stack, partialTicks ->

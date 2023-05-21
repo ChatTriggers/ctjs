@@ -12,7 +12,6 @@
         "ClientConnectionMixin",
         "ClientPlayerInteractionManagerMixin",
         "ClientWorldAccessor",
-        "DebugHudMixin",
         "GameOptionsAccessor",
         "GameRendererMixin",
         "InGameHudMixin",

@@ -16,7 +16,7 @@ object CPS : Initializer {
     private var rightClicksMax = 0
 
     override fun init() {
-        CTEvents.RENDER_OVERLAY.register {
+        CTEvents.RENDER_OVERLAY.register { _, _ ->
             while (Client.getSystemTime() > sysTime + 50L) {
                 sysTime += 50L
 

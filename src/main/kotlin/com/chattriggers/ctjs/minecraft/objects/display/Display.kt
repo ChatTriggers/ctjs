@@ -260,13 +260,16 @@ abstract class Display() {
         }
 
         override fun init() {
-            CTEvents.RENDER_OVERLAY.register { stack ->
+            CTEvents.RENDER_OVERLAY.register { stack, partialTicks ->
                 Renderer.matrixStack = UMatrixStack(stack)
+                Renderer.partialTicks = partialTicks
                 drawAll(RegisterType.RENDER_OVERLAY)
+
             }
 
-            CTEvents.POST_RENDER_SCREEN.register { stack, _, _, _, _ ->
+            CTEvents.POST_RENDER_SCREEN.register { stack, _, _, _, partialTicks ->
                 Renderer.matrixStack = UMatrixStack(stack)
+                Renderer.partialTicks = partialTicks
                 drawAll(RegisterType.POST_GUI_RENDER)
             }
         }
