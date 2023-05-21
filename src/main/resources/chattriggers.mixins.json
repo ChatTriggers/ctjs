@@ -7,6 +7,8 @@
         "AbstractSoundInstanceAccessor",
         "BookScreenAccessor",
         "ChatScreenAccessor",
+        "ChunkAccessor",
+        "ClickableWidgetAccessor",
         "ClientChunkManagerAccessor",
         "ClientChunkMapAccessor",
         "ClientConnectionMixin",
@@ -17,11 +19,14 @@
         "GameRendererMixin",
         "InGameHudMixin",
         "ItemEntityMixin",
+        "ItemStackMixin",
         "KeyBindingAccessor",
         "MinecraftClientMixin",
         "MouseMixin",
+        "NbtCompoundAccessor",
         "ParticleAccessor",
         "PlayerEntityMixin",
+        "PlayerListHudAccessor",
         "RenderTickCounterMixin",
         "ScreenMixin",
         "SoundAccessor",
@@ -31,12 +36,5 @@
     ],
     "injectors": {
         "defaultRequire": 1
-    },
-    "mixins": [
-        "ChunkAccessor",
-        "ClickableWidgetAccessor",
-        "ItemStackMixin",
-        "NbtCompoundAccessor",
-        "PlayerListHudAccessor"
-    ]
+    }
 }
