@@ -1,6 +1,7 @@
 package com.chattriggers.ctjs.minecraft.libs
 
 import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer
+import com.chattriggers.ctjs.minecraft.wrappers.Client
 import gg.essential.universal.UMinecraft
 import gg.essential.universal.wrappers.message.UMessage
 import gg.essential.universal.wrappers.message.UTextComponent
@@ -69,16 +70,16 @@ object ChatLib {
         return message.toString().replace("(?<!\\\\)&(?![^0-9a-fk-or]|$)".toRegex(), "\u00a7")
     }
 
+    /**
+     * Says chat message.
+     * This message is actually sent to the server.
+     *
+     * @param text the message to be sent
+     */
+    @JvmStatic
+    fun say(text: String) = Client.getMinecraft().networkHandler!!.sendChatMessage(text)
+
     // TODO:
-    // /**
-    //  * Says chat message.
-    //  * This message is actually sent to the server.
-    //  *
-    //  * @param text the message to be sent
-    //  */
-    // @JvmStatic
-    // fun say(text: String) = Player.getPlayer()?.sendChatMessage(text)
-    //
     // /**
     //  * Runs a command.
     //  *
