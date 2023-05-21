@@ -139,8 +139,6 @@ class ConsoleComponent(private val loader: ILoader?) : WindowScreen(ElementaVers
             }
         }
 
-        textInput.grabWindowFocus()
-
         window.onMouseClick {
             if (it.target == window)
                 close()
@@ -164,6 +162,10 @@ class ConsoleComponent(private val loader: ILoader?) : WindowScreen(ElementaVers
     }
 
     fun printStackTrace(error: Throwable) = addErrorEntry(makeErrorEntry(error))
+
+    override fun onDisplayed() {
+        textInput.grabWindowFocus()
+    }
 
     private fun makeErrorEntry(error: Throwable, input: String? = null): ConsoleEntry {
         val errorText = "&c" + error.stackTraceToString().replace("\n", "\n&c")
