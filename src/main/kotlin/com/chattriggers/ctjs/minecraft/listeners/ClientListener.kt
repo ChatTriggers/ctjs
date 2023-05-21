@@ -131,7 +131,7 @@ object ClientListener : Initializer {
 
         CTEvents.POST_RENDER_WORLD.register { stack, partialTicks ->
             renderTrigger(stack, partialTicks) {
-                TriggerType.PreRenderWorld.triggerAll(partialTicks)
+                TriggerType.PostRenderWorld.triggerAll(partialTicks)
             }
         }
 
