@@ -12,6 +12,7 @@
         "ClientConnectionMixin",
         "ClientPlayerInteractionManagerMixin",
         "ClientWorldAccessor",
+        "EntityRenderDispatcherMixin",
         "GameOptionsAccessor",
         "GameRendererMixin",
         "InGameHudMixin",

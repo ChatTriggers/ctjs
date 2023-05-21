@@ -3,11 +3,24 @@ package com.chattriggers.ctjs.minecraft.libs.renderer
 import com.chattriggers.ctjs.minecraft.libs.ChatLib
 import com.chattriggers.ctjs.minecraft.wrappers.Client
 import com.chattriggers.ctjs.minecraft.wrappers.Player
+import com.chattriggers.ctjs.minecraft.wrappers.entity.PlayerMP
+import com.chattriggers.ctjs.mixins.EntityRenderDispatcherMixin
+import com.chattriggers.ctjs.utils.asMixin
+import com.chattriggers.ctjs.utils.getOrDefault
+import com.chattriggers.ctjs.utils.toRadians
 import com.chattriggers.ctjs.utils.vec.Vec3f
+import com.mojang.blaze3d.systems.RenderSystem
 import gg.essential.universal.UGraphics
 import gg.essential.universal.UMatrixStack
 import gg.essential.universal.UMinecraft
+import net.minecraft.client.MinecraftClient
+import net.minecraft.client.network.AbstractClientPlayerEntity
+import net.minecraft.client.render.DiffuseLighting
 import net.minecraft.client.render.Tessellator
+import net.minecraft.client.render.entity.EntityRendererFactory
+import org.joml.Matrix4f
+import org.joml.Quaternionf
+import org.mozilla.javascript.NativeObject
 import java.util.*
 import kotlin.math.*
 
@@ -23,6 +36,9 @@ object Renderer {
 
     // The currently-active matrix stack
     internal lateinit var matrixStack: UMatrixStack
+
+    private lateinit var slimCTRenderPlayer: CTPlayerRenderer
+    private lateinit var normalCTRenderPlayer: CTPlayerRenderer
 
     // The current partialTicks value
     @JvmStatic
@@ -97,6 +113,12 @@ object Renderer {
             14 -> YELLOW
             else -> WHITE
         }
+    }
+
+    @JvmStatic
+    internal fun initializePlayerRenderers(context: EntityRendererFactory.Context) {
+        normalCTRenderPlayer = CTPlayerRenderer(context, slim = false)
+        slimCTRenderPlayer = CTPlayerRenderer(context, slim = true)
     }
 
     @JvmStatic
@@ -352,7 +374,10 @@ object Renderer {
         UGraphics.tryBlendFuncSeparate(770, 771, 1, 0)
         doColor(color)
 
-        worldRenderer.beginWithDefaultShader(drawMode ?: UGraphics.DrawMode.QUADS, UGraphics.CommonVertexFormats.POSITION)
+        worldRenderer.beginWithDefaultShader(
+            drawMode ?: UGraphics.DrawMode.QUADS,
+            UGraphics.CommonVertexFormats.POSITION
+        )
             .pos(matrixStack, pos[0].toDouble(), pos[3].toDouble(), 0.0).endVertex()
             .pos(matrixStack, pos[2].toDouble(), pos[3].toDouble(), 0.0).endVertex()
             .pos(matrixStack, pos[2].toDouble(), pos[1].toDouble(), 0.0).endVertex()
@@ -449,11 +474,13 @@ object Renderer {
 
         for (i in 0..steps) {
             worldRenderer.pos(matrixStack, x.toDouble(), y.toDouble(), 0.0).endVertex()
-            worldRenderer.pos(matrixStack, (circleX * radius + x).toDouble(), (circleY * radius + y).toDouble(), 0.0).endVertex()
+            worldRenderer.pos(matrixStack, (circleX * radius + x).toDouble(), (circleY * radius + y).toDouble(), 0.0)
+                .endVertex()
             xHolder = circleX
             circleX = cos * circleX - sin * circleY
             circleY = sin * xHolder + cos * circleY
-            worldRenderer.pos(matrixStack, (circleX * radius + x).toDouble(), (circleY * radius + y).toDouble(), 0.0).endVertex()
+            worldRenderer.pos(matrixStack, (circleX * radius + x).toDouble(), (circleY * radius + y).toDouble(), 0.0)
+                .endVertex()
         }
 
         worldRenderer.drawDirect()
@@ -507,79 +534,139 @@ object Renderer {
     //
     //     finishDraw()
     // }
-    //
-    // private val renderManager = getRenderManager()
-    // private val slimCTRenderPlayer = CTRenderPlayer(renderManager, true)
-    // private val normalCTRenderPlayer = CTRenderPlayer(renderManager, false)
-    //
-    // @JvmStatic
-    // @JvmOverloads
-    // fun drawPlayer(
-    //     player: Any,
-    //     x: Int,
-    //     y: Int,
-    //     rotate: Boolean = false,
-    //     showNametag: Boolean = false,
-    //     showArmor: Boolean = true,
-    //     showCape: Boolean = true,
-    //     showHeldItem: Boolean = true,
-    //     showArrows: Boolean = true
-    // ) {
-    //     val mouseX = -30f
-    //     val mouseY = 0f
-    //
-    //     val ent = if (player is PlayerMP) player.player else Player.getPlayer()!!
-    //
-    //     GlStateManager.enableColorMaterial()
-    //     RenderHelper.enableStandardItemLighting()
-    //
-    //     val f = ent.renderYawOffset
-    //     val f1 = ent.rotationYaw
-    //     val f2 = ent.rotationPitch
-    //     val f3 = ent.prevRotationYawHead
-    //     val f4 = ent.rotationYawHead
-    //
-    //     translate(x.toFloat(), y.toFloat(), 50.0f)
-    //     GlStateManager.rotate(180.0f, 0.0f, 0.0f, 1.0f)
-    //     GlStateManager.rotate(45.0f, 0.0f, 1.0f, 0.0f)
-    //     GlStateManager.rotate(-45.0f, 0.0f, 1.0f, 0.0f)
-    //     GlStateManager.rotate(-atan(mouseY / 40.0f) * 20.0f, 1.0f, 0.0f, 0.0f)
-    //     scale(-1f, 1f)
-    //     if (!rotate) {
-    //         ent.renderYawOffset = atan(mouseX / 40.0f) * 20.0f
-    //         ent.rotationYaw = atan(mouseX / 40.0f) * 40.0f
-    //         ent.rotationPitch = -atan(mouseY / 40.0f) * 20.0f
-    //         ent.rotationYawHead = ent.rotationYaw
-    //         ent.prevRotationYawHead = ent.rotationYaw
-    //     }
-    //
-    //     renderManager.playerViewY = 180.0f
-    //     renderManager.isRenderShadow = false
-    //     //#if MC<=10809
-    //     val isSmall = (ent as AbstractClientPlayer).skinType == "slim"
-    //     val ctRenderPlayer = if (isSmall) slimCTRenderPlayer else normalCTRenderPlayer
-    //
-    //     ctRenderPlayer.setOptions(showNametag, showArmor, showCape, showHeldItem, showArrows)
-    //     ctRenderPlayer.doRender(ent, 0.0, 0.0, 0.0, 0.0f, 1.0f)
-    //     //#else
-    //     //$$ renderManager.doRenderEntity(ent, 0.0, 0.0, 0.0, 0.0F, 1.0F, false)
-    //     //#endif
-    //     renderManager.isRenderShadow = true
-    //
-    //     ent.renderYawOffset = f
-    //     ent.rotationYaw = f1
-    //     ent.rotationPitch = f2
-    //     ent.prevRotationYawHead = f3
-    //     ent.rotationYawHead = f4
-    //
-    //     RenderHelper.disableStandardItemLighting()
-    //     GlStateManager.disableRescaleNormal()
-    //     GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit)
-    //     GlStateManager.disableTexture2D()
-    //     GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit)
-    //
-    //     finishDraw()
-    // }
+
+    /**
+     * Draws a player entity to the screen, similar to the one displayed in the inventory screen.
+     *
+     * Takes a parameter with the following options:
+     * - player: The player entity to draw. Can be a [PlayerMP] or [AbstractClientPlayerEntity].
+     *           Defaults to Player.getPlayer()
+     * - x: The x position on the screen to render the player
+     * - y: The y position on the screen to render the player
+     * - size: The size of the rendered player
+     * - rotate: Whether the player should look at the mouse cursor, similar to the inventory screen
+     * - pitch: THe pitch the rendered player will face, if rotate is false
+     * - yaw: The yaw the rendered player will face, if rotate is false
+     * - showNametag: Whether the nametag of the player should be rendered
+     * - showArmor: Whether the armor of the player should be rendered
+     * - showCape: Whether the cape of the player should be rendered
+     * - showHeldItem: Whether the held item of the player should be rendered
+     * - showArrows: Whether any arrows stuck in the player's model should be rendered
+     * - showElytra: Whether the player's Elytra should be rendered
+     * - showParrot: Whether a perched parrot should be rendered
+     * - showBeeStinger: Whether any stuck bee stingers should be rendered
+     *
+     * @param obj An options bag
+     */
+    // TODO(breaking): Takes an object instead of 85 parameters, since more were added and the parameter list
+    //                 was far to large to be practical
+    @JvmStatic
+    fun drawPlayer(obj: NativeObject) {
+        val entity = obj["player"].let {
+            it as? AbstractClientPlayerEntity
+                ?: ((it as? PlayerMP)?.entity as? AbstractClientPlayerEntity)
+                ?: Player.getPlayer()
+                ?: return
+        }
+
+        val x = obj.getOrDefault<Number>("x", 0).toInt()
+        val y = obj.getOrDefault<Number>("y", 0).toInt()
+        val size = obj.getOrDefault<Number>("size", 20).toDouble()
+        val rotate = obj.getOrDefault<Boolean>("rotate", false)
+        val pitch = obj.getOrDefault<Number>("pitch", 0f).toFloat()
+        val yaw = obj.getOrDefault<Number>("yaw", 0f).toFloat()
+        val slim = obj.getOrDefault<Boolean>("slim", false)
+        val showNametag = obj.getOrDefault<Boolean>("showNametag", false)
+        val showArmor = obj.getOrDefault<Boolean>("showArmor", false)
+        val showCape = obj.getOrDefault<Boolean>("showCape", false)
+        val showHeldItem = obj.getOrDefault<Boolean>("showHeldItem", false)
+        val showArrows = obj.getOrDefault<Boolean>("showArrows", false)
+        val showElytra = obj.getOrDefault<Boolean>("showElytra", false)
+        val showParrot = obj.getOrDefault<Boolean>("showParrot", false)
+        val showStingers = obj.getOrDefault<Boolean>("showBeeStinger", false)
+
+        matrixStack.push()
+
+        val (entityYaw, entityPitch) = if (rotate) {
+            val mouseX = x - Client.getMouseX()
+            val mouseY = y - Client.getMouseY() - (entity.standingEyeHeight * size)
+            atan((mouseX / 40.0f)).toFloat() to atan((mouseY / 40.0f)).toFloat()
+        } else {
+            val scaleFactor = 130f / 180f
+            (yaw * scaleFactor).toRadians() to pitch.toRadians()
+        }
+
+        val flipModelRotation = Quaternionf().rotateZ(Math.PI.toFloat())
+        val pitchModelRotation = Quaternionf().rotateX(entityPitch * 20.0f * (Math.PI / 180.0).toFloat())
+        flipModelRotation.mul(pitchModelRotation)
+
+        val oldBodyYaw = entity.bodyYaw
+        val oldYaw = entity.yaw
+        val oldPitch = entity.pitch
+        val oldPrevHeadYaw = entity.prevHeadYaw
+        val oldHeadYaw = entity.headYaw
+
+        entity.bodyYaw = 180.0f + entityYaw * 20.0f
+        entity.yaw = 180.0f + entityYaw * 40.0f
+        entity.pitch = -entityPitch * 20.0f
+        entity.headYaw = entity.yaw
+        entity.prevHeadYaw = entity.yaw
+
+        matrixStack.push()
+        matrixStack.translate(0.0, 0.0, 1000.0)
+        matrixStack.push()
+        matrixStack.translate(x.toDouble(), y.toDouble(), -950.0)
+
+        // UC's version of multiplyPositionMatrix
+        matrixStack.peek().model.mul(Matrix4f().scaling(size.toFloat(), size.toFloat(), (-size).toFloat()))
+
+        matrixStack.multiply(flipModelRotation)
+        DiffuseLighting.method_34742()
+
+        val entityRenderDispatcher = MinecraftClient.getInstance().entityRenderDispatcher
+
+        if (pitchModelRotation != null) {
+            pitchModelRotation.conjugate()
+            entityRenderDispatcher.rotation = pitchModelRotation
+        }
+
+        entityRenderDispatcher.setRenderShadows(false)
+        val vertexConsumers = MinecraftClient.getInstance().bufferBuilders.entityVertexConsumers
+
+        val light = 0xf000f0
+
+        val entityRenderer = if (slim) slimCTRenderPlayer else normalCTRenderPlayer
+        entityRenderer.setOptions(showNametag, showArmor, showCape, showHeldItem, showArrows, showElytra, showParrot, showStingers)
+
+        val vec3d = entityRenderer.getPositionOffset(entity, partialTicks)
+        val d = vec3d.getX()
+        val e = vec3d.getY()
+        val f = vec3d.getZ()
+        matrixStack.push()
+        matrixStack.translate(d, e, f)
+        RenderSystem.runAsFancy {
+            entityRenderer.render(entity, 0.0f, 1.0f, matrixStack.toMC(), vertexConsumers, light)
+            if (entity.doesRenderOnFire()) {
+                entityRenderDispatcher.asMixin<EntityRenderDispatcherMixin>().invokeRenderFire(matrixStack.toMC(), vertexConsumers, entity)
+            }
+        }
+
+        this.matrixStack.pop()
+
+        vertexConsumers.draw()
+        entityRenderDispatcher.setRenderShadows(true)
+        matrixStack.pop()
+        DiffuseLighting.enableGuiDepthLighting()
+        matrixStack.pop()
+
+        entity.bodyYaw = oldBodyYaw
+        entity.yaw = oldYaw
+        entity.pitch = oldPitch
+        entity.prevHeadYaw = oldPrevHeadYaw
+        entity.headYaw = oldHeadYaw
+
+        this.matrixStack.pop()
+    }
 
     internal fun doColor(longColor: Long) {
         val color = longColor.toInt()
