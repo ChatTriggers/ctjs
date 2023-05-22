@@ -1,12 +1,12 @@
 package com.chattriggers.ctjs.minecraft.wrappers
 
 import gg.essential.universal.UMinecraft
-import net.minecraft.client.option.ChatVisibility
-import net.minecraft.client.option.CloudRenderMode
 import net.minecraft.client.option.GraphicsMode
-import net.minecraft.client.option.ParticlesMode
 import net.minecraft.client.render.entity.PlayerModelPart
 import net.minecraft.sound.SoundCategory
+import net.minecraft.client.option.ChatVisibility as MCChatVisibility
+import net.minecraft.client.option.CloudRenderMode as MCCloudRenderMode
+import net.minecraft.client.option.ParticlesMode as MCParticlesMode
 
 class Settings {
     fun getSettings() = UMinecraft.getSettings()
@@ -172,17 +172,17 @@ class Settings {
         }
 
         // TODO(breaking): Use enum instead of Int
-        fun getClouds() = getSettings().cloudRenderMode.value
+        fun getClouds() = CloudRenderMode.fromMC(getSettings().cloudRenderMode.value)
 
         fun setClouds(clouds: CloudRenderMode) {
-            getSettings().cloudRenderMode.value = clouds
+            getSettings().cloudRenderMode.value = clouds.toMC()
         }
 
         // TODO(breaking): Use enum instead of Int
-        fun getParticles() = getSettings().particles.value
+        fun getParticles() = ParticlesMode.fromMC(getSettings().particles.value)
 
         fun setParticles(particles: ParticlesMode) {
-            getSettings().particles.value = particles
+            getSettings().particles.value = particles.toMC()
         }
 
         fun getFullscreen() = getSettings().fullscreen.value
@@ -219,10 +219,10 @@ class Settings {
 
     val chat = object {
         // TODO(breaking): Use enum instead of String
-        fun getVisibility() = getSettings().chatVisibility.value
+        fun getVisibility() = ChatVisibility.fromMC(getSettings().chatVisibility.value)
 
         fun setVisibility(visibility: ChatVisibility) {
-            getSettings().chatVisibility.value = visibility
+            getSettings().chatVisibility.value = visibility.toMC()
         }
 
         fun getColors() = getSettings().chatColors.value
@@ -277,6 +277,69 @@ class Settings {
 
         fun setReducedDebugInfo(toggled: Boolean) {
             getSettings().reducedDebugInfo.value = toggled
+        }
+    }
+
+    enum class CloudRenderMode(private val mcValue: MCCloudRenderMode) {
+        OFF(MCCloudRenderMode.OFF),
+        FAST(MCCloudRenderMode.FAST),
+        FANCY(MCCloudRenderMode.FANCY);
+
+        fun toMC() = mcValue
+
+        companion object {
+            @JvmStatic
+            fun fromMC(mcValue: MCCloudRenderMode) = values().first { it.mcValue == mcValue }
+
+            @JvmStatic
+            fun from(value: Any) = when (value) {
+                is String -> CloudRenderMode.valueOf(value)
+                is MCCloudRenderMode -> fromMC(value)
+                is CloudRenderMode -> value
+                else -> throw IllegalArgumentException("Cannot create CloudRenderMode from $value")
+            }
+        }
+    }
+
+    enum class ParticlesMode(private val mcValue: MCParticlesMode) {
+        ALL(MCParticlesMode.ALL),
+        DECREASED(MCParticlesMode.DECREASED),
+        MINIMAL(MCParticlesMode.MINIMAL);
+
+        fun toMC() = mcValue
+
+        companion object {
+            @JvmStatic
+            fun fromMC(mcValue: MCParticlesMode) = values().first { it.mcValue == mcValue }
+
+            @JvmStatic
+            fun from(value: Any) = when (value) {
+                is String -> ParticlesMode.valueOf(value)
+                is MCParticlesMode -> fromMC(value)
+                is ParticlesMode -> value
+                else -> throw IllegalArgumentException("Cannot create ParticlesMode from $value")
+            }
+        }
+    }
+
+    enum class ChatVisibility(private val mcValue: MCChatVisibility) {
+        FULL(MCChatVisibility.FULL),
+        SYSTEM(MCChatVisibility.SYSTEM),
+        HIDDEN(MCChatVisibility.HIDDEN);
+
+        fun toMC() = mcValue
+
+        companion object {
+            @JvmStatic
+            fun fromMC(mcValue: MCChatVisibility) = values().first { it.mcValue == mcValue }
+
+            @JvmStatic
+            fun from(value: Any) = when (value) {
+                is String -> ChatVisibility.valueOf(value)
+                is MCChatVisibility -> fromMC(value)
+                is ChatVisibility -> value
+                else -> throw IllegalArgumentException("Cannot create ChatVisibility from $value")
+            }
         }
     }
 }

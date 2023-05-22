@@ -11,7 +11,8 @@ import com.chattriggers.ctjs.utils.asMixin
 import gg.essential.universal.UMinecraft
 import net.minecraft.client.sound.MovingSoundInstance
 import net.minecraft.client.sound.Sound.RegistrationType
-import net.minecraft.client.sound.SoundInstance.AttenuationType
+import net.minecraft.client.sound.SoundInstance
+import net.minecraft.client.sound.SoundInstance.AttenuationType as MCAttenuationType
 import net.minecraft.client.sound.SoundSystem
 import net.minecraft.client.sound.WeightedSoundSet
 import net.minecraft.sound.SoundCategory
@@ -71,7 +72,6 @@ class Sound(private val config: NativeObject) {
         val x = (config.getOrDefault("x", Player.getX()) as Number).toDouble()
         val y = (config.getOrDefault("y", Player.getY()) as Number).toDouble()
         val z = (config.getOrDefault("z", Player.getZ()) as Number).toDouble()
-        val attenuationType = config.getOrDefault("attenuationType", AttenuationType.LINEAR) as AttenuationType
         val attenuation = (config.getOrDefault("attenuation", 16) as Number).toInt()
 
         val resourceManager = UMinecraft.getMinecraft().resourceManager
@@ -88,11 +88,10 @@ class Sound(private val config: NativeObject) {
         identifier = id
         soundManagerAccessor.soundResources[identifier] = resource
 
-        val category = if (config["category"] != null) {
-            SoundCategory.valueOf(config["category"] as String)
-        } else SoundCategory.MASTER
+        val category = config["category"]?.let(Category::from) ?: Category.MASTER
+        val attenuationType = config["attenuationType"]?.let(AttenuationType::from) ?: AttenuationType.LINEAR
 
-        soundImpl = SoundImpl(SoundEvent.of(identifier), category, attenuationType)
+        soundImpl = SoundImpl(SoundEvent.of(identifier), category.toMC(), attenuationType.toMC())
 
         sound = MCSound(
             identifier.toString(),
@@ -139,8 +138,8 @@ class Sound(private val config: NativeObject) {
      * @param category the category
      */
     // TODO(breaking): Changed from string to enum
-    fun setCategory(category: SoundCategory) = apply {
-        soundImpl.categoryOverride = category
+    fun setCategory(category: Category) = apply {
+        soundImpl.categoryOverride = category.toMC()
     }
 
     /**
@@ -182,7 +181,7 @@ class Sound(private val config: NativeObject) {
      */
     // TODO(breaking): Use enum instead of Int and changed name
     fun setAttenuationType(attenuationType: AttenuationType) = apply {
-        soundImpl.attenuationType_ = attenuationType
+        soundImpl.attenuationType_ = attenuationType.toMC()
     }
 
     /**
@@ -234,7 +233,7 @@ class Sound(private val config: NativeObject) {
     private class SoundImpl(
         soundEvent: SoundEvent,
         soundCategory: SoundCategory,
-        var attenuationType_: AttenuationType,
+        var attenuationType_: MCAttenuationType,
     ) : MovingSoundInstance(soundEvent, soundCategory, Random.create()) {
         var categoryOverride: SoundCategory? = null
         var x_ = 0.0
@@ -250,7 +249,7 @@ class Sound(private val config: NativeObject) {
             return categoryOverride ?: super.getCategory()
         }
 
-        override fun getAttenuationType(): AttenuationType {
+        override fun getAttenuationType(): MCAttenuationType {
             return attenuationType_
         }
 
@@ -264,6 +263,54 @@ class Sound(private val config: NativeObject) {
 
         override fun getZ(): Double {
             return z_
+        }
+    }
+
+    enum class Category(private val mcValue: SoundCategory) {
+        MASTER(SoundCategory.MASTER),
+        MUSIC(SoundCategory.MUSIC),
+        RECORDS(SoundCategory.RECORDS),
+        WEATHER(SoundCategory.WEATHER),
+        BLOCKS(SoundCategory.BLOCKS),
+        HOSTILE(SoundCategory.HOSTILE),
+        NEUTRAL(SoundCategory.NEUTRAL),
+        PLAYERS(SoundCategory.PLAYERS),
+        AMBIENT(SoundCategory.AMBIENT),
+        VOICE(SoundCategory.VOICE);
+
+        fun toMC() = mcValue
+
+        companion object {
+            @JvmStatic
+            fun fromMC(mcValue: SoundCategory) = values().first { it.mcValue == mcValue }
+
+            @JvmStatic
+            fun from(value: Any) = when (value) {
+                is String -> valueOf(value)
+                is SoundCategory -> fromMC(value)
+                is Category -> value
+                else -> throw IllegalArgumentException("Cannot create Sound.Category from $value")
+            }
+        }
+    }
+
+    enum class AttenuationType(private val mcValue: MCAttenuationType) {
+        NONE(MCAttenuationType.NONE),
+        LINEAR(MCAttenuationType.LINEAR);
+
+        fun toMC() = mcValue
+
+        companion object {
+            @JvmStatic
+            fun fromMC(mcValue: MCAttenuationType) = values().first { it.mcValue == mcValue }
+
+            @JvmStatic
+            fun from(value: Any) = when (value) {
+                is String -> valueOf(value)
+                is MCAttenuationType -> fromMC(value)
+                is AttenuationType -> value
+                else -> throw IllegalArgumentException("Cannot create Sound.Category from $value")
+            }
         }
     }
 }

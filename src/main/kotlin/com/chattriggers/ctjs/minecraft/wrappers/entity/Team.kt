@@ -2,6 +2,7 @@ package com.chattriggers.ctjs.minecraft.wrappers.entity
 
 import com.chattriggers.ctjs.utils.MCTeam
 import gg.essential.universal.wrappers.message.UTextComponent
+import net.minecraft.scoreboard.AbstractTeam
 
 class Team(val team: MCTeam) {
     /**
@@ -91,11 +92,25 @@ class Team(val team: MCTeam) {
      * Gets the team's name tag visibility
      */
     // TODO(breaking): Use enum instead of String
-    fun getNameTagVisibility() = team.nameTagVisibilityRule
+    fun getNameTagVisibility() = Visibility.fromMC(team.nameTagVisibilityRule)
 
     /**
      * Gets the team's death message visibility
      */
     // TODO(breaking): Use enum instead of String
-    fun getDeathMessageVisibility() = team.deathMessageVisibilityRule
+    fun getDeathMessageVisibility() = Visibility.fromMC(team.deathMessageVisibilityRule)
+
+    enum class Visibility(private val mcValue: AbstractTeam.VisibilityRule) {
+        ALWAYS(AbstractTeam.VisibilityRule.ALWAYS),
+        NEVER(AbstractTeam.VisibilityRule.NEVER),
+        HIDE_FOR_OTHERS_TEAMS(AbstractTeam.VisibilityRule.HIDE_FOR_OTHER_TEAMS),
+        HIDE_FOR_OWN_TEAM(AbstractTeam.VisibilityRule.HIDE_FOR_OWN_TEAM);
+
+        fun toMC() = mcValue
+
+        companion object {
+            @JvmStatic
+            fun fromMC(mcValue: AbstractTeam.VisibilityRule) = values().first { it.mcValue == mcValue }
+        }
+    }
 }

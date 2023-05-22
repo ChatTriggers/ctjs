@@ -7,9 +7,12 @@ import com.chattriggers.ctjs.minecraft.wrappers.world.block.BlockPos
 import com.chattriggers.ctjs.utils.MCEntity
 import gg.essential.universal.wrappers.message.UTextComponent
 import net.minecraft.entity.MovementType
+import net.minecraft.registry.RegistryKey
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
+import net.minecraft.world.dimension.DimensionTypes
 import java.util.*
+import net.minecraft.world.dimension.DimensionType as MCDimensionType
 
 open class Entity(val entity: MCEntity) {
     fun getX() = entity.pos.x
@@ -208,7 +211,9 @@ open class Entity(val entity: MCEntity) {
     // TODO(breaking): Remove isAirborne
 
     // TODO(breaking): Use enum instead of int
-    fun getDimension() = entity.world.dimension
+    fun getDimension() = entity.world.dimensionKey.let { key ->
+        DimensionType.values().first { it.mcValue == key }
+    }
 
     fun setPosition(x: Double, y: Double, z: Double) = apply {
         entity.setPosition(x, y, z)
@@ -287,5 +292,12 @@ open class Entity(val entity: MCEntity) {
 
     override fun toString(): String {
         return "Entity{name=${getName()}, x=${getX()}, y=${getY()}, z=${getZ()}}"
+    }
+
+    enum class DimensionType(internal val mcValue: RegistryKey<MCDimensionType>) {
+        OVERWORLD(DimensionTypes.OVERWORLD),
+        NETHER(DimensionTypes.THE_NETHER),
+        END(DimensionTypes.THE_END),
+        OVERWORLD_CAVES(DimensionTypes.OVERWORLD_CAVES),
     }
 }
