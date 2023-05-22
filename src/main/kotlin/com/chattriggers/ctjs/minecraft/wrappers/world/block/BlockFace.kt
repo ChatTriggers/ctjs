@@ -5,18 +5,19 @@ import net.minecraft.util.StringIdentifiable
 import net.minecraft.util.math.Direction
 import java.util.function.Predicate
 
+// TODO(breaking): Use UPPER_CASE for enum instances
 enum class BlockFace(
     private val oppositeIndex: Int,
     val axisDirection: AxisDirection,
     val axis: Axis,
     val directionVec: Vec3i
 ) : StringIdentifiable {
-    Down(1, AxisDirection.Negative, Axis.Y, Vec3i(0, -1, 0)),
-    Up(0, AxisDirection.Positive, Axis.Y, Vec3i(0, 1, 0)),
-    North(3, AxisDirection.Negative, Axis.Z, Vec3i(0, 0, -1)),
-    South(2, AxisDirection.Positive, Axis.Z, Vec3i(0, 0, 1)),
-    West(5, AxisDirection.Negative, Axis.X, Vec3i(-1, 0, 0)),
-    East(4, AxisDirection.Positive, Axis.X, Vec3i(1, 0, 0));
+    DOWN(1, AxisDirection.NEGATIVE, Axis.Y, Vec3i(0, -1, 0)),
+    UP(0, AxisDirection.POSITIVE, Axis.Y, Vec3i(0, 1, 0)),
+    NORTH(3, AxisDirection.NEGATIVE, Axis.Z, Vec3i(0, 0, -1)),
+    SOUTH(2, AxisDirection.POSITIVE, Axis.Z, Vec3i(0, 0, 1)),
+    WEST(5, AxisDirection.NEGATIVE, Axis.X, Vec3i(-1, 0, 0)),
+    EAST(4, AxisDirection.POSITIVE, Axis.X, Vec3i(1, 0, 0));
 
     fun getOpposite() = values()[oppositeIndex]
 
@@ -28,86 +29,87 @@ enum class BlockFace(
 
     fun rotateAround(axis: Axis): BlockFace {
         return when (axis) {
-            Axis.X -> if (this != West && this != East) rotateX() else this
-            Axis.Y -> if (this != Up && this != Down) rotateY() else this
-            Axis.Z -> if (this != North && this != South) rotateZ() else this
+            Axis.X -> if (this != WEST && this != EAST) rotateX() else this
+            Axis.Y -> if (this != UP && this != DOWN) rotateY() else this
+            Axis.Z -> if (this != NORTH && this != SOUTH) rotateZ() else this
         }
     }
 
     fun rotateX() = when (this) {
-        Down -> South
-        Up -> North
-        North -> Down
-        South -> Up
+        DOWN -> SOUTH
+        UP -> NORTH
+        NORTH -> DOWN
+        SOUTH -> UP
         else -> throw IllegalStateException("Cannot rotate $this around x-axis")
     }
 
     fun rotateY() = when (this) {
-        North -> East
-        South -> West
-        West -> North
-        East -> South
+        NORTH -> EAST
+        SOUTH -> WEST
+        WEST -> NORTH
+        EAST -> SOUTH
         else -> throw IllegalStateException("Cannot rotate $this around y-axis")
     }
 
     fun rotateZ() = when (this) {
-        Down -> West
-        Up -> East
-        West -> Up
-        East -> Down
+        DOWN -> WEST
+        UP -> EAST
+        WEST -> UP
+        EAST -> DOWN
         else -> throw IllegalStateException("Cannot rotate $this around z-axis")
     }
 
     fun toMC() = when (this) {
-        Down -> Direction.DOWN
-        Up -> Direction.UP
-        North -> Direction.NORTH
-        South -> Direction.SOUTH
-        West -> Direction.WEST
-        East -> Direction.EAST
+        DOWN -> Direction.DOWN
+        UP -> Direction.UP
+        NORTH -> Direction.NORTH
+        SOUTH -> Direction.SOUTH
+        WEST -> Direction.WEST
+        EAST -> Direction.EAST
     }
 
     override fun asString() = name.lowercase()
 
     enum class Plane : Predicate<BlockFace>, Iterable<BlockFace> {
-        Horizontal,
-        Vertical;
+        HORIZONTAL,
+        VERTICAL;
 
         override fun test(t: BlockFace) = t.axis.plane == this
 
         fun facings() = when (this) {
-            Horizontal -> arrayOf(North, East, West, South)
-            Vertical -> arrayOf(Up, Down)
+            HORIZONTAL -> arrayOf(NORTH, EAST, WEST, SOUTH)
+            VERTICAL -> arrayOf(UP, DOWN)
         }
 
         override fun iterator() = facings().iterator()
     }
 
     enum class AxisDirection(val offset: Int) {
-        Positive(1),
-        Negative(-1);
+        POSITIVE(1),
+        NEGATIVE(-1);
 
         fun toMC() = when (this) {
-            Positive -> Direction.AxisDirection.POSITIVE
-            Negative -> Direction.AxisDirection.NEGATIVE
+            POSITIVE -> Direction.AxisDirection.POSITIVE
+            NEGATIVE -> Direction.AxisDirection.NEGATIVE
         }
 
         companion object {
+            @JvmStatic
             fun fromMC(axisDirection: AxisDirection) = when (axisDirection) {
-                Positive -> Positive
-                Negative -> Negative
+                POSITIVE -> POSITIVE
+                NEGATIVE -> NEGATIVE
             }
         }
     }
 
     enum class Axis(val plane: Plane) : Predicate<BlockFace>, StringIdentifiable {
-        X(Plane.Horizontal),
-        Y(Plane.Vertical),
-        Z(Plane.Horizontal);
+        X(Plane.HORIZONTAL),
+        Y(Plane.VERTICAL),
+        Z(Plane.HORIZONTAL);
 
-        fun isHorizontal() = plane == Plane.Horizontal
+        fun isHorizontal() = plane == Plane.HORIZONTAL
 
-        fun isVertical() = plane == Plane.Vertical
+        fun isVertical() = plane == Plane.VERTICAL
 
         fun toMC() = when (this) {
             X -> Direction.Axis.X
@@ -120,6 +122,7 @@ enum class BlockFace(
         override fun asString() = name.lowercase()
 
         companion object {
+            @JvmStatic
             fun fromMC(axis: Direction.Axis) = when (axis) {
                 Direction.Axis.X -> X
                 Direction.Axis.Y -> Y
@@ -130,13 +133,14 @@ enum class BlockFace(
 
     companion object {
         // TODO(breaking): Rename to fromMC
+        @JvmStatic
         fun fromMC(facing: Direction) = when (facing) {
-            Direction.DOWN -> Down
-            Direction.UP -> Up
-            Direction.NORTH -> North
-            Direction.SOUTH -> South
-            Direction.WEST -> West
-            Direction.EAST -> East
+            Direction.DOWN -> DOWN
+            Direction.UP -> UP
+            Direction.NORTH -> NORTH
+            Direction.SOUTH -> SOUTH
+            Direction.WEST -> WEST
+            Direction.EAST -> EAST
         }
     }
 }

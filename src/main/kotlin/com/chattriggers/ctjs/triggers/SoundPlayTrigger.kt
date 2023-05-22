@@ -2,7 +2,7 @@ package com.chattriggers.ctjs.triggers
 
 import com.chattriggers.ctjs.engine.ILoader
 
-class SoundPlayTrigger(method: Any, loader: ILoader) : Trigger(method, TriggerType.SoundPlay, loader) {
+class SoundPlayTrigger(method: Any, loader: ILoader) : Trigger(method, TriggerType.SOUND_PLAY, loader) {
     private var soundNameCriteria = ""
 
     /**

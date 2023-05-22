@@ -4,7 +4,6 @@ import com.chattriggers.ctjs.engine.ILoader
 import com.chattriggers.ctjs.minecraft.CTEvents
 import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer
 import com.chattriggers.ctjs.minecraft.libs.renderer.Text
-import com.chattriggers.ctjs.minecraft.listeners.MouseListener
 import com.chattriggers.ctjs.minecraft.wrappers.Client
 import com.chattriggers.ctjs.triggers.RegularTrigger
 import com.chattriggers.ctjs.triggers.TriggerType
@@ -111,22 +110,22 @@ abstract class DisplayLine {
     }
 
     fun registerClicked(method: Any) = run {
-        onClicked = RegularTrigger(method, TriggerType.Other, getLoader())
+        onClicked = RegularTrigger(method, TriggerType.OTHER, getLoader())
         onClicked
     }
 
     fun registerHovered(method: Any) = run {
-        onHovered = RegularTrigger(method, TriggerType.Other, getLoader())
+        onHovered = RegularTrigger(method, TriggerType.OTHER, getLoader())
         onHovered
     }
 
     fun registerMouseLeave(method: Any) = run {
-        onMouseLeave = RegularTrigger(method, TriggerType.Other, getLoader())
+        onMouseLeave = RegularTrigger(method, TriggerType.OTHER, getLoader())
         onMouseLeave
     }
 
     fun registerDragged(method: Any) = run {
-        onDragged = RegularTrigger(method, TriggerType.Other, getLoader())
+        onDragged = RegularTrigger(method, TriggerType.OTHER, getLoader())
         onDragged
     }
 

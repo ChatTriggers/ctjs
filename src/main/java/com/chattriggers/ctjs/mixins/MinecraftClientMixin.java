@@ -14,23 +14,23 @@ public class MinecraftClientMixin {
     @Inject(method = "joinWorld", at = @At("TAIL"))
     void injectJoinWorld(ClientWorld world, CallbackInfo ci) {
         // TODO(breaking): does not pass the event
-        TriggerType.ServerConnect.triggerAll();
+        TriggerType.SERVER_CONNECT.triggerAll();
     }
 
     @Inject(method = "disconnect(Lnet/minecraft/client/gui/screen/Screen;)V", at = @At("HEAD"))
     void injectDisconnect(Screen screen, CallbackInfo ci) {
         // TODO(breaking): does not pass the event
-        TriggerType.ServerDisconnect.triggerAll();
+        TriggerType.SERVER_DISCONNECT.triggerAll();
     }
 
     @Inject(method = "setScreen", at = @At("HEAD"))
     void injectScreenOpened(Screen screen, CallbackInfo ci) {
         if (screen != null)
-            TriggerType.GuiOpened.triggerAll(screen, ci);
+            TriggerType.GUI_OPENED.triggerAll(screen, ci);
     }
 
     @Inject(method = "run", at = @At("HEAD"))
     void injectRun(CallbackInfo ci) {
-        TriggerType.GameLoad.triggerAll();
+        TriggerType.GAME_LOAD.triggerAll();
     }
 }

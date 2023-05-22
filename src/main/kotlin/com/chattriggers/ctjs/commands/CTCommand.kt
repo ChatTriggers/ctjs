@@ -182,8 +182,8 @@ object CTCommand {
     }
 
     enum class DumpType(val messageList: () -> List<UTextComponent>) {
-        Chat(ClientListener::chatHistory),
-        ActionBar(ClientListener::actionBarHistory);
+        CHAT(ClientListener::chatHistory),
+        ACTION_BAR(ClientListener::actionBarHistory);
 
         companion object {
             fun fromString(str: String) = DumpType.values().first { it.name.lowercase() == str }

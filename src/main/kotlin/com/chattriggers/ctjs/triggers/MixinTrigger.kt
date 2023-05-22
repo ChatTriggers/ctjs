@@ -2,7 +2,7 @@ package com.chattriggers.ctjs.triggers
 
 import com.chattriggers.ctjs.engine.ILoader
 
-class MixinTrigger(method: Any, loader: ILoader) : Trigger(method, TriggerType.Mixin, loader) {
+class MixinTrigger(method: Any, loader: ILoader) : Trigger(method, TriggerType.MIXIN, loader) {
     private var name: String? = null
 
     fun setEventName(name: String) {

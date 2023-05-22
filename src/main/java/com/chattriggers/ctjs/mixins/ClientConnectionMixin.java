@@ -35,6 +35,6 @@ public class ClientConnectionMixin {
         cancellable = true
     )
     void injectSendPacket(Packet<?> packet, @Nullable PacketCallbacks callbacks, CallbackInfo ci) {
-        TriggerType.PacketSent.triggerAll(packet, ci);
+        TriggerType.PACKET_SENT.triggerAll(packet, ci);
     }
 }

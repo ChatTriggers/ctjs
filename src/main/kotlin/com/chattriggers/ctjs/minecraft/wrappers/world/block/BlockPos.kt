@@ -28,22 +28,22 @@ class BlockPos(x: Int, y: Int, z: Int) : Vec3i(x, y, z) {
     override operator fun minus(other: Vec3i) = BlockPos(super.minus(other))
 
     @JvmOverloads
-    fun up(n: Int = 1) = offset(BlockFace.Up, n)
+    fun up(n: Int = 1) = offset(BlockFace.UP, n)
 
     @JvmOverloads
-    fun down(n: Int = 1) = offset(BlockFace.Down, n)
+    fun down(n: Int = 1) = offset(BlockFace.DOWN, n)
 
     @JvmOverloads
-    fun north(n: Int = 1) = offset(BlockFace.North, n)
+    fun north(n: Int = 1) = offset(BlockFace.NORTH, n)
 
     @JvmOverloads
-    fun south(n: Int = 1) = offset(BlockFace.South, n)
+    fun south(n: Int = 1) = offset(BlockFace.SOUTH, n)
 
     @JvmOverloads
-    fun east(n: Int = 1) = offset(BlockFace.East, n)
+    fun east(n: Int = 1) = offset(BlockFace.EAST, n)
 
     @JvmOverloads
-    fun west(n: Int = 1) = offset(BlockFace.West, n)
+    fun west(n: Int = 1) = offset(BlockFace.WEST, n)
 
     @JvmOverloads
     fun offset(facing: BlockFace, n: Int = 1): BlockPos {

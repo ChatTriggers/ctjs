@@ -65,17 +65,17 @@ abstract class KeyBind {
     }
 
     fun registerKeyPress(method: Any) = run {
-        onKeyPress = RegularTrigger(method, TriggerType.Other, getLoader())
+        onKeyPress = RegularTrigger(method, TriggerType.OTHER, getLoader())
         onKeyPress
     }
 
     fun registerKeyRelease(method: Any) = run {
-        onKeyRelease = RegularTrigger(method, TriggerType.Other, getLoader())
+        onKeyRelease = RegularTrigger(method, TriggerType.OTHER, getLoader())
         onKeyRelease
     }
 
     fun registerKeyDown(method: Any) = run {
-        onKeyDown = RegularTrigger(method, TriggerType.Other, getLoader())
+        onKeyDown = RegularTrigger(method, TriggerType.OTHER, getLoader())
         onKeyDown
     }
 

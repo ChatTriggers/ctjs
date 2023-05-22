@@ -27,8 +27,8 @@ object Reference {
 
     @JvmStatic
     fun unloadCT(asCommand: Boolean = true) {
-        TriggerType.WorldUnload.triggerAll()
-        TriggerType.GameUnload.triggerAll()
+        TriggerType.WORLD_UNLOAD.triggerAll()
+        TriggerType.GAME_UNLOAD.triggerAll()
 
         isLoaded = false
 
@@ -65,9 +65,9 @@ object Reference {
                 ChatLib.chat("&aDone reloading!")
             isLoaded = true
 
-            TriggerType.GameLoad.triggerAll()
+            TriggerType.GAME_LOAD.triggerAll()
             if (World.isLoaded())
-                TriggerType.WorldLoad.triggerAll()
+                TriggerType.WORLD_LOAD.triggerAll()
         }
     }
 

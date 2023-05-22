@@ -69,7 +69,7 @@ abstract class Gui(title: UTextComponent) : Screen(title) {
      * @return the trigger
      */
     fun registerDraw(method: Any) = run {
-        onDraw = RegularTrigger(method, TriggerType.Other, getLoader())
+        onDraw = RegularTrigger(method, TriggerType.OTHER, getLoader())
         onDraw
     }
 
@@ -85,7 +85,7 @@ abstract class Gui(title: UTextComponent) : Screen(title) {
      * @return the trigger
      */
     fun registerClicked(method: Any) = run {
-        onClick = RegularTrigger(method, TriggerType.Other, getLoader())
+        onClick = RegularTrigger(method, TriggerType.OTHER, getLoader())
         onClick
     }
 
@@ -98,7 +98,7 @@ abstract class Gui(title: UTextComponent) : Screen(title) {
      * - int scroll direction
      */
     fun registerScrolled(method: Any) = run {
-        onScroll = RegularTrigger(method, TriggerType.Other, getLoader())
+        onScroll = RegularTrigger(method, TriggerType.OTHER, getLoader())
         onScroll
     }
 
@@ -113,7 +113,7 @@ abstract class Gui(title: UTextComponent) : Screen(title) {
      * @return the trigger
      */
     fun registerKeyTyped(method: Any) = run {
-        onKeyTyped = RegularTrigger(method, TriggerType.Other, getLoader())
+        onKeyTyped = RegularTrigger(method, TriggerType.OTHER, getLoader())
         onKeyTyped
     }
 
@@ -130,7 +130,7 @@ abstract class Gui(title: UTextComponent) : Screen(title) {
      * @return the trigger
      */
     fun registerMouseDragged(method: Any) = run {
-        onMouseDragged = RegularTrigger(method, TriggerType.Other, getLoader())
+        onMouseDragged = RegularTrigger(method, TriggerType.OTHER, getLoader())
         onMouseDragged
     }
 
@@ -146,7 +146,7 @@ abstract class Gui(title: UTextComponent) : Screen(title) {
      * @return the trigger
      */
     fun registerMouseReleased(method: Any) = run {
-        onMouseReleased = RegularTrigger(method, TriggerType.Other, getLoader())
+        onMouseReleased = RegularTrigger(method, TriggerType.OTHER, getLoader())
         onMouseReleased
     }
 
@@ -160,7 +160,7 @@ abstract class Gui(title: UTextComponent) : Screen(title) {
      * @return the trigger
      */
     fun registerActionPerformed(method: Any) = run {
-        onActionPerformed = RegularTrigger(method, TriggerType.Other, getLoader())
+        onActionPerformed = RegularTrigger(method, TriggerType.OTHER, getLoader())
         onActionPerformed
     }
 
@@ -173,7 +173,7 @@ abstract class Gui(title: UTextComponent) : Screen(title) {
      * @return the trigger
      */
     fun registerOpened(method: Any) = run {
-        onOpened = RegularTrigger(method, TriggerType.Other, getLoader())
+        onOpened = RegularTrigger(method, TriggerType.OTHER, getLoader())
         onOpened
     }
 
@@ -186,7 +186,7 @@ abstract class Gui(title: UTextComponent) : Screen(title) {
      * @return the trigger
      */
     fun registerClosed(method: Any) = run {
-        onClosed = RegularTrigger(method, TriggerType.Other, getLoader())
+        onClosed = RegularTrigger(method, TriggerType.OTHER, getLoader())
         onClosed
     }
 

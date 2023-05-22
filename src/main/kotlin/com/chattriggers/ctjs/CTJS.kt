@@ -48,7 +48,7 @@ class CTJS : ClientModInitializer {
 
         Config.loadData()
 
-        Runtime.getRuntime().addShutdownHook(Thread(TriggerType.GameLoad::triggerAll))
+        Runtime.getRuntime().addShutdownHook(Thread(TriggerType.GAME_LOAD::triggerAll))
     }
 
     private fun reportHashedUUID() {

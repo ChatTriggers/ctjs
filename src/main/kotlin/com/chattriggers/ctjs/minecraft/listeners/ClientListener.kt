@@ -19,13 +19,8 @@ import com.chattriggers.ctjs.utils.console.printToConsole
 import gg.essential.universal.UMatrixStack
 import gg.essential.universal.UMinecraft
 import gg.essential.universal.wrappers.message.UTextComponent
-import io.netty.channel.ChannelDuplexHandler
-import io.netty.channel.ChannelHandlerContext
-import io.netty.channel.ChannelInboundHandlerAdapter
-import io.netty.channel.ChannelPromise
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents
@@ -33,7 +28,6 @@ import net.fabricmc.fabric.api.event.player.UseBlockCallback
 import net.fabricmc.fabric.api.event.player.UseEntityCallback
 import net.fabricmc.fabric.api.event.player.UseItemCallback
 import net.minecraft.client.util.math.MatrixStack
-import net.minecraft.network.packet.Packet
 import net.minecraft.util.ActionResult
 import net.minecraft.util.TypedActionResult
 import org.mozilla.javascript.Context
@@ -61,7 +55,7 @@ object ClientListener : Initializer {
                 chatHistory.removeAt(0)
 
             val event = ChatTrigger.Event(textComponent)
-            TriggerType.Chat.triggerAll(event)
+            TriggerType.CHAT.triggerAll(event)
 
             // print to console
             if (Config.printChatToConsole)
@@ -80,7 +74,7 @@ object ClientListener : Initializer {
                 actionBarHistory.removeAt(0)
 
             val event = ChatTrigger.Event(textComponent)
-            TriggerType.ActionBar.triggerAll(event)
+            TriggerType.ACTION_BAR.triggerAll(event)
             !event.isCancelled()
         }
 
@@ -93,7 +87,7 @@ object ClientListener : Initializer {
             }
 
             if (World.isLoaded()) {
-                TriggerType.Tick.triggerAll(ticksPassed)
+                TriggerType.TICK.triggerAll(ticksPassed)
                 ticksPassed++
 
                 // TODO
@@ -103,35 +97,35 @@ object ClientListener : Initializer {
 
         CTEvents.PACKET_RECECIVED.register { packet, ctx ->
             JSLoader.wrapInContext(packetContext) {
-                TriggerType.PacketReceived.triggerAll(packet, ctx)
+                TriggerType.PACKET_RECEIVED.triggerAll(packet, ctx)
             }
         }
 
         CTEvents.RENDER_TICK.register {
-            TriggerType.Step.triggerAll()
+            TriggerType.STEP.triggerAll()
         }
 
         CTEvents.POST_RENDER_SCREEN.register { stack, mouseX, mouseY, screen, partialTicks ->
             renderTrigger(stack, partialTicks) {
-                TriggerType.PostGuiRender.triggerAll(mouseX, mouseY, screen, partialTicks)
+                TriggerType.POST_GUI_RENDER.triggerAll(mouseX, mouseY, screen, partialTicks)
             }
         }
 
         CTEvents.RENDER_OVERLAY.register { stack, partialTicks ->
             renderTrigger(stack, partialTicks) {
-                TriggerType.RenderOverlay.triggerAll(CancellableEvent())
+                TriggerType.RENDER_OVERLAY.triggerAll(CancellableEvent())
             }
         }
 
         CTEvents.PRE_RENDER_WORLD.register { stack, partialTicks ->
             renderTrigger(stack, partialTicks) {
-                TriggerType.PreRenderWorld.triggerAll(partialTicks)
+                TriggerType.PRE_RENDER_WORLD.triggerAll(partialTicks)
             }
         }
 
         CTEvents.POST_RENDER_WORLD.register { stack, partialTicks ->
             renderTrigger(stack, partialTicks) {
-                TriggerType.PostRenderWorld.triggerAll(partialTicks)
+                TriggerType.POST_RENDER_WORLD.triggerAll(partialTicks)
             }
         }
 
@@ -139,15 +133,15 @@ object ClientListener : Initializer {
             renderTrigger(stack, partialTicks) {
                 // TODO(breaking): Don't pass the position into the trigger (they can get it
                 //                 from the entity if its needed)
-                TriggerType.RenderEntity.triggerAll(Entity(entity), partialTicks, ci)
+                TriggerType.RENDER_ENTITY.triggerAll(Entity(entity), partialTicks, ci)
             }
         }
 
         AttackBlockCallback.EVENT.register { _, _, _, pos, direction ->
             val event = CancellableEvent()
 
-            TriggerType.PlayerInteract.triggerAll(
-                PlayerInteraction.AttackBlock,
+            TriggerType.PLAYER_INTERACT.triggerAll(
+                PlayerInteraction.ATTACK_BLOCK,
                 World.getBlockAt(BlockPos(pos)).withFace(BlockFace.fromMC(direction)),
                 event,
             )
@@ -158,8 +152,8 @@ object ClientListener : Initializer {
         AttackEntityCallback.EVENT.register { _, _, _, entity, _ ->
             val event = CancellableEvent()
 
-            TriggerType.PlayerInteract.triggerAll(
-                PlayerInteraction.AttackEntity,
+            TriggerType.PLAYER_INTERACT.triggerAll(
+                PlayerInteraction.ATTACK_ENTITY,
                 Entity(entity),
                 event,
             )
@@ -170,8 +164,8 @@ object ClientListener : Initializer {
         PlayerBlockBreakEvents.BEFORE.register { _, _, pos, state, _ ->
             val event = CancellableEvent()
 
-            TriggerType.PlayerInteract.triggerAll(
-                PlayerInteraction.BreakBlock,
+            TriggerType.PLAYER_INTERACT.triggerAll(
+                PlayerInteraction.BREAK_BLOCK,
                 Block(BlockType(state.block), BlockPos(pos)),
                 event,
             )
@@ -182,8 +176,8 @@ object ClientListener : Initializer {
         UseBlockCallback.EVENT.register { _, _, _, hitResult ->
             val event = CancellableEvent()
 
-            TriggerType.PlayerInteract.triggerAll(
-                PlayerInteraction.UseBlock,
+            TriggerType.PLAYER_INTERACT.triggerAll(
+                PlayerInteraction.USE_BLOCK,
                 World.getBlockAt(BlockPos(hitResult.blockPos)).withFace(BlockFace.fromMC(hitResult.side)),
                 event,
             )
@@ -194,8 +188,8 @@ object ClientListener : Initializer {
         UseEntityCallback.EVENT.register { _, _, _, entity, _ ->
             val event = CancellableEvent()
 
-            TriggerType.PlayerInteract.triggerAll(
-                PlayerInteraction.UseEntity,
+            TriggerType.PLAYER_INTERACT.triggerAll(
+                PlayerInteraction.USE_ENTITY,
                 Entity(entity),
                 event
             )
@@ -206,8 +200,8 @@ object ClientListener : Initializer {
         UseItemCallback.EVENT.register { _, _, _ ->
             val event = CancellableEvent()
 
-            TriggerType.PlayerInteract.triggerAll(
-                PlayerInteraction.UseItem,
+            TriggerType.PLAYER_INTERACT.triggerAll(
+                PlayerInteraction.USE_ITEM,
                 // TODO,
                 event
             )
@@ -228,12 +222,13 @@ object ClientListener : Initializer {
         Renderer.popMatrix()
     }
 
+    // TODO(breaking): Difference cases here
     enum class PlayerInteraction(val isLeftHand: Boolean) {
-        AttackBlock(true),
-        AttackEntity(true),
-        BreakBlock(true),
-        UseBlock(false),
-        UseEntity(false),
-        UseItem(false),
+        ATTACK_BLOCK(true),
+        ATTACK_ENTITY(true),
+        BREAK_BLOCK(true),
+        USE_BLOCK(false),
+        USE_ENTITY(false),
+        USE_ITEM(false),
     }
 }

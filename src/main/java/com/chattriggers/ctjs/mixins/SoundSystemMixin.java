@@ -26,7 +26,7 @@ public class SoundSystemMixin {
         } catch (Throwable ignored) {
         }
 
-        TriggerType.SoundPlay.triggerAll(
+        TriggerType.SOUND_PLAY.triggerAll(
             new Vec3f((float) sound.getX(), (float) sound.getY(), (float) sound.getZ()),
             sound.getId().toString(),
             volume,
