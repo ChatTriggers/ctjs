@@ -12,6 +12,7 @@ val yarnMappings = property("yarn_mappings")!!
 repositories {
     maven("https://repo.essential.gg/repository/maven-public")
     maven("https://jitpack.io")
+    maven("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1")
 }
 
 dependencies {
@@ -35,6 +36,8 @@ dependencies {
     include(modImplementation("gg.essential:vigilance-1.18.1-fabric:284")!!)
     include(modImplementation("gg.essential:universalcraft-1.19.4-fabric:262")!!)
     include(modImplementation("gg.essential:elementa-1.18.1-fabric:587")!!)
+
+    modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:1.1.2")
 }
 
 loom {
