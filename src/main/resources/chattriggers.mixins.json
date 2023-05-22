@@ -6,6 +6,8 @@
     "client": [
         "AbstractSoundInstanceAccessor",
         "BookScreenAccessor",
+        "ChatHudAccessor",
+        "ChatHudMixin",
         "ChatScreenAccessor",
         "ChunkAccessor",
         "ClickableWidgetAccessor",

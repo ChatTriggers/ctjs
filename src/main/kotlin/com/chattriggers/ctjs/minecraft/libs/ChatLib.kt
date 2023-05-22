@@ -1,60 +1,71 @@
 package com.chattriggers.ctjs.minecraft.libs
 
 import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer
+import com.chattriggers.ctjs.minecraft.listeners.ClientListener
+import com.chattriggers.ctjs.minecraft.objects.Message
 import com.chattriggers.ctjs.minecraft.wrappers.Client
-import gg.essential.universal.UMinecraft
-import gg.essential.universal.wrappers.message.UMessage
+import com.chattriggers.ctjs.minecraft.wrappers.Player
+import com.chattriggers.ctjs.mixins.ChatHudAccessor
+import com.chattriggers.ctjs.utils.asMixin
+import com.chattriggers.ctjs.utils.console.printToConsole
 import gg.essential.universal.wrappers.message.UTextComponent
+import net.minecraft.client.gui.hud.ChatHudLine
+import net.minecraft.client.gui.hud.MessageIndicator
+import org.mozilla.javascript.regexp.NativeRegExp
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
+import java.util.regex.Pattern
 import kotlin.math.roundToInt
 
 object ChatLib {
+    private val chatLineIds = mutableMapOf<ChatHudLine, Int>()
+    private val chatHudAccessor get() = Client.getChatGUI()?.asMixin<ChatHudAccessor>()
+
     /**
      * Prints text in the chat.
-     * The text can be a String, a [UMessage] or a [UTextComponent]
+     * The text can be a String, a [Message] or a [UTextComponent]
      *
      * @param text the text to be printed
      */
     @JvmStatic
     fun chat(text: Any) {
         when (text) {
-            is String -> UMessage(text).chat()
-            is UMessage -> text.chat()
+            is String -> Message(text).chat()
+            is Message -> text.chat()
             is UTextComponent -> text.chat()
-            else -> UMessage(text.toString()).chat()
+            else -> Message(text.toString()).chat()
         }
     }
 
     /**
      * Shows text in the action bar.
-     * The text can be a String, a [UMessage] or a [UTextComponent]
+     * The text can be a String, a [Message] or a [UTextComponent]
      *
      * @param text the text to show
      */
     @JvmStatic
     fun actionBar(text: Any) {
         when (text) {
-            is String -> UMessage(text).actionBar()
-            is UMessage -> text.actionBar()
+            is String -> Message(text).actionBar()
+            is Message -> text.actionBar()
             is UTextComponent -> text.actionBar()
-            else -> UMessage(text.toString()).actionBar()
+            else -> Message(text.toString()).actionBar()
         }
     }
 
     /**
      * Simulates a chat message to be caught by other triggers for testing.
-     * The text can be a String, a [UMessage] or a [UTextComponent]
+     * The text can be a String, a [Message] or a [UTextComponent]
      *
      * @param text The message to simulate
      */
     @JvmStatic
     fun simulateChat(text: Any) {
         when (text) {
-            is String -> UMessage(text).apply { isRecursive = true }.chat()
-            is UMessage -> text.apply { isRecursive = true }.chat()
-            is UTextComponent -> UMessage(text).apply { isRecursive = true }.chat()
-            else -> UMessage(text.toString()).apply { isRecursive = true }.chat()
+            is String -> Message(text).apply { isRecursive = true }.chat()
+            is Message -> text.apply { isRecursive = true }.chat()
+            is UTextComponent -> Message(text).apply { isRecursive = true }.chat()
+            else -> Message(text.toString()).apply { isRecursive = true }.chat()
         }
     }
 
@@ -77,36 +88,36 @@ object ChatLib {
      * @param text the message to be sent
      */
     @JvmStatic
-    fun say(text: String) = Client.getMinecraft().networkHandler!!.sendChatMessage(text)
+    fun say(text: String) = Client.getMinecraft().networkHandler?.sendChatMessage(text)
 
-    // TODO:
-    // /**
-    //  * Runs a command.
-    //  *
-    //  * @param text the command to run, without the leading slash (Ex. "help")
-    //  * @param clientSide should the command be ran as a client side command
-    //  */
-    // @JvmOverloads
-    // @JvmStatic
-    // fun command(text: String, clientSide: Boolean = false) {
-    //     if (clientSide) ClientCommandHandler.instance.executeCommand(Player.getPlayer(), "/$text")
-    //     else say("/$text")
-    // }
+    /**
+     * Runs a command.
+     *
+     * @param text the command to run, without the leading slash (Ex. "help")
+     * @param clientSide should the command be run as a client side command
+     */
+    @JvmOverloads
+    @JvmStatic
+    fun command(text: String, clientSide: Boolean = false) {
+        // TODO: clientSide param? This is client side by default
+        Client.getMinecraft().networkHandler?.sendChatCommand(text)
+    }
+
     /**
      * Clear chat messages with the specified message ID, or all chat messages if no ID is specified
      *
-     * @param chatLineIDs the id(s) to be cleared
+     * @param chatLineIds the id(s) to be cleared
      */
+    // TODO: This is a weird api... ideally this wouldn't be called clearChat and wouldn't
+    //       do anything if no ids were passed
     @JvmStatic
-    fun clearChat(vararg chatLineIDs: Int) {
-        if (chatLineIDs.isEmpty()) {
-            UMinecraft.getChatGUI()?.clear(false)
-            return
+    fun clearChat(vararg chatLineIds: Int) {
+        if (chatLineIds.isEmpty()) {
+            Client.getChatGUI()?.clear(false)
+            this.chatLineIds.clear()
+        } else {
+            chatLineIds.forEach { deleteChat(it) }
         }
-
-        TODO()
-        // for (chatLineID in chatLineIDs)
-        //     Client.getChatGUI()?.deleteChatLine(chatLineID)
     }
 
     /**
@@ -122,7 +133,6 @@ object ChatLib {
     fun getChatBreak(separator: String = "-"): String {
         val len = Renderer.getStringWidth(separator)
         val times = getChatWidth() / len
-
         return separator.repeat(times)
     }
 
@@ -133,7 +143,7 @@ object ChatLib {
      */
     @JvmStatic
     fun getChatWidth(): Int {
-        return UMinecraft.getChatGUI()?.width ?: 0
+        return Client.getChatGUI()?.width ?: 0
     }
 
     /**
@@ -192,244 +202,232 @@ object ChatLib {
         Toolkit.getDefaultToolkit().systemClipboard.setContents(StringSelection(text), null)
     }
 
-    // /**
-    //  * Edits an already sent chat message matched by [regexp].
-    //  *
-    //  * @param regexp the regex object to match to the message
-    //  * @param replacements the new message(s) to be put in replace of the old one
-    //  */
-    // @JvmStatic
-    // fun editChat(regexp: NativeRegExp, vararg replacements: Message) {
-    //     val global = regexp["global"] as Boolean
-    //     val ignoreCase = regexp["ignoreCase"] as Boolean
-    //     val multiline = regexp["multiline"] as Boolean
-    //
-    //     val flags = (if (ignoreCase) Pattern.CASE_INSENSITIVE else 0) or if (multiline) Pattern.MULTILINE else 0
-    //     val pattern = Pattern.compile(regexp["source"] as String, flags)
-    //
-    //     editChat(
-    //         {
-    //             val matcher = pattern.matcher(it.getChatMessage().unformattedText)
-    //             if (global) matcher.find() else matcher.matches()
-    //         },
-    //         *replacements
-    //     )
-    // }
-    //
-    // /**
-    //  * Edits an already sent chat message by the text of the chat
-    //  *
-    //  * @param toReplace the unformatted text of the message to be replaced
-    //  * @param replacements the new message(s) to be put in place of the old one
-    //  */
-    // @JvmStatic
-    // fun editChat(toReplace: String, vararg replacements: Message) {
-    //     editChat(
-    //         {
-    //             removeFormatting(it.getChatMessage().unformattedText) == toReplace
-    //         },
-    //         *replacements
-    //     )
-    // }
-    //
-    // /**
-    //  * Edits an already sent chat message by the [Message]
-    //  *
-    //  * @param toReplace the message to be replaced
-    //  * @param replacements the new message(s) to be put in place of the old one
-    //  */
-    // @JvmStatic
-    // fun editChat(toReplace: Message, vararg replacements: Message) {
-    //     editChat(
-    //         {
-    //             toReplace.getChatMessage().formattedText == it.getChatMessage().formattedText.substring(4)
-    //         },
-    //         *replacements
-    //     )
-    // }
-    //
-    // /**
-    //  * Edits an already sent chat message by its chat line id
-    //  *
-    //  * @param chatLineId the chat line id of the message to be replaced
-    //  * @param replacements the new message(s) to be put in place of the old one
-    //  */
-    // @JvmStatic
-    // fun editChat(chatLineId: Int, vararg replacements: Message) {
-    //     editChat(
-    //         { message ->
-    //             message.getChatLineId() == chatLineId
-    //         },
-    //         *replacements
-    //     )
-    // }
-    //
-    // private fun editChat(toReplace: (Message) -> Boolean, vararg replacements: Message) {
-    //     val chatLines = Client.getChatGUI()!!.chatLines
-    //
-    //     editChatLineList(chatLines, toReplace, *replacements)
-    //     Client.getChatGUI()!!.refreshChat()
-    // }
-    //
-    // private fun editChatLineList(
-    //     lineList: MutableList<ChatLine>,
-    //     toReplace: (Message) -> Boolean,
-    //     vararg replacements: Message
-    // ) {
-    //     val chatLineIterator = lineList.listIterator()
-    //
-    //     while (chatLineIterator.hasNext()) {
-    //         val chatLine = chatLineIterator.next()
-    //
-    //         val result = toReplace(
-    //             Message(chatLine.chatComponent).setChatLineId(chatLine.chatLineID)
-    //         )
-    //
-    //         if (!result) {
-    //             continue
-    //         }
-    //
-    //         chatLineIterator.remove()
-    //
-    //         replacements.map {
-    //             val lineId = if (it.getChatLineId() == -1) 0 else it.getChatLineId()
-    //
-    //             ChatLine(chatLine.updatedCounter, it.getChatMessage(), lineId)
-    //         }.forEach(chatLineIterator::add)
-    //     }
-    // }
-    //
-    // /**
-    //  * Deletes an already sent chat message matching [regexp].
-    //  *
-    //  * @param regexp the regex object to match to the message
-    //  */
-    // @JvmStatic
-    // fun deleteChat(regexp: NativeRegExp) {
-    //     val global = regexp["global"] as Boolean
-    //     val ignoreCase = regexp["ignoreCase"] as Boolean
-    //     val multiline = regexp["multiline"] as Boolean
-    //
-    //     val flags = (if (ignoreCase) Pattern.CASE_INSENSITIVE else 0) or if (multiline) Pattern.MULTILINE else 0
-    //     val pattern = Pattern.compile(regexp["source"] as String, flags)
-    //
-    //     deleteChat {
-    //         val matcher = pattern.matcher(it.getChatMessage().unformattedText)
-    //         if (global) matcher.find() else matcher.matches()
-    //     }
-    // }
-    //
-    // /**
-    //  * Deletes an already sent chat message by the text of the chat
-    //  *
-    //  * @param toDelete the unformatted text of the message to be deleted
-    //  */
-    // @JvmStatic
-    // fun deleteChat(toDelete: String) {
-    //     deleteChat {
-    //         removeFormatting(it.getChatMessage().unformattedText) == toDelete
-    //     }
-    // }
-    //
-    // /**
-    //  * Deletes an already sent chat message by the [Message]
-    //  *
-    //  * @param toDelete the message to be deleted
-    //  */
-    // @JvmStatic
-    // fun deleteChat(toDelete: Message) {
-    //     deleteChat {
-    //         toDelete.getChatMessage().formattedText == it.getChatMessage().formattedText.substring(4)
-    //     }
-    // }
-    //
-    // /**
-    //  * Deletes an already sent chat message by its chat line id
-    //  *
-    //  * @param chatLineId the chat line id of the message to be deleted
-    //  */
-    // @JvmStatic
-    // fun deleteChat(chatLineId: Int) {
-    //     deleteChat {
-    //         it.getChatLineId() == chatLineId
-    //     }
-    // }
-    //
-    // private fun deleteChat(toDelete: (Message) -> Boolean) {
-    //     val chatLines = Client.getChatGUI()!!.chatLines
-    //
-    //     deleteChatLineList(chatLines, toDelete)
-    //     Client.getChatGUI()!!.refreshChat()
-    // }
-    //
-    // private fun deleteChatLineList(
-    //     lineList: MutableList<ChatLine>,
-    //     toDelete: (Message) -> Boolean,
-    // ) {
-    //     val chatLineIterator = lineList.listIterator()
-    //
-    //     while (chatLineIterator.hasNext()) {
-    //         val chatLine = chatLineIterator.next()
-    //
-    //         if (toDelete(Message(chatLine.chatComponent).setChatLineId(chatLine.chatLineID)))
-    //             chatLineIterator.remove()
-    //     }
-    // }
-    //
-    // /**
-    //  * Gets the previous 1000 lines of chat
-    //  *
-    //  * @return A list of the last 1000 chat lines
-    //  */
-    // @JvmStatic
-    // fun getChatLines(): List<String> {
-    //     val hist = ClientListener.chatHistory.toMutableList()
-    //     hist.reverse()
-    //     return hist
-    // }
-    //
-    // /**
-    //  * Adds a message to the player's chat history. This allows the message to
-    //  * show up for the player when pressing the up/down keys while in the chat gui
-    //  *
-    //  * @param index the index to insert the message
-    //  * @param message the message to add to chat history
-    //  */
-    // @JvmOverloads
-    // @JvmStatic
-    // fun addToSentMessageHistory(index: Int = -1, message: String) {
-    //     val sentMessages = Client.getChatGUI()!!.sentMessages
-    //
-    //     if (index == -1) sentMessages.add(message)
-    //     else sentMessages.add(index, message)
-    // }
-    //
-    // /**
-    //  * Get the text of a chat event.
-    //  * Defaults to the unformatted version.
-    //  *
-    //  * @param event The chat event passed in by a chat trigger
-    //  * @param formatted If true, returns formatted text. Otherwise, returns
-    //  * unformatted text
-    //  * @return The text of the event
-    //  */
-    // @JvmOverloads
-    // @JvmStatic
-    // fun getChatMessage(event: ClientChatReceivedEvent, formatted: Boolean = false): String {
-    //     return if (formatted) {
-    //         replaceFormatting(EventLib.getMessage(event).formattedText)
-    //     } else {
-    //         EventLib.getMessage(event).unformattedText
-    //     }
-    // }
-    //
+
+    /**
+     * Edits an already sent chat message matched by [regexp].
+     *
+     * @param regexp the regex object to match to the message
+     * @param replacements the new message(s) to be put in replace of the old one
+     */
+    @JvmStatic
+    fun editChat(regexp: NativeRegExp, vararg replacements: Any) {
+        val global = regexp["global"] as Boolean
+        val ignoreCase = regexp["ignoreCase"] as Boolean
+        val multiline = regexp["multiline"] as Boolean
+
+        val flags = (if (ignoreCase) Pattern.CASE_INSENSITIVE else 0) or if (multiline) Pattern.MULTILINE else 0
+        val pattern = Pattern.compile(regexp["source"] as String, flags)
+
+        editLines(replacements) {
+            val matcher = pattern.matcher(UTextComponent(it.content).unformattedText)
+            if (global) matcher.find() else matcher.matches()
+        }
+    }
+
+    /**
+     * Edits an already sent chat message by the text of the chat
+     *
+     * @param toReplace the unformatted text of the message to be replaced
+     * @param replacements the new message(s) to be put in place of the old one
+     */
+    @JvmStatic
+    fun editChat(toReplace: String, vararg replacements: Any) {
+        editLines(replacements) {
+            removeFormatting(UTextComponent(it.content).unformattedText) == toReplace
+        }
+    }
+
+    /**
+     * Edits an already sent chat message by the [Message]
+     *
+     * @param toReplace the message to be replaced
+     * @param replacements the new message(s) to be put in place of the old one
+     */
+    @JvmStatic
+    fun editChat(toReplace: Message, vararg replacements: Any) {
+        editLines(replacements) {
+            // TODO: Why did we substring 4???
+            toReplace.chatMessage.formattedText == UTextComponent(it.content).formattedText.substring(4)
+        }
+    }
+
+    /**
+     * Edits an already sent chat message by its chat line id
+     *
+     * @param chatLineId the chat line id of the message to be replaced
+     * @param replacements the new message(s) to be put in place of the old one
+     */
+    @JvmStatic
+    fun editChat(chatLineId: Int, vararg replacements: Any) {
+        editLines(replacements) {
+            chatLineIds[it] == chatLineId
+        }
+    }
+
+    private fun editLines(replacements: Array<out Any>, matcher: (ChatHudLine) -> Boolean) {
+        val mc = Client.getMinecraft()
+        val indicator = if (mc.isConnectedToLocalServer) MessageIndicator.singlePlayer() else MessageIndicator.system()
+        var edited = false
+        val it = chatHudAccessor?.messages?.listIterator() ?: return
+
+        while (it.hasNext()) {
+            val next = it.next()
+            if (matcher(next)) {
+                edited = true
+                it.remove()
+                chatLineIds.remove(next)
+                for (replacement in replacements) {
+                    val message = if (replacement !is Message) {
+                        UTextComponent.from(replacement)?.let(::Message) ?: continue
+                    } else replacement
+
+                    val line = ChatHudLine(next.creationTick, message.chatMessage, null, indicator)
+                    if (message.chatLineId != -1)
+                        chatLineIds[line] = message.chatLineId
+
+                    it.add(line)
+                }
+            }
+        }
+
+        if (edited)
+            chatHudAccessor!!.invokeRefresh()
+    }
+
+    /**
+     * Deletes an already sent chat message matching [regexp].
+     *
+     * @param regexp the regex object to match to the message
+     */
+    @JvmStatic
+    fun deleteChat(regexp: NativeRegExp) {
+        val global = regexp["global"] as Boolean
+        val ignoreCase = regexp["ignoreCase"] as Boolean
+        val multiline = regexp["multiline"] as Boolean
+
+        val flags = (if (ignoreCase) Pattern.CASE_INSENSITIVE else 0) or if (multiline) Pattern.MULTILINE else 0
+        val pattern = Pattern.compile(regexp["source"] as String, flags)
+
+        removeLines {
+            val matcher = pattern.matcher(UTextComponent(it.content).unformattedText)
+            if (global) matcher.find() else matcher.matches()
+        }
+    }
+
+    /**
+     * Deletes an already sent chat message by the text of the chat
+     *
+     * @param toDelete the unformatted text of the message to be deleted
+     */
+    @JvmStatic
+    fun deleteChat(toDelete: String) {
+        removeLines {
+            removeFormatting(UTextComponent(it.content).unformattedText) == toDelete
+        }
+    }
+
+    /**
+     * Deletes an already sent chat message by the [Message]
+     *
+     * @param toDelete the message to be deleted
+     */
+    @JvmStatic
+    fun deleteChat(toDelete: Message) {
+        removeLines {
+            // TODO: Why did we substring 4???
+            toDelete.chatMessage.formattedText == UTextComponent(it.content).formattedText.substring(4)
+        }
+    }
+
+    /**
+     * Deletes an already sent chat message by its chat line id
+     *
+     * @param chatLineId the chat line id of the message to be deleted
+     */
+    @JvmStatic
+    fun deleteChat(chatLineId: Int) {
+        removeLines { chatLineIds[it] == chatLineId }
+    }
+
+    private fun removeLines(matcher: (ChatHudLine) -> Boolean) {
+        var removed = false
+        val it = chatHudAccessor?.messages?.listIterator() ?: return
+
+        while (it.hasNext()) {
+            val next = it.next()
+            if (matcher(next)) {
+                it.remove()
+                chatLineIds.remove(next)
+                removed = true
+            }
+        }
+
+        if (removed)
+            chatHudAccessor!!.invokeRefresh()
+    }
+
+    /**
+     * Gets the previous 1000 lines of chat
+     *
+     * @return A list of the last 1000 chat lines
+     */
+    // TODO(breaking): Return UTextComponent instead of String
+    @JvmStatic
+    fun getChatLines(): List<UTextComponent> {
+        val hist = ClientListener.chatHistory.toMutableList()
+        hist.reverse()
+        return hist
+    }
+
+    /**
+     * Adds a message to the player's chat history. This allows the message to
+     * show up for the player when pressing the up/down keys while in the chat gui
+     *
+     * @param index the index to insert the message
+     * @param message the message to add to chat history
+     */
+    @JvmOverloads
+    @JvmStatic
+    fun addToSentMessageHistory(index: Int = -1, message: String) {
+        if (index == -1) {
+            Client.getMinecraft().inGameHud.chatHud.addToMessageHistory(message)
+        } else {
+            Client.getMinecraft().inGameHud.chatHud.messageHistory.add(index, message)
+        }
+    }
+
+    // TODO(breaking): Remove getChatMessage()
+
     // helper method to make sure player exists before putting something in chat
-    // fun isPlayer(out: String): Boolean {
-    //     if (Player.getPlayer() == null) {
-    //         out.printToConsole()
-    //         return false
-    //     }
-    //
-    //     return true
-    // }
+    fun checkPlayerExists(out: String): Boolean {
+        if (Player.getPlayer() == null) {
+            out.printToConsole()
+            return false
+        }
+
+        return true
+    }
+
+    internal fun sendMessageWithId(message: Message) {
+        require(message.chatLineId != -1)
+
+        val chatGui = Client.getChatGUI() ?: return
+        val chatMessage = message.chatMessage
+        chatGui.addMessage(chatMessage)
+        val newChatLine: ChatHudLine = chatHudAccessor!!.messages[0]
+
+        check(chatMessage == newChatLine.content()) {
+            "Expected new chat message to be at index 0"
+        }
+
+        chatLineIds[newChatLine] = message.chatLineId
+    }
+
+    internal fun onChatHudClearChat() {
+        chatLineIds.clear()
+    }
+
+    internal fun onChatHudLineRemoved(line: ChatHudLine) {
+        chatLineIds.remove(line)
+    }
 }

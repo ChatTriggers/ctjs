@@ -6,6 +6,7 @@ import com.chattriggers.ctjs.engine.langs.Lang
 import com.chattriggers.ctjs.engine.module.ModuleManager
 import com.chattriggers.ctjs.minecraft.libs.ChatLib
 import com.chattriggers.ctjs.minecraft.listeners.ClientListener
+import com.chattriggers.ctjs.minecraft.objects.Message
 import com.chattriggers.ctjs.minecraft.wrappers.Client
 import com.chattriggers.ctjs.utils.Config
 import com.chattriggers.ctjs.utils.console.ConsoleManager
@@ -14,9 +15,6 @@ import com.chattriggers.ctjs.utils.toVersion
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.arguments.IntegerArgumentType
 import com.mojang.brigadier.arguments.StringArgumentType
-import com.mojang.brigadier.builder.ArgumentBuilder
-import com.mojang.brigadier.context.CommandContext
-import gg.essential.universal.wrappers.message.UMessage
 import gg.essential.universal.wrappers.message.UTextComponent
 import net.minecraft.server.command.CommandManager.argument
 import net.minecraft.server.command.CommandManager.literal
@@ -157,11 +155,11 @@ object CTCommand {
         val messages = type.messageList()
         var toDump = lines
         if (toDump > messages.size) toDump = messages.size
-        UMessage("&6&m${ChatLib.getChatBreak()}").apply { chatLineId = idFixed }.chat()
+        Message("&6&m${ChatLib.getChatBreak()}").apply { chatLineId = idFixed }.chat()
         var msg: String
         for (i in 0 until toDump) {
             msg = messages[messages.size - toDump + i].unformattedText
-            UMessage(
+            Message(
                 UTextComponent(msg)
                     .setClick(ClickEvent.Action.RUN_COMMAND, "/ct copy $msg")
                     .setHover(HoverEvent.Action.SHOW_TEXT, ChatLib.addColor("&eClick here to copy this message."))
@@ -171,7 +169,7 @@ object CTCommand {
                 chatLineId = idFixed + i + 1
             }
         }
-        UMessage("&6&m${ChatLib.getChatBreak()}").apply { chatLineId = idFixed + lines + 1 }.chat()
+        Message("&6&m${ChatLib.getChatBreak()}").apply { chatLineId = idFixed + lines + 1 }.chat()
 
         idFixedOffset = idFixed + lines + 1
     }
