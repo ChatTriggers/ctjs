@@ -24,7 +24,7 @@ class PlayerMP(val player: PlayerEntity) : LivingEntity(player) {
      * i.e. the name shown in tab list and in the player's nametag.
      * @return the display name
      */
-    fun getDisplayName() = UTextComponent(getPlayerName(getPlayerInfo()))
+    fun getDisplayName() = getPlayerName(getPlayerInfo())
 
     fun setTabDisplayName(textComponent: UTextComponent) {
         getPlayerInfo()?.displayName = textComponent
@@ -59,7 +59,6 @@ class PlayerMP(val player: PlayerEntity) : LivingEntity(player) {
     //     Renderer.drawPlayer(player, x, y, rotate, showNametag, showArmor, showCape, showHeldItem, showArrows)
     // }
 
-    // TODO(breaking): Changed from String to UTextComponent
     private fun getPlayerName(playerListEntry: PlayerListEntry?): UTextComponent {
         return playerListEntry?.displayName?.let(::UTextComponent)
             ?: UTextComponent(net.minecraft.scoreboard.Team.decorateName(

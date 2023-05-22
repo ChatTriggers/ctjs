@@ -18,9 +18,8 @@ object TabList {
      *
      * @return The formatted names
      */
-    // TODO(breaking): Return List<UTextComponent> instead of List<String>
     @JvmStatic
-    fun getNamesByObjectives(): List<UTextComponent> {
+    fun getNamesByObjectives(): List<String> {
         val scoreboard = Scoreboard.getScoreboard() ?: return emptyList()
         val sidebarObjective = scoreboard.getObjectiveForSlot(0) ?: return emptyList()
 
@@ -28,18 +27,17 @@ object TabList {
 
         return scores.map {
             val team = scoreboard.getTeam(it.playerName)
-            UTextComponent(MCTeam.decorateName(team, UTextComponent(it.playerName)))
+            UTextComponent(MCTeam.decorateName(team, UTextComponent(it.playerName))).formattedText
         }
     }
 
-    // TODO(breaking): Return UTextComponent
     @JvmStatic
-    fun getNames(): List<UTextComponent> {
+    fun getNames(): List<String> {
         if (Client.getTabGui() == null) return listOf()
 
         return playerComparator
             .sortedCopy(Player.getPlayer()!!.networkHandler.playerList)
-            .map { UTextComponent(Client.getTabGui()!!.getPlayerName(it)) }
+            .map { UTextComponent(Client.getTabGui()!!.getPlayerName(it)).formattedText }
     }
 
     /**

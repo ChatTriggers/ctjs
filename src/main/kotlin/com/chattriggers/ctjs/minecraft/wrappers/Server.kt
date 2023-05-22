@@ -11,7 +11,8 @@ object Server {
      */
     @JvmStatic
     fun getIP(): String {
-        if (Client.getMinecraft().isInSingleplayer) return "localhost"
+        if (Client.getMinecraft().isInSingleplayer)
+            return "localhost"
 
         return Client.getMinecraft().currentServerEntry?.address ?: ""
     }
@@ -24,7 +25,8 @@ object Server {
      */
     @JvmStatic
     fun getName(): String {
-        if (Client.getMinecraft().isInSingleplayer) return "SinglePlayer"
+        if (Client.getMinecraft().isInSingleplayer)
+            return "SinglePlayer"
 
         return Client.getMinecraft().currentServerEntry?.name ?: ""
     }
@@ -35,12 +37,12 @@ object Server {
      *
      * @return The MOTD of the current server
      */
-    // TODO(breaking): Return UTextComponent
     @JvmStatic
-    fun getMOTD(): UTextComponent {
-        if (Client.getMinecraft().isInSingleplayer) return UTextComponent("SinglePlayer")
+    fun getMOTD(): String {
+        if (Client.getMinecraft().isInSingleplayer)
+            return "SinglePlayer"
 
-        return Client.getMinecraft().currentServerEntry?.label?.let(::UTextComponent) ?: UTextComponent("")
+        return Client.getMinecraft().currentServerEntry?.label?.let(::UTextComponent)?.formattedText ?: ""
     }
 
     /**

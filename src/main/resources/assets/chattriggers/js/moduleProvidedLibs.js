@@ -99,6 +99,7 @@
     loadClass("com.chattriggers.ctjs.minecraft.wrappers.entity.Entity");
     loadClass("com.chattriggers.ctjs.minecraft.wrappers.entity.LivingEntity");
     loadClass("com.chattriggers.ctjs.minecraft.wrappers.entity.PlayerMP");
+    loadClass("com.chattriggers.ctjs.minecraft.wrappers.entity.Team");
 
     loadClass("com.chattriggers.ctjs.minecraft.wrappers.inventory.Inventory");
     loadClass("com.chattriggers.ctjs.minecraft.wrappers.inventory.Item");

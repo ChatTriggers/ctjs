@@ -54,8 +54,7 @@ class BlockType(val mcBlock: MCBlock) {
      *
      * @return the block's localized name
      */
-    // TODO(breaking): Return UTextComponent instead of String
-    fun getName() = UTextComponent(mcBlock.name)
+    fun getName() = UTextComponent(mcBlock.name).formattedText
 
     // TODO: Rename this method?
     fun getLightValue(): Int {

@@ -12,18 +12,23 @@ class Team(val team: MCTeam) {
     /**
      * Gets the display name of the team
      */
-    // TODO(breaking): Changed from String to UTextComponent
-    fun getName() = UTextComponent(team.displayName)
+    fun getName() = UTextComponent(team.displayName).formattedText
 
     /**
      * Sets the display name of the team
      * @param name the new display name
      * @return the team for method chaining
      */
-    // TODO(breaking): Changed from String to UTextComponent
     fun setName(name: UTextComponent) = apply {
         team.displayName = name
     }
+
+    /**
+     * Sets the display name of the team
+     * @param name the new display name
+     * @return the team for method chaining
+     */
+    fun setName(name: String) = setName(UTextComponent(name))
 
     /**
      * Gets the list of names on the team
@@ -33,34 +38,44 @@ class Team(val team: MCTeam) {
     /**
      * Gets the team prefix
      */
-    // TODO(breaking): Changed from String to UTextComponent
-    fun getPrefix() = UTextComponent(team.prefix)
+    fun getPrefix() = UTextComponent(team.prefix).formattedText
 
     /**
      * Sets the team prefix
      * @param prefix the prefix to set
      * @return the team for method chaining
      */
-    // TODO(breaking): Changed from String to UTextComponent
     fun setPrefix(prefix: UTextComponent) = apply {
         team.prefix = prefix
     }
 
     /**
+     * Sets the team prefix
+     * @param prefix the prefix to set
+     * @return the team for method chaining
+     */
+    fun setPrefix(prefix: String) = setPrefix(UTextComponent(prefix))
+
+    /**
      * Gets the team suffix
      */
-    // TODO(breaking): Changed from String to UTextComponent
-    fun getSuffix() = UTextComponent(team.suffix)
+    fun getSuffix() = UTextComponent(team.suffix).formattedText
 
     /**
      * Sets the team suffix
      * @param suffix the suffix to set
      * @return the team for method chaining
      */
-    // TODO(breaking): Changed from String to UTextComponent
     fun setSuffix(suffix: UTextComponent) = apply {
         team.suffix = suffix
     }
+
+    /**
+     * Sets the team suffix
+     * @param suffix the suffix to set
+     * @return the team for method chaining
+     */
+    fun setSuffix(suffix: String) = setSuffix(UTextComponent(suffix))
 
     /**
      * Gets the team's friendly fire setting

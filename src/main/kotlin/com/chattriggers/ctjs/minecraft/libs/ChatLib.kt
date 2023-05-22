@@ -371,12 +371,10 @@ object ChatLib {
      *
      * @return A list of the last 1000 chat lines
      */
-    // TODO(breaking): Return UTextComponent instead of String
     @JvmStatic
-    fun getChatLines(): List<UTextComponent> {
+    fun getChatLines(): List<String> {
         val hist = ClientListener.chatHistory.toMutableList()
-        hist.reverse()
-        return hist
+        return hist.asReversed().map { it.formattedText }
     }
 
     /**

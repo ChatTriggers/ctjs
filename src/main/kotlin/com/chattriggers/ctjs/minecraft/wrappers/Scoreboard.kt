@@ -26,15 +26,14 @@ object Scoreboard {
      *
      * @return the scoreboard title
      */
-    // TODO(breaking): Returns UTextComponent
     @JvmStatic
-    fun getTitle(): UTextComponent {
+    fun getTitle(): String {
         if (needsUpdate) {
             updateNames()
             needsUpdate = false
         }
 
-        return scoreboardTitle
+        return scoreboardTitle.formattedText
     }
 
     /**
@@ -154,12 +153,11 @@ object Scoreboard {
          *
          * @return the display name
          */
-        // TODO(breaking): Returns UTextComponent
         fun getName() = UTextComponent(MCTeam.decorateName(
             getScoreboard()!!.getTeam(score.playerName),
             UTextComponent(score.playerName),
-        ))
+        )).formattedText
 
-        override fun toString(): String = getName().unformattedText
+        override fun toString(): String = getName()
     }
 }
