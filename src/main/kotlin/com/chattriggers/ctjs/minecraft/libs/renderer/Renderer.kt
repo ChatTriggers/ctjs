@@ -20,6 +20,7 @@ import net.minecraft.client.render.Tessellator
 import net.minecraft.client.render.entity.EntityRendererFactory
 import org.joml.Matrix4f
 import org.joml.Quaternionf
+import org.lwjgl.opengl.GL11
 import org.mozilla.javascript.NativeObject
 import java.util.*
 import kotlin.math.*
@@ -27,7 +28,7 @@ import kotlin.math.*
 object Renderer {
     var colorized: Long? = null
     private var retainTransforms = false
-    private var drawMode: UGraphics.DrawMode? = null
+    private var drawMode: DrawMode? = null
     private var firstVertex = true
     private var began = false
 
@@ -158,9 +159,9 @@ object Renderer {
     }
 
     @JvmStatic
-    fun retainTransforms(retain: Boolean) {
+    fun retainTransforms(retain: Boolean) = apply {
         retainTransforms = retain
-        finishDraw()
+        resetTransformsIfNecessary()
     }
 
     @JvmStatic
@@ -232,7 +233,7 @@ object Renderer {
      */
     @JvmStatic
     @JvmOverloads
-    fun begin(drawMode: Int = 7, textured: Boolean = true) = apply {
+    fun begin(drawMode: DrawMode? = Renderer.drawMode, textured: Boolean = true) = apply {
         pushMatrix()
         enableBlend()
         tryBlendFuncSeparate(770, 771, 1, 0)
@@ -240,13 +241,18 @@ object Renderer {
         translate(-Client.camera.getX().toFloat(), -Client.camera.getY().toFloat(), -Client.camera.getZ().toFloat())
 
         worldRenderer.beginWithDefaultShader(
-            Renderer.drawMode ?: UGraphics.DrawMode.QUADS,
+            drawMode?.toUC() ?: UGraphics.DrawMode.QUADS,
             if (textured) UGraphics.CommonVertexFormats.POSITION_TEXTURE else UGraphics.CommonVertexFormats.POSITION,
         )
 
         firstVertex = true
         began = true
     }
+
+    @JvmStatic
+    @JvmOverloads
+    fun begin(drawMode: Int, textured: Boolean = true) =
+        begin(DrawMode.fromUC(UGraphics.DrawMode.fromGl(drawMode)), textured)
 
     /**
      * Sets a new vertex in the Tessellator.
@@ -281,37 +287,38 @@ object Renderer {
 
     @JvmStatic
     @JvmOverloads
-    fun translate(x: Float, y: Float, z: Float = 0.0F) {
+    fun translate(x: Float, y: Float, z: Float = 0.0F) = apply {
         matrixStack.translate(x, y, z)
     }
 
     @JvmStatic
     @JvmOverloads
-    fun scale(scaleX: Float, scaleY: Float = scaleX, scaleZ: Float = 1f) {
+    fun scale(scaleX: Float, scaleY: Float = scaleX, scaleZ: Float = 1f) = apply {
         matrixStack.scale(scaleX, scaleY, scaleZ)
     }
 
     @JvmStatic
-    fun rotate(angle: Float) {
+    fun rotate(angle: Float) = apply {
         matrixStack.rotate(angle, 0f, 0f, 1f)
     }
 
     @JvmStatic
     @JvmOverloads
-    fun colorize(red: Float, green: Float, blue: Float, alpha: Float = 1f) {
+    fun colorize(red: Float, green: Float, blue: Float, alpha: Float = 1f) = apply {
         colorized = fixAlpha(color(red.toLong(), green.toLong(), blue.toLong(), alpha.toLong()))
-
         worldRenderer.color(red.coerceIn(0f, 1f), green.coerceIn(0f, 1f), blue.coerceIn(0f, 1f), alpha.coerceIn(0f, 1f))
     }
 
     @JvmStatic
-    fun setDrawMode(drawMode: Int) = apply {
-        this.drawMode = UGraphics.DrawMode.fromGl(drawMode)
-    }
+    @JvmOverloads
+    fun colorize(red: Int, green: Int, blue: Int, alpha: Int = 255) =
+        colorize(red / 255f, green / 255f, blue / 255f, alpha / 255f)
 
     @JvmStatic
-    fun setDrawMode(drawMode: UGraphics.DrawMode) = apply {
-        // TODO: Add UGraphics.DrawMode to providedLibs
+    fun setDrawMode(drawMode: Int) = setDrawMode(DrawMode.fromUC(UGraphics.DrawMode.fromGl(drawMode)))
+
+    @JvmStatic
+    fun setDrawMode(drawMode: DrawMode) = apply {
         this.drawMode = drawMode
     }
 
@@ -324,26 +331,6 @@ object Renderer {
         return if (alpha < 10)
             (color and 0xFF_FF_FF) or 0xA_FF_FF_FF
         else color
-    }
-
-    /**
-     * Finalizes and draws the Tessellator.
-     */
-    @JvmStatic
-    fun draw() {
-        if (!began)
-            return
-
-        worldRenderer.endVertex()
-
-        tessellator.draw()
-
-        colorize(1f, 1f, 1f, 1f)
-
-        began = false
-
-        disableBlend()
-        popMatrix()
     }
 
     /**
@@ -363,7 +350,7 @@ object Renderer {
     }
 
     @JvmStatic
-    fun drawRect(color: Long, x: Float, y: Float, width: Float, height: Float) {
+    fun drawRect(color: Long, x: Float, y: Float, width: Float, height: Float) = apply {
         val pos = mutableListOf(x, y, x + width, y + height)
         if (pos[0] > pos[2])
             Collections.swap(pos, 0, 2)
@@ -375,7 +362,7 @@ object Renderer {
         doColor(color)
 
         worldRenderer.beginWithDefaultShader(
-            drawMode ?: UGraphics.DrawMode.QUADS,
+            drawMode?.toUC() ?: UGraphics.DrawMode.QUADS,
             UGraphics.CommonVertexFormats.POSITION
         )
             .pos(matrixStack, pos[0].toDouble(), pos[3].toDouble(), 0.0).endVertex()
@@ -387,34 +374,10 @@ object Renderer {
         colorize(1f, 1f, 1f, 1f)
         UGraphics.disableBlend()
 
-        finishDraw()
+        resetTransformsIfNecessary()
     }
 
-    // TODO: Remove this and replace with Shape()
-    // @JvmStatic
-    // @JvmOverloads
-    // fun drawShape(color: Long, vararg vertexes: List<Float>, drawMode: Int = 9) {
-    //     UGraphics.enableBlend()
-    //     UGraphics.tryBlendFuncSeparate(770, 771, 1, 0)
-    //     doColor(color)
-    //
-    //     worldRenderer.beginWithDefaultShader(this.drawMode ?: drawMode, DefaultVertexFormats.POSITION)
-    //
-    //     if (area(vertexes) >= 0)
-    //         vertexes.reverse()
-    //
-    //     vertexes.forEach {
-    //         worldRenderer.pos(it[0].toDouble(), it[1].toDouble(), 0.0).endVertex()
-    //     }
-    //
-    //     tessellator.draw()
-    //
-    //     GlStateManager.color(1f, 1f, 1f, 1f)
-    //     GlStateManager.enableTexture2D()
-    //     GlStateManager.disableBlend()
-    //
-    //     finishDraw()
-    // }
+    // TODO(breaking): Removed drawShape in favor of Shape()
 
     @JvmStatic
     @JvmOverloads
@@ -435,7 +398,7 @@ object Renderer {
         UGraphics.tryBlendFuncSeparate(770, 771, 1, 0)
         doColor(color)
 
-        worldRenderer.beginWithDefaultShader(this.drawMode ?: drawMode, UGraphics.CommonVertexFormats.POSITION)
+        worldRenderer.beginWithDefaultShader(this.drawMode?.toUC() ?: drawMode, UGraphics.CommonVertexFormats.POSITION)
             .pos(matrixStack, (x1 + i).toDouble(), (y1 + j).toDouble(), 0.0).endVertex()
             .pos(matrixStack, (x2 + i).toDouble(), (y2 + j).toDouble(), 0.0).endVertex()
             .pos(matrixStack, (x2 - i).toDouble(), (y2 - j).toDouble(), 0.0).endVertex()
@@ -445,7 +408,7 @@ object Renderer {
         colorize(1f, 1f, 1f, 1f)
         UGraphics.disableBlend()
 
-        finishDraw()
+        resetTransformsIfNecessary()
     }
 
     @JvmStatic
@@ -470,7 +433,7 @@ object Renderer {
         UGraphics.tryBlendFuncSeparate(770, 771, 1, 0)
         doColor(color)
 
-        worldRenderer.beginWithDefaultShader(this.drawMode ?: drawMode, UGraphics.CommonVertexFormats.POSITION)
+        worldRenderer.beginWithDefaultShader(this.drawMode?.toUC() ?: drawMode, UGraphics.CommonVertexFormats.POSITION)
 
         for (i in 0..steps) {
             worldRenderer.pos(matrixStack, x.toDouble(), y.toDouble(), 0.0).endVertex()
@@ -488,7 +451,7 @@ object Renderer {
         colorize(1f, 1f, 1f, 1f)
         UGraphics.disableBlend()
 
-        finishDraw()
+        resetTransformsIfNecessary()
     }
 
     @JvmOverloads
@@ -508,7 +471,7 @@ object Renderer {
             newY += fr.fontHeight
         }
 
-        finishDraw()
+        resetTransformsIfNecessary()
     }
 
     @JvmStatic
@@ -532,7 +495,7 @@ object Renderer {
     //     worldRenderer.pos(x, y, 0.0).tex(0.0, 0.0).endVertex()
     //     tessellator.draw()
     //
-    //     finishDraw()
+    //     resetTransformsIfNecessary()
     // }
 
     /**
@@ -680,14 +643,21 @@ object Renderer {
         }
     }
 
+    /**
+     * Finalizes vertices and draws the Renderer.
+     */
     @JvmStatic
-    fun finishDraw() {
-        if (!retainTransforms) {
-            colorized = null
-            drawMode = null
-            matrixStack.pop()
-            matrixStack.push()
-        }
+    fun draw() {
+        if (!began)
+            return
+        began = false
+
+        worldRenderer.endVertex()
+        tessellator.draw()
+
+        colorize(1f, 1f, 1f, 1f)
+        disableBlend()
+        resetTransformsIfNecessary()
     }
 
     private fun area(points: Array<out List<Float>>): Float {
@@ -701,6 +671,31 @@ object Renderer {
         }
 
         return area / 2
+    }
+
+    internal fun resetTransformsIfNecessary() {
+        if (!retainTransforms) {
+            colorized = null
+            drawMode = null
+            popMatrix()
+            pushMatrix()
+        }
+    }
+
+    enum class DrawMode(private val ucValue: UGraphics.DrawMode) {
+        LINES(UGraphics.DrawMode.LINES),
+        LINE_STRIP(UGraphics.DrawMode.LINE_STRIP),
+        TRIANGLES(UGraphics.DrawMode.TRIANGLES),
+        TRIANGLE_STRIP(UGraphics.DrawMode.TRIANGLE_STRIP),
+        TRIANGLE_FAN(UGraphics.DrawMode.TRIANGLE_FAN),
+        QUADS(UGraphics.DrawMode.QUADS);
+
+        fun toUC() = ucValue
+
+        companion object {
+            @JvmStatic
+            fun fromUC(ucValue: UGraphics.DrawMode) = values().first { it.ucValue == ucValue }
+        }
     }
 
     object screen {

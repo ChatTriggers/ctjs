@@ -58,7 +58,7 @@
     loadClass("com.chattriggers.ctjs.minecraft.libs.renderer.Image");
     loadClass("com.chattriggers.ctjs.minecraft.libs.renderer.Rectangle");
     loadClass("com.chattriggers.ctjs.minecraft.libs.renderer.Renderer");
-    // loadClass("com.chattriggers.ctjs.minecraft.libs.renderer.Shape");
+    loadClass("com.chattriggers.ctjs.minecraft.libs.renderer.Shape");
     loadClass("com.chattriggers.ctjs.minecraft.libs.renderer.Text");
 
     // Objects

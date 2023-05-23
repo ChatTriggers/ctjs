@@ -93,6 +93,6 @@ class Item(val stack: ItemStack) {
         //       affect anything
         itemRenderer.renderInGui(Renderer.matrixStack.toMC(), stack, 0, 0)
 
-        Renderer.finishDraw()
+        Renderer.resetTransformsIfNecessary()
     }
 }
