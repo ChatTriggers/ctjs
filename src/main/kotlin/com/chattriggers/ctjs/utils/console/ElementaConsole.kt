@@ -129,13 +129,14 @@ class ConsoleComponent(private val loader: ILoader?) : WindowScreen(ElementaVers
                 history += input
                 historyOffset = 0
 
+                val cleanInput = escapeFormattingCodes(input)
                 val entry = try {
                     val output = loader.eval(input).let { if (it == "undefined") null else it }
-                    ConsoleEntry(input, output, backgroundInnerBlock)
+                    ConsoleEntry(cleanInput, output, backgroundInnerBlock)
                 } catch (e: RhinoException) {
-                    ConsoleEntry(input, "&c${e.details()}", backgroundInnerBlock)
+                    ConsoleEntry(cleanInput, "&c${e.details()}", backgroundInnerBlock)
                 } catch (e: Throwable) {
-                    makeErrorEntry(e, input)
+                    makeErrorEntry(e, cleanInput)
                 }
 
                 addErrorEntry(entry)
@@ -147,19 +148,20 @@ class ConsoleComponent(private val loader: ILoader?) : WindowScreen(ElementaVers
             textInput.onKeyType { _, keyCode ->
                 if (keyCode == GLFW.GLFW_KEY_UP && Client.isControlDown()) {
                     historyOffset++
-                    try {
-                        val message = history[history.size - historyOffset]
-                        textInput.setText(message)
-                    } catch (exception: Exception) {
+
+                    val index = history.size - historyOffset
+                    if (index in 0 until history.size) {
+                        textInput.setText(history[index])
+                    } else {
                         historyOffset--
                     }
                 } else if (keyCode == GLFW.GLFW_KEY_DOWN && Client.isControlDown()) {
-                    historyOffset = maxOf(0, historyOffset - 1)
+                    historyOffset = (historyOffset - 1).coerceAtLeast(0)
 
-                    try {
-                        val message = history[history.size - historyOffset]
-                        textInput.setText(message)
-                    } catch (exception: Exception) {
+                    val index = history.size - historyOffset
+                    if (index in 0 until history.size) {
+                        textInput.setText(history[index])
+                    } else {
                         historyOffset = 0
                         textInput.setText("")
                     }
@@ -178,6 +180,16 @@ class ConsoleComponent(private val loader: ILoader?) : WindowScreen(ElementaVers
 
         background.animateAfterUnhide {
             setYAnimation(Animations.OUT_EXP, 0.5f, 0.pixels())
+        }
+    }
+
+    /**
+     * Adds &r between color codes in order to keep them unformatted in the console display
+     */
+    private fun escapeFormattingCodes(input: String): String {
+        val regex = Regex("([\u00A7&])([0-9a-fk-or])")
+        return regex.replace(input) {
+            "${it.groupValues[1]}&r${it.groupValues[2]}"
         }
     }
 
