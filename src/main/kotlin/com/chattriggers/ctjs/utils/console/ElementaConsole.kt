@@ -1,6 +1,5 @@
 package com.chattriggers.ctjs.utils.console
 
-import com.chattriggers.ctjs.Reference
 import com.chattriggers.ctjs.engine.ILoader
 import com.chattriggers.ctjs.minecraft.wrappers.Client
 import gg.essential.elementa.ElementaVersion
@@ -17,6 +16,7 @@ import gg.essential.elementa.dsl.*
 import gg.essential.elementa.effects.ScissorEffect
 import gg.essential.universal.UMinecraft
 import gg.essential.universal.UResolution
+import org.lwjgl.glfw.GLFW
 import org.mozilla.javascript.RhinoException
 import java.awt.Color
 
@@ -60,6 +60,9 @@ class ConsoleEntry(input: String?, output: String?, maxWidthComponent: UICompone
 }
 
 class ConsoleComponent(private val loader: ILoader?) : WindowScreen(ElementaVersion.V2, drawDefaultBackground = false, restoreCurrentGuiOnClose = true) {
+    private var historyOffset = 0
+    private val history = mutableListOf<String>()
+
     private val background by UIBlock(Color(30, 30, 30)) constrain {
         x = basicXConstraint {
             if (UMinecraft.getMinecraft().window == null)
@@ -123,8 +126,11 @@ class ConsoleComponent(private val loader: ILoader?) : WindowScreen(ElementaVers
             textBackground.onMouseClick { textInput.grabWindowFocus() }
 
             textInput.onActivate { input ->
+                history += input
+                historyOffset = 0
+
                 val entry = try {
-                    val output = loader!!.eval(input).let { if (it == "undefined") null else it }
+                    val output = loader.eval(input).let { if (it == "undefined") null else it }
                     ConsoleEntry(input, output, backgroundInnerBlock)
                 } catch (e: RhinoException) {
                     ConsoleEntry(input, "&c${e.details()}", backgroundInnerBlock)
@@ -136,6 +142,28 @@ class ConsoleComponent(private val loader: ILoader?) : WindowScreen(ElementaVers
 
                 textInput.setText("")
                 scrollToLastInput()
+            }
+
+            textInput.onKeyType { _, keyCode ->
+                if (keyCode == GLFW.GLFW_KEY_UP && Client.isControlDown()) {
+                    historyOffset++
+                    try {
+                        val message = history[history.size - historyOffset]
+                        textInput.setText(message)
+                    } catch (exception: Exception) {
+                        historyOffset--
+                    }
+                } else if (keyCode == GLFW.GLFW_KEY_DOWN && Client.isControlDown()) {
+                    historyOffset = maxOf(0, historyOffset - 1)
+
+                    try {
+                        val message = history[history.size - historyOffset]
+                        textInput.setText(message)
+                    } catch (exception: Exception) {
+                        historyOffset = 0
+                        textInput.setText("")
+                    }
+                }
             }
         }
 
