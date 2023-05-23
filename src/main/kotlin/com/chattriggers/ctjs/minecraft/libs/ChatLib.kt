@@ -103,21 +103,14 @@ object ChatLib {
         Client.getMinecraft().networkHandler?.sendChatCommand(text)
     }
 
+    // TODO(breaking): Now only clears all chats
     /**
-     * Clear chat messages with the specified message ID, or all chat messages if no ID is specified
-     *
-     * @param chatLineIds the id(s) to be cleared
+     * Clear all chat messages
      */
-    // TODO: This is a weird api... ideally this wouldn't be called clearChat and wouldn't
-    //       do anything if no ids were passed
     @JvmStatic
-    fun clearChat(vararg chatLineIds: Int) {
-        if (chatLineIds.isEmpty()) {
-            Client.getChatGUI()?.clear(false)
-            this.chatLineIds.clear()
-        } else {
-            chatLineIds.forEach { deleteChat(it) }
-        }
+    fun clearChat() {
+        Client.getChatGUI()?.clear(false)
+        chatLineIds.clear()
     }
 
     /**
@@ -246,8 +239,7 @@ object ChatLib {
     @JvmStatic
     fun editChat(toReplace: Message, vararg replacements: Any) {
         editLines(replacements) {
-            // TODO: Why did we substring 4???
-            toReplace.chatMessage.formattedText == UTextComponent(it.content).formattedText.substring(4)
+            toReplace.chatMessage.formattedText == UTextComponent(it.content).formattedText
         }
     }
 
@@ -334,8 +326,7 @@ object ChatLib {
     @JvmStatic
     fun deleteChat(toDelete: Message) {
         removeLines {
-            // TODO: Why did we substring 4???
-            toDelete.chatMessage.formattedText == UTextComponent(it.content).formattedText.substring(4)
+            toDelete.chatMessage.formattedText == UTextComponent(it.content).formattedText
         }
     }
 
