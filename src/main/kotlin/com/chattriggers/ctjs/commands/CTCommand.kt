@@ -177,7 +177,7 @@ object CTCommand {
     private fun clearOldDump() {
         if (idFixedOffset == -1) return
         while (idFixedOffset >= idFixed)
-            ChatLib.clearChat(idFixedOffset--)
+            ChatLib.deleteChat(idFixedOffset--)
         idFixedOffset = -1
     }
 
