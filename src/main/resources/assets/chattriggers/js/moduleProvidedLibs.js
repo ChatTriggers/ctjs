@@ -154,11 +154,12 @@
     loadClass("org.lwjgl.opengl.GL45");
 
     global.cancel = event => {
-        try {
-            EventLib.cancel(event);
-        } catch (err) {
-            if (event.isCancelable())
-                event.setCanceled(true);
+        if (event instanceof com.chattriggers.ctjs.minecraft.listeners.CancellableEvent) {
+            event.setCanceled(true);
+        } else if (event instanceof org.spongepowered.asm.mixin.injection.callback.CallbackInfo) {
+            event.cancel();
+        } else {
+            throw new TypeError("event must be a CancellableEvent, CallbakcInfo, or CallbackInfoReturnable")
         }
     };
 
