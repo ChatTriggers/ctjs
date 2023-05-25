@@ -1,6 +1,8 @@
 package com.chattriggers.ctjs.minecraft.wrappers
 
 import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer
+import com.chattriggers.ctjs.minecraft.wrappers.entity.PlayerMP
+import com.chattriggers.ctjs.minecraft.wrappers.entity.Team
 import com.chattriggers.ctjs.minecraft.wrappers.inventory.Inventory
 import com.chattriggers.ctjs.minecraft.wrappers.inventory.Item
 import gg.essential.universal.UMath
@@ -18,10 +20,10 @@ object Player {
     fun getPlayer(): ClientPlayerEntity? = UMinecraft.getMinecraft().player
 
     @JvmStatic
-    fun getTeam(): Unit = TODO()
+    fun getTeam(): Team? = Scoreboard.getScoreboard()?.getPlayerTeam(getName())?.let(::Team)
 
     @JvmStatic
-    fun asPlayerMP(): Unit = TODO()
+    fun asPlayerMP(): PlayerMP? = getPlayer()?.let(::PlayerMP)
 
     @JvmStatic
     fun getX(): Double = getPlayer()?.x ?: 0.0
@@ -141,7 +143,10 @@ object Player {
 
     @JvmStatic
     fun getBiome(): String {
-        TODO()
+        val pos = getPlayer()?.blockPos ?: return ""
+        val biomeEntry = World.getWorld()?.getBiome(pos) ?: return ""
+
+        return biomeEntry.key.get().value.path
     }
 
     /**
