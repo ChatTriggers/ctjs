@@ -442,6 +442,7 @@ interface IRegister {
         return EventTrigger(method, TriggerType.PLAYER_INTERACT, getImplementationLoader())
     }
 
+    // TODO(breaking): Rename from blockbreak to breakblock
     /**
      * Registers a new trigger that runs before the player breaks a block
      *
@@ -454,8 +455,8 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    fun registerBlockBreak(method: Any): RegularTrigger {
-        return RegularTrigger(method, TriggerType.BLOCK_BREAK, getImplementationLoader())
+    fun registerBreakBlock(method: Any): RegularTrigger {
+        return RegularTrigger(method, TriggerType.BREAK_BLOCK, getImplementationLoader())
     }
 
     /**
