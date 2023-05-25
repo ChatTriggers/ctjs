@@ -29,6 +29,7 @@
         "ParticleAccessor",
         "PlayerEntityMixin",
         "PlayerListHudAccessor",
+        "PlayerListHudMixin",
         "RenderTickCounterMixin",
         "ScreenMixin",
         "SoundAccessor",
