@@ -19,7 +19,7 @@ enum class TriggerType {
     TOOLTIP,
     PLAYER_INTERACT,
     HIT_BLOCK,
-    GUI_RENDER,
+    BREAK_BLOCK,
     GUI_KEY,
     GUI_MOUSE_CLICK,
     GUI_MOUSE_DRAG,
@@ -36,13 +36,13 @@ enum class TriggerType {
     RENDER_OVERLAY,
     RENDER_PLAYER_LIST,
     RENDER_ENTITY,
+    GUI_RENDER,
     POST_GUI_RENDER,
 
     // world
     SOUND_PLAY,
     WORLD_LOAD,
     WORLD_UNLOAD,
-    BLOCK_BREAK,
     SPAWN_PARTICLE,
     ENTITY_DEATH,
     ENTITY_DAMAGE,
