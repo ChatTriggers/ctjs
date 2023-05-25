@@ -21,6 +21,7 @@ import gg.essential.universal.UMinecraft
 import gg.essential.universal.wrappers.message.UTextComponent
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
+import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents
@@ -93,6 +94,20 @@ object ClientListener : Initializer {
                 // TODO
                 // Scoreboard.resetCache()
             }
+        }
+
+        ClientSendMessageEvents.ALLOW_CHAT.register { message ->
+            val event = CancellableEvent()
+            TriggerType.MESSAGE_SENT.triggerAll(message, event)
+
+            !event.isCancelled()
+        }
+
+        ClientSendMessageEvents.ALLOW_COMMAND.register { message ->
+            val event = CancellableEvent()
+            TriggerType.MESSAGE_SENT.triggerAll(message, event)
+
+            !event.isCancelled()
         }
 
         CTEvents.PACKET_RECECIVED.register { packet, ctx ->
