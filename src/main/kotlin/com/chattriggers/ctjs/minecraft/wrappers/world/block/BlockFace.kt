@@ -95,9 +95,9 @@ enum class BlockFace(
 
         companion object {
             @JvmStatic
-            fun fromMC(axisDirection: AxisDirection) = when (axisDirection) {
-                POSITIVE -> POSITIVE
-                NEGATIVE -> NEGATIVE
+            fun fromMC(axisDirection: Direction.AxisDirection) = when (axisDirection) {
+                Direction.AxisDirection.POSITIVE -> POSITIVE
+                Direction.AxisDirection.NEGATIVE -> NEGATIVE
             }
         }
     }
