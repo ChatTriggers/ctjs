@@ -7,9 +7,8 @@ import com.chattriggers.ctjs.utils.console.printToConsole
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
-import net.minecraft.command.CommandSource
-import net.minecraft.server.command.CommandManager.argument
-import net.minecraft.server.command.CommandManager.literal
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
 
 class Command(
     val trigger: CommandTrigger,

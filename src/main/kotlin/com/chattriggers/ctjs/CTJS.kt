@@ -13,6 +13,8 @@ import com.chattriggers.ctjs.utils.console.printTraceToConsole
 import com.google.gson.Gson
 import com.mojang.brigadier.CommandDispatcher
 import net.fabricmc.api.ClientModInitializer
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
 import net.minecraft.server.command.ServerCommandSource
 import java.io.File
@@ -26,7 +28,7 @@ class CTJS : ClientModInitializer {
     override fun onInitializeClient() {
         Initializer.initializers.forEach(Initializer::init)
 
-        CommandRegistrationCallback.EVENT.register { dispatcher, _, _ ->
+        ClientCommandRegistrationCallback.EVENT.register { dispatcher, _ ->
             CTCommand.register(dispatcher)
             commandDispatcher = dispatcher
 
@@ -77,7 +79,7 @@ class CTJS : ClientModInitializer {
         const val WEBSITE_ROOT = "https://www.chattriggers.com"
         internal val images = mutableListOf<Image>()
         internal val sounds = mutableListOf<Sound>()
-        internal var commandDispatcher: CommandDispatcher<ServerCommandSource>? = null
+        internal var commandDispatcher: CommandDispatcher<FabricClientCommandSource>? = null
 
         val configLocation = File("./config")
         val assetsDir = File(configLocation, "ChatTriggers/images/").apply { mkdirs() }

@@ -16,9 +16,9 @@ import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.arguments.IntegerArgumentType
 import com.mojang.brigadier.arguments.StringArgumentType
 import gg.essential.universal.wrappers.message.UTextComponent
-import net.minecraft.server.command.CommandManager.argument
-import net.minecraft.server.command.CommandManager.literal
-import net.minecraft.server.command.ServerCommandSource
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import net.minecraft.text.ClickEvent
 import net.minecraft.text.HoverEvent
 import java.awt.Desktop
@@ -29,7 +29,7 @@ object CTCommand {
     private const val idFixed = 90123 // ID for dumped chat
     private var idFixedOffset = -1 // ID offset (increments)
 
-    fun register(dispatcher: CommandDispatcher<ServerCommandSource>) {
+    fun register(dispatcher: CommandDispatcher<FabricClientCommandSource>) {
         // TODO(breaking): Remove copy command and a bunch of aliases
         val command = literal("ct")
             .then(literal("load").onExecute { Reference.loadCT(asCommand = true) })
