@@ -534,8 +534,8 @@ interface IRegister {
      * - The mouse x position
      * - The mouse y position
      * - The mouse button
-     * - The gui
      * - The mouse button state (true if button is pressed, false otherwise)
+     * - The gui
      * - The event, which can be cancelled
      *
      * Available modifications:

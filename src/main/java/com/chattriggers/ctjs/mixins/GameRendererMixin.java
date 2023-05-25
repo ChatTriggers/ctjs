@@ -52,22 +52,6 @@ public class GameRendererMixin {
         CTEvents.POST_RENDER_OVERLAY.invoker().render(matrixStack2, i, j, overlay, client.getLastFrameDuration());
     }
 
-    @Inject(
-        method = "render",
-        at = @At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/client/gui/screen/Screen;renderWithTooltip(Lnet/minecraft/client/util/math/MatrixStack;IIF)V",
-            ordinal = 0,
-            shift = At.Shift.AFTER
-        ),
-        locals = LocalCapture.CAPTURE_FAILHARD
-    )
-    private void injectPostRenderScreen(float tickDelta, long startTime, boolean tick, CallbackInfo ci, int i, int j, MatrixStack matrixStack, MatrixStack matrixStack2) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        Screen screen = Objects.requireNonNull(client.currentScreen);
-        CTEvents.POST_RENDER_SCREEN.invoker().render(matrixStack2, i, j, screen, client.getLastFrameDuration());
-    }
-
     @Inject(method = "renderWorld", at = @At("HEAD"))
     private void injectPreRenderWorld(float tickDelta, long limitTime, MatrixStack matrices, CallbackInfo ci) {
         CTEvents.PRE_RENDER_WORLD.invoker().render(matrices, tickDelta);
