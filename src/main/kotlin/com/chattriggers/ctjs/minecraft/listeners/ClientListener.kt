@@ -20,8 +20,11 @@ import gg.essential.universal.UMatrixStack
 import gg.essential.universal.UMinecraft
 import gg.essential.universal.wrappers.message.UTextComponent
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
+import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
 import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents
+import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents
+import net.fabricmc.fabric.api.client.screen.v1.ScreenKeyboardEvents
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents
@@ -31,6 +34,7 @@ import net.fabricmc.fabric.api.event.player.UseItemCallback
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.util.ActionResult
 import net.minecraft.util.TypedActionResult
+import org.lwjgl.glfw.GLFW
 import org.mozilla.javascript.Context
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -110,6 +114,36 @@ object ClientListener : Initializer {
             !event.isCancelled()
         }
 
+        ScreenEvents.BEFORE_INIT.register { _, screen, _, _ ->
+            // TODO: Why does Renderer.drawString not work in here?
+            ScreenEvents.beforeRender(screen).register { _, stack, mouseX, mouseY, partialTicks ->
+                renderTrigger(stack, partialTicks) {
+                    TriggerType.GUI_RENDER.triggerAll(mouseX, mouseY, screen)
+                }
+            }
+
+            // TODO: Why does Renderer.drawString not work in here?
+            ScreenEvents.afterRender(screen).register { _, stack, mouseX, mouseY, partialTicks ->
+                renderTrigger(stack, partialTicks) {
+                    TriggerType.POST_GUI_RENDER.triggerAll(mouseX, mouseY, screen, partialTicks)
+                }
+            }
+
+            // TODO: Use modifiers?
+            ScreenKeyboardEvents.allowKeyPress(screen).register { _, key, scancode, _ ->
+                val event = CancellableEvent()
+                TriggerType.GUI_KEY.triggerAll(GLFW.glfwGetKeyName(key, scancode), key, screen, event)
+
+                !event.isCancelled()
+            }
+        }
+
+        ScreenEvents.AFTER_INIT.register { _, screen, _, _ ->
+            ScreenEvents.remove(screen).register {
+                TriggerType.GUI_CLOSED.triggerAll(screen)
+            }
+        }
+
         CTEvents.PACKET_RECECIVED.register { packet, ctx ->
             JSLoader.wrapInContext(packetContext) {
                 TriggerType.PACKET_RECEIVED.triggerAll(packet, ctx)
@@ -118,12 +152,6 @@ object ClientListener : Initializer {
 
         CTEvents.RENDER_TICK.register {
             TriggerType.STEP.triggerAll()
-        }
-
-        CTEvents.POST_RENDER_SCREEN.register { stack, mouseX, mouseY, screen, partialTicks ->
-            renderTrigger(stack, partialTicks) {
-                TriggerType.POST_GUI_RENDER.triggerAll(mouseX, mouseY, screen, partialTicks)
-            }
         }
 
         CTEvents.RENDER_OVERLAY.register { stack, partialTicks ->

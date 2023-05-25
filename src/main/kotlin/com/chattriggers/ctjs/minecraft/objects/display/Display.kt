@@ -5,6 +5,7 @@ import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer
 import com.chattriggers.ctjs.utils.Initializer
 import com.chattriggers.ctjs.utils.getOption
 import gg.essential.universal.UMatrixStack
+import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents
 import org.mozilla.javascript.NativeObject
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -267,10 +268,12 @@ abstract class Display() {
 
             }
 
-            CTEvents.POST_RENDER_SCREEN.register { stack, _, _, _, partialTicks ->
-                Renderer.matrixStack = UMatrixStack(stack)
-                Renderer.partialTicks = partialTicks
-                drawAll(RegisterType.POST_GUI_RENDER)
+            ScreenEvents.BEFORE_INIT.register { _, screen, _, _ ->
+                ScreenEvents.afterRender(screen).register { _, stack, _, _, partialTicks ->
+                    Renderer.matrixStack = UMatrixStack(stack)
+                    Renderer.partialTicks = partialTicks
+                    drawAll(RegisterType.POST_GUI_RENDER)
+                }
             }
         }
 

@@ -5,6 +5,7 @@ import com.chattriggers.ctjs.minecraft.wrappers.Client
 import com.chattriggers.ctjs.minecraft.wrappers.World
 import com.chattriggers.ctjs.triggers.TriggerType
 import com.chattriggers.ctjs.utils.Initializer
+import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents
 import org.lwjgl.glfw.GLFW
 
@@ -45,19 +46,22 @@ internal object MouseListener : Initializer {
         CTEvents.MOUSE_CLICKED.register(TriggerType.CLICKED::triggerAll)
         CTEvents.MOUSE_SCROLLED.register(TriggerType.SCROLLED::triggerAll)
         CTEvents.MOUSE_DRAGGED.register(TriggerType.DRAGGED::triggerAll)
+        CTEvents.GUI_MOUSE_DRAG.register(TriggerType.GUI_MOUSE_DRAG::triggerAll)
 
-        ScreenMouseEvents.AllowMouseClick { screen, mouseX, mouseY, button ->
-            val event = CancellableEvent()
-            TriggerType.GUI_MOUSE_CLICK.triggerAll(mouseX, mouseY, button, screen, true, event)
+        ScreenEvents.BEFORE_INIT.register { _, screen, _, _ ->
+            ScreenMouseEvents.allowMouseClick(screen).register { _, mouseX, mouseY, button ->
+                val event = CancellableEvent()
+                TriggerType.GUI_MOUSE_CLICK.triggerAll(mouseX, mouseY, button, true, screen, event)
 
-            !event.isCanceled()
-        }
+                !event.isCanceled()
+            }
 
-        ScreenMouseEvents.AllowMouseRelease { screen, mouseX, mouseY, button ->
-            val event = CancellableEvent()
-            TriggerType.GUI_MOUSE_CLICK.triggerAll(mouseX, mouseY, button, screen, false, event)
+            ScreenMouseEvents.allowMouseRelease(screen).register { _, mouseX, mouseY, button ->
+                val event = CancellableEvent()
+                TriggerType.GUI_MOUSE_CLICK.triggerAll(mouseX, mouseY, button, false, screen, event)
 
-            !event.isCanceled()
+                !event.isCanceled()
+            }
         }
     }
 

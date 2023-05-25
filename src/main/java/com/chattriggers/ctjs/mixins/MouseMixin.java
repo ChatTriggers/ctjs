@@ -18,10 +18,6 @@ public class MouseMixin {
     @Shadow
     private int activeButton;
 
-    @Shadow
-    @Final
-    private MinecraftClient client;
-
     @Inject(
         method = "onMouseButton",
         at = @At(
@@ -54,9 +50,9 @@ public class MouseMixin {
         ),
         cancellable = true
     )
-    void injectOnMouseDrag(Screen screen, double d, double e, double f, double g, CallbackInfo ci) {
-        if (client.currentScreen != null) {
-            CTEvents.GUI_MOUSE_DRAG.invoker().process(f, g, d, e, activeButton, client.currentScreen, ci);
+    void injectOnGuiMouseDrag(Screen screen, double d, double e, double f, double g, CallbackInfo ci) {
+        if (screen != null) {
+            CTEvents.GUI_MOUSE_DRAG.invoker().process(f, g, d, e, activeButton, screen, ci);
         }
     }
 }
