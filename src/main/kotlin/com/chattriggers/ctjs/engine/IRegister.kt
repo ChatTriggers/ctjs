@@ -383,6 +383,25 @@ interface IRegister {
         return RegularTrigger(method, TriggerType.GUI_CLOSED, getImplementationLoader())
     }
 
+    // TODO(breaking): Changed params
+    /**
+     * Registers a new trigger that runs before an item is dropped.
+     *
+     * Passes through two arguments:
+     * - The [com.chattriggers.ctjs.minecraft.wrappers.inventory.Item] that was dropped
+     * - Whether the entire stack (true), or just 1 item (false) will be dropped
+     * - The event, which can be cancelled
+     *
+     * Available modifications:
+     * - [Trigger.setPriority] Sets the priority
+     *
+     * @param method The method to call when the event is fired
+     * @return The trigger for additional modification
+     */
+    fun registerDropItem(method: Any): EventTrigger {
+        return EventTrigger(method, TriggerType.DROP_ITEM, getImplementationLoader())
+    }
+
     /**
      * Registers a new trigger that runs before a message is sent in chat.
      *
@@ -407,7 +426,7 @@ interface IRegister {
      *
      * Passes through three arguments:
      * - The list of lore to modify.
-     * - The [Item] that this lore is attached to.
+     * - The [com.chattriggers.ctjs.minecraft.wrappers.inventory.Item] that this lore is attached to.
      * - The cancellable event.
      *
      * Available modifications:
