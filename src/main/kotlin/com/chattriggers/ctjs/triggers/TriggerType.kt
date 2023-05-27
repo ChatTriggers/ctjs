@@ -28,6 +28,7 @@ enum class TriggerType {
     SERVER_CONNECT,
     SERVER_DISCONNECT,
     GUI_CLOSED,
+    DROP_ITEM,
 
     // rendering
     PRE_RENDER_WORLD,
