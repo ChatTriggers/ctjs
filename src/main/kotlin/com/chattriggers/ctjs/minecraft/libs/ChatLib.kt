@@ -9,6 +9,7 @@ import com.chattriggers.ctjs.mixins.ChatHudAccessor
 import com.chattriggers.ctjs.utils.asMixin
 import com.chattriggers.ctjs.utils.console.printToConsole
 import gg.essential.universal.wrappers.message.UTextComponent
+import net.fabricmc.fabric.impl.command.client.ClientCommandInternals
 import net.minecraft.client.gui.hud.ChatHudLine
 import net.minecraft.client.gui.hud.MessageIndicator
 import org.mozilla.javascript.regexp.NativeRegExp
@@ -99,8 +100,8 @@ object ChatLib {
     @JvmOverloads
     @JvmStatic
     fun command(text: String, clientSide: Boolean = false) {
-        // TODO: clientSide param? This is client side by default
-        Client.getMinecraft().networkHandler?.sendChatCommand(text)
+        if (clientSide) ClientCommandInternals.executeCommand(text)
+        else Client.getMinecraft().networkHandler?.sendChatCommand(text)
     }
 
     // TODO(breaking): Now only clears all chats
