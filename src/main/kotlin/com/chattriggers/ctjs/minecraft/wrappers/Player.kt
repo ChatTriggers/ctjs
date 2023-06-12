@@ -5,8 +5,10 @@ import com.chattriggers.ctjs.minecraft.wrappers.entity.PlayerMP
 import com.chattriggers.ctjs.minecraft.wrappers.entity.Team
 import com.chattriggers.ctjs.minecraft.wrappers.inventory.Inventory
 import com.chattriggers.ctjs.minecraft.wrappers.inventory.Item
+import com.chattriggers.ctjs.minecraft.wrappers.world.PotionEffect
 import gg.essential.universal.UMath
 import gg.essential.universal.UMinecraft
+import gg.essential.universal.wrappers.message.UTextComponent
 import net.minecraft.client.network.ClientPlayerEntity
 import java.util.*
 
@@ -202,10 +204,14 @@ object Player {
         }
     }
 
+    /**
+     * Gets the current active potion effects. Returns an empty list
+     * if the player has no active potion effects.
+     *
+     * @return a list of the active [PotionEffect]s
+     */
     @JvmStatic
-    fun getActivePotionEffects() {
-        TODO()
-    }
+    fun getActivePotionEffects(): List<PotionEffect> = getPlayer()?.activeStatusEffects?.values?.map(::PotionEffect).orEmpty()
 
     /**
      * Gets the current object that the player is looking at,
@@ -219,16 +225,31 @@ object Player {
         TODO()
     }
 
+    /**
+     * Gets the current item in the player's main hand.
+     *
+     * @return the current held [Item]
+     */
     @JvmStatic
     fun getHeldItem(): Item? = getPlayer()?.inventory?.selectedSlot?.let {
         getInventory()?.getStackInSlot(it)
     }
 
+    /**
+     * Sets the current held item based on the provided index.
+     *
+     * @param index the new held item index
+     */
     @JvmStatic
     fun setHeldItemIndex(index: Int) {
         getPlayer()?.inventory?.selectedSlot = index
     }
 
+    /**
+     * Gets the current index of the held item.
+     *
+     * @return the current index
+     */
     @JvmStatic
     fun getHeldItemIndex(): Int = getPlayer()?.inventory?.selectedSlot ?: -1
 
@@ -240,36 +261,34 @@ object Player {
     @JvmStatic
     fun getInventory(): Inventory? = getPlayer()?.inventory?.let(::Inventory)
 
-    // /**
-    //  * Gets the display name for the player,
-    //  * i.e. the name shown in tab list and in the player's nametag.
-    //  * @return the display name
-    //  */
-    // @JvmStatic
-    // fun getDisplayName(): TextComponent {
-    //     return asPlayerMP()?.getDisplayName() ?: TextComponent("")
-    // }
-    //
-    // /**
-    //  * Sets the name for this player shown in tab list
-    //  *
-    //  * @param textComponent the new name to display
-    //  */
-    // @JvmStatic
-    // fun setTabDisplayName(textComponent: TextComponent) {
-    //     asPlayerMP()?.setTabDisplayName(textComponent)
-    // }
-    //
-    // /**
-    //  * Sets the name for this player shown above their head,
-    //  * in their name tag
-    //  *
-    //  * @param textComponent the new name to display
-    //  */
-    // @JvmStatic
-    // fun setNametagName(textComponent: TextComponent) {
-    //     asPlayerMP()?.setNametagName(textComponent)
-    // }
+    /**
+     * Gets the display name for the player,
+     * i.e. the name shown in tab list and in the player's nametag.
+     * @return the display name
+     */
+    @JvmStatic
+    fun getDisplayName(): UTextComponent = asPlayerMP()?.getDisplayName() ?: UTextComponent("")
+
+    /**
+     * Sets the name for this player shown in tab list
+     *
+     * @param textComponent the new name to display
+     */
+    @JvmStatic
+    fun setTabDisplayName(textComponent: UTextComponent) {
+        asPlayerMP()?.setTabDisplayName(textComponent)
+    }
+
+    /**
+     * Sets the name for this player shown above their head,
+     * in their name tag
+     *
+     * @param textComponent the new name to display
+     */
+    @JvmStatic
+    fun setNametagName(textComponent: UTextComponent) {
+        asPlayerMP()?.setNametagName(textComponent)
+    }
 
     // TODO:
     // @Deprecated("Use the better named method", ReplaceWith("getContainer()"))
@@ -304,25 +323,25 @@ object Player {
 
     object armor {
         /**
-         * @return the item in the player's helmet slot
+         * @return the [Item] in the player's helmet slot or null if the slot is empty
          */
         @JvmStatic
         fun getHelmet(): Item? = getInventory()?.getStackInSlot(39)
 
         /**
-         * @return the item in the player's chestplate slot
+         * @return the [Item] in the player's chestplate slot or null if the slot is empty
          */
         @JvmStatic
         fun getChestplate(): Item? = getInventory()?.getStackInSlot(38)
 
         /**
-         * @return the item in the player's leggings slot
+         * @return the [Item] in the player's leggings slot or null if the slot is empty
          */
         @JvmStatic
         fun getLeggings(): Item? = getInventory()?.getStackInSlot(37)
 
         /**
-         * @return the item in the player's boots slot
+         * @return the [Item] in the player's boots slot or null if the slot is empty
          */
         @JvmStatic
         fun getBoots(): Item? = getInventory()?.getStackInSlot(36)
