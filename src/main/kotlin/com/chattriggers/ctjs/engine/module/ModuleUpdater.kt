@@ -8,9 +8,9 @@ import com.chattriggers.ctjs.minecraft.CTEvents
 import com.chattriggers.ctjs.minecraft.libs.ChatLib
 import com.chattriggers.ctjs.utils.Config
 import com.chattriggers.ctjs.utils.Initializer
-import com.chattriggers.ctjs.utils.console.LogType
-import com.chattriggers.ctjs.utils.console.printToConsole
-import com.chattriggers.ctjs.utils.console.printTraceToConsole
+import com.chattriggers.ctjs.console.LogType
+import com.chattriggers.ctjs.console.printToConsole
+import com.chattriggers.ctjs.console.printTraceToConsole
 import com.chattriggers.ctjs.utils.toVersion
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents
 import org.apache.commons.io.FileUtils

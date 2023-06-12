@@ -9,8 +9,8 @@ import com.chattriggers.ctjs.minecraft.listeners.ClientListener
 import com.chattriggers.ctjs.minecraft.objects.Message
 import com.chattriggers.ctjs.minecraft.wrappers.Client
 import com.chattriggers.ctjs.utils.Config
-import com.chattriggers.ctjs.utils.console.ConsoleManager
-import com.chattriggers.ctjs.utils.console.printTraceToConsole
+import com.chattriggers.ctjs.console.ConsoleManager
+import com.chattriggers.ctjs.console.printTraceToConsole
 import com.chattriggers.ctjs.utils.toVersion
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.arguments.IntegerArgumentType

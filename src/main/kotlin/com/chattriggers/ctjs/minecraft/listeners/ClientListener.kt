@@ -15,12 +15,11 @@ import com.chattriggers.ctjs.triggers.ChatTrigger
 import com.chattriggers.ctjs.triggers.TriggerType
 import com.chattriggers.ctjs.utils.Config
 import com.chattriggers.ctjs.utils.Initializer
-import com.chattriggers.ctjs.utils.console.printToConsole
+import com.chattriggers.ctjs.console.printToConsole
 import gg.essential.universal.UMatrixStack
 import gg.essential.universal.UMinecraft
 import gg.essential.universal.wrappers.message.UTextComponent
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
-import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
 import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents

@@ -7,7 +7,7 @@ import com.chattriggers.ctjs.minecraft.listeners.WorldListener
 import com.chattriggers.ctjs.minecraft.objects.KeyBind
 import com.chattriggers.ctjs.minecraft.objects.display.Display
 import com.chattriggers.ctjs.minecraft.wrappers.CPS
-import com.chattriggers.ctjs.utils.console.ConsoleManager
+import com.chattriggers.ctjs.console.ConsoleManager
 
 internal interface Initializer {
     fun init()

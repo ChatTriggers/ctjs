@@ -1,6 +1,7 @@
 package com.chattriggers.ctjs
 
 import com.chattriggers.ctjs.commands.Command
+import com.chattriggers.ctjs.console.ConsoleManager
 import com.chattriggers.ctjs.engine.module.ModuleManager
 import com.chattriggers.ctjs.minecraft.libs.ChatLib
 import com.chattriggers.ctjs.minecraft.libs.renderer.Image
@@ -11,8 +12,7 @@ import com.chattriggers.ctjs.minecraft.wrappers.Client
 import com.chattriggers.ctjs.minecraft.wrappers.World
 import com.chattriggers.ctjs.triggers.TriggerType
 import com.chattriggers.ctjs.utils.Config
-import com.chattriggers.ctjs.utils.console.ConsoleManager
-import com.chattriggers.ctjs.utils.console.printTraceToConsole
+import com.chattriggers.ctjs.console.printTraceToConsole
 import kotlin.concurrent.thread
 
 object Reference {

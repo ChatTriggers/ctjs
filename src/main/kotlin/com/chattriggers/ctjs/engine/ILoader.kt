@@ -4,11 +4,10 @@ import com.chattriggers.ctjs.engine.langs.Lang
 import com.chattriggers.ctjs.engine.module.Module
 import com.chattriggers.ctjs.triggers.Trigger
 import com.chattriggers.ctjs.triggers.TriggerType
-import com.chattriggers.ctjs.utils.console.Console
-import com.chattriggers.ctjs.utils.console.ConsoleManager
+import com.chattriggers.ctjs.console.Console
+import com.chattriggers.ctjs.console.ConsoleManager
 import org.apache.commons.io.FileUtils
 import java.io.File
-import java.lang.invoke.MethodHandle
 import java.net.URI
 import java.net.URL
 import java.nio.charset.Charset

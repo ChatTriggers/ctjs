@@ -1,4 +1,4 @@
-package com.chattriggers.ctjs.utils.console
+package com.chattriggers.ctjs.console
 
 import com.chattriggers.ctjs.engine.langs.Lang
 import com.chattriggers.ctjs.engine.langs.js.JSLoader
@@ -16,8 +16,8 @@ object ConsoleManager : Initializer {
     private val keybindings = mutableMapOf<Lang?, KeyBinding>()
 
     init {
-        consoles[null] = ElementaConsole(null)
-        consoles[Lang.JS] = ElementaConsole(JSLoader)
+        consoles[null] = RemoteConsoleHost(null)
+        consoles[Lang.JS] = RemoteConsoleHost(JSLoader)
     }
 
     override fun init() {
@@ -43,12 +43,8 @@ object ConsoleManager : Initializer {
         }
     }
 
-    fun onConsoleSettingsChanged() {
-        consoles.values.forEach { it.onConsoleSettingsChanged() }
-    }
-
-    fun installConsole(lang: Lang?, console: Console) {
-        consoles[lang] = console
+    fun onConsoleSettingsChanged(settings: Config.ConsoleSettings) {
+        consoles.values.forEach { it.onConsoleSettingsChanged(settings) }
     }
 
     fun getConsole(lang: Lang? = null) = consoles[lang]!!

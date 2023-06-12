@@ -1,7 +1,7 @@
 package com.chattriggers.ctjs.launch
 
 import com.chattriggers.ctjs.engine.module.ModuleManager
-import com.chattriggers.ctjs.utils.console.printTraceToConsole
+import com.chattriggers.ctjs.console.printTraceToConsole
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.putJsonArray
@@ -9,7 +9,6 @@ import kotlinx.serialization.json.putJsonObject
 import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint
 import org.spongepowered.asm.mixin.Mixins
 import java.io.ByteArrayInputStream
-import java.net.MalformedURLException
 import java.net.URL
 import java.net.URLConnection
 import java.net.URLStreamHandler

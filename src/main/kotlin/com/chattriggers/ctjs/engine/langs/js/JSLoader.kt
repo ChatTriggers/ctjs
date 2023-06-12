@@ -1,12 +1,14 @@
 package com.chattriggers.ctjs.engine.langs.js
 
+import com.chattriggers.ctjs.console.LogType
+import com.chattriggers.ctjs.console.printToConsole
+import com.chattriggers.ctjs.console.printTraceToConsole
 import com.chattriggers.ctjs.engine.ILoader
 import com.chattriggers.ctjs.engine.langs.Lang
 import com.chattriggers.ctjs.engine.module.Module
 import com.chattriggers.ctjs.engine.module.ModuleManager.modulesFolder
 import com.chattriggers.ctjs.triggers.Trigger
 import com.chattriggers.ctjs.triggers.TriggerType
-import com.chattriggers.ctjs.utils.console.*
 import org.mozilla.javascript.*
 import org.mozilla.javascript.Function
 import org.mozilla.javascript.commonjs.module.ModuleScriptProvider
@@ -14,12 +16,8 @@ import org.mozilla.javascript.commonjs.module.Require
 import org.mozilla.javascript.commonjs.module.provider.StrongCachingModuleScriptProvider
 import org.mozilla.javascript.commonjs.module.provider.UrlModuleSourceProvider
 import java.io.File
-import java.lang.invoke.MethodHandle
-import java.lang.invoke.MethodHandles
-import java.lang.invoke.MethodType
 import java.net.URI
 import java.net.URL
-import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentSkipListSet
 import kotlin.contracts.ExperimentalContracts
