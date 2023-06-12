@@ -7,7 +7,7 @@ import com.chattriggers.ctjs.minecraft.wrappers.Client
 import com.chattriggers.ctjs.minecraft.wrappers.Player
 import com.chattriggers.ctjs.mixins.ChatHudAccessor
 import com.chattriggers.ctjs.utils.asMixin
-import com.chattriggers.ctjs.utils.console.printToConsole
+import com.chattriggers.ctjs.console.printToConsole
 import gg.essential.universal.wrappers.message.UTextComponent
 import net.fabricmc.fabric.impl.command.client.ClientCommandInternals
 import net.minecraft.client.gui.hud.ChatHudLine

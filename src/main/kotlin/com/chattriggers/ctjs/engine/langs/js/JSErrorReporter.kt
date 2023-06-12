@@ -1,9 +1,8 @@
 package com.chattriggers.ctjs.engine.langs.js
 
-import com.chattriggers.ctjs.utils.console.Console
+import com.chattriggers.ctjs.console.Console
 import org.mozilla.javascript.ErrorReporter
 import org.mozilla.javascript.EvaluatorException
-import java.io.PrintWriter
 
 class JSErrorReporter(private val console: Console) : ErrorReporter {
     override fun warning(message: String?, sourceName: String?, line: Int, lineSource: String?, lineOffset: Int) {

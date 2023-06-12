@@ -1,13 +1,13 @@
 package com.chattriggers.ctjs.utils
 
 import com.chattriggers.ctjs.CTJS
-import com.chattriggers.ctjs.engine.module.ModuleManager
-import com.chattriggers.ctjs.utils.console.ConsoleManager
+import com.chattriggers.ctjs.console.ConsoleManager
 import gg.essential.vigilance.Vigilant
 import gg.essential.vigilance.data.Property
 import gg.essential.vigilance.data.PropertyType
 import java.awt.Color
 import java.io.File
+import kotlin.reflect.KProperty
 
 object Config : Vigilant(File(CTJS.configLocation, "ChatTriggers.toml"), sortingBehavior = CategorySorting) {
     @Property(
@@ -126,13 +126,6 @@ object Config : Vigilant(File(CTJS.configLocation, "ChatTriggers.toml"), sorting
     var consoleBackgroundColor = Color(21, 21, 21)
 
     @Property(
-        PropertyType.SWITCH,
-        name = "Use custom console colors for errors or warnings",
-        category = "Console",
-    )
-    var consoleErrorAndWarningColors = true
-
-    @Property(
         PropertyType.COLOR,
         name = "Console error color",
         category = "Console",
@@ -149,26 +142,56 @@ object Config : Vigilant(File(CTJS.configLocation, "ChatTriggers.toml"), sorting
     init {
         initialize()
 
-        addDependency(
-            javaClass.getDeclaredField("consoleErrorColor"),
-            javaClass.getDeclaredField("consoleErrorAndWarningColors"),
-        )
+        listenToConsoleProperty(::clearConsoleOnLoad)
+        listenToConsoleProperty(::openConsoleOnError)
+        listenToConsoleProperty(::consoleFiraCodeFont)
+        listenToConsoleProperty(::consoleFontSize)
+        listenToConsoleProperty(::customTheme)
+        listenToConsoleProperty(::consoleTheme)
+        listenToConsoleProperty(::consoleForegroundColor)
+        listenToConsoleProperty(::consoleBackgroundColor)
+        listenToConsoleProperty(::consoleErrorColor)
+        listenToConsoleProperty(::consoleWarningColor)
+    }
 
-        addDependency(
-            javaClass.getDeclaredField("consoleWarningColor"),
-            javaClass.getDeclaredField("consoleErrorAndWarningColors"),
-        )
+    private inline fun <reified T> listenToConsoleProperty(property: KProperty<T>) {
+        val field = ConsoleSettings::class.java.getDeclaredField(property.name)
+        field.isAccessible = true
 
-        registerListener<Boolean>("clearConsoleOnLoad") { ConsoleManager.onConsoleSettingsChanged() }
-        registerListener<Boolean>("openConsoleOnError") { ConsoleManager.onConsoleSettingsChanged() }
-        registerListener<Boolean>("consoleFiraCodeFont") { ConsoleManager.onConsoleSettingsChanged() }
-        registerListener<Int>("consoleFontSize") { ConsoleManager.onConsoleSettingsChanged() }
-        registerListener<Boolean>("customTheme") { ConsoleManager.onConsoleSettingsChanged() }
-        registerListener<String>("consoleTheme") { ConsoleManager.onConsoleSettingsChanged() }
-        registerListener<Color>("consoleForegroundColor") { ConsoleManager.onConsoleSettingsChanged() }
-        registerListener<Color>("consoleBackgroundColor") { ConsoleManager.onConsoleSettingsChanged() }
-        registerListener<Boolean>("consoleErrorAndWarningColors") { ConsoleManager.onConsoleSettingsChanged() }
-        registerListener<Color>("consoleErrorColor") { ConsoleManager.onConsoleSettingsChanged() }
-        registerListener<Color>("consoleWarningColor") { ConsoleManager.onConsoleSettingsChanged() }
+        registerListener<T>(property.name) {
+            val settings = ConsoleSettings.make()
+            field.set(settings, it)
+            ConsoleManager.onConsoleSettingsChanged(settings)
+        }
+    }
+
+    // The listener properties above get called before the property is updated, so we have
+    // to keep track of it ourselves and use the new value that is passed in
+    data class ConsoleSettings(
+        var clearConsoleOnLoad: Boolean,
+        var openConsoleOnError: Boolean,
+        var consoleFiraCodeFont: Boolean,
+        var consoleFontSize: Int,
+        var customTheme: Boolean,
+        var consoleTheme: String,
+        var consoleForegroundColor: Color,
+        var consoleBackgroundColor: Color,
+        var consoleErrorColor: Color,
+        var consoleWarningColor: Color,
+    ) {
+        companion object {
+            fun make() = ConsoleSettings(
+                clearConsoleOnLoad,
+                openConsoleOnError,
+                consoleFiraCodeFont,
+                consoleFontSize,
+                customTheme,
+                consoleTheme,
+                consoleForegroundColor,
+                consoleBackgroundColor,
+                consoleErrorColor,
+                consoleWarningColor,
+            )
+        }
     }
 }

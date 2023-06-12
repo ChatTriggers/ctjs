@@ -2,8 +2,8 @@ package com.chattriggers.ctjs.commands
 
 import com.chattriggers.ctjs.CTJS
 import com.chattriggers.ctjs.triggers.CommandTrigger
-import com.chattriggers.ctjs.utils.console.LogType
-import com.chattriggers.ctjs.utils.console.printToConsole
+import com.chattriggers.ctjs.console.LogType
+import com.chattriggers.ctjs.console.printToConsole
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.context.CommandContext

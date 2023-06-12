@@ -2,18 +2,20 @@ package com.chattriggers.ctjs.engine.module
 
 import com.chattriggers.ctjs.CTJS
 import com.chattriggers.ctjs.Reference
+import com.chattriggers.ctjs.console.ConsoleManager
+import com.chattriggers.ctjs.console.LogType
+import com.chattriggers.ctjs.console.printToConsole
 import com.chattriggers.ctjs.engine.ILoader
+import com.chattriggers.ctjs.engine.langs.Lang
 import com.chattriggers.ctjs.engine.langs.js.JSContextFactory
 import com.chattriggers.ctjs.engine.langs.js.JSLoader
 import com.chattriggers.ctjs.minecraft.libs.ChatLib
 import com.chattriggers.ctjs.triggers.TriggerType
-import com.chattriggers.ctjs.utils.console.*
 import gg.essential.vigilance.impl.nightconfig.core.file.FileConfig
 import kotlinx.serialization.json.Json
 import org.apache.commons.io.FileUtils
 import org.mozilla.javascript.Context
 import java.io.File
-import java.lang.invoke.MethodHandle
 import java.net.URLClassLoader
 
 object ModuleManager {
