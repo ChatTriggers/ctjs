@@ -6,6 +6,7 @@ import com.chattriggers.ctjs.minecraft.CTEvents
 import com.chattriggers.ctjs.minecraft.libs.ChatLib
 import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer
 import com.chattriggers.ctjs.minecraft.wrappers.World
+import com.chattriggers.ctjs.minecraft.wrappers.entity.BlockEntity
 import com.chattriggers.ctjs.minecraft.wrappers.entity.Entity
 import com.chattriggers.ctjs.minecraft.wrappers.world.block.Block
 import com.chattriggers.ctjs.minecraft.wrappers.world.block.BlockFace
@@ -174,9 +175,13 @@ object ClientListener : Initializer {
 
         CTEvents.RENDER_ENTITY.register { stack, entity, partialTicks, ci ->
             renderTrigger(stack, partialTicks) {
-                // TODO(breaking): Don't pass the position into the trigger (they can get it
-                //                 from the entity if its needed)
-                TriggerType.RENDER_ENTITY.triggerAll(Entity(entity), partialTicks, ci)
+                TriggerType.RENDER_ENTITY.triggerAll(Entity.fromMC(entity), partialTicks, ci)
+            }
+        }
+
+        CTEvents.RENDER_BLOCK_ENTITY.register { stack, blockEntity, partialTicks, ci ->
+            renderTrigger(stack, partialTicks) {
+                TriggerType.RENDER_BLOCK_ENTITY.triggerAll(BlockEntity(blockEntity), partialTicks, ci)
             }
         }
 
@@ -197,7 +202,7 @@ object ClientListener : Initializer {
 
             TriggerType.PLAYER_INTERACT.triggerAll(
                 PlayerInteraction.ATTACK_ENTITY,
-                Entity(entity),
+                Entity.fromMC(entity),
                 event,
             )
 
@@ -233,7 +238,7 @@ object ClientListener : Initializer {
 
             TriggerType.PLAYER_INTERACT.triggerAll(
                 PlayerInteraction.USE_ENTITY,
-                Entity(entity),
+                Entity.fromMC(entity),
                 event
             )
 

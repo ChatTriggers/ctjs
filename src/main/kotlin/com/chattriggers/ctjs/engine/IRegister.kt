@@ -661,12 +661,13 @@ interface IRegister {
         return RegularTrigger(method, TriggerType.SERVER_DISCONNECT, getImplementationLoader())
     }
 
+    // TODO(breaking): Don't pass the position into the trigger (they can get it
+    //                 from the entity if its needed)
     /**
      * Registers a new trigger that runs whenever an entity is rendered
      *
-     * Passes through four arguments:
+     * Passes through three arguments:
      * - The [com.chattriggers.ctjs.minecraft.wrappers.entity.Entity]
-     * - The position as a [com.chattriggers.ctjs.utils.vec.Vec3f]
      * - The partial ticks
      * - The event, which can be cancelled
      *
@@ -678,36 +679,18 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerRenderEntity(method: Any): RenderEntityTrigger {
-    //     return RenderEntityTrigger(method, TriggerType.RenderEntity, getImplementationLoader())
-    // }
+     fun registerRenderEntity(method: Any): RenderEntityTrigger {
+         return RenderEntityTrigger(method, getImplementationLoader())
+     }
 
+    //  TODO(breaking): Renamed to blockentity
+    // TODO(breaking): Don't pass the position into the trigger (they can get it
+    //                 from the blockentity if its needed)
     /**
-     * Registers a new trigger that runs after an entity is rendered
+     * Registers a new trigger that runs whenever a block entity is rendered
      *
      * Passes through three arguments:
-     * - The [com.chattriggers.ctjs.minecraft.wrappers.entity.Entity]
-     * - The position as a [com.chattriggers.ctjs.utils.vec.Vec3f]
-     * - The partial ticks
-     *
-     * Available modifications:
-     * - [Trigger.setPriority] Sets the priority
-     * - [ClassFilterTrigger.setFilteredClasses] Sets the entity classes which this trigger
-     *   gets fired for
-     *
-     * @param method The method to call when the event is fired
-     * @return The trigger for additional modification
-     */
-    // fun registerPostRenderEntity(method: Any): RenderEntityTrigger {
-    //     return RenderEntityTrigger(method, TriggerType.PostRenderEntity, getImplementationLoader())
-    // }
-
-    /**
-     * Registers a new trigger that runs whenever a tile entity is rendered
-     *
-     * Passes through four arguments:
-     * - The TileEntity
-     * - The position as a [com.chattriggers.ctjs.utils.vec.Vec3f]
+     * - The [com.chattriggers.ctjs.minecraft.wrappers.entity.BlockEntity]
      * - The partial ticks
      * - The event, which can be cancelled
      *
@@ -719,29 +702,9 @@ interface IRegister {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    // fun registerRenderTileEntity(method: Any): RenderTileEntityTrigger {
-    //     return RenderTileEntityTrigger(method, TriggerType.RenderTileEntity, getImplementationLoader())
-    // }
-
-    /**
-     * Registers a new trigger that runs after a tile entity is rendered
-     *
-     * Passes through three arguments:
-     * - The TileEntity
-     * - The position as a [com.chattriggers.ctjs.utils.vec.Vec3f]
-     * - The partial ticks
-     *
-     * Available modifications:
-     * - [Trigger.setPriority] Sets the priority
-     * - [ClassFilterTrigger.setFilteredClasses] Sets the tile entity classes which this trigger
-     *   gets fired for
-     *
-     * @param method The method to call when the event is fired
-     * @return The trigger for additional modification
-     */
-    // fun registerPostRenderTileEntity(method: Any): RenderTileEntityTrigger {
-    //     return RenderTileEntityTrigger(method, TriggerType.PostRenderTileEntity, getImplementationLoader())
-    // }
+     fun registerRenderBlockEntity(method: Any): RenderBlockEntityTrigger {
+         return RenderBlockEntityTrigger(method, getImplementationLoader())
+     }
 
     /**
      * Registers a new trigger that runs after the current screen is rendered
