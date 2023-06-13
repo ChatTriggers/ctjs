@@ -436,7 +436,7 @@ interface IRegister {
      * @return The trigger for additional modification
      */
     fun registerItemTooltip(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.TOOLTIP, getImplementationLoader())
+        return EventTrigger(method, TriggerType.ITEM_TOOLTIP, getImplementationLoader())
     }
 
     // TODO(breaking): Changes second argument
