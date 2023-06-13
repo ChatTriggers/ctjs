@@ -16,7 +16,7 @@ enum class TriggerType {
     DRAGGED,
     GUI_OPENED,
     MESSAGE_SENT,
-    TOOLTIP,
+    ITEM_TOOLTIP,
     PLAYER_INTERACT,
     HIT_BLOCK,
     BREAK_BLOCK,
