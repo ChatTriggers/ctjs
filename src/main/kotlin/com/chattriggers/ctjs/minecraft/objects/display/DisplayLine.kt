@@ -109,24 +109,21 @@ abstract class DisplayLine {
         this.backgroundColor = backgroundColor
     }
 
-    fun registerClicked(method: Any) = run {
+    //TODO(breaking): changed run to apply in all register function
+    fun registerClicked(method: Any) = apply {
         onClicked = RegularTrigger(method, TriggerType.OTHER, getLoader())
-        onClicked
     }
 
-    fun registerHovered(method: Any) = run {
+    fun registerHovered(method: Any) = apply {
         onHovered = RegularTrigger(method, TriggerType.OTHER, getLoader())
-        onHovered
     }
 
-    fun registerMouseLeave(method: Any) = run {
+    fun registerMouseLeave(method: Any) = apply {
         onMouseLeave = RegularTrigger(method, TriggerType.OTHER, getLoader())
-        onMouseLeave
     }
 
-    fun registerDragged(method: Any) = run {
+    fun registerDragged(method: Any) = apply {
         onDragged = RegularTrigger(method, TriggerType.OTHER, getLoader())
-        onDragged
     }
 
     fun unregisterClicked() = apply {
@@ -153,14 +150,14 @@ abstract class DisplayLine {
         x: Float,
         y: Float,
         totalWidth: Float,
-        background_: Display.Background,
-        backgroundColor_: Long,
-        textColor_: Long,
+        displayBackground: Display.Background,
+        displayBackgroundColor: Long,
+        displayTextColor: Long,
         align: Display.Align,
     ) {
-        val background = this.background ?: background_
-        val backgroundColor = this.backgroundColor ?: backgroundColor_
-        val textColor = this.textColor ?: textColor_
+        val background = this.background ?: displayBackground
+        val backgroundColor = this.backgroundColor ?: displayBackgroundColor
+        val textColor = this.textColor ?: displayTextColor
 
         // X relative to the top left of the display
         val baseX = when (align) {
