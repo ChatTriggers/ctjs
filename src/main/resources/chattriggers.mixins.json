@@ -5,6 +5,7 @@
     "compatibilityLevel": "JAVA_17",
     "client": [
         "AbstractSoundInstanceAccessor",
+        "BlockEntityRenderDispatcherMixin",
         "BookScreenAccessor",
         "ChatHudAccessor",
         "ChatHudMixin",
@@ -36,11 +37,9 @@
         "PlayerScreenHandlerMixin",
         "RenderTickCounterMixin",
         "ScreenHandlerMixin",
-        "ScreenMixin",
         "SoundAccessor",
         "SoundManagerAccessor",
-        "SoundSystemMixin",
-        "WorldRendererMixin"
+        "SoundSystemMixin"
     ],
     "injectors": {
         "defaultRequire": 1

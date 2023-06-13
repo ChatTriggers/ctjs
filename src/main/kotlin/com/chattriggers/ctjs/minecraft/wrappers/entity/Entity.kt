@@ -83,7 +83,7 @@ open class Entity(val entity: MCEntity) {
      * @return an Entity or null
      */
     fun getRiding(): Entity? {
-        return entity.vehicle?.let(::Entity)
+        return entity.vehicle?.let(::fromMC)
     }
 
     // TODO(breaking): Removed getRider()
@@ -93,7 +93,7 @@ open class Entity(val entity: MCEntity) {
      *
      * @return List of entities, empty if there are no riders
      */
-    fun getRiders() = entity.passengerList?.map(::Entity).orEmpty()
+    fun getRiders() = entity.passengerList?.map(::fromMC).orEmpty()
 
     /**
      * Checks whether the entity is dead.
@@ -169,9 +169,7 @@ open class Entity(val entity: MCEntity) {
      */
     fun getAir(): Int = entity.air
 
-    fun setAir(air: Int) = apply {
-        entity.air = air
-    }
+    // TODO(breaking): remove setAir
 
     fun distanceTo(other: Entity): Float = distanceTo(other.entity)
 

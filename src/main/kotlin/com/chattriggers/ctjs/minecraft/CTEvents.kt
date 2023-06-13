@@ -3,11 +3,12 @@ package com.chattriggers.ctjs.minecraft
 import com.chattriggers.ctjs.minecraft.CTEvents.PacketReceivedCallback
 import com.chattriggers.ctjs.minecraft.CTEvents.RenderScreenCallback
 import com.chattriggers.ctjs.minecraft.CTEvents.VoidCallback
+import com.chattriggers.ctjs.utils.MCBlockEntity
+import com.chattriggers.ctjs.utils.MCEntity
 import net.fabricmc.fabric.api.event.EventFactory
 import net.minecraft.client.gui.Drawable
 import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.util.math.MatrixStack
-import net.minecraft.entity.Entity
 import net.minecraft.network.packet.Packet
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 
@@ -25,7 +26,11 @@ internal object CTEvents {
     }
 
     fun interface RenderEntityCallback {
-        fun render(matrixStack: MatrixStack, entity: Entity, partialTicks: Float, ci: CallbackInfo)
+        fun render(matrixStack: MatrixStack, entity: MCEntity, partialTicks: Float, ci: CallbackInfo)
+    }
+
+    fun interface RenderBlockEntityCallback {
+        fun render(matrixStack: MatrixStack, entity: MCBlockEntity, partialTicks: Float, ci: CallbackInfo)
     }
 
     fun interface RenderOverlayCallback {
@@ -91,6 +96,13 @@ internal object CTEvents {
     val RENDER_ENTITY = make<RenderEntityCallback> { listeners ->
         RenderEntityCallback { stack, entity, partialTicks, ci ->
             listeners.forEach { it.render(stack, entity, partialTicks, ci) }
+        }
+    }
+
+    @JvmField
+    val RENDER_BLOCK_ENTITY = make<RenderBlockEntityCallback> { listeners ->
+        RenderBlockEntityCallback { stack, blockEntity, partialTicks, ci ->
+            listeners.forEach { it.render(stack, blockEntity, partialTicks, ci) }
         }
     }
 

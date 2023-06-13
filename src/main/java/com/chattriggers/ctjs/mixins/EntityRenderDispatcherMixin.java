@@ -1,5 +1,6 @@
 package com.chattriggers.ctjs.mixins;
 
+import com.chattriggers.ctjs.minecraft.CTEvents;
 import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -22,5 +23,12 @@ public abstract class EntityRenderDispatcherMixin {
     @Inject(method = "reload", at = @At("TAIL"), locals = LocalCapture.CAPTURE_FAILHARD)
     private void injectReload(ResourceManager manager, CallbackInfo ci, EntityRendererFactory.Context context) {
         Renderer.initializePlayerRenderers$ctjs(context);
+    }
+
+    @Inject(method = "render", at = @At("HEAD"), cancellable = true)
+    private void injectRender(Entity entity, double x, double y, double z, float yaw, float tickDelta,
+                              MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light,
+                              CallbackInfo ci) {
+        CTEvents.RENDER_ENTITY.invoker().render(matrices, entity, tickDelta, ci);
     }
 }

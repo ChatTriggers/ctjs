@@ -37,6 +37,7 @@ enum class TriggerType {
     RENDER_OVERLAY,
     RENDER_PLAYER_LIST,
     RENDER_ENTITY,
+    RENDER_BLOCK_ENTITY,
     GUI_RENDER,
     POST_GUI_RENDER,
 
