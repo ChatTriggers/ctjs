@@ -31,6 +31,7 @@
         "MouseMixin",
         "NbtCompoundAccessor",
         "ParticleAccessor",
+        "ParticleManagerMixin",
         "PlayerEntityMixin",
         "PlayerListHudAccessor",
         "PlayerListHudMixin",

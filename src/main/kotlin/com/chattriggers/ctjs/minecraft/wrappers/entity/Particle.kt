@@ -85,12 +85,7 @@ class Particle(val particle: MCParticle) {
      */
     fun getColor(): Color = Color(red, green, blue, alpha)
 
-    fun setColor(color: Color) = apply {
-        red = color.redF
-        green = color.greenF
-        blue = color.blueF
-        alpha = color.alphaF
-    }
+    fun setColor(color: Color) = setColor(color.rgb.toLong())
 
     /**
      * Sets the amount of ticks this particle will live for
@@ -105,5 +100,5 @@ class Particle(val particle: MCParticle) {
         particle.markDead()
     }
 
-    override fun toString() = "Particle(pos=[$x, $y, $z], color=[$red, $green, $blue, $alpha], age=$age)"
+    override fun toString() = "Particle(type=${particle.javaClass.simpleName}, pos=($x, $y, $z), color=[$red, $green, $blue, $alpha], age=$age)"
 }

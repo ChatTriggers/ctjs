@@ -724,12 +724,12 @@ interface IRegister {
         return RegularTrigger(method, TriggerType.POST_GUI_RENDER, getImplementationLoader())
     }
 
+    // TODO(breaking): Remove ParticleType parameter
     /**
      * Registers a new trigger that runs whenever a particle is spawned
      *
-     * Passes through three arguments:
+     * Passes through two arguments:
      * - The [com.chattriggers.ctjs.minecraft.wrappers.entity.Particle]
-     * - The [net.minecraft.util.EnumParticleTypes]
      * - The event, which can be cancelled
      *
      * Available modifications:

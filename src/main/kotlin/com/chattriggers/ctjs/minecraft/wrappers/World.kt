@@ -245,7 +245,7 @@ object World {
 
         /**
          * Spawns a particle into the world with the given attributes,
-         * which can be configured further with the returned [Particle]
+         * which can be configured further with the returned [com.chattriggers.ctjs.minecraft.wrappers.entity.Particle]
          *
          * @param particle the name of the particle to spawn, see [getParticleNames]
          * @param x the x coordinate to spawn the particle at
