@@ -1,0 +1,44 @@
+name: build
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+
+jobs:
+  build:
+    name: Build
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-java@v2
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Build
+        run: ./gradlew --no-daemon build
+
+      # TODO: Uncomment when we care about publishing artifacts
+      # - name: Get Short SHA
+      #   id: sha
+      #   run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+
+      # - name: Publish Artifacts
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: ChatTriggers-artifacts-${{ steps.sha.outputs.sha_short }}
+      #     path: |
+      #       build/libs/*
