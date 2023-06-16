@@ -51,6 +51,9 @@ class InitMessage(
 object OpenMessage : H2CMessage()
 
 @Serializable
+object CloseMessage : H2CMessage()
+
+@Serializable
 class EvalResultMessage(val id: Int, val result: String) : H2CMessage()
 
 @Serializable

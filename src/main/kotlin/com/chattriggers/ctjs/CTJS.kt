@@ -2,6 +2,7 @@ package com.chattriggers.ctjs
 
 import com.chattriggers.ctjs.commands.CTCommand
 import com.chattriggers.ctjs.commands.Command
+import com.chattriggers.ctjs.console.ConsoleManager
 import com.chattriggers.ctjs.console.RemoteConsoleHost
 import com.chattriggers.ctjs.engine.module.ModuleManager
 import com.chattriggers.ctjs.minecraft.libs.renderer.Image
@@ -49,7 +50,10 @@ class CTJS : ClientModInitializer {
 
         Config.loadData()
 
-        Runtime.getRuntime().addShutdownHook(Thread(TriggerType.GAME_LOAD::triggerAll))
+        Runtime.getRuntime().addShutdownHook(Thread {
+            TriggerType.GAME_UNLOAD.triggerAll()
+            ConsoleManager.closeConsoles()
+        })
     }
 
     private fun reportHashedUUID() {

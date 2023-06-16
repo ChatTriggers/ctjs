@@ -16,6 +16,8 @@ interface Console {
 
     fun show()
 
+    fun close()
+
     // Invoked when the user changes any Console-related settings in the Config
     fun onConsoleSettingsChanged(settings: Config.ConsoleSettings)
 }

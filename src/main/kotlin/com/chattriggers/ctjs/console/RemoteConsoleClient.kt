@@ -70,6 +70,9 @@ class RemoteConsoleClient(private val port: Int) {
                     OpenMessage -> {
                         frame?.showConsole() ?: error("Received OpenMessage before InitMessage")
                     }
+                    CloseMessage -> {
+                        frame?.close() ?: error("Received CloseMessage before InitMessage")
+                    }
                     ClearConsoleMessage -> {
                         frame?.clearConsole() ?: error("Received ClearConsoleMessage before InitMessage")
                     }
