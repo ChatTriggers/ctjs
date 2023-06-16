@@ -15,6 +15,7 @@ import com.mojang.brigadier.CommandDispatcher
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
+import net.fabricmc.loader.api.FabricLoader
 import java.io.File
 import java.net.URL
 import java.net.URLConnection
@@ -66,6 +67,7 @@ class CTJS : ClientModInitializer {
         internal val images = mutableListOf<Image>()
         internal val sounds = mutableListOf<Sound>()
         internal var commandDispatcher: CommandDispatcher<FabricClientCommandSource>? = null
+        internal val isDevelopment = FabricLoader.getInstance().isDevelopmentEnvironment
 
         val configLocation = File("./config")
         val assetsDir = File(configLocation, "ChatTriggers/images/").apply { mkdirs() }
