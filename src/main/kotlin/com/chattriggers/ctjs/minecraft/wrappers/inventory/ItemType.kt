@@ -12,15 +12,15 @@ class ItemType(private val item: MCItem) {
 
     constructor(id: Int) : this(Registries.ITEM[id])
 
-    constructor(blockType: BlockType) : this(blockType.mcBlock.asItem())
+    constructor(blockType: BlockType) : this(blockType.block.asItem())
 
-    fun getName() = getNameComponent().unformattedText
+    fun getName(): String = getNameComponent().unformattedText
 
-    fun getNameComponent() = UTextComponent(item.name)
+    fun getNameComponent(): UTextComponent = UTextComponent(item.name)
 
-    fun getID() = MCItem.getRawId(item)
+    fun getID(): Int = MCItem.getRawId(item)
 
-    fun getTranslationKey() = item.translationKey
+    fun getTranslationKey(): String = item.translationKey
 
-    fun getRegistryName() = Registries.ITEM.getId(item)
+    fun getRegistryName(): String = Registries.ITEM.getId(item).toString()
 }

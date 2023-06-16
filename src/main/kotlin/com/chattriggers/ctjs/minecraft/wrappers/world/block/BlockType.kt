@@ -1,23 +1,29 @@
 package com.chattriggers.ctjs.minecraft.wrappers.world.block
 
+import com.chattriggers.ctjs.minecraft.wrappers.inventory.Item
+import com.chattriggers.ctjs.minecraft.wrappers.inventory.ItemType
 import com.chattriggers.ctjs.utils.MCBlock
+import com.chattriggers.ctjs.utils.MCItem
+import com.chattriggers.ctjs.utils.toIdentifier
 import gg.essential.universal.wrappers.message.UTextComponent
+import net.minecraft.registry.Registries
+import net.minecraft.util.Identifier
 
+// TODO(breaking): rename mcBlock to block to match all other mc class fields inside wrappers
 /**
  * An immutable wrapper around Minecraft's Block object. Note
  * that this references a block "type", and not an actual block
  * in the world. If a reference to a particular block is needed,
  * use [Block]
  */
-class BlockType(val mcBlock: MCBlock) {
-    constructor(block: BlockType) : this(block.mcBlock)
+class BlockType(val block: MCBlock) {
+    constructor(block: BlockType) : this(block.block)
 
-    // TODO:
-    // constructor(blockName: String) : this(MCBlock.getBlockFromName(blockName)!!)
-    //
-    // constructor(blockID: Int) : this(MCBlock.getBlockById(blockID))
-    //
-    // constructor(item: Item) : this(MCBlock.getBlockFromItem(item.item))
+    constructor(blockName: String) : this(Registries.BLOCK[blockName.toIdentifier()])
+
+    constructor(blockID: Int) : this(ItemType(MCItem.byRawId(blockID)).getRegistryName())
+
+    constructor(item: Item) : this(MCBlock.getBlockFromItem(item.stack.item))
 
     /**
      * Returns a [Block] based on this block and the
@@ -28,25 +34,23 @@ class BlockType(val mcBlock: MCBlock) {
      */
     fun withBlockPos(blockPos: BlockPos) = Block(this, blockPos)
 
-    // TODO:
-    // fun getID(): Int = MCBlock.getIdFromBlock(mcBlock)
+     fun getID(): Int = Registries.BLOCK.indexOf(block)
 
     /**
      * Gets the block's registry name.
-     * Example: minecraft:planks
+     * Example: minecraft:oak_planks
      *
      * @return the block's registry name
      */
-    fun getRegistryName() = mcBlock.translationKey
+    fun getRegistryName(): String = Registries.BLOCK.getId(block).toString()
 
     /**
-     * Gets the block's unlocalized name.
-     * Example: tile.wood
+     * Gets the block's translation key.
+     * Example: block.minecraft.oak_planks
      *
-     * @return the block's unlocalized name
+     * @return the block's translation key
      */
-    // TODO: What is this?
-    // fun getUnlocalizedName(): String = mcBlock.unlocalizedName
+     fun getTranslationKey(): String = block.translationKey
 
     /**
      * Gets the block's localized name.
@@ -54,20 +58,18 @@ class BlockType(val mcBlock: MCBlock) {
      *
      * @return the block's localized name
      */
-    fun getName() = UTextComponent(mcBlock.name).formattedText
+    fun getName() = UTextComponent(block.name).formattedText
 
     // TODO: Rename this method?
-    fun getLightValue(): Int {
-        return mcBlock.defaultState.luminance
-    }
+    fun getLightValue(): Int = block.defaultState.luminance
 
-    fun getDefaultState() = mcBlock.defaultState
+    fun getDefaultState() = block.defaultState
 
     // TODO(breaking): Remove getDefaultMetadata and getHarvestLevel
 
     fun canProvidePower() = getDefaultState().emitsRedstonePower()
 
-    fun isTranslucent() = mcBlock.defaultState.hasSidedTransparency()
+    fun isTranslucent() = block.defaultState.hasSidedTransparency()
 
-    override fun toString(): String = "BlockType(${getRegistryName()})"
+    override fun toString(): String = "BlockType{${getRegistryName()}}"
 }
