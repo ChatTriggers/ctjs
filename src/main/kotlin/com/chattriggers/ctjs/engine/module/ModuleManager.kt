@@ -134,15 +134,6 @@ object ModuleManager {
             }
         }
 
-        val mixinsFile = File(directory, "mixins.json")
-        if (mixinsFile.exists()) {
-            try {
-                metadata.mixins = Json.decodeFromString(mixinsFile.readText())
-            } catch (e: Exception) {
-                "Module $directory has invalid mixins.json".printToConsole(logType = LogType.ERROR)
-            }
-        }
-
         return Module(directory.name, metadata, directory)
     }
 
