@@ -1,5 +1,6 @@
 package com.chattriggers.ctjs.engine.langs.js
 
+import com.chattriggers.ctjs.CTJS
 import com.chattriggers.ctjs.launch.Mappings
 import net.fabricmc.loader.api.FabricLoader
 import org.mozilla.javascript.Context
@@ -39,7 +40,7 @@ object JSContextFactory : ContextFactory() {
     override fun hasFeature(cx: Context?, featureIndex: Int): Boolean {
         when (featureIndex) {
             FEATURE_LOCATION_INFORMATION_IN_ERROR -> return true
-            EMIT_DEBUG_OUTPUT -> return FabricLoader.getInstance().isDevelopmentEnvironment
+            EMIT_DEBUG_OUTPUT -> return CTJS.isDevelopment
         }
 
         return super.hasFeature(cx, featureIndex)

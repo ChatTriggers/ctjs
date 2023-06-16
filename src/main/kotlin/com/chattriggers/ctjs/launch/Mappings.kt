@@ -1,5 +1,6 @@
 package com.chattriggers.ctjs.launch
 
+import com.chattriggers.ctjs.CTJS
 import net.fabricmc.loader.api.FabricLoader
 import net.fabricmc.loader.impl.launch.FabricLauncherBase
 import net.fabricmc.mapping.tree.Descriptored
@@ -21,7 +22,6 @@ import java.nio.file.Files
 import java.util.zip.ZipFile
 
 object Mappings {
-    private val isDevelopment = FabricLauncherBase.getLauncher().isDevelopment
     private const val YARN_MAPPINGS_URL_PREFIX = "https://maven.fabricmc.net/net/fabricmc/yarn/"
 
     private val unmappedClasses = mutableMapOf<String, MappedClass>()
@@ -77,7 +77,7 @@ object Mappings {
                 methods
             )
 
-            if (isDevelopment) {
+            if (CTJS.isDevelopment) {
                 mappedToUnmappedClassNames[clazz.unmappedName] = clazz.unmappedName
             } else {
                 mappedToUnmappedClassNames[clazz.mappedName] = clazz.unmappedName
@@ -85,7 +85,7 @@ object Mappings {
         }
 
         // Create a remapper for Rhino
-        if (isDevelopment)
+        if (CTJS.isDevelopment)
             return
 
         rhinoProvider = object : JavaObjectMappingProvider {
@@ -171,13 +171,13 @@ object Mappings {
 
     fun getMappedClass(name: String) = unmappedClasses[name]
 
-    fun getMappedClassName(unmappedClassName: String) = if (!isDevelopment) {
+    fun getMappedClassName(unmappedClassName: String) = if (!CTJS.isDevelopment) {
         unmappedClasses[unmappedClassName.replace('.', '/')]?.name?.mapped?.replace('/', '.')
     } else null
 
     data class Mapping(val original: String, val mapped: String) {
         val value: String
-            get() = if (isDevelopment) original else mapped
+            get() = if (CTJS.isDevelopment) original else mapped
 
         companion object {
             fun fromMapped(mapped: Mapped) = Mapping(mapped.unmappedName, mapped.mappedName)
