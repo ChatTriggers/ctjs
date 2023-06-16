@@ -113,6 +113,8 @@ class RemoteConsoleHost(private val loader: ILoader?) : Console {
 
     override fun show() = trySendMessage(OpenMessage)
 
+    override fun close() = trySendMessage(CloseMessage)
+
     override fun onConsoleSettingsChanged(settings: Config.ConsoleSettings) =
         trySendMessage(ConfigUpdateMessage.constructFromConfig(settings))
 

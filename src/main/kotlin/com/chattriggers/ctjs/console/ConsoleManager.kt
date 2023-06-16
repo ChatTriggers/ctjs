@@ -56,4 +56,8 @@ object ConsoleManager : Initializer {
             }
         }
     }
+
+    fun closeConsoles() {
+        consoles.values.forEach(Console::close)
+    }
 }

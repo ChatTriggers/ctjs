@@ -6,6 +6,7 @@ import org.fife.ui.rsyntaxtextarea.Theme
 import java.awt.*
 import java.awt.event.KeyEvent
 import java.awt.event.KeyListener
+import java.awt.event.WindowEvent
 import java.io.ByteArrayInputStream
 import java.util.concurrent.CompletableFuture
 import javax.swing.*
@@ -123,6 +124,10 @@ class ConsoleFrame(
 
     fun clearConsole() {
         invokeLater { writer.clear() }
+    }
+
+    fun close() {
+        invokeLater { frame.dispatchEvent(WindowEvent(frame, WindowEvent.WINDOW_CLOSING)) }
     }
 
     // TODO: Make println and roll this back before 3.0.0
