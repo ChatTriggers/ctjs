@@ -5,7 +5,6 @@ import com.chattriggers.ctjs.minecraft.wrappers.Client
 import com.chattriggers.ctjs.minecraft.wrappers.World
 import com.chattriggers.ctjs.minecraft.wrappers.entity.Entity
 import com.chattriggers.ctjs.minecraft.wrappers.inventory.nbt.NBTTagCompound
-import com.chattriggers.ctjs.minecraft.wrappers.inventory.nbt.NBTTagList
 import com.chattriggers.ctjs.minecraft.wrappers.world.block.Block
 import com.chattriggers.ctjs.minecraft.wrappers.world.block.BlockPos
 import com.chattriggers.ctjs.mixins.ItemStackMixin
@@ -23,7 +22,7 @@ import net.minecraft.registry.Registries
 class Item(val stack: ItemStack) {
     val type: ItemType = ItemType(stack.item)
 
-    fun getHolder(): Entity? = stack.holder?.let(::Entity)
+    fun getHolder(): Entity? = stack.holder?.let(Entity::fromMC)
 
     fun getStackSize(): Int = stack.count
 
@@ -34,7 +33,8 @@ class Item(val stack: ItemStack) {
 
     fun isEnchantable() = stack.isEnchantable
 
-    fun isEnchated() = stack.hasEnchantments()
+    // TODO(breaking): fix typo in method name
+    fun isEnchanted() = stack.hasEnchantments()
 
     fun canPlaceOn(pos: BlockPos) = stack.canPlaceOn(Registries.BLOCK, CachedBlockPosition(World.getWorld(), pos.toMC(), false))
 
@@ -53,6 +53,8 @@ class Item(val stack: ItemStack) {
     // TODO(breaking): Rename isDamagable to isDamageable
     fun isDamageable() = stack.isDamageable
 
+    fun getName(): String = UTextComponent(stack.name).formattedText
+
     @JvmOverloads
     fun getLore(advanced: Boolean = false): List<UTextComponent>? = (getHolder()?.entity as? PlayerEntity)?.let {
         stack.getTooltip(it, if (advanced) TooltipContext.ADVANCED else TooltipContext.BASIC).map(::UTextComponent)
@@ -69,7 +71,7 @@ class Item(val stack: ItemStack) {
         stack.asMixin<ItemStackMixin>().overrideTooltip = false
     }
 
-    fun getRawNBT() = getNBT().toString()
+    // TODO(breaking): Removed getRawNBT - was useless
 
     fun getNBT() = stack.nbt?.let(::NBTTagCompound) ?: NBTTagCompound(MCNbtCompound())
 
@@ -95,4 +97,6 @@ class Item(val stack: ItemStack) {
 
         Renderer.resetTransformsIfNecessary()
     }
+
+    override fun toString(): String = "Item{name=${getName()}, type=${type.getRegistryName()}, size=${getStackSize()}}"
 }

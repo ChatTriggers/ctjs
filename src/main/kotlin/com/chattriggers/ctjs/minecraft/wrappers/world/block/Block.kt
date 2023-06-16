@@ -2,6 +2,7 @@ package com.chattriggers.ctjs.minecraft.wrappers.world.block
 
 import com.chattriggers.ctjs.minecraft.wrappers.Player
 import com.chattriggers.ctjs.minecraft.wrappers.World
+import com.chattriggers.ctjs.minecraft.wrappers.inventory.Item
 
 /**
  * An immutable reference to a placed block in the world. It
@@ -51,15 +52,14 @@ open class Block(
         return BlockFace.values().asSequence().map(::getEmittingPower).firstOrNull { it != 0 } ?: 0
     }
 
-    // TODO:
     /**
      * Checks whether the block can be mined with the tool in the player's hand
      *
      * @return whether the block can be mined
      */
-    // fun canBeHarvested(): Boolean = type.mcBlock.canHarvestBlock(World.getWorld(), pos.toMCBlock(), Player.getPlayer())
+     fun canBeHarvested(): Boolean = Player.getHeldItem()?.let(::canBeHarvestedWith) ?: false
 
-    // fun canBeHarvestedWith(item: Item): Boolean = item.canHarvest(type)
+     fun canBeHarvestedWith(item: Item): Boolean = item.canHarvest(this)
 
-    override fun toString() = "Block(type=$type, pos=($x, $y, $z), face=$face}"
+    override fun toString() = "Block{type=$type, pos=($x, $y, $z), face=$face}"
 }
