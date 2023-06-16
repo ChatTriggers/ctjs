@@ -1,6 +1,7 @@
 package com.chattriggers.ctjs.engine.langs.js
 
 import com.chattriggers.ctjs.CTJS
+import com.chattriggers.ctjs.launch.CTJavaObjectMappingProvider
 import com.chattriggers.ctjs.launch.Mappings
 import net.fabricmc.loader.api.FabricLoader
 import org.mozilla.javascript.Context
@@ -34,7 +35,9 @@ object JSContextFactory : ContextFactory() {
                 return super.wrap(cx, scope, obj, staticType)
             }
         }.apply { isJavaPrimitiveWrap = false }
-        Mappings.rhinoProvider?.let { cx.javaObjectMappingProvider = it }
+
+        if (!CTJS.isDevelopment)
+            cx.javaObjectMappingProvider = CTJavaObjectMappingProvider
     }
 
     override fun hasFeature(cx: Context?, featureIndex: Int): Boolean {
