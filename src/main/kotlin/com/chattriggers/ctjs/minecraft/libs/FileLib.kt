@@ -165,7 +165,7 @@ object FileLib {
     @JvmStatic
     @JvmOverloads
     fun getUrlContent(theUrl: String, userAgent: String? = "Mozilla/5.0"): String {
-        val conn = CTJS.makeWebRequest(theUrl)
+        val conn = CTJS.makeWebRequest(theUrl, userAgent)
 
         return conn.getInputStream().use {
             it.readBytes()

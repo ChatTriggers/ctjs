@@ -89,8 +89,9 @@ class CTJS : ClientModInitializer {
 
         internal val gson = Gson()
 
-        internal fun makeWebRequest(url: String): URLConnection = URL(url).openConnection().apply {
-            setRequestProperty("User-Agent", "Mozilla/5.0 (ChatTriggers)")
+        @JvmOverloads
+        internal fun makeWebRequest(url: String, userAgent: String? = "Mozilla/5.0 (ChatTriggers)"): URLConnection = URL(url).openConnection().apply {
+            setRequestProperty("User-Agent", userAgent)
             connectTimeout = 3000
             readTimeout = 3000
         }
