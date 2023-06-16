@@ -1,20 +1,15 @@
 package com.chattriggers.ctjs.launch
 
 import com.chattriggers.ctjs.CTJS
+import gg.essential.elementa.state.map
 import net.fabricmc.loader.api.FabricLoader
-import net.fabricmc.loader.impl.launch.FabricLauncherBase
 import net.fabricmc.mapping.tree.Descriptored
 import net.fabricmc.mapping.tree.Mapped
 import net.fabricmc.mapping.tree.TinyMappingFactory
-import org.mozilla.javascript.JavaObjectMappingProvider
-import org.mozilla.javascript.JavaObjectMappingProvider.MethodSignature
-import org.mozilla.javascript.JavaObjectMappingProvider.RenameableField
-import org.mozilla.javascript.JavaObjectMappingProvider.RenameableMethod
 import org.objectweb.asm.Type
 import org.objectweb.asm.tree.ClassNode
 import org.spongepowered.asm.service.MixinService
 import java.io.ByteArrayInputStream
-import java.lang.reflect.Modifier
 import java.net.URL
 import java.net.URLEncoder
 import java.nio.charset.Charset
@@ -26,8 +21,6 @@ object Mappings {
 
     private val unmappedClasses = mutableMapOf<String, MappedClass>()
     private val mappedToUnmappedClassNames = mutableMapOf<String, String>()
-
-    var rhinoProvider: JavaObjectMappingProvider? = null
 
     fun initialize() {
         // TODO: Change modid to ctjs
@@ -83,97 +76,11 @@ object Mappings {
                 mappedToUnmappedClassNames[clazz.mappedName] = clazz.unmappedName
             }
         }
-
-        // Create a remapper for Rhino
-        if (CTJS.isDevelopment)
-            return
-
-        rhinoProvider = object : JavaObjectMappingProvider {
-            override fun findExtraMethods(
-                clazz: Class<*>,
-                map: MutableMap<MethodSignature, RenameableMethod>,
-                includeProtected: Boolean,
-                includePrivate: Boolean
-            ) {
-                var current: Class<*>? = clazz
-                while (current != null) {
-                    findRemappedMethods(current, map, includeProtected, includePrivate)
-                    current = current.superclass
-                }
-            }
-
-            override fun findExtraFields(
-                clazz: Class<*>,
-                list: MutableList<RenameableField>,
-                includeProtected: Boolean,
-                includePrivate: Boolean
-            ) {
-                var current: Class<*>? = clazz
-                while (current != null) {
-                    // TODO: Why do I need the null assertion here but not above? Compiler bug?
-                    findRemappedFields(current!!, list, includeProtected, includePrivate)
-                    current = current!!.superclass
-                }
-            }
-
-            private fun findRemappedMethods(
-                clazz: Class<*>,
-                map: MutableMap<MethodSignature, RenameableMethod>,
-                includeProtected: Boolean,
-                includePrivate: Boolean,
-            ) {
-                val mappedClass = getMappedClassFromObject(clazz) ?: return
-
-                for ((unmappedMethodName, mappedMethods) in mappedClass.methods) {
-                    for (mappedMethod in mappedMethods) {
-                        val method = clazz.methods.find {
-                            when {
-                                it.name != mappedMethod.name.value -> false
-                                Modifier.isProtected(it.modifiers) && !includeProtected -> false
-                                Modifier.isPrivate(it.modifiers) && !includePrivate -> false
-                                else -> true
-                            }
-                        } ?: continue
-
-                        map[MethodSignature(unmappedMethodName, method.parameterTypes)] = RenameableMethod(method, unmappedMethodName)
-                    }
-                }
-            }
-
-            private fun findRemappedFields(
-                clazz: Class<*>,
-                list: MutableList<RenameableField>,
-                includeProtected: Boolean,
-                includePrivate: Boolean
-            ) {
-                val mappedClass = getMappedClassFromObject(clazz) ?: return
-
-                for ((unmappedFieldName, mappedField) in mappedClass.fields) {
-                    val field = clazz.fields.find {
-                        when {
-                            it.name != mappedField.name.value -> false
-                            Modifier.isProtected(it.modifiers) && !includeProtected -> false
-                            Modifier.isPrivate(it.modifiers) && !includePrivate -> false
-                            else -> true
-                        }
-                    } ?: continue
-
-                    list.add(RenameableField(field, unmappedFieldName))
-                }
-            }
-
-            private fun getMappedClassFromObject(clazz: Class<*>): MappedClass? {
-                val unmappedClassName = mappedToUnmappedClassNames[clazz.name.replace('.', '/')] ?: return null
-                return getMappedClass(unmappedClassName)
-            }
-        }
     }
 
     fun getMappedClass(name: String) = unmappedClasses[name]
 
-    fun getMappedClassName(unmappedClassName: String) = if (!CTJS.isDevelopment) {
-        unmappedClasses[unmappedClassName.replace('.', '/')]?.name?.mapped?.replace('/', '.')
-    } else null
+    fun getUnmappedClassName(mappedClassName: String) = mappedToUnmappedClassNames[mappedClassName]
 
     data class Mapping(val original: String, val mapped: String) {
         val value: String
