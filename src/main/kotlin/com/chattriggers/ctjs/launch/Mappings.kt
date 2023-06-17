@@ -1,14 +1,12 @@
 package com.chattriggers.ctjs.launch
 
 import com.chattriggers.ctjs.CTJS
-import gg.essential.elementa.state.map
 import net.fabricmc.loader.api.FabricLoader
 import net.fabricmc.mapping.tree.Descriptored
 import net.fabricmc.mapping.tree.Mapped
 import net.fabricmc.mapping.tree.TinyMappingFactory
 import org.objectweb.asm.Type
-import org.objectweb.asm.tree.ClassNode
-import org.spongepowered.asm.service.MixinService
+import org.spongepowered.asm.mixin.transformer.ClassInfo
 import java.io.ByteArrayInputStream
 import java.net.URL
 import java.net.URLEncoder
@@ -16,8 +14,11 @@ import java.nio.charset.Charset
 import java.nio.file.Files
 import java.util.zip.ZipFile
 
-object Mappings {
+internal object Mappings {
     private const val YARN_MAPPINGS_URL_PREFIX = "https://maven.fabricmc.net/net/fabricmc/yarn/"
+
+    // If this is changed, also change the Java.type function in mixinProvidedLibs.js
+    val mappedPackages = setOf("Lnet/minecraft/", "Lcom/mojang/blaze3d/")
 
     private val unmappedClasses = mutableMapOf<String, MappedClass>()
     private val mappedToUnmappedClassNames = mutableMapOf<String, String>()
@@ -57,8 +58,15 @@ object Mappings {
 
                 methods.getOrPut(method.unmappedName, ::mutableListOf).add(MappedMethod(
                     name = Mapping.fromMapped(method),
-                    parameterTypes = unmappedType.argumentTypes.zip(mappedType.argumentTypes).map {
-                        Mapping(it.first.descriptor, it.second.descriptor)
+                    parameters = method.parameters.sortedBy { it.localVariableIndex }.mapIndexed { index, param ->
+                        MappedParameter(
+                            Mapping(param.unmappedName, param.mappedName),
+                            Mapping(
+                                unmappedType.argumentTypes[index].descriptor,
+                                mappedType.argumentTypes[index].descriptor,
+                            ),
+                            param.localVariableIndex,
+                        )
                     },
                     returnType = Mapping(unmappedType.returnType.descriptor, mappedType.returnType.descriptor)
                 ))
@@ -78,9 +86,17 @@ object Mappings {
         }
     }
 
-    fun getMappedClass(name: String) = unmappedClasses[name]
+    fun getMappedClass(unmappedClassName: String): MappedClass? {
+        var name = unmappedClassName.let {
+            (if (it.startsWith('L') && it.endsWith(';')) {
+                it.drop(1).dropLast(1)
+            } else it).replace('.', '/')
+        }
+        mappedToUnmappedClassNames[name]?.also { name = it }
+        return unmappedClasses[name]
+    }
 
-    fun getUnmappedClassName(mappedClassName: String) = mappedToUnmappedClassNames[mappedClassName]
+    fun getMappedClassName(unmappedClassName: String) = getMappedClass(unmappedClassName)?.name?.value
 
     data class Mapping(val original: String, val mapped: String) {
         val value: String
@@ -93,26 +109,42 @@ object Mappings {
 
     data class MappedField(val name: Mapping, val type: Mapping)
 
+    class MappedParameter(
+        val name: Mapping,
+        val type: Mapping,
+        val lvtIndex: Int,
+    )
+
     class MappedMethod(
         val name: Mapping,
-        val parameterTypes: List<Mapping>,
+        val parameters: List<MappedParameter>,
         val returnType: Mapping,
-    )
+    ) {
+        fun toDescriptor() = buildString {
+            append('(')
+            parameters.forEach {
+                append(it.type.value)
+            }
+            append(')')
+            append(returnType.value)
+        }
+
+        fun toFullDescriptor() = name.value + toDescriptor()
+    }
 
     class MappedClass(
         val name: Mapping,
         val fields: Map<String, MappedField>,
         val methods: Map<String, List<MappedMethod>>,
     ) {
-        fun findMethods(name: String, classNode: ClassNode): List<MappedMethod>? {
-            if (name in methods)
-                return methods[name]
+        fun findMethods(name: String, classInfo: ClassInfo?): List<MappedMethod>? {
+            methods[name]?.let { return it }
 
-            val unmappedSuperClass = mappedToUnmappedClassNames[classNode.superName]!!
-            return unmappedClasses[unmappedSuperClass]?.findMethods(
-                name,
-                MixinService.getService().bytecodeProvider.getClassNode(classNode.superName)
-            )
+            if (classInfo == null)
+                return null
+
+            val unmappedSuperClass = mappedToUnmappedClassNames[classInfo.superName] ?: return null
+            return unmappedClasses[unmappedSuperClass]?.findMethods(name, classInfo.superClass)
         }
     }
 
