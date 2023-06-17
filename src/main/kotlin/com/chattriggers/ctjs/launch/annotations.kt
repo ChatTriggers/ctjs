@@ -105,3 +105,14 @@ data class ModifyArgs(
     val allow: Int?,
     val constraints: String?,
 ) : IInjector
+
+data class ModifyExpressionValue(
+    val method: String,
+    val at: At,
+    val slice: List<Slice>?,
+    val locals: List<Local>?,
+    val remap: Boolean?,
+    val require: Int?,
+    val expect: Int?,
+    val allow: Int?,
+) : IInjector
