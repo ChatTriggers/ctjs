@@ -21,6 +21,7 @@
     const ModifyArgObj = Java.type('com.chattriggers.ctjs.launch.ModifyArg');
     const ModifyArgsObj = Java.type('com.chattriggers.ctjs.launch.ModifyArgs');
     const ModifyExpressionValueObj = Java.type('com.chattriggers.ctjs.launch.ModifyExpressionValue');
+    const ModifyReceiverObj = Java.type('com.chattriggers.ctjs.launch.ModifyReceiver');
 
     global.Opcodes = Java.type('org.objectweb.asm.Opcodes');
 
@@ -231,6 +232,12 @@
             return this._createModifyExpressionValue(obj);
         }
 
+        modifyReceiver(obj) {
+            if (typeof obj != 'object')
+                throw new Error('Mixin.modifyReceiver() expects an object as its first argument');
+            return this._createModifyReceiver(obj);
+        }
+
         _createInject(obj) {
             const method = obj.method ?? throw new Error('Inject.method must be specified');
             const id = obj.id;
@@ -434,6 +441,42 @@
             );
 
             return JSLoader.registerInjector(this.mixinObj, modifyExpressionValueObj);
+        }
+
+        _createModifyReceiver(obj) {
+            const method = obj.method ?? throw new Error('ModifyReceiver.method must be specified');
+            const at = obj.at ?? throw new Error('ModifyReceiver.at must be specified');
+            let slices = obj.slice;
+            if (slices instanceof Slice)
+                slices = [slices];
+            let locals = obj.locals;
+            if (locals instanceof Local)
+                locals = [locals];
+            const remap = obj.remap;
+            const require = obj.require;
+            const expect = obj.expect;
+            const allow = obj.allow;
+
+            assertType(method, 'string', 'ModifyReceiver.method');
+            assertType(at, At, 'ModifyReceiver.at');
+            assertArrayType(slices, Slice, 'ModifyReceiver.slice');
+            assertType(remap, 'boolean', 'ModifyReceiver.remap');
+            assertType(require, 'number', 'ModifyReceiver.require');
+            assertType(expect, 'number', 'ModifyReceiver.expect');
+            assertType(allow, 'number', 'ModifyReceiver.allow');
+
+            const modifyReceiverObj = new ModifyReceiverObj(
+                method,
+                at?.atObj,
+                slices?.map(s => s.sliceObj),
+                locals?.map(l => l.localObj),
+                remap,
+                require,
+                expect,
+                allow,
+            );
+
+            return JSLoader.registerInjector(this.mixinObj, modifyReceiverObj);
         }
     }
 

@@ -116,3 +116,14 @@ data class ModifyExpressionValue(
     val expect: Int?,
     val allow: Int?,
 ) : IInjector
+
+data class ModifyReceiver(
+    val method: String,
+    val at: At,
+    val slice: List<Slice>?,
+    val locals: List<Local>?,
+    val remap: Boolean?,
+    val require: Int?,
+    val expect: Int?,
+    val allow: Int?,
+) : IInjector
