@@ -20,6 +20,7 @@
     const RedirectObj = Java.type('com.chattriggers.ctjs.launch.Redirect');
     const ModifyArgObj = Java.type('com.chattriggers.ctjs.launch.ModifyArg');
     const ModifyArgsObj = Java.type('com.chattriggers.ctjs.launch.ModifyArgs');
+    const ModifyExpressionValueObj = Java.type('com.chattriggers.ctjs.launch.ModifyExpressionValue');
 
     global.Opcodes = Java.type('org.objectweb.asm.Opcodes');
 
@@ -224,6 +225,12 @@
             return this._createModifyArgs(obj);
         }
 
+        modifyExpressionValue(obj) {
+            if (typeof obj != 'object')
+                throw new Error('Mixin.modifyExpressionValue() expects an object as its first argument');
+            return this._createModifyExpressionValue(obj);
+        }
+
         _createInject(obj) {
             const method = obj.method ?? throw new Error('Inject.method must be specified');
             const id = obj.id;
@@ -390,6 +397,43 @@
             );
 
             return JSLoader.registerInjector(this.mixinObj, modifyArgsObj);
+        }
+
+        _createModifyExpressionValue(obj) {
+            const method = obj.method ?? throw new Error('ModifyExpressionValue.method must be specified');
+            const at = obj.at ?? throw new Error('ModifyExpressionValue.at must be specified');
+            let slices = obj.slice;
+            if (slices instanceof Slice)
+                slices = [slices];
+            let locals = obj.locals;
+            if (locals instanceof Local)
+                locals = [locals];
+            const remap = obj.remap;
+            const require = obj.require;
+            const expect = obj.expect;
+            const allow = obj.allow;
+
+            assertType(method, 'string', 'ModifyExpressionValue.method');
+            assertType(at, At, 'ModifyExpressionValue.at');
+            assertArrayType(slices, Slice, 'ModifyExpressionValue.slice');
+            assertArrayType(locals, Local, 'ModifyExpressionValue.locals');
+            assertType(remap, 'boolean', 'ModifyExpressionValue.remap');
+            assertType(require, 'number', 'ModifyExpressionValue.require');
+            assertType(expect, 'number', 'ModifyExpressionValue.expect');
+            assertType(allow, 'number', 'ModifyExpressionValue.allow');
+
+            const modifyExpressionValueObj = new ModifyExpressionValueObj(
+                method,
+                at?.atObj,
+                slices?.map(s => s.sliceObj),
+                locals?.map(l => l.localObj),
+                remap,
+                require,
+                expect,
+                allow,
+            );
+
+            return JSLoader.registerInjector(this.mixinObj, modifyExpressionValueObj);
         }
     }
 
