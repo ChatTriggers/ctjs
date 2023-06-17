@@ -1,9 +1,11 @@
 package com.chattriggers.ctjs.utils
 
+import com.chattriggers.ctjs.launch.Descriptor
 import com.fasterxml.jackson.core.Version
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.MathHelper
 import org.mozilla.javascript.NativeObject
+import kotlin.reflect.KClass
 
 fun String.toVersion(): Version {
     val split = this.split(".").map(String::toInt)
@@ -32,3 +34,6 @@ fun Double.toRadians() = this * MathHelper.RADIANS_PER_DEGREE
 fun Float.toRadians() = this * MathHelper.RADIANS_PER_DEGREE
 fun Double.toDegrees() = this * MathHelper.DEGREES_PER_RADIAN
 fun Float.toDegrees() = this * MathHelper.DEGREES_PER_RADIAN
+
+fun KClass<*>.descriptorString(): String = java.descriptorString()
+fun KClass<*>.descriptor() = Descriptor.Object(descriptorString())
