@@ -79,3 +79,17 @@ data class Redirect(
     val allow: Int?,
     val constraints: String?,
 ) : IInjector
+
+data class ModifyArg(
+    val method: String,
+    val slice: Slice?,
+    val at: At,
+    val index: Int,
+    val captureAllParams: Boolean?,
+    val locals: List<Local>?,
+    val remap: Boolean?,
+    val require: Int?,
+    val expect: Int?,
+    val allow: Int?,
+    val constraints: String?,
+) : IInjector
