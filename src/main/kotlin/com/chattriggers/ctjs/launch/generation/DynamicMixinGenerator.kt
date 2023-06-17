@@ -18,7 +18,7 @@ internal class DynamicMixinGenerator(private val ctx: GenerationContext, private
         val mixinClassNode = assembleClass(public, generatedClassFullPath, version = Opcodes.V17) {
             for ((id, injector) in details.injectors) {
                 when (injector) {
-                    else -> TODO()
+                    is Inject -> InjectGenerator(ctx, id, injector).generate()
                 }
             }
         }
