@@ -107,11 +107,15 @@ object Player {
     @JvmStatic
     fun getName(): String = UMinecraft.getMinecraft().session.username
 
+    // TODO(breaking): getUUID returns UUID object now
+    /**
+     * Gets the Java UUID object of the player.
+     * Use of [UUID.toString] in conjunction is recommended.
+     *
+     * @return the player's uuid
+     */
     @JvmStatic
-    fun getUUID(): String = getUUIDObj().toString()
-
-    @JvmStatic
-    fun getUUIDObj(): UUID = UMinecraft.getMinecraft().session.profile.id
+    fun getUUID(): UUID = UMinecraft.getMinecraft().session.profile.id
 
     @JvmStatic
     fun getHP(): Float = getPlayer()?.health ?: 0f
