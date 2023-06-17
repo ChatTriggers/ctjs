@@ -93,3 +93,15 @@ data class ModifyArg(
     val allow: Int?,
     val constraints: String?,
 ) : IInjector
+
+data class ModifyArgs(
+    val method: String,
+    val slice: Slice?,
+    val at: At,
+    val locals: List<Local>?,
+    val remap: Boolean?,
+    val require: Int?,
+    val expect: Int?,
+    val allow: Int?,
+    val constraints: String?,
+) : IInjector
