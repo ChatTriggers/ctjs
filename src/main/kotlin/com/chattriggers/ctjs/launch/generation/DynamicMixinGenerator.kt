@@ -20,6 +20,7 @@ internal class DynamicMixinGenerator(private val ctx: GenerationContext, private
                 when (injector) {
                     is Inject -> InjectGenerator(ctx, id, injector).generate()
                     is Redirect -> RedirectGenerator(ctx, id, injector).generate()
+                    is ModifyArg -> ModifyArgGenerator(ctx, id, injector).generate()
                 }
             }
         }
