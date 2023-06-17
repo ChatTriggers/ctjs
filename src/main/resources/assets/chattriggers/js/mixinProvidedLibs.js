@@ -19,6 +19,7 @@
     const InjectObj = Java.type('com.chattriggers.ctjs.launch.Inject');
     const RedirectObj = Java.type('com.chattriggers.ctjs.launch.Redirect');
     const ModifyArgObj = Java.type('com.chattriggers.ctjs.launch.ModifyArg');
+    const ModifyArgsObj = Java.type('com.chattriggers.ctjs.launch.ModifyArgs');
 
     global.Opcodes = Java.type('org.objectweb.asm.Opcodes');
 
@@ -217,6 +218,12 @@
             return this._createModifyArg(obj);
         }
 
+        modifyArgs(obj) {
+            if (typeof obj != 'object')
+                throw new Error('Mixin.modifyArgs() expects an object as its first argument');
+            return this._createModifyArgs(obj);
+        }
+
         _createInject(obj) {
             const method = obj.method ?? throw new Error('Inject.method must be specified');
             const id = obj.id;
@@ -345,6 +352,44 @@
             );
 
             return JSLoader.registerInjector(this.mixinObj, modifyArgObj);
+        }
+
+        _createModifyArgs(obj) {
+            const method = obj.method ?? throw new Error('ModifyArgs.method must be specified');
+            const slice = obj.slice;
+            const at = obj.at ?? throw new Error('ModifyArgs.at must be specified');
+            let locals = obj.locals;
+            if (locals instanceof Local)
+                locals = [locals];
+            const require = obj.require;
+            const remap = obj.remap;
+            const expect = obj.expect;
+            const allow = obj.allow;
+            const constraints = obj.constraints;
+
+            assertType(method, 'string', 'ModifyArgs.method');
+            assertType(slice, Slice, 'ModifyArgs.slice');
+            assertType(at, At, 'ModifyArgs.at');
+            assertArrayType(locals, Local, 'ModifyArgs.locals');
+            assertType(require, 'number', 'ModifyArgs.require');
+            assertType(remap, 'boolean', 'ModifyArgs.remap');
+            assertType(expect, 'number', 'ModifyArgs.expect');
+            assertType(allow, 'number', 'ModifyArgs.allow');
+            assertType(constraints, 'string', 'ModifyArgs.constraints');
+
+            const modifyArgsObj = new ModifyArgsObj(
+                method,
+                slice?.sliceObj,
+                at?.atObj,
+                locals?.map(l => l.localObj),
+                remap,
+                require,
+                expect,
+                allow,
+                constraints,
+            );
+
+            return JSLoader.registerInjector(this.mixinObj, modifyArgsObj);
         }
     }
 
