@@ -17,6 +17,7 @@
     const SliceObj = Java.type('com.chattriggers.ctjs.launch.Slice');
     const LocalObj = Java.type('com.chattriggers.ctjs.launch.Local');
     const InjectObj = Java.type('com.chattriggers.ctjs.launch.Inject');
+    const RedirectObj = Java.type('com.chattriggers.ctjs.launch.Redirect');
 
     global.Opcodes = Java.type('org.objectweb.asm.Opcodes');
 
@@ -203,6 +204,12 @@
             return this._createInject(obj);
         }
 
+        redirect(obj) {
+            if (typeof obj != 'object')
+                throw new Error('Mixin.redirect() expects an object as its first argument');
+            return this._createRedirect(obj);
+        }
+
         _createInject(obj) {
             const method = obj.method ?? throw new Error('Inject.method must be specified');
             const id = obj.id;
@@ -249,6 +256,44 @@
             );
 
             return JSLoader.registerInjector(this.mixinObj, injectObj);
+        }
+
+        _createRedirect(obj) {
+            const method = obj.method ?? throw new Error('Redirect.method must be specified');
+            const slice = obj.slice;
+            const at = obj.at ?? throw new Error('Redirect.at must be specified');
+            let locals = obj.locals;
+            if (locals instanceof Local)
+                locals = [locals];
+            const remap = obj.remap;
+            const require = obj.require;
+            const expect = obj.expect;
+            const allow = obj.allow;
+            const constraints = obj.constraints;
+
+            assertType(method, 'string', 'Redirect.method');
+            assertType(slice, Slice, 'Redirect.slice');
+            assertType(at, At, 'Redirect.at');
+            assertArrayType(locals, Local, 'Redirect.locals');
+            assertType(remap, 'boolean', 'Redirect.remap');
+            assertType(require, 'number', 'Redirect.number');
+            assertType(expect, 'number', 'Redirect.expect');
+            assertType(allow, 'number', 'Redirect.allow');
+            assertType(constraints, 'string', 'Redirect.constraints');
+
+            const redirectObj = new RedirectObj(
+                method,
+                slice?.sliceObj,
+                at?.atObj,
+                locals?.map(l => l.localObj),
+                remap,
+                require,
+                expect,
+                allow,
+                constraints,
+            );
+
+            return JSLoader.registerInjector(this.mixinObj, redirectObj);
         }
     }
 
