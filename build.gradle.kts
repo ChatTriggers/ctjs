@@ -29,6 +29,8 @@ dependencies {
     include(modImplementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")!!)
     include(modImplementation("com.github.char:Koffee:3a78d8a437")!!)
 
+    include(implementation(annotationProcessor("com.github.llamalad7.mixinextras:mixinextras-fabric:0.2.0-beta.8")!!)!!)
+
     // 1.18 versions are good enough for Elementa and Vigilance, but not UC, so we
     // need to exclude this version
     configurations.modApi { exclude("gg.essential", "universalcraft-1.18.1-fabric") }
