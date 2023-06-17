@@ -127,3 +127,14 @@ data class ModifyReceiver(
     val expect: Int?,
     val allow: Int?,
 ) : IInjector
+
+data class ModifyReturnValue(
+    val method: String,
+    val at: At,
+    val slice: List<Slice>?,
+    val locals: List<Local>?,
+    val remap: Boolean?,
+    val require: Int?,
+    val expect: Int?,
+    val allow: Int?,
+) : IInjector
