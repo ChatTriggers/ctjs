@@ -20,6 +20,7 @@ class CTMixinPlugin : IMixinConfigPlugin {
 
         try {
             DynamicMixinManager.initialize()
+            DynamicMixinManager.applyAccessWideners()
         } catch (e: Throwable) {
             IllegalStateException("Error generating dynamic mixins", e).printTraceToConsole()
         }

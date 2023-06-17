@@ -50,6 +50,56 @@ internal object Utils {
         }
     }
 
+    fun widenField(mappedClass: Mappings.MappedClass, fieldName: String, isMutable: Boolean) {
+        val field = mappedClass.fields[fieldName]
+            ?: error("Unable to find field $fieldName in class ${mappedClass.name.original}")
+
+        FabricLoaderImpl.INSTANCE.accessWidener.visitField(
+            mappedClass.name.value,
+            field.name.value,
+            field.type.value,
+            AccessWidenerReader.AccessType.ACCESSIBLE,
+            false,
+        )
+
+        if (isMutable) {
+            FabricLoaderImpl.INSTANCE.accessWidener.visitField(
+                mappedClass.name.value,
+                field.name.value,
+                field.type.value,
+                AccessWidenerReader.AccessType.MUTABLE,
+                false,
+            )
+        }
+    }
+
+    fun widenMethod(
+        mappedClass: Mappings.MappedClass,
+        methodName: String,
+        isMutable: Boolean,
+    ) {
+        val descriptor = Descriptor.Parser(methodName).parseMethod(full = false)
+        val mappedMethod = findMethod(mappedClass, descriptor).first
+
+        FabricLoaderImpl.INSTANCE.accessWidener.visitMethod(
+            mappedClass.name.value,
+            mappedMethod.name.value,
+            mappedMethod.toDescriptor(),
+            AccessWidenerReader.AccessType.ACCESSIBLE,
+            false,
+        )
+
+        if (isMutable) {
+            FabricLoaderImpl.INSTANCE.accessWidener.visitMethod(
+                mappedClass.name.value,
+                mappedMethod.name.value,
+                mappedMethod.toDescriptor(),
+                AccessWidenerReader.AccessType.MUTABLE,
+                false,
+            )
+        }
+    }
+
     fun findMethod(
         mappedClass: Mappings.MappedClass,
         descriptor: Descriptor.Method,
