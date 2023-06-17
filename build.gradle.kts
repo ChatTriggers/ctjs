@@ -64,6 +64,12 @@ tasks {
         options.release.set(17)
     }
 
+    compileKotlin {
+        kotlinOptions {
+            freeCompilerArgs = listOf("-Xcontext-receivers")
+        }
+    }
+
     jar {
         from("LICENSE") {
             rename { "${name}_${base.archivesName.get()}" }
