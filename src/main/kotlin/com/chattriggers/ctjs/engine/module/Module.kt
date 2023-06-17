@@ -1,11 +1,13 @@
 package com.chattriggers.ctjs.engine.module
 
+import com.chattriggers.ctjs.engine.langs.Lang
 import com.fasterxml.jackson.core.Version
 import java.io.File
 
 class Module(val name: String, var metadata: ModuleMetadata, val folder: File) {
     var targetModVersion: Version? = null
     var requiredBy = mutableSetOf<String>()
+    lateinit var lang: Lang
 
     // TODO:
     // private val gui = object {

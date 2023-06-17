@@ -7,6 +7,8 @@ import com.chattriggers.ctjs.engine.ILoader
 import com.chattriggers.ctjs.engine.langs.Lang
 import com.chattriggers.ctjs.engine.module.Module
 import com.chattriggers.ctjs.engine.module.ModuleManager.modulesFolder
+import com.chattriggers.ctjs.launch.Mixin
+import com.chattriggers.ctjs.launch.MixinCallback
 import com.chattriggers.ctjs.triggers.Trigger
 import com.chattriggers.ctjs.triggers.TriggerType
 import org.mozilla.javascript.*
@@ -143,6 +145,14 @@ object JSLoader : ILoader {
         evalContext = JSContextFactory.enterContext()
         Context.exit()
         JSContextFactory.optimize = true
+    }
+
+    override fun mixinSetup(modules: List<Module>): Map<Mixin, ILoader.MixinDetails> {
+        TODO("Not yet implemented")
+    }
+
+    override fun invokeMixinLookup(id: Int): MixinCallback {
+        TODO("Not yet implemented")
     }
 
     class CTRequire(
