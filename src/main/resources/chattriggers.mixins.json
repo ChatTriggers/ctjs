@@ -40,9 +40,12 @@
         "ScreenHandlerMixin",
         "SoundAccessor",
         "SoundManagerAccessor",
-        "SoundSystemMixin"
+        "SoundSystemMixin",
+        "stdio.BootstrapMixin",
+        "stdio.LoggerPrintStreamMixin"
     ],
     "injectors": {
         "defaultRequire": 1
-    }
+    },
+    "plugin": "com.chattriggers.ctjs.launch.CTMixinPlugin"
 }
