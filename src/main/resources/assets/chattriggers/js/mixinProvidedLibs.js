@@ -22,6 +22,7 @@
     const ModifyArgsObj = Java.type('com.chattriggers.ctjs.launch.ModifyArgs');
     const ModifyExpressionValueObj = Java.type('com.chattriggers.ctjs.launch.ModifyExpressionValue');
     const ModifyReceiverObj = Java.type('com.chattriggers.ctjs.launch.ModifyReceiver');
+    const ModifyReturnValueObj = Java.type('com.chattriggers.ctjs.launch.ModifyReturnValue');
 
     global.Opcodes = Java.type('org.objectweb.asm.Opcodes');
 
@@ -236,6 +237,12 @@
             if (typeof obj != 'object')
                 throw new Error('Mixin.modifyReceiver() expects an object as its first argument');
             return this._createModifyReceiver(obj);
+        }
+
+        modifyReturnValue(obj) {
+            if (typeof obj != 'object')
+                throw new Error('Mixin.modifyReturnValue() expects an object as its first argument');
+            return this._createModifyReturnValue(obj);
         }
 
         widenField(name, isMutable) {
@@ -497,6 +504,42 @@
             );
 
             return JSLoader.registerInjector(this.mixinObj, modifyReceiverObj);
+        }
+
+        _createModifyReturnValue(obj) {
+            const method = obj.method ?? throw new Error('ModifyReturnValue.method must be specified');
+            const at = obj.at ?? throw new Error('ModifyReturnValue.at must be specified');
+            let slices = obj.slice;
+            if (slices instanceof Slice)
+                slices = [slices];
+            let locals = obj.locals;
+            if (locals instanceof Local)
+                locals = [locals];
+            const remap = obj.remap;
+            const require = obj.require;
+            const expect = obj.expect;
+            const allow = obj.allow;
+
+            assertType(method, 'string', 'ModifyReturnValue.method');
+            assertType(at, At, 'ModifyReturnValue.at');
+            assertArrayType(slices, Slice, 'ModifyReturnValue.slice');
+            assertType(remap, 'boolean', 'ModifyReturnValue.remap');
+            assertType(require, 'number', 'ModifyReturnValue.require');
+            assertType(expect, 'number', 'ModifyReturnValue.expect');
+            assertType(allow, 'number', 'ModifyReturnValue.allow');
+
+            const modifyReturnValueObj = new ModifyReturnValueObj(
+                method,
+                at?.atObj,
+                slices?.map(s => s.sliceObj),
+                locals?.map(l => l.localObj),
+                remap,
+                require,
+                expect,
+                allow,
+            )
+
+            return JSLoader.registerInjector(this.mixinObj, modifyReturnValueObj);
         }
     }
 
