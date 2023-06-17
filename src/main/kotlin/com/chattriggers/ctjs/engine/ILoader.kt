@@ -6,6 +6,8 @@ import com.chattriggers.ctjs.triggers.Trigger
 import com.chattriggers.ctjs.triggers.TriggerType
 import com.chattriggers.ctjs.console.Console
 import com.chattriggers.ctjs.console.ConsoleManager
+import com.chattriggers.ctjs.launch.Mixin
+import com.chattriggers.ctjs.launch.MixinCallback
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.net.URI
@@ -24,6 +26,25 @@ interface ILoader {
      * these are all jars from all modules.
      */
     fun setup(jars: List<URL>)
+
+    /**
+     * Performs setup for any existing dynamic mixins.
+     *
+     * @param modules All modules that belong to this module and have a mixin file
+     * @return A map of all mixin classes to their corresponding injectors, each of
+     *         which has an id unique to this loader instance. These must persist
+     *         across reloads.
+     */
+    fun mixinSetup(modules: List<Module>): Map<Mixin, MixinDetails>
+
+    /**
+     * To support user mixins, we need to link the mixin to the user function that
+     * will eventually be invoked. This method lets each specific engine handle
+     * functino invocation specifics themselves.
+     *
+     * @return a [MixinCallback] with a bound [MixinCallback.handle], if possible
+     */
+    fun invokeMixinLookup(id: Int): MixinCallback
 
     fun entrySetup()
 
@@ -89,4 +110,10 @@ interface ILoader {
         FileUtils.write(outputFile, res, Charset.defaultCharset())
         return res
     }
+
+    data class MixinDetails(
+        val injectors: MutableList<MixinCallback> = mutableListOf(),
+        val fieldWideners: MutableMap<String, Boolean> = mutableMapOf(),
+        val methodWideners: MutableMap<String, Boolean> = mutableMapOf(),
+    )
 }

@@ -2,13 +2,12 @@ package com.chattriggers.ctjs.engine.module
 
 import com.chattriggers.ctjs.CTJS
 import com.chattriggers.ctjs.Reference
-import com.chattriggers.ctjs.console.ConsoleManager
 import com.chattriggers.ctjs.console.LogType
 import com.chattriggers.ctjs.console.printToConsole
 import com.chattriggers.ctjs.engine.ILoader
-import com.chattriggers.ctjs.engine.langs.Lang
 import com.chattriggers.ctjs.engine.langs.js.JSContextFactory
 import com.chattriggers.ctjs.engine.langs.js.JSLoader
+import com.chattriggers.ctjs.launch.Mixin
 import com.chattriggers.ctjs.minecraft.libs.ChatLib
 import com.chattriggers.ctjs.minecraft.wrappers.World
 import com.chattriggers.ctjs.triggers.TriggerType
@@ -71,6 +70,18 @@ object ModuleManager {
         loadAssetsAndJars(cachedModules)
     }
 
+    fun mixinSetup(): Map<ILoader, Map<Mixin, ILoader.MixinDetails>> {
+        val mixins = mutableMapOf<ILoader, Map<Mixin, ILoader.MixinDetails>>()
+
+        for (loader in loaders) {
+            mixins[loader] = loader.mixinSetup(cachedModules.filter {
+                it.lang == loader.getLanguage() && it.metadata.mixinEntry != null
+            })
+        }
+
+        return mixins
+    }
+
     private fun loadAssetsAndJars(modules: List<Module>) {
         // Load their assets
         loadAssets(modules)
@@ -78,6 +89,7 @@ object ModuleManager {
         // Normalize all metadata
         modules.forEach {
             it.metadata.entry = it.metadata.entry?.replace('/', File.separatorChar)?.replace('\\', File.separatorChar)
+            it.metadata.mixinEntry = it.metadata.mixinEntry?.replace('/', File.separatorChar)?.replace('\\', File.separatorChar)
         }
 
         // Get all jars
@@ -93,6 +105,19 @@ object ModuleManager {
         loaders.forEach {
             it.setup(jars)
         }
+
+        // Associate each module with a loader via its language
+        cachedModules.toList().forEach { module ->
+            for (loader in loaders) {
+                if (module.metadata.entry?.substringAfterLast('.', "") == loader.getLanguage().extension) {
+                    module.lang = loader.getLanguage()
+                    return@forEach
+                }
+            }
+
+            "Module ${module.name} has an unknown loader".printToConsole()
+            cachedModules.remove(module)
+        }
     }
 
     fun entryPass(modules: List<Module> = cachedModules, completionListener: (percentComplete: Float) -> Unit = {}) {
@@ -104,7 +129,7 @@ object ModuleManager {
         // Load the modules
         loaders.forEach { loader ->
             modules.filter {
-                File(it.folder, it.metadata.entry ?: return@filter false).extension == loader.getLanguage().extension
+                it.lang == loader.getLanguage()
             }.forEach {
                 loader.entryPass(it, File(it.folder, it.metadata.entry!!).toURI())
 

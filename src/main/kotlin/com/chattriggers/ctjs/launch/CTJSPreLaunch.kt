@@ -13,5 +13,11 @@ class CTJSPreLaunch : PreLaunchEntrypoint {
             exception.printTraceToConsole()
             prevHandler.uncaughtException(thread, exception)
         }
+
+        try {
+            DynamicMixinManager.applyMixins()
+        } catch (e: Throwable) {
+            IllegalStateException("Error generating dynamic mixins", e).printTraceToConsole()
+        }
     }
 }
