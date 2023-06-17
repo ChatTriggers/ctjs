@@ -20,9 +20,9 @@ import net.minecraft.registry.Registries
 
 object World {
     /**
-     * Gets Minecraft's WorldClient object
+     * Gets Minecraft's [ClientWorld] object
      *
-     * @return The Minecraft WorldClient object
+     * @return The Minecraft [ClientWorld] object
      */
     @JvmStatic
     fun getWorld(): ClientWorld? = UMinecraft.getMinecraft().world
@@ -84,10 +84,10 @@ object World {
     }
 
     /**
-     * Gets the [IBlockState] at a location in the world.
+     * Gets the [BlockState] at a location in the world.
      *
      * @param pos The block position
-     * @return the [IBlockState] at the location
+     * @return the [BlockState] at the location
      */
     @JvmStatic
     fun getBlockStateAt(pos: BlockPos): BlockState {
