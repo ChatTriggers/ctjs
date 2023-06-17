@@ -16,6 +16,7 @@
     const AtObj = Java.type('com.chattriggers.ctjs.launch.At');
     const SliceObj = Java.type('com.chattriggers.ctjs.launch.Slice');
     const LocalObj = Java.type('com.chattriggers.ctjs.launch.Local');
+    const InjectObj = Java.type('com.chattriggers.ctjs.launch.Inject');
 
     global.Opcodes = Java.type('org.objectweb.asm.Opcodes');
 
@@ -194,6 +195,60 @@
             assertType(remap, 'boolean', 'Mixin.remap');
 
             this.mixinObj = new MixinObj(target, priority, remap);
+        }
+
+        inject(obj) {
+            if (typeof obj !== 'object')
+                throw new Error('Mixin.inject() expects an object as its first argument');
+            return this._createInject(obj);
+        }
+
+        _createInject(obj) {
+            const method = obj.method ?? throw new Error('Inject.method must be specified');
+            const id = obj.id;
+            let slices = obj.slice;
+            if (slices instanceof Slice)
+                slices = [slices];
+            let at = obj.at;
+            if (at instanceof At)
+                at = [at]
+            const cancellable = obj.cancellable;
+            let locals = obj.locals;
+            if (locals instanceof Local)
+                locals = [locals];
+            const remap = obj.remap;
+            const require = obj.require;
+            const expect = obj.expect;
+            const allow = obj.allow;
+            const constraints = obj.constraints;
+
+            assertType(id, 'string', 'Inject.id');
+            assertType(method, 'string', 'Inject.method');
+            assertArrayType(slices, Slice, 'Inject.slice');
+            assertArrayType(at, At, 'Inject.at');
+            assertType(cancellable, 'boolean', 'Inject.cancellable');
+            assertArrayType(locals, Local, 'Inject.locals');
+            assertType(remap, 'boolean', 'Inject.remap');
+            assertType(require, 'number', 'Inject.require');
+            assertType(expect, 'number', 'Inject.expect');
+            assertType(allow, 'number', 'Inject.allow');
+            assertType(constraints, 'string', 'Inject.constraints');
+
+            const injectObj = new InjectObj(
+                method,
+                id,
+                slices?.map(s => s.sliceObj),
+                at?.map(a => a.atObj),
+                cancellable,
+                locals?.map(l => l.localObj),
+                remap,
+                require,
+                expect,
+                allow,
+                constraints,
+            );
+
+            return JSLoader.registerInjector(this.mixinObj, injectObj);
         }
     }
 

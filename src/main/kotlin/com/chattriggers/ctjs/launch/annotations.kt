@@ -52,5 +52,18 @@ data class Local(
     val mutable: Boolean?,
 )
 
-// TODO: Add injector support
 sealed interface IInjector
+
+data class Inject(
+    val method: String,
+    val id: String?,
+    val slice: List<Slice>?,
+    val at: List<At>?,
+    val cancellable: Boolean?,
+    val locals: List<Local>?,
+    val remap: Boolean?,
+    val require: Int?,
+    val expect: Int?,
+    val allow: Int?,
+    val constraints: String?,
+) : IInjector
