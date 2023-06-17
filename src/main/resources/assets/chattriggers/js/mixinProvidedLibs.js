@@ -238,6 +238,26 @@
             return this._createModifyReceiver(obj);
         }
 
+        widenField(name, isMutable) {
+            if (typeof name !== 'string')
+                throw new Error('Mixin.widenField expects a string');
+            isMutable ??= false
+            if (typeof isMutable !== 'boolean')
+                throw new Error('The second argument provided to Mixin.widenField must be a boolean or undefined')
+
+            JSLoader.registerFieldWidener(this.mixinObj, name, isMutable);
+        }
+
+        widenMethod(name, isMutable) {
+            if (typeof name !== 'string')
+                throw new Error('Mixin.widenMethod expects a string');
+            isMutable ??= false
+            if (typeof isMutable !== 'boolean')
+                throw new Error('The second argument provided to Mixin.widenMethod must be a boolean or undefined')
+
+            JSLoader.registerMethodWidener(this.mixinObj, name, isMutable);
+        }
+
         _createInject(obj) {
             const method = obj.method ?? throw new Error('Inject.method must be specified');
             const id = obj.id;

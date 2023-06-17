@@ -264,6 +264,28 @@ object JSLoader : ILoader {
         }
     }
 
+    fun registerFieldWidener(mixin: Mixin, fieldName: String, isMutable: Boolean) {
+        if (mixinsFinalized) {
+            if (mixins[mixin]?.fieldWideners?.contains(fieldName) != null) {
+                "A new field widener was registered at runtime. This will require a restart, and will " +
+                    "have no effect until then!".printToConsole(console)
+            }
+        } else {
+            mixins.getOrPut(mixin, ILoader::MixinDetails).fieldWideners[fieldName] = isMutable
+        }
+    }
+
+    fun registerMethodWidener(mixin: Mixin, methodName: String, isMutable: Boolean) {
+        if (mixinsFinalized) {
+            if (mixins[mixin]?.methodWideners?.contains(methodName) != null) {
+                "A new method widener was registered at runtime. This will require a restart, and will " +
+                    "have no effect until then!".printToConsole(console)
+            }
+        } else {
+            mixins.getOrPut(mixin, ILoader::MixinDetails).methodWideners[methodName] = isMutable
+        }
+    }
+
     class CTRequire(
         moduleProvider: ModuleScriptProvider,
     ) : Require(moduleContext, scope, moduleProvider, null, null, false) {

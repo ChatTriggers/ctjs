@@ -4,6 +4,7 @@ import com.chattriggers.ctjs.engine.ILoader
 import com.chattriggers.ctjs.engine.module.ModuleManager
 import com.chattriggers.ctjs.launch.generation.DynamicMixinGenerator
 import com.chattriggers.ctjs.launch.generation.GenerationContext
+import com.chattriggers.ctjs.launch.generation.Utils
 import kotlinx.serialization.json.*
 import org.spongepowered.asm.mixin.Mixins
 import java.io.ByteArrayInputStream
@@ -20,6 +21,18 @@ internal object DynamicMixinManager {
 
     fun initialize() {
         mixins = ModuleManager.mixinSetup()
+    }
+
+    fun applyAccessWideners() {
+        for (mixinMap in mixins.values) {
+            for ((mixin, details) in mixinMap) {
+                val mappedClass = Mappings.getMappedClass(mixin.target) ?: error("Unknown class name ${mixin.target}")
+                for ((field, isMutable) in details.fieldWideners)
+                    Utils.widenField(mappedClass, field, isMutable)
+                for ((method, isMutable) in details.methodWideners)
+                    Utils.widenMethod(mappedClass, method, isMutable)
+            }
+        }
     }
 
     fun applyMixins() {
