@@ -27,6 +27,7 @@
     const ModifyReceiverObj = Java.type('com.chattriggers.ctjs.launch.ModifyReceiver');
     const ModifyReturnValueObj = Java.type('com.chattriggers.ctjs.launch.ModifyReturnValue');
     const WrapOperationObj = Java.type('com.chattriggers.ctjs.launch.WrapOperation');
+    const WrapWithConditionObj = Java.type('com.chattriggers.ctjs.launch.WrapWithCondition');
 
     global.Condition = Condition
     global.Opcodes = Java.type('org.objectweb.asm.Opcodes');
@@ -293,6 +294,12 @@
             if (typeof obj != 'object')
                 throw new Error('Mixin.wrapOperation() expects an object as its first argument');
             return this._createWrapOperation(obj);
+        }
+
+        wrapWithCondition(obj) {
+            if (typeof obj != 'object')
+                throw new Error('Mixin.wrapWithCondition() expects an object as its first argument');
+            return this._createWrapWithCondition(obj);
         }
 
         widenField(name, isMutable) {
@@ -629,7 +636,44 @@
                 allow,
             );
 
-            return JSLoader.registerInjector(this.mixinObj, modifyReturnValueObj);
+            return JSLoader.registerInjector(this.mixinObj, wrapOperationObj);
+        }
+
+        _createWrapWithCondition(obj) {
+            const method = obj.method ?? throw new Error('WrapWithCondition.method must be specified');
+            const at = obj.at ?? throw new Error('WrapWithCondition.at must be specified');
+            let slices = obj.slice;
+            if (slices instanceof Slice)
+                slices = [slices];
+            let locals = obj.locals;
+            if (locals instanceof Local)
+                locals = [locals];
+            const remap = obj.remap;
+            const require = obj.require;
+            const expect = obj.expect;
+            const allow = obj.allow;
+
+            assertType(method, 'string', 'WrapWithCondition.method');
+            assertType(at, At, 'WrapWithCondition.at');
+            assertArrayType(locals, Local, 'WrapWithCondition.locals');
+            assertArrayType(slices, Slice, 'WrapWithCondition.slice');
+            assertType(remap, 'boolean', 'WrapWithCondition.remap');
+            assertType(require, 'number', 'WrapWithCondition.require');
+            assertType(expect, 'number', 'WrapWithCondition.expect');
+            assertType(allow, 'number', 'WrapWithCondition.allow');
+
+            const wrapWithConditionObj = new WrapWithConditionObj(
+                method,
+                at?.atObj,
+                slices?.map(s => s.sliceObj),
+                locals?.map(l => l.localObj),
+                remap,
+                require,
+                expect,
+                allow,
+            );
+
+            return JSLoader.registerInjector(this.mixinObj, wrapWithConditionObj);
         }
     }
 
