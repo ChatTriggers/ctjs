@@ -27,6 +27,7 @@
     const ModifyExpressionValueObj = Java.type('com.chattriggers.ctjs.launch.ModifyExpressionValue');
     const ModifyReceiverObj = Java.type('com.chattriggers.ctjs.launch.ModifyReceiver');
     const ModifyReturnValueObj = Java.type('com.chattriggers.ctjs.launch.ModifyReturnValue');
+    const ModifyVariableObj = Java.type('com.chattriggers.ctjs.launch.ModifyVariable');
     const WrapOperationObj = Java.type('com.chattriggers.ctjs.launch.WrapOperation');
     const WrapWithConditionObj = Java.type('com.chattriggers.ctjs.launch.WrapWithCondition');
 
@@ -295,6 +296,12 @@
             if (typeof obj != 'object')
                 throw new Error('Mixin.modifyReturnValue() expects an object as its first argument');
             return this._createModifyReturnValue(obj);
+        }
+
+        modifyVariable(obj) {
+            if (typeof obj != 'object')
+                throw new Error('Mixin.modifyVariable() expects an object as its first argument');
+            return this._createModifyVariable(obj);
         }
 
         wrapOperation(obj) {
@@ -641,9 +648,63 @@
                 require,
                 expect,
                 allow,
-            )
+            );
 
             return JSLoader.registerInjector(this.mixinObj, modifyReturnValueObj);
+        }
+
+        _createModifyVariable(obj) {
+            const method = obj.method ?? throw new Error('ModifyVariable.method must be specified');
+            const at = obj.at ?? throw new Error('ModifyVariable.at must be specified');
+            const slice = obj.slice;
+            const print = obj.print;
+            const ordinal = obj.ordinal;
+            const index = obj.index;
+            const type = obj.type;
+            const parameterName = obj.parameterName;
+            let locals = obj.locals;
+            if (locals instanceof Local)
+                locals = [locals];
+            const remap = obj.remap;
+            const require = obj.require;
+            const expect = obj.expect;
+            const allow = obj.allow;
+            const constraints = obj.constraints;
+
+            assertType(method, 'string', 'ModifyVariable.method');
+            assertType(at, At, 'ModifyVariable.at');
+            assertType(slice, Slice, 'ModifyVariable.slice');
+            assertType(remap, 'boolean', 'ModifyVariable.remap');
+            assertType(print, 'boolean', 'ModifyVariable.print');
+            assertType(ordinal, 'number', 'ModifyVariable.ordinal');
+            assertType(index, 'number', 'ModifyVariable.index');
+            assertType(type, 'string', 'ModifyVariable.type');
+            assertType(parameterName, 'string', 'ModifyVariable.type');
+            assertArrayType(locals, Local, 'ModifyVariable.locals');
+            assertType(remap, 'number', 'ModifyVariable.remap');
+            assertType(require, 'number', 'ModifyVariable.require');
+            assertType(expect, 'number', 'ModifyVariable.expect');
+            assertType(allow, 'number', 'ModifyVariable.allow');
+            assertType(constraints, 'string', 'ModifyVariable.constraints');
+
+            const modifyVariableObj = new ModifyVariableObj(
+                method,
+                at?.atObj,
+                slice?.sliceObj,
+                print,
+                ordinal,
+                index,
+                type,
+                parameterName,
+                locals?.map(l => l.localObj),
+                remap,
+                require,
+                expect,
+                allow,
+                constraints,
+            );
+
+            return JSLoader.registerInjector(this.mixinObj, modifyVariableObj);
         }
 
         _createWrapOperation(obj) {

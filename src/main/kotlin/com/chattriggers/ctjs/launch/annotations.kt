@@ -179,6 +179,23 @@ data class ModifyReturnValue(
     val allow: Int?,
 ) : IInjector
 
+data class ModifyVariable(
+    val method: String,
+    val at: At,
+    val slice: Slice?,
+    val print: Boolean?,
+    val ordinal: Int?,
+    val index: Int?,
+    val type: String?,
+    val parameterName: String?,
+    val locals: List<Local>?,
+    val remap: Boolean?,
+    val require: Int?,
+    val expect: Int?,
+    val allow: Int?,
+    val constraints: String?,
+) : IInjector
+
 data class WrapOperation(
     val method: String,
     val at: At?,
