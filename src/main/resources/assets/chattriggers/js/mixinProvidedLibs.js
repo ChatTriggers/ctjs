@@ -23,6 +23,7 @@
     const RedirectObj = Java.type('com.chattriggers.ctjs.launch.Redirect');
     const ModifyArgObj = Java.type('com.chattriggers.ctjs.launch.ModifyArg');
     const ModifyArgsObj = Java.type('com.chattriggers.ctjs.launch.ModifyArgs');
+    const ModifyConstantObj = Java.type('com.chattriggers.ctjs.launch.ModifyConstant');
     const ModifyExpressionValueObj = Java.type('com.chattriggers.ctjs.launch.ModifyExpressionValue');
     const ModifyReceiverObj = Java.type('com.chattriggers.ctjs.launch.ModifyReceiver');
     const ModifyReturnValueObj = Java.type('com.chattriggers.ctjs.launch.ModifyReturnValue');
@@ -272,6 +273,12 @@
             return this._createModifyArgs(obj);
         }
 
+        modifyConstant(obj) {
+            if (typeof obj != 'object')
+                throw new Error('Mixin.modifyConstant() expects an object as its first argument');
+            return this._createModifyConstant(obj);
+        }
+
         modifyExpressionValue(obj) {
             if (typeof obj != 'object')
                 throw new Error('Mixin.modifyExpressionValue() expects an object as its first argument');
@@ -488,6 +495,46 @@
             );
 
             return JSLoader.registerInjector(this.mixinObj, modifyArgsObj);
+        }
+
+        _createModifyConstant(obj) {
+            const method = obj.method ?? throw new Error('ModifyConstant.method must be specified');
+            let slice = obj.slice;
+            if (slice instanceof Slice)
+                slice = [slice]
+            const constant = obj.constant;
+            let locals = obj.locals;
+            if (locals instanceof Local)
+                locals = [locals];
+            const require = obj.require;
+            const remap = obj.remap;
+            const expect = obj.expect;
+            const allow = obj.allow;
+            const constraints = obj.constraints;
+
+            assertType(method, 'string', 'ModifyConstant.method');
+            assertArrayType(slice, Slice, 'ModifyConstant.slice');
+            assertType(constant, Constant, 'ModifyConstant.constant');
+            assertArrayType(locals, Local, 'ModifyConstant.locals');
+            assertType(require, 'number', 'ModifyConstant.require');
+            assertType(remap, 'boolean', 'ModifyConstant.remap');
+            assertType(expect, 'number', 'ModifyConstant.expect');
+            assertType(allow, 'number', 'ModifyConstant.allow');
+            assertType(constraints, 'string', 'ModifyConstant.constraints');
+
+            const modifyConstantObj = new ModifyConstantObj(
+                method,
+                slice?.map(s => s.sliceObj),
+                constant?.constantObj,
+                locals?.map(l => l.localObj),
+                remap,
+                require,
+                expect,
+                allow,
+                constraints,
+            );
+
+            return JSLoader.registerInjector(this.mixinObj, modifyConstantObj);
         }
 
         _createModifyExpressionValue(obj) {
