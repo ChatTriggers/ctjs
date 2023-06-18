@@ -1,6 +1,8 @@
 
 package com.chattriggers.ctjs.launch
 
+import org.spongepowered.asm.mixin.injection.Constant as SPConstant
+
 /*
  * Annotation classes present some difficulties, especially when trying to
  * create them from an embedded engine context. They've been more-or-less
@@ -50,6 +52,20 @@ data class Local(
     val ordinal: Int?,
     val type: String?,
     val mutable: Boolean?,
+)
+
+data class Constant(
+    val nullValue: Boolean?,
+    val intValue: Int?,
+    val floatValue: Float?,
+    val longValue: Long?,
+    val doubleValue: Double?,
+    val stringValue: String?,
+    val classValue: String?,
+    val ordinal: Int?,
+    val slice: String?,
+    val expandZeroConditions: List<SPConstant.Condition>?,
+    val log: Boolean?,
 )
 
 sealed interface IInjector
@@ -131,6 +147,18 @@ data class ModifyReceiver(
 data class ModifyReturnValue(
     val method: String,
     val at: At,
+    val slice: List<Slice>?,
+    val locals: List<Local>?,
+    val remap: Boolean?,
+    val require: Int?,
+    val expect: Int?,
+    val allow: Int?,
+) : IInjector
+
+data class WrapOperation(
+    val method: String,
+    val at: At?,
+    val constant: Constant?,
     val slice: List<Slice>?,
     val locals: List<Local>?,
     val remap: Boolean?,

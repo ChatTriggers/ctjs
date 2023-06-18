@@ -6,9 +6,11 @@ import com.chattriggers.ctjs.utils.descriptorString
 import net.fabricmc.accesswidener.AccessWidenerReader
 import net.fabricmc.loader.impl.FabricLoaderImpl
 import org.objectweb.asm.Opcodes
+import org.objectweb.asm.Type
 import org.objectweb.asm.tree.AnnotationNode
 import org.spongepowered.asm.mixin.transformer.ClassInfo
 import org.spongepowered.asm.mixin.injection.At as SPAt
+import org.spongepowered.asm.mixin.injection.Constant as SPConstant
 import org.spongepowered.asm.mixin.injection.Slice as SPSlice
 
 internal object Utils {
@@ -47,6 +49,36 @@ internal object Utils {
             if (slice.to != null)
                 visit("to", createAtAnnotation(slice.to))
             visitEnd()
+        }
+    }
+
+    fun createConstantAnnotation(constant: Constant): AnnotationNode {
+        return AnnotationNode(SPConstant::class.descriptorString()).apply {
+            if (constant.nullValue != null)
+                visit("nullValue", constant.nullValue)
+            if (constant.intValue != null)
+                visit("intValue", constant.intValue)
+            if (constant.floatValue != null)
+                visit("floatValue", constant.floatValue)
+            if (constant.longValue != null)
+                visit("longValue", constant.longValue)
+            if (constant.doubleValue != null)
+                visit("doubleValue", constant.doubleValue)
+            if (constant.stringValue != null)
+                visit("stringValue", constant.stringValue)
+            if (constant.classValue != null) {
+                val name = Mappings.getMappedClassName(constant.classValue)
+                    ?: error("Unknown class \"${constant.classValue}\"")
+                visit("classValue", Type.getObjectType(name))
+            }
+            if (constant.ordinal != null)
+                visit("ordinal", constant.ordinal)
+            if (constant.slice != null)
+                visit("slice", constant.slice)
+            if (constant.expandZeroConditions != null)
+                visit("expandZeroConditions", constant.expandZeroConditions)
+            if (constant.log != null)
+                visit("log", constant.log)
         }
     }
 

@@ -9,13 +9,16 @@
             return Packages[arg]
         }
     }
+
     const JSLoader = Java.type('com.chattriggers.ctjs.engine.langs.js.JSLoader').INSTANCE;
     global.Console = JSLoader.getConsole();
 
+    const Condition = Java.type('org.spongepowered.asm.mixin.injection.Constant').Condition;
     const MixinObj = Java.type('com.chattriggers.ctjs.launch.Mixin');
     const AtObj = Java.type('com.chattriggers.ctjs.launch.At');
     const SliceObj = Java.type('com.chattriggers.ctjs.launch.Slice');
     const LocalObj = Java.type('com.chattriggers.ctjs.launch.Local');
+    const ConstantObj = Java.type('com.chattriggers.ctjs.launch.Constant');
     const InjectObj = Java.type('com.chattriggers.ctjs.launch.Inject');
     const RedirectObj = Java.type('com.chattriggers.ctjs.launch.Redirect');
     const ModifyArgObj = Java.type('com.chattriggers.ctjs.launch.ModifyArg');
@@ -23,7 +26,9 @@
     const ModifyExpressionValueObj = Java.type('com.chattriggers.ctjs.launch.ModifyExpressionValue');
     const ModifyReceiverObj = Java.type('com.chattriggers.ctjs.launch.ModifyReceiver');
     const ModifyReturnValueObj = Java.type('com.chattriggers.ctjs.launch.ModifyReturnValue');
+    const WrapOperationObj = Java.type('com.chattriggers.ctjs.launch.WrapOperation');
 
+    global.Condition = Condition
     global.Opcodes = Java.type('org.objectweb.asm.Opcodes');
 
     // Descriptor helpers
@@ -182,6 +187,45 @@
         }
     }
 
+    class Constant {
+        constructor(obj) {
+            if (typeof obj !== 'object')
+                throw new Error('Constant() expects an object as its first argument');
+            this._initProps(obj);
+        }
+
+        _initProps(obj) {
+            const nullValue = obj.nullValue;
+            const intValue = obj.intValue;
+            const floatValue = obj.floatValue;
+            const longValue = obj.longValue;
+            const doubleValue = obj.doubleValue;
+            const stringValue = obj.stringValue;
+            const classValue = obj.classValue;
+            const ordinal = obj.ordinal;
+            const slice = obj.slice;
+            const expandZeroConditions = obj.expandZeroConditions;
+            const log = obj.log;
+
+            assertType(nullValue, 'boolean', 'Constant.nullValue');
+            assertType(intValue, 'number', 'Constant.intValue');
+            assertType(floatValue, 'number', 'Constant.floatValue');
+            assertType(longValue, 'number', 'Constant.longValue');
+            assertType(doubleValue, 'number', 'Constant.doubleValue');
+            assertType(stringValue, 'string', 'Constant.stringValue');
+            assertType(classValue, 'string', 'Constant.classValue');
+            assertType(ordinal, 'number', 'Constant.ordinal');
+            assertType(slice, 'string', 'Constant.slice');
+            assertType(expandZeroConditions, 'boolean', 'Constant.expandZeroConditions');
+            assertType(log, 'boolean', 'Constant.log');
+
+            this.constantObj = new ConstantObj(
+                nullValue, intValue, floatValue, longValue, doubleValue,
+                stringValue, classValue, ordinal, slice, expandZeroConditions, log,
+            )
+        }
+    }
+
     class Mixin {
         constructor(obj) {
             if (typeof obj === 'string') {
@@ -243,6 +287,12 @@
             if (typeof obj != 'object')
                 throw new Error('Mixin.modifyReturnValue() expects an object as its first argument');
             return this._createModifyReturnValue(obj);
+        }
+
+        wrapOperation(obj) {
+            if (typeof obj != 'object')
+                throw new Error('Mixin.wrapOperation() expects an object as its first argument');
+            return this._createWrapOperation(obj);
         }
 
         widenField(name, isMutable) {
@@ -541,12 +591,53 @@
 
             return JSLoader.registerInjector(this.mixinObj, modifyReturnValueObj);
         }
+
+        _createWrapOperation(obj) {
+            const method = obj.method ?? throw new Error('WrapOperation.method must be specified');
+            const at = obj.at;
+            let constant = obj.constant;
+            let slices = obj.slice;
+            if (slices instanceof Slice)
+                slices = [slices];
+            let locals = obj.locals;
+            if (locals instanceof Local)
+                locals = [locals];
+            const remap = obj.remap;
+            const require = obj.require;
+            const expect = obj.expect;
+            const allow = obj.allow;
+
+            assertType(method, 'string', 'WrapOperation.method');
+            assertType(at, At, 'WrapOperation.at');
+            assertType(constant, Constant, 'WrapOperation.constant');
+            assertArrayType(locals, Local, 'WrapOperation.locals');
+            assertArrayType(slices, Slice, 'WrapOperation.slice');
+            assertType(remap, 'boolean', 'WrapOperation.remap');
+            assertType(require, 'number', 'WrapOperation.require');
+            assertType(expect, 'number', 'WrapOperation.expect');
+            assertType(allow, 'number', 'WrapOperation.allow');
+
+            const wrapOperationObj = new WrapOperationObj(
+                method,
+                at?.atObj,
+                constant?.constantObj,
+                slices?.map(s => s.sliceObj),
+                locals?.map(l => l.localObj),
+                remap,
+                require,
+                expect,
+                allow,
+            );
+
+            return JSLoader.registerInjector(this.mixinObj, modifyReturnValueObj);
+        }
     }
 
     global.Mixin = Mixin;
     global.Slice = Slice;
     global.At = At;
     global.Local = Local;
+    global.Constant = Constant;
 
 
     /**
