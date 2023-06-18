@@ -36,11 +36,11 @@ class Item(val stack: ItemStack) {
     // TODO(breaking): fix typo in method name
     fun isEnchanted() = stack.hasEnchantments()
 
-    fun canPlaceOn(pos: BlockPos) = stack.canPlaceOn(Registries.BLOCK, CachedBlockPosition(World.getWorld(), pos.toMC(), false))
+    fun canPlaceOn(pos: BlockPos) = stack.canPlaceOn(Registries.BLOCK, CachedBlockPosition(World.toMC(), pos.toMC(), false))
 
     fun canPlaceOn(block: Block) = canPlaceOn(block.pos)
 
-    fun canHarvest(pos: BlockPos) = stack.canDestroy(Registries.BLOCK, CachedBlockPosition(World.getWorld(), pos.toMC(), false))
+    fun canHarvest(pos: BlockPos) = stack.canDestroy(Registries.BLOCK, CachedBlockPosition(World.toMC(), pos.toMC(), false))
 
     fun canHarvest(block: Block) = canHarvest(block.pos)
 
@@ -56,7 +56,7 @@ class Item(val stack: ItemStack) {
     fun getName(): String = UTextComponent(stack.name).formattedText
 
     @JvmOverloads
-    fun getLore(advanced: Boolean = false): List<UTextComponent>? = (getHolder()?.entity as? PlayerEntity)?.let {
+    fun getLore(advanced: Boolean = false): List<UTextComponent>? = (getHolder()?.toMC() as? PlayerEntity)?.let {
         stack.getTooltip(it, if (advanced) TooltipContext.ADVANCED else TooltipContext.BASIC).map(::UTextComponent)
     }
 

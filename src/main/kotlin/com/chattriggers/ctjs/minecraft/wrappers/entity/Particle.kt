@@ -1,13 +1,14 @@
 package com.chattriggers.ctjs.minecraft.wrappers.entity
 
 import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer
+import com.chattriggers.ctjs.minecraft.wrappers.CTWrapper
 import com.chattriggers.ctjs.mixins.ParticleAccessor
 import com.chattriggers.ctjs.utils.MCParticle
 import com.chattriggers.ctjs.utils.asMixin
 import java.awt.Color
 
-class Particle(val particle: MCParticle) {
-    private val mixed: ParticleAccessor = particle.asMixin()
+class Particle(override val mcValue: MCParticle) : CTWrapper<MCParticle> {
+    private val mixed: ParticleAccessor = mcValue.asMixin()
 
     var x by mixed::x
     var y by mixed::y
@@ -34,7 +35,7 @@ class Particle(val particle: MCParticle) {
     var dead by mixed::dead
 
     fun scale(scale: Float) = apply {
-        particle.scale(scale)
+        mcValue.scale(scale)
     }
 
     // TODO(breaking): Removed multiplyVelocity
@@ -46,7 +47,7 @@ class Particle(val particle: MCParticle) {
      * @param blue the blue value between 0 and 1.
      */
     fun setColor(red: Float, green: Float, blue: Float) = apply {
-        particle.setColor(red, green, blue)
+        mcValue.setColor(red, green, blue)
     }
 
     /**
@@ -93,12 +94,12 @@ class Particle(val particle: MCParticle) {
      * @param maxAge the particle's max age (in ticks)
      */
     fun setMaxAge(maxAge: Int) = apply {
-        particle.maxAge = maxAge
+        mcValue.maxAge = maxAge
     }
 
     fun remove() = apply {
-        particle.markDead()
+        mcValue.markDead()
     }
 
-    override fun toString() = "Particle(type=${particle.javaClass.simpleName}, pos=($x, $y, $z), color=[$red, $green, $blue, $alpha], age=$age)"
+    override fun toString() = "Particle(type=${mcValue.javaClass.simpleName}, pos=($x, $y, $z), color=[$red, $green, $blue, $alpha], age=$age)"
 }

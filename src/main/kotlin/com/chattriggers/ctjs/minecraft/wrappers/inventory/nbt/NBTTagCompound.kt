@@ -3,21 +3,19 @@ package com.chattriggers.ctjs.minecraft.wrappers.inventory.nbt
 import com.chattriggers.ctjs.mixins.NbtCompoundAccessor
 import com.chattriggers.ctjs.utils.MCNbtBase
 import com.chattriggers.ctjs.utils.MCNbtCompound
-import com.chattriggers.ctjs.utils.MCNbtList
 import com.chattriggers.ctjs.utils.asMixin
 import net.minecraft.nbt.NbtByteArray
 import net.minecraft.nbt.NbtElement
-import net.minecraft.nbt.NbtInt
 import net.minecraft.nbt.NbtIntArray
 import net.minecraft.nbt.NbtLongArray
 import org.mozilla.javascript.NativeObject
 
-class NBTTagCompound(override val rawNBT: MCNbtCompound) : NBTBase(rawNBT) {
+class NBTTagCompound(override val mcValue: MCNbtCompound) : NBTBase(mcValue) {
     val tagMap: Map<String, MCNbtBase>
-        get() = rawNBT.asMixin<NbtCompoundAccessor>().entries
+        get() = mcValue.asMixin<NbtCompoundAccessor>().entries
 
     val keySet: Set<String>
-        get() = rawNBT.keys
+        get() = mcValue.keys
 
     enum class NBTDataType {
         BYTE,
@@ -36,34 +34,34 @@ class NBTTagCompound(override val rawNBT: MCNbtCompound) : NBTBase(rawNBT) {
     }
 
     // TODO(breaking): Wrap MCNbtLists to NBTTagLists
-    fun getTag(key: String): NBTBase? = rawNBT.get(key)?.let(::fromMC)
+    fun getTag(key: String): NBTBase? = mcValue.get(key)?.let(::fromMC)
 
-    fun getTagId(key: String) = rawNBT.getType(key)
+    fun getTagId(key: String) = mcValue.getType(key)
 
-    fun getByte(key: String) = rawNBT.getByte(key)
+    fun getByte(key: String) = mcValue.getByte(key)
 
-    fun getShort(key: String) = rawNBT.getShort(key)
+    fun getShort(key: String) = mcValue.getShort(key)
 
-    fun getInteger(key: String) = rawNBT.getInt(key)
+    fun getInteger(key: String) = mcValue.getInt(key)
 
-    fun getLong(key: String) = rawNBT.getLong(key)
+    fun getLong(key: String) = mcValue.getLong(key)
 
-    fun getFloat(key: String) = rawNBT.getFloat(key)
+    fun getFloat(key: String) = mcValue.getFloat(key)
 
-    fun getDouble(key: String) = rawNBT.getDouble(key)
+    fun getDouble(key: String) = mcValue.getDouble(key)
 
-    fun getString(key: String) = rawNBT.getString(key)
+    fun getString(key: String) = mcValue.getString(key)
 
-    fun getByteArray(key: String) = rawNBT.getByteArray(key)
+    fun getByteArray(key: String) = mcValue.getByteArray(key)
 
-    fun getIntArray(key: String) = rawNBT.getIntArray(key)
+    fun getIntArray(key: String) = mcValue.getIntArray(key)
 
-    fun getBoolean(key: String) = rawNBT.getBoolean(key)
+    fun getBoolean(key: String) = mcValue.getBoolean(key)
 
-    fun getCompoundTag(key: String) = NBTTagCompound(rawNBT.getCompound(key))
+    fun getCompoundTag(key: String) = NBTTagCompound(mcValue.getCompound(key))
 
     // TODO(breaking): Return wrapped NBTTagList
-    fun getTagList(key: String, type: Int) = NBTTagList(rawNBT.getList(key, type))
+    fun getTagList(key: String, type: Int) = NBTTagList(mcValue.getList(key, type))
 
     fun get(key: String, type: NBTDataType, tagType: Int?): Any? {
         return when (type) {
@@ -74,22 +72,22 @@ class NBTTagCompound(override val rawNBT: MCNbtCompound) : NBTBase(rawNBT) {
             NBTDataType.FLOAT -> getFloat(key)
             NBTDataType.DOUBLE -> getDouble(key)
             NBTDataType.STRING -> {
-                if (rawNBT.contains(key, NbtElement.STRING_TYPE.toInt()))
+                if (mcValue.contains(key, NbtElement.STRING_TYPE.toInt()))
                     tagMap[key]?.let { NBTBase(it).toString() }
                 else null
             }
             NBTDataType.BYTE_ARRAY -> {
-                if (rawNBT.contains(key, NbtElement.BYTE_TYPE.toInt()))
+                if (mcValue.contains(key, NbtElement.BYTE_TYPE.toInt()))
                     (tagMap[key] as NbtByteArray).byteArray
                 else null
             }
             NBTDataType.INT_ARRAY -> {
-                if (rawNBT.contains(key, NbtElement.INT_ARRAY_TYPE.toInt()))
+                if (mcValue.contains(key, NbtElement.INT_ARRAY_TYPE.toInt()))
                     (tagMap[key] as NbtIntArray).intArray
                 else null
             }
             NBTDataType.LONG_ARRAY -> {
-                if (rawNBT.contains(key, NbtElement.LONG_ARRAY_TYPE.toInt()))
+                if (mcValue.contains(key, NbtElement.LONG_ARRAY_TYPE.toInt()))
                     (tagMap[key] as NbtLongArray).longArray
                 else null
             }
@@ -105,54 +103,54 @@ class NBTTagCompound(override val rawNBT: MCNbtCompound) : NBTBase(rawNBT) {
 
     operator fun get(key: String): NBTBase? = getTag(key)
 
-    fun setNBTBase(key: String, value: NBTBase) = setNBTBase(key, value.rawNBT)
+    fun setNBTBase(key: String, value: NBTBase) = setNBTBase(key, value.toMC())
 
     fun setNBTBase(key: String, value: MCNbtBase) = apply {
-        rawNBT.put(key, value)
+        mcValue.put(key, value)
     }
 
     fun setBoolean(key: String, value: Boolean) = apply {
-        rawNBT.putBoolean(key, value)
+        mcValue.putBoolean(key, value)
     }
 
     fun setByte(key: String, value: Byte) = apply {
-        rawNBT.putByte(key, value)
+        mcValue.putByte(key, value)
     }
 
     fun setShort(key: String, value: Short) = apply {
-        rawNBT.putShort(key, value)
+        mcValue.putShort(key, value)
     }
 
     fun setInteger(key: String, value: Int) = apply {
-        rawNBT.putInt(key, value)
+        mcValue.putInt(key, value)
     }
 
     fun setLong(key: String, value: Long) = apply {
-        rawNBT.putLong(key, value)
+        mcValue.putLong(key, value)
     }
 
     fun setFloat(key: String, value: Float) = apply {
-        rawNBT.putFloat(key, value)
+        mcValue.putFloat(key, value)
     }
 
     fun setDouble(key: String, value: Double) = apply {
-        rawNBT.putDouble(key, value)
+        mcValue.putDouble(key, value)
     }
 
     fun setString(key: String, value: String) = apply {
-        rawNBT.putString(key, value)
+        mcValue.putString(key, value)
     }
 
     fun setByteArray(key: String, value: ByteArray) = apply {
-        rawNBT.putByteArray(key, value)
+        mcValue.putByteArray(key, value)
     }
 
     fun setIntArray(key: String, value: IntArray) = apply {
-        rawNBT.putIntArray(key, value)
+        mcValue.putIntArray(key, value)
     }
 
     fun putLongArray(key: String, value: LongArray) = apply {
-        rawNBT.putLongArray(key, value)
+        mcValue.putLongArray(key, value)
     }
 
     operator fun set(key: String, value: Any) = apply {
@@ -174,8 +172,8 @@ class NBTTagCompound(override val rawNBT: MCNbtCompound) : NBTBase(rawNBT) {
     }
 
     fun removeTag(key: String) = apply {
-        rawNBT.remove(key)
+        mcValue.remove(key)
     }
 
-    fun toObject(): NativeObject = rawNBT.toObject()
+    fun toObject(): NativeObject = mcValue.toObject()
 }

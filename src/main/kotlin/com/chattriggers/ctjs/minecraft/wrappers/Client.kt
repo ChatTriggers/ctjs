@@ -318,7 +318,7 @@ abstract class Client {
          */
         @JvmStatic
         fun close() {
-            Player.getPlayer()?.closeScreen()
+            Player.toMC()?.closeScreen()
         }
     }
 

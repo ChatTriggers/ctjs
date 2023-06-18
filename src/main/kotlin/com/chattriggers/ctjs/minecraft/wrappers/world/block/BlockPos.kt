@@ -1,11 +1,14 @@
 package com.chattriggers.ctjs.minecraft.wrappers.world.block
 
+import com.chattriggers.ctjs.minecraft.wrappers.CTWrapper
 import com.chattriggers.ctjs.minecraft.wrappers.entity.Entity
 import com.chattriggers.ctjs.utils.MCBlockPos
 import com.chattriggers.ctjs.utils.vec.Vec3i
 import kotlin.math.floor
 
-class BlockPos(x: Int, y: Int, z: Int) : Vec3i(x, y, z) {
+class BlockPos(x: Int, y: Int, z: Int) : Vec3i(x, y, z), CTWrapper<MCBlockPos> {
+    override val mcValue = MCBlockPos(x, y, z)
+
     constructor(x: Number, y: Number, z: Number) : this(floor(x.toDouble()).toInt(), floor(y.toDouble()).toInt(), floor(z.toDouble()).toInt())
 
     constructor(pos: Vec3i) : this(pos.x, pos.y, pos.z)
@@ -50,7 +53,4 @@ class BlockPos(x: Int, y: Int, z: Int) : Vec3i(x, y, z) {
     fun offset(facing: BlockFace, n: Int = 1): BlockPos {
         return BlockPos(x + facing.getOffsetX() * n, y + facing.getOffsetY() * n, z + facing.getOffsetZ() * n)
     }
-
-    // TODO(breaking): Renamed from toMCBlockPos
-    fun toMC() = MCBlockPos(x, y, z)
 }

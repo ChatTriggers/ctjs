@@ -7,18 +7,18 @@ import com.chattriggers.ctjs.utils.MCLivingEntity
 import net.minecraft.entity.effect.StatusEffect
 
 // TODO(breaking): Rename from EntityLivingBase
-open class LivingEntity(val livingEntity: MCLivingEntity) : Entity(livingEntity) {
+open class LivingEntity(override val mcValue: MCLivingEntity) : Entity(mcValue) {
     // TODO(breaking): Remove addPotionEffect
 
     // TODO(breaking): Remove clearPotionEffects
 
     fun getActivePotionEffects(): List<PotionEffect> {
-        return livingEntity.statusEffects.map(::PotionEffect)
+        return mcValue.statusEffects.map(::PotionEffect)
     }
 
-    fun canSeeEntity(other: MCEntity) = livingEntity.canSee(other)
+    fun canSeeEntity(other: MCEntity) = mcValue.canSee(other)
 
-    fun canSeeEntity(other: Entity) = canSeeEntity(other.entity)
+    fun canSeeEntity(other: Entity) = canSeeEntity(other.toMC())
 
     /**
      * Gets the item currently in the entity's specified inventory slot.
@@ -32,23 +32,23 @@ open class LivingEntity(val livingEntity: MCLivingEntity) : Entity(livingEntity)
 //         return livingEntity.getItemStackFromSlot(EntityEquipmentSlot.values()[slot])?.let(::Item)
 //     }
 
-    fun getHP() = livingEntity.health
+    fun getHP() = mcValue.health
 
     // TODO(breaking): Remove setHP
 
-    fun getMaxHP() = livingEntity.maxHealth
+    fun getMaxHP() = mcValue.maxHealth
 
-    fun getAbsorption() = livingEntity.absorptionAmount
+    fun getAbsorption() = mcValue.absorptionAmount
 
     // TODO(breaking): Remove setAbsorption
 
-    fun getAge() = livingEntity.age
+    fun getAge() = mcValue.age
 
-    fun getArmorValue() = livingEntity.armor
+    fun getArmorValue() = mcValue.armor
 
-    fun isPotionActive(id: Int) = livingEntity.hasStatusEffect(StatusEffect.byRawId(id))
+    fun isPotionActive(id: Int) = mcValue.hasStatusEffect(StatusEffect.byRawId(id))
 
-    fun isPotionActive(type: PotionEffectType) = livingEntity.hasStatusEffect(type.type)
+    fun isPotionActive(type: PotionEffectType) = mcValue.hasStatusEffect(type.type)
 
     fun isPotionActive(effect: PotionEffect) = isPotionActive(effect.type)
 

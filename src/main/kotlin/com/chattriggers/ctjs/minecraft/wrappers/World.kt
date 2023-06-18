@@ -18,46 +18,51 @@ import net.minecraft.block.BlockState
 import net.minecraft.client.world.ClientWorld
 import net.minecraft.registry.Registries
 
-object World {
+object World : CTWrapper<ClientWorld?> {
+    override val mcValue get() = UMinecraft.getMinecraft().world
+
     /**
      * Gets Minecraft's [ClientWorld] object
      *
      * @return The Minecraft [ClientWorld] object
      */
+    @Deprecated("Use toMC", ReplaceWith("toMC()"))
     @JvmStatic
-    fun getWorld(): ClientWorld? = UMinecraft.getMinecraft().world
+    fun getWorld(): ClientWorld? = toMC()
+
+
 
     @JvmStatic
-    fun isLoaded(): Boolean = getWorld() != null
+    fun isLoaded(): Boolean = toMC() != null
 
     // TODO(breaking): Remove Sound methods in favor of the Sound class
 
     @JvmStatic
-    fun isRaining(): Boolean = getWorld()?.isRaining ?: false
+    fun isRaining(): Boolean = toMC()?.isRaining ?: false
 
     @JvmStatic
-    fun getRainingStrength(): Float = getWorld()?.getRainGradient(Renderer.partialTicks) ?: -1f
+    fun getRainingStrength(): Float = toMC()?.getRainGradient(Renderer.partialTicks) ?: -1f
 
     @JvmStatic
-    fun getTime(): Long = getWorld()?.time ?: -1L
+    fun getTime(): Long = toMC()?.time ?: -1L
 
     // TODO: Use enum?
     @JvmStatic
-    fun getDifficulty(): String = getWorld()?.difficulty.toString()
+    fun getDifficulty(): String = toMC()?.difficulty.toString()
 
     @JvmStatic
-    fun getMoonPhase(): Int = getWorld()?.moonPhase ?: -1
+    fun getMoonPhase(): Int = toMC()?.moonPhase ?: -1
 
     // TODO
     // @JvmStatic
-    // fun getSeed(): Long = getWorld()?.seed ?: -1L
+    // fun getSeed(): Long = toMC()?.seed ?: -1L
     //
     // @JvmStatic
     // fun getType(): String {
     //     //#if MC<=10809
-    //     return getWorld()?.worldType?.worldTypeName.toString()
+    //     return toMC()?.worldType?.worldTypeName.toString()
     //     //#else
-    //     //$$ return getWorld()?.worldType?.name.toString()
+    //     //$$ return toMC()?.worldType?.name.toString()
     //     //#endif
     // }
 
@@ -91,7 +96,7 @@ object World {
      */
     @JvmStatic
     fun getBlockStateAt(pos: BlockPos): BlockState {
-        return getWorld()!!.getBlockState(pos.toMC())
+        return toMC()!!.getBlockState(pos.toMC())
     }
 
     /**
@@ -100,7 +105,7 @@ object World {
      * @return the players
      */
     @JvmStatic
-    fun getAllPlayers(): List<PlayerMP> = getWorld()?.players?.map(::PlayerMP) ?: listOf()
+    fun getAllPlayers(): List<PlayerMP> = toMC()?.players?.map(::PlayerMP) ?: listOf()
 
     /**
      * Gets a player by their username, must be in the currently loaded chunks!
@@ -115,10 +120,10 @@ object World {
     fun hasPlayer(name: String) = getPlayerByName(name) != null
 
     @JvmStatic
-    fun getChunk(x: Int, y: Int, z: Int) = Chunk(getWorld()!!.getWorldChunk(MCBlockPos(x, y, z)))
+    fun getChunk(x: Int, y: Int, z: Int) = Chunk(toMC()!!.getWorldChunk(MCBlockPos(x, y, z)))
 
     @JvmStatic
-    fun getAllEntities() = getWorld()?.entities?.map(Entity::fromMC) ?: listOf()
+    fun getAllEntities() = toMC()?.entities?.map(Entity::fromMC) ?: listOf()
 
     /**
      * Gets every entity loaded in the world of a certain class
@@ -129,14 +134,14 @@ object World {
     @JvmStatic
     fun getAllEntitiesOfType(clazz: Class<*>): List<Entity> {
         return getAllEntities().filter {
-            clazz.isInstance(it.entity)
+            clazz.isInstance(it.toMC())
         }
     }
 
     // TODO(breaking): Rename to getAllBlockEntities
     @JvmStatic
     fun getAllBlockEntities(): List<BlockEntity> {
-        val chunks = getWorld()
+        val chunks = toMC()
             ?.asMixin<ClientWorldAccessor>()
             ?.chunkManager?.asMixin<ClientChunkManagerAccessor>()
             ?.chunks?.asMixin<ClientChunkMapAccessor>()
@@ -155,7 +160,7 @@ object World {
      @JvmStatic
      fun getAllBlockEntitiesOfType(clazz: Class<*>): List<BlockEntity> {
          return getAllBlockEntities().filter {
-             clazz.isInstance(it.blockEntity)
+             clazz.isInstance(it.toMC())
          }
      }
 
@@ -169,7 +174,7 @@ object World {
          * @return the border center x location
          */
         @JvmStatic
-        fun getCenterX(): Double = getWorld()!!.worldBorder.centerX
+        fun getCenterX(): Double = toMC()!!.worldBorder.centerX
 
         /**
          * Gets the border center z location.
@@ -177,7 +182,7 @@ object World {
          * @return the border center z location
          */
         @JvmStatic
-        fun getCenterZ(): Double = getWorld()!!.worldBorder.centerZ
+        fun getCenterZ(): Double = toMC()!!.worldBorder.centerZ
 
         /**
          * Gets the border size.
@@ -185,7 +190,7 @@ object World {
          * @return the border size
          */
         @JvmStatic
-        fun getSize(): Double = getWorld()!!.worldBorder.size
+        fun getSize(): Double = toMC()!!.worldBorder.size
 
         /**
          * Gets the border target size.
@@ -193,7 +198,7 @@ object World {
          * @return the border target size
          */
         @JvmStatic
-        fun getTargetSize(): Double = getWorld()!!.worldBorder.sizeLerpTarget
+        fun getTargetSize(): Double = toMC()!!.worldBorder.sizeLerpTarget
 
         /**
          * Gets the border time until the target size is met.
@@ -201,7 +206,7 @@ object World {
          * @return the border time until target
          */
         @JvmStatic
-        fun getTimeUntilTarget(): Long = getWorld()!!.worldBorder.sizeLerpTime
+        fun getTimeUntilTarget(): Long = toMC()!!.worldBorder.sizeLerpTime
     }
 
     /**
@@ -214,7 +219,7 @@ object World {
          * @return the spawn x location.
          */
         @JvmStatic
-        fun getX(): Int = getWorld()!!.spawnPos.x
+        fun getX(): Int = toMC()!!.spawnPos.x
 
         /**
          * Gets the spawn y location.
@@ -222,7 +227,7 @@ object World {
          * @return the spawn y location.
          */
         @JvmStatic
-        fun getY(): Int = getWorld()!!.spawnPos.y
+        fun getY(): Int = toMC()!!.spawnPos.y
 
         /**
          * Gets the spawn z location.
@@ -230,7 +235,7 @@ object World {
          * @return the spawn z location.
          */
         @JvmStatic
-        fun getZ(): Int = getWorld()!!.spawnPos.z
+        fun getZ(): Int = toMC()!!.spawnPos.z
     }
 
     object particle {

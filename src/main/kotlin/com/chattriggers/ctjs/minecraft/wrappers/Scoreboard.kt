@@ -6,17 +6,20 @@ import gg.essential.universal.wrappers.message.UTextComponent
 import net.minecraft.scoreboard.ScoreboardObjective
 import net.minecraft.scoreboard.ScoreboardPlayerScore
 
-object Scoreboard {
+object Scoreboard : CTWrapper<MCScoreboard?> {
     private var needsUpdate = true
     private var scoreboardNames = mutableListOf<Score>()
     private var scoreboardTitle = UTextComponent("")
     private var shouldRender = true
 
+    override val mcValue get() = World.toMC()?.scoreboard
+
+    @Deprecated("Use toMC", ReplaceWith("toMC()"))
     @JvmStatic
-    fun getScoreboard(): MCScoreboard? = World.getWorld()?.scoreboard
+    fun getScoreboard() = toMC()
 
     @JvmStatic
-    fun getSidebar(): ScoreboardObjective? = getScoreboard()?.getObjectiveForSlot(1)
+    fun getSidebar(): ScoreboardObjective? = toMC()?.getObjectiveForSlot(1)
 
     // TODO(breaking): Remove getScoreboardTitle
 
@@ -99,7 +102,7 @@ object Scoreboard {
      */
     @JvmStatic
     fun setLine(score: Int, line: String, override: Boolean) {
-        val scoreboard = getScoreboard() ?: return
+        val scoreboard = toMC() ?: return
         val sidebarObjective = getSidebar() ?: return
 
         val scores = scoreboard.getAllPlayerScores(sidebarObjective)
@@ -127,7 +130,7 @@ object Scoreboard {
         scoreboardNames.clear()
         scoreboardTitle = UTextComponent("")
 
-        val scoreboard = getScoreboard() ?: return
+        val scoreboard = toMC() ?: return
         val sidebarObjective = getSidebar() ?: return
         scoreboardTitle = UTextComponent(sidebarObjective.displayName)
 
@@ -139,14 +142,14 @@ object Scoreboard {
         needsUpdate = true
     }
 
-    class Score(val score: ScoreboardPlayerScore) {
+    class Score(override val mcValue: ScoreboardPlayerScore) : CTWrapper<ScoreboardPlayerScore> {
         /**
          * Gets the score point value for this score,
          * i.e. the number on the right of the board
          *
          * @return the actual point value
          */
-        fun getPoints(): Int = score.score
+        fun getPoints(): Int = mcValue.score
 
         /**
          * Gets the display string of this score
@@ -154,8 +157,8 @@ object Scoreboard {
          * @return the display name
          */
         fun getName() = UTextComponent(MCTeam.decorateName(
-            getScoreboard()!!.getTeam(score.playerName),
-            UTextComponent(score.playerName),
+            Scoreboard.toMC()!!.getTeam(mcValue.playerName),
+            UTextComponent(mcValue.playerName),
         )).formattedText
 
         override fun toString(): String = getName()

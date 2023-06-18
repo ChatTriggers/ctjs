@@ -20,7 +20,7 @@ object TabList {
      */
     @JvmStatic
     fun getNamesByObjectives(): List<String> {
-        val scoreboard = Scoreboard.getScoreboard() ?: return emptyList()
+        val scoreboard = Scoreboard.toMC() ?: return emptyList()
         val sidebarObjective = scoreboard.getObjectiveForSlot(0) ?: return emptyList()
 
         val scores = scoreboard.getAllPlayerScores(sidebarObjective)
@@ -36,7 +36,7 @@ object TabList {
         if (Client.getTabGui() == null) return listOf()
 
         return playerComparator
-            .sortedCopy(Player.getPlayer()!!.networkHandler.playerList)
+            .sortedCopy(Player.toMC()!!.networkHandler.playerList)
             .map { UTextComponent(Client.getTabGui()!!.getPlayerName(it)).formattedText }
     }
 
@@ -47,7 +47,7 @@ object TabList {
      */
     @JvmStatic
     fun getUnformattedNames(): List<String> {
-        if (Player.getPlayer() == null) return listOf()
+        if (Player.toMC() == null) return listOf()
 
         return Client.getConnection()?.playerList?.let {
             playerComparator.sortedCopy(it)

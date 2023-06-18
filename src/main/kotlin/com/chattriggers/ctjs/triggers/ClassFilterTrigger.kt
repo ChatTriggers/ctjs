@@ -49,11 +49,11 @@ sealed class ClassFilterTrigger<Wrapped, Unwrapped>(method: Any, private val tri
 }
 
 class RenderEntityTrigger(method: Any, loader: ILoader) : ClassFilterTrigger<Entity, MCEntity>(method, TriggerType.RENDER_ENTITY, loader, Entity::class.java) {
-    override fun unwrap(wrapped: Entity): MCEntity = wrapped.entity
+    override fun unwrap(wrapped: Entity): MCEntity = wrapped.toMC()
  }
 
 class RenderBlockEntityTrigger(method: Any, loader: ILoader) : ClassFilterTrigger<BlockEntity, MCBlockEntity>(method, TriggerType.RENDER_BLOCK_ENTITY, loader, BlockEntity::class.java) {
-    override fun unwrap(wrapped: BlockEntity): MCBlockEntity = wrapped.blockEntity
+    override fun unwrap(wrapped: BlockEntity): MCBlockEntity = wrapped.toMC()
  }
 
 class PacketTrigger(method: Any, triggerType: TriggerType, loader: ILoader) : ClassFilterTrigger<Packet<*>, Packet<*>>(method, triggerType, loader, Packet::class.java) {

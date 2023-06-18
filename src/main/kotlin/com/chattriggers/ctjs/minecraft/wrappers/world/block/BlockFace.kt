@@ -1,5 +1,6 @@
 package com.chattriggers.ctjs.minecraft.wrappers.world.block
 
+import com.chattriggers.ctjs.minecraft.wrappers.CTWrapper
 import com.chattriggers.ctjs.utils.vec.Vec3i
 import net.minecraft.util.StringIdentifiable
 import net.minecraft.util.math.Direction
@@ -10,14 +11,15 @@ enum class BlockFace(
     private val oppositeIndex: Int,
     val axisDirection: AxisDirection,
     val axis: Axis,
-    val directionVec: Vec3i
-) : StringIdentifiable {
-    DOWN(1, AxisDirection.NEGATIVE, Axis.Y, Vec3i(0, -1, 0)),
-    UP(0, AxisDirection.POSITIVE, Axis.Y, Vec3i(0, 1, 0)),
-    NORTH(3, AxisDirection.NEGATIVE, Axis.Z, Vec3i(0, 0, -1)),
-    SOUTH(2, AxisDirection.POSITIVE, Axis.Z, Vec3i(0, 0, 1)),
-    WEST(5, AxisDirection.NEGATIVE, Axis.X, Vec3i(-1, 0, 0)),
-    EAST(4, AxisDirection.POSITIVE, Axis.X, Vec3i(1, 0, 0));
+    val directionVec: Vec3i,
+    override val mcValue: Direction
+) : StringIdentifiable, CTWrapper<Direction> {
+    DOWN(1, AxisDirection.NEGATIVE, Axis.Y, Vec3i(0, -1, 0), Direction.DOWN),
+    UP(0, AxisDirection.POSITIVE, Axis.Y, Vec3i(0, 1, 0), Direction.UP),
+    NORTH(3, AxisDirection.NEGATIVE, Axis.Z, Vec3i(0, 0, -1), Direction.NORTH),
+    SOUTH(2, AxisDirection.POSITIVE, Axis.Z, Vec3i(0, 0, 1), Direction.SOUTH),
+    WEST(5, AxisDirection.NEGATIVE, Axis.X, Vec3i(-1, 0, 0), Direction.WEST),
+    EAST(4, AxisDirection.POSITIVE, Axis.X, Vec3i(1, 0, 0), Direction.EAST);
 
     fun getOpposite() = values()[oppositeIndex]
 
@@ -59,15 +61,6 @@ enum class BlockFace(
         else -> throw IllegalStateException("Cannot rotate $this around z-axis")
     }
 
-    fun toMC() = when (this) {
-        DOWN -> Direction.DOWN
-        UP -> Direction.UP
-        NORTH -> Direction.NORTH
-        SOUTH -> Direction.SOUTH
-        WEST -> Direction.WEST
-        EAST -> Direction.EAST
-    }
-
     override fun asString() = name.lowercase()
 
     enum class Plane : Predicate<BlockFace>, Iterable<BlockFace> {
@@ -84,14 +77,9 @@ enum class BlockFace(
         override fun iterator() = facings().iterator()
     }
 
-    enum class AxisDirection(val offset: Int) {
-        POSITIVE(1),
-        NEGATIVE(-1);
-
-        fun toMC() = when (this) {
-            POSITIVE -> Direction.AxisDirection.POSITIVE
-            NEGATIVE -> Direction.AxisDirection.NEGATIVE
-        }
+    enum class AxisDirection(val offset: Int, override val mcValue: Direction.AxisDirection) : CTWrapper<Direction.AxisDirection> {
+        POSITIVE(1, Direction.AxisDirection.POSITIVE),
+        NEGATIVE(-1, Direction.AxisDirection.NEGATIVE);
 
         companion object {
             @JvmStatic
@@ -102,20 +90,14 @@ enum class BlockFace(
         }
     }
 
-    enum class Axis(val plane: Plane) : Predicate<BlockFace>, StringIdentifiable {
-        X(Plane.HORIZONTAL),
-        Y(Plane.VERTICAL),
-        Z(Plane.HORIZONTAL);
+    enum class Axis(val plane: Plane, override val mcValue: Direction.Axis) : Predicate<BlockFace>, StringIdentifiable, CTWrapper<Direction.Axis> {
+        X(Plane.HORIZONTAL, Direction.Axis.X),
+        Y(Plane.VERTICAL, Direction.Axis.Y),
+        Z(Plane.HORIZONTAL, Direction.Axis.Z);
 
         fun isHorizontal() = plane == Plane.HORIZONTAL
 
         fun isVertical() = plane == Plane.VERTICAL
-
-        fun toMC() = when (this) {
-            X -> Direction.Axis.X
-            Y -> Direction.Axis.Y
-            Z -> Direction.Axis.Z
-        }
 
         override fun test(t: BlockFace) = t.axis == this
 

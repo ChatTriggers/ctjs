@@ -1,19 +1,20 @@
 package com.chattriggers.ctjs.minecraft.wrappers.entity
 
+import com.chattriggers.ctjs.minecraft.wrappers.CTWrapper
 import com.chattriggers.ctjs.utils.MCTeam
 import gg.essential.universal.wrappers.message.UTextComponent
 import net.minecraft.scoreboard.AbstractTeam
 
-class Team(val team: MCTeam) {
+class Team(override val mcValue: MCTeam) : CTWrapper<MCTeam> {
     /**
      * Gets the registered name of the team
      */
-    fun getRegisteredName(): String = team.name
+    fun getRegisteredName(): String = mcValue.name
 
     /**
      * Gets the display name of the team
      */
-    fun getName() = UTextComponent(team.displayName).formattedText
+    fun getName() = UTextComponent(mcValue.displayName).formattedText
 
     /**
      * Sets the display name of the team
@@ -21,7 +22,7 @@ class Team(val team: MCTeam) {
      * @return the team for method chaining
      */
     fun setName(name: UTextComponent) = apply {
-        team.displayName = name
+        mcValue.displayName = name
     }
 
     /**
@@ -34,12 +35,12 @@ class Team(val team: MCTeam) {
     /**
      * Gets the list of names on the team
      */
-    fun getMembers(): List<String> = team.playerList.toList()
+    fun getMembers(): List<String> = mcValue.playerList.toList()
 
     /**
      * Gets the team prefix
      */
-    fun getPrefix() = UTextComponent(team.prefix).formattedText
+    fun getPrefix() = UTextComponent(mcValue.prefix).formattedText
 
     /**
      * Sets the team prefix
@@ -47,7 +48,7 @@ class Team(val team: MCTeam) {
      * @return the team for method chaining
      */
     fun setPrefix(prefix: UTextComponent) = apply {
-        team.prefix = prefix
+        mcValue.prefix = prefix
     }
 
     /**
@@ -60,7 +61,7 @@ class Team(val team: MCTeam) {
     /**
      * Gets the team suffix
      */
-    fun getSuffix() = UTextComponent(team.suffix).formattedText
+    fun getSuffix() = UTextComponent(mcValue.suffix).formattedText
 
     /**
      * Sets the team suffix
@@ -68,7 +69,7 @@ class Team(val team: MCTeam) {
      * @return the team for method chaining
      */
     fun setSuffix(suffix: UTextComponent) = apply {
-        team.suffix = suffix
+        mcValue.suffix = suffix
     }
 
     /**
@@ -81,32 +82,30 @@ class Team(val team: MCTeam) {
     /**
      * Gets the team's friendly fire setting
      */
-    fun getFriendlyFire(): Boolean = team.isFriendlyFireAllowed
+    fun getFriendlyFire(): Boolean = mcValue.isFriendlyFireAllowed
 
     /**
      * Gets whether the team can see invisible players on the same team
      */
-    fun canSeeInvisibleTeammates(): Boolean = team.shouldShowFriendlyInvisibles()
+    fun canSeeInvisibleTeammates(): Boolean = mcValue.shouldShowFriendlyInvisibles()
 
     /**
      * Gets the team's name tag visibility
      */
     // TODO(breaking): Use enum instead of String
-    fun getNameTagVisibility() = Visibility.fromMC(team.nameTagVisibilityRule)
+    fun getNameTagVisibility() = Visibility.fromMC(mcValue.nameTagVisibilityRule)
 
     /**
      * Gets the team's death message visibility
      */
     // TODO(breaking): Use enum instead of String
-    fun getDeathMessageVisibility() = Visibility.fromMC(team.deathMessageVisibilityRule)
+    fun getDeathMessageVisibility() = Visibility.fromMC(mcValue.deathMessageVisibilityRule)
 
-    enum class Visibility(private val mcValue: AbstractTeam.VisibilityRule) {
+    enum class Visibility(override val mcValue: AbstractTeam.VisibilityRule) : CTWrapper<AbstractTeam.VisibilityRule> {
         ALWAYS(AbstractTeam.VisibilityRule.ALWAYS),
         NEVER(AbstractTeam.VisibilityRule.NEVER),
         HIDE_FOR_OTHERS_TEAMS(AbstractTeam.VisibilityRule.HIDE_FOR_OTHER_TEAMS),
         HIDE_FOR_OWN_TEAM(AbstractTeam.VisibilityRule.HIDE_FOR_OWN_TEAM);
-
-        fun toMC() = mcValue
 
         companion object {
             @JvmStatic

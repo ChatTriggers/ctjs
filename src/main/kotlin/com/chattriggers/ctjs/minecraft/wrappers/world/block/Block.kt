@@ -28,27 +28,27 @@ open class Block(
      */
     fun withFace(face: BlockFace) = Block(type, pos, face)
 
-    fun getState() = World.getWorld()?.getBlockState(pos.toMC())
+    fun getState() = World.toMC()?.getBlockState(pos.toMC())
 
     // TODO(breaking): remove getMetadata
 
     @JvmOverloads
     fun isEmittingPower(face: BlockFace? = null): Boolean {
         if (face != null)
-            return World.getWorld()!!.isEmittingRedstonePower(pos.toMC(), face.toMC())
+            return World.toMC()!!.isEmittingRedstonePower(pos.toMC(), face.toMC())
         return BlockFace.values().any { isEmittingPower(it) }
     }
 
     // TODO(breaking): Renamed this method from isPowered
-    fun isReceivingPower() = World.getWorld()!!.isReceivingRedstonePower(pos.toMC())
+    fun isReceivingPower() = World.toMC()!!.isReceivingRedstonePower(pos.toMC())
 
     // TODO(breaking): Renamed this method from getRedstoneStrength
-    fun getReceivingPower() = World.getWorld()!!.getReceivedRedstonePower(pos.toMC())
+    fun getReceivingPower() = World.toMC()!!.getReceivedRedstonePower(pos.toMC())
 
     @JvmOverloads
     fun getEmittingPower(face: BlockFace? = null): Int {
         if (face != null)
-            return World.getWorld()!!.getEmittedRedstonePower(pos.toMC(), face.toMC())
+            return World.toMC()!!.getEmittedRedstonePower(pos.toMC(), face.toMC())
         return BlockFace.values().asSequence().map(::getEmittingPower).firstOrNull { it != 0 } ?: 0
     }
 

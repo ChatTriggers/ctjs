@@ -390,7 +390,7 @@ object ChatLib {
 
     // helper method to make sure player exists before putting something in chat
     fun checkPlayerExists(out: String): Boolean {
-        if (Player.getPlayer() == null) {
+        if (Player.toMC() == null) {
             out.printToConsole()
             return false
         }
