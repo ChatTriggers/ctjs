@@ -1,6 +1,5 @@
 package com.chattriggers.ctjs.minecraft.wrappers.entity
 
-import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer
 import com.chattriggers.ctjs.minecraft.wrappers.Client
 import com.chattriggers.ctjs.mixins.PlayerEntityMixin
 import com.chattriggers.ctjs.utils.asMixin
@@ -8,8 +7,8 @@ import gg.essential.universal.wrappers.message.UTextComponent
 import net.minecraft.client.network.PlayerListEntry
 import net.minecraft.entity.player.PlayerEntity
 
-class PlayerMP(val player: PlayerEntity) : LivingEntity(player) {
-    fun isSpectator() = player.isSpectator
+class PlayerMP(override val mcValue: PlayerEntity) : LivingEntity(mcValue) {
+    fun isSpectator() = mcValue.isSpectator
 
     fun getPing(): Int {
         return getPlayerInfo()?.latency ?: -1
@@ -37,7 +36,7 @@ class PlayerMP(val player: PlayerEntity) : LivingEntity(player) {
      * @param textComponent the new name to display
      */
     fun setNametagName(textComponent: UTextComponent) {
-        player.asMixin<PlayerEntityMixin>().setOverriddenNametagName(textComponent.formattedText)
+        mcValue.asMixin<PlayerEntityMixin>().setOverriddenNametagName(textComponent.formattedText)
     }
 
     /**
@@ -67,13 +66,10 @@ class PlayerMP(val player: PlayerEntity) : LivingEntity(player) {
             ))
     }
 
-    private fun getPlayerInfo() = Client.getConnection()?.getPlayerListEntry(player.uuid)
+    private fun getPlayerInfo() = Client.getConnection()?.getPlayerListEntry(mcValue.uuid)
 
     override fun toString(): String {
-        return "PlayerMP{name=" + getName() +
-            ", ping=" + getPing() +
-            ", entityLivingBase=" + super.toString() +
-            "}"
+        return "PlayerMP{name=${getName()}, ping=${getPing()}, livingEntity=${super.toString()}}"
     }
 
     override fun getNameComponent() = getDisplayName()

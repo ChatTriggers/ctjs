@@ -53,7 +53,7 @@ object Server {
      */
     @JvmStatic
     fun getPing(): Long {
-        val player = Player.getPlayer()
+        val player = Player.toMC()
 
         if (player == null
             || Client.getMinecraft().isInSingleplayer

@@ -5,52 +5,52 @@ import com.chattriggers.ctjs.utils.MCNbtList
 import net.minecraft.nbt.NbtElement
 import org.mozilla.javascript.NativeArray
 
-class NBTTagList(override val rawNBT: MCNbtList) : NBTBase(rawNBT) {
+class NBTTagList(override val mcValue: MCNbtList) : NBTBase(mcValue) {
     val tagCount: Int
-        get() = rawNBT.size
+        get() = mcValue.size
 
-    fun appendTag(nbt: NBTBase) = appendTag(nbt.rawNBT)
+    fun appendTag(nbt: NBTBase) = appendTag(nbt.toMC())
 
     fun appendTag(nbt: MCNbtBase) = apply {
-        rawNBT.add(nbt)
+        mcValue.add(nbt)
     }
 
-    operator fun set(id: Int, nbt: NBTBase) = set(id, nbt.rawNBT)
+    operator fun set(id: Int, nbt: NBTBase) = set(id, nbt.toMC())
 
     operator fun set(id: Int, nbt: MCNbtBase) = apply {
-        rawNBT[id] = nbt
+        mcValue[id] = nbt
     }
 
-    fun insertTag(index: Int, nbt: NBTBase) = insertTag(index, nbt.rawNBT)
+    fun insertTag(index: Int, nbt: NBTBase) = insertTag(index, nbt.toMC())
 
     fun insertTag(index: Int, nbt: MCNbtBase) = apply {
-        rawNBT.add(index, nbt)
+        mcValue.add(index, nbt)
     }
 
     // TODO(breaking): Return wrapped element instead of raw element
-    fun removeTag(index: Int) = fromMC(rawNBT.removeAt(index))
+    fun removeTag(index: Int) = fromMC(mcValue.removeAt(index))
 
-    fun getShortAt(index: Int) = rawNBT.getShort(index)
+    fun getShortAt(index: Int) = mcValue.getShort(index)
 
-    fun getIntAt(index: Int) = rawNBT.getInt(index)
+    fun getIntAt(index: Int) = mcValue.getInt(index)
 
-    fun getFloatAt(index: Int) = rawNBT.getFloat(index)
+    fun getFloatAt(index: Int) = mcValue.getFloat(index)
 
-    fun getDoubleAt(index: Int) = rawNBT.getDouble(index)
+    fun getDoubleAt(index: Int) = mcValue.getDouble(index)
 
-    fun getStringTagAt(index: Int): String = rawNBT.getString(index)
+    fun getStringTagAt(index: Int): String = mcValue.getString(index)
 
-    fun getListAt(index: Int) = NBTTagList(rawNBT.getList(index))
+    fun getListAt(index: Int) = NBTTagList(mcValue.getList(index))
 
-    fun getCompoundTagAt(index: Int) = NBTTagCompound(rawNBT.getCompound(index))
+    fun getCompoundTagAt(index: Int) = NBTTagCompound(mcValue.getCompound(index))
 
-    fun getIntArrayAt(index: Int): IntArray = rawNBT.getIntArray(index)
+    fun getIntArrayAt(index: Int): IntArray = mcValue.getIntArray(index)
 
-    fun getLongArrayAt(index: Int): LongArray = rawNBT.getLongArray(index)
+    fun getLongArrayAt(index: Int): LongArray = mcValue.getLongArray(index)
 
-    operator fun get(index: Int): NbtElement = rawNBT[index]
+    operator fun get(index: Int): NbtElement = mcValue[index]
 
-    fun get(index: Int, type: Byte): Any? = when (type) {
+    fun get(index: Int, type: Byte): Any = when (type) {
         NbtElement.SHORT_TYPE -> getShortAt(index)
         NbtElement.INT_TYPE -> getIntAt(index)
         NbtElement.FLOAT_TYPE -> getFloatAt(index)
@@ -63,5 +63,5 @@ class NBTTagList(override val rawNBT: MCNbtList) : NBTBase(rawNBT) {
         else -> get(index)
     }
 
-    fun toArray(): NativeArray = rawNBT.toObject()
+    fun toArray(): NativeArray = mcValue.toObject()
 }

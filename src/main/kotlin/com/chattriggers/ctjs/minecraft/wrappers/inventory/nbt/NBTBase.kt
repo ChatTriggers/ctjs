@@ -1,5 +1,6 @@
 package com.chattriggers.ctjs.minecraft.wrappers.inventory.nbt
 
+import com.chattriggers.ctjs.minecraft.wrappers.CTWrapper
 import com.chattriggers.ctjs.utils.MCNbtBase
 import com.chattriggers.ctjs.utils.MCNbtCompound
 import com.chattriggers.ctjs.utils.MCNbtList
@@ -7,34 +8,34 @@ import net.minecraft.nbt.*
 import org.mozilla.javascript.NativeArray
 import org.mozilla.javascript.NativeObject
 
-open class NBTBase(open val rawNBT: MCNbtBase) {
+open class NBTBase(override val mcValue: MCNbtBase) : CTWrapper<MCNbtBase> {
     /**
      * Gets the type byte for the tag.
      */
     val id: Byte
-        get() = rawNBT.type
+        get() = mcValue.type
 
     /**
      * Creates a clone of the tag.
      */
-    fun copy() = rawNBT.copy()
+    fun copy() = mcValue.copy()
 
     /**
      * Return whether this compound has no tags.
      */
     fun hasNoTags() = when (this) {
-        is NBTTagCompound -> this.tagMap.isEmpty()
-        is NBTTagList -> this.rawNBT.isEmpty()
+        is NBTTagCompound -> tagMap.isEmpty()
+        is NBTTagList -> mcValue.isEmpty()
         else -> false
     }
 
     fun hasTags() = !hasNoTags()
 
-    override fun equals(other: Any?) = rawNBT == other
+    override fun equals(other: Any?) = mcValue == other
 
-    override fun hashCode() = rawNBT.hashCode()
+    override fun hashCode() = mcValue.hashCode()
 
-    override fun toString() = rawNBT.toString()
+    override fun toString() = mcValue.toString()
 
     companion object {
         @JvmStatic

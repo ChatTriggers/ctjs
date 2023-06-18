@@ -1,6 +1,7 @@
 package com.chattriggers.ctjs.minecraft.objects
 
 import com.chattriggers.ctjs.CTJS
+import com.chattriggers.ctjs.minecraft.wrappers.CTWrapper
 import com.chattriggers.ctjs.minecraft.wrappers.Player
 import com.chattriggers.ctjs.minecraft.wrappers.World
 import com.chattriggers.ctjs.mixins.AbstractSoundInstanceAccessor
@@ -266,7 +267,7 @@ class Sound(private val config: NativeObject) {
         }
     }
 
-    enum class Category(private val mcValue: SoundCategory) {
+    enum class Category(override val mcValue: SoundCategory) : CTWrapper<SoundCategory> {
         MASTER(SoundCategory.MASTER),
         MUSIC(SoundCategory.MUSIC),
         RECORDS(SoundCategory.RECORDS),
@@ -277,8 +278,6 @@ class Sound(private val config: NativeObject) {
         PLAYERS(SoundCategory.PLAYERS),
         AMBIENT(SoundCategory.AMBIENT),
         VOICE(SoundCategory.VOICE);
-
-        fun toMC() = mcValue
 
         companion object {
             @JvmStatic
@@ -294,11 +293,9 @@ class Sound(private val config: NativeObject) {
         }
     }
 
-    enum class AttenuationType(private val mcValue: MCAttenuationType) {
+    enum class AttenuationType(override val mcValue: MCAttenuationType) : CTWrapper<MCAttenuationType> {
         NONE(MCAttenuationType.NONE),
         LINEAR(MCAttenuationType.LINEAR);
-
-        fun toMC() = mcValue
 
         companion object {
             @JvmStatic

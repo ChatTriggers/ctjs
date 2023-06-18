@@ -1,5 +1,6 @@
 package com.chattriggers.ctjs.minecraft.wrappers.world
 
+import com.chattriggers.ctjs.minecraft.wrappers.CTWrapper
 import com.chattriggers.ctjs.mixins.ChunkAccessor
 import com.chattriggers.ctjs.utils.MCChunk
 import com.chattriggers.ctjs.utils.asMixin
@@ -9,16 +10,16 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.world.LightType
 
 // TODO: Add more methods here?
-class Chunk(val chunk: MCChunk) {
+class Chunk(override val mcValue: MCChunk) : CTWrapper<MCChunk> {
     /**
      * Gets the x position of the chunk
      */
-    fun getX() = chunk.pos.x
+    fun getX() = mcValue.pos.x
 
     /**
      * Gets the z position of the chunk
      */
-    fun getZ() = chunk.pos.z
+    fun getZ() = mcValue.pos.z
 
     /**
      * Gets the minimum x coordinate of a block in the chunk
@@ -89,7 +90,7 @@ class Chunk(val chunk: MCChunk) {
       * @return the block entity list
       */
      fun getAllBlockEntities(): List<BlockEntity> {
-         return chunk.asMixin<ChunkAccessor>().blockEntities.values.map(::BlockEntity)
+         return mcValue.asMixin<ChunkAccessor>().blockEntities.values.map(::BlockEntity)
      }
 
     // TODO(breaking): Rename to getAllBlockEntitiesOfType
@@ -101,7 +102,7 @@ class Chunk(val chunk: MCChunk) {
       */
      fun getAllBlockEntitiesOfType(clazz: Class<*>): List<BlockEntity> {
          return getAllBlockEntities().filter {
-             clazz.isInstance(it.blockEntity)
+             clazz.isInstance(it.toMC())
          }
      }
 }

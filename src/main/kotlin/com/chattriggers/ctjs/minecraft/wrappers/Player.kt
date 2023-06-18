@@ -12,38 +12,41 @@ import gg.essential.universal.wrappers.message.UTextComponent
 import net.minecraft.client.network.ClientPlayerEntity
 import java.util.*
 
-object Player {
+object Player : CTWrapper<ClientPlayerEntity?> {
+    override val mcValue get() = UMinecraft.getMinecraft().player
+
     /**
      * Gets Minecraft's EntityPlayerSP object representing the user
      *
      * @return The Minecraft EntityPlayerSP object representing the user
      */
+    @Deprecated("Use toMC", ReplaceWith("toMC()"))
     @JvmStatic
-    fun getPlayer(): ClientPlayerEntity? = UMinecraft.getMinecraft().player
+    fun getPlayer() = toMC()
 
     @JvmStatic
-    fun getTeam(): Team? = Scoreboard.getScoreboard()?.getPlayerTeam(getName())?.let(::Team)
+    fun getTeam(): Team? = Scoreboard.toMC()?.getPlayerTeam(getName())?.let(::Team)
 
     @JvmStatic
-    fun asPlayerMP(): PlayerMP? = getPlayer()?.let(::PlayerMP)
+    fun asPlayerMP(): PlayerMP? = toMC()?.let(::PlayerMP)
 
     @JvmStatic
-    fun getX(): Double = getPlayer()?.x ?: 0.0
+    fun getX(): Double = toMC()?.x ?: 0.0
 
     @JvmStatic
-    fun getY(): Double = getPlayer()?.y ?: 0.0
+    fun getY(): Double = toMC()?.y ?: 0.0
 
     @JvmStatic
-    fun getZ(): Double = getPlayer()?.z ?: 0.0
+    fun getZ(): Double = toMC()?.z ?: 0.0
 
     @JvmStatic
-    fun getLastX(): Double = getPlayer()?.lastRenderX ?: 0.0
+    fun getLastX(): Double = toMC()?.lastRenderX ?: 0.0
 
     @JvmStatic
-    fun getLastY(): Double = getPlayer()?.lastRenderY ?: 0.0
+    fun getLastY(): Double = toMC()?.lastRenderY ?: 0.0
 
     @JvmStatic
-    fun getLastZ(): Double = getPlayer()?.lastRenderZ ?: 0.0
+    fun getLastZ(): Double = toMC()?.lastRenderZ ?: 0.0
 
     @JvmStatic
     fun getRenderX(): Double = getLastX() + (getX() - getLastX()) * Renderer.partialTicks
@@ -61,7 +64,7 @@ object Player {
      * @return the player's x motion
      */
     @JvmStatic
-    fun getMotionX(): Double = getPlayer()?.velocity?.x ?: 0.0
+    fun getMotionX(): Double = toMC()?.velocity?.x ?: 0.0
 
     /**
      * Gets the player's y motion.
@@ -70,7 +73,7 @@ object Player {
      * @return the player's y motion
      */
     @JvmStatic
-    fun getMotionY(): Double = getPlayer()?.velocity?.y ?: 0.0
+    fun getMotionY(): Double = toMC()?.velocity?.y ?: 0.0
 
     /**
      * Gets the player's z motion.
@@ -79,7 +82,7 @@ object Player {
      * @return the player's z motion
      */
     @JvmStatic
-    fun getMotionZ(): Double = getPlayer()?.velocity?.z ?: 0.0
+    fun getMotionZ(): Double = toMC()?.velocity?.z ?: 0.0
 
     /**
      * Gets the player's camera pitch.
@@ -87,7 +90,7 @@ object Player {
      * @return the player's camera pitch
      */
     @JvmStatic
-    fun getPitch(): Double = UMath.wrapAngleTo180(getPlayer()?.pitch?.toDouble() ?: 0.0)
+    fun getPitch(): Double = UMath.wrapAngleTo180(toMC()?.pitch?.toDouble() ?: 0.0)
 
     /**
      * Gets the player's camera yaw.
@@ -95,7 +98,7 @@ object Player {
      * @return the player's camera yaw
      */
     @JvmStatic
-    fun getYaw(): Double = UMath.wrapAngleTo180(getPlayer()?.yaw?.toDouble() ?: 0.0)
+    fun getYaw(): Double = UMath.wrapAngleTo180(toMC()?.yaw?.toDouble() ?: 0.0)
 
     // TODO(breaking): Remove getRawYaw (completely useless method)
 
@@ -118,16 +121,16 @@ object Player {
     fun getUUID(): UUID = UMinecraft.getMinecraft().session.profile.id
 
     @JvmStatic
-    fun getHP(): Float = getPlayer()?.health ?: 0f
+    fun getHP(): Float = toMC()?.health ?: 0f
 
     @JvmStatic
-    fun getHunger(): Int = getPlayer()?.hungerManager?.foodLevel ?: 0
+    fun getHunger(): Int = toMC()?.hungerManager?.foodLevel ?: 0
 
     @JvmStatic
-    fun getSaturation(): Float = getPlayer()?.hungerManager?.saturationLevel ?: 0f
+    fun getSaturation(): Float = toMC()?.hungerManager?.saturationLevel ?: 0f
 
     @JvmStatic
-    fun getArmorPoints(): Int = getPlayer()?.armor ?: 0
+    fun getArmorPoints(): Int = toMC()?.armor ?: 0
 
     /**
      * Gets the player's air level.
@@ -139,18 +142,18 @@ object Player {
      * @return the player's air level
      */
     @JvmStatic
-    fun getAirLevel(): Int = getPlayer()?.air ?: 0
+    fun getAirLevel(): Int = toMC()?.air ?: 0
 
     @JvmStatic
-    fun getXPLevel(): Int = getPlayer()?.experienceLevel ?: 0
+    fun getXPLevel(): Int = toMC()?.experienceLevel ?: 0
 
     @JvmStatic
-    fun getXPProgress(): Float = getPlayer()?.experienceProgress ?: 0f
+    fun getXPProgress(): Float = toMC()?.experienceProgress ?: 0f
 
     @JvmStatic
     fun getBiome(): String {
-        val pos = getPlayer()?.blockPos ?: return ""
-        val biomeEntry = World.getWorld()?.getBiome(pos) ?: return ""
+        val pos = toMC()?.blockPos ?: return ""
+        val biomeEntry = World.toMC()?.getBiome(pos) ?: return ""
 
         return biomeEntry.key.get().value.path
     }
@@ -161,16 +164,16 @@ object Player {
      * @return the light level at the player's current position
      */
     @JvmStatic
-    fun getLightLevel(): Int = World.getWorld()?.getLightLevel(getPlayer()?.blockPos) ?: 0
+    fun getLightLevel(): Int = World.toMC()?.getLightLevel(toMC()?.blockPos) ?: 0
 
     @JvmStatic
-    fun isMoving(): Boolean = getPlayer()?.movementSpeed?.let { it != 0f } ?: false
+    fun isMoving(): Boolean = toMC()?.movementSpeed?.let { it != 0f } ?: false
 
     @JvmStatic
-    fun isSneaking(): Boolean = getPlayer()?.isSneaking ?: false
+    fun isSneaking(): Boolean = toMC()?.isSneaking ?: false
 
     @JvmStatic
-    fun isSprinting(): Boolean = getPlayer()?.isSprinting ?: false
+    fun isSprinting(): Boolean = toMC()?.isSprinting ?: false
 
     /**
      * Checks if player can be pushed by water.
@@ -178,10 +181,10 @@ object Player {
      * @return true if the player is flying, false otherwise
      */
     @JvmStatic
-    fun isFlying(): Boolean = getPlayer()?.abilities?.flying ?: false
+    fun isFlying(): Boolean = toMC()?.abilities?.flying ?: false
 
     @JvmStatic
-    fun isSleeping(): Boolean = getPlayer()?.isSleeping ?: false
+    fun isSleeping(): Boolean = toMC()?.isSleeping ?: false
 
     /**
      * Gets the direction the player is facing.
@@ -191,7 +194,7 @@ object Player {
      */
     @JvmStatic
     fun facing(): String {
-        if (getPlayer() == null) return ""
+        if (toMC() == null) return ""
 
         val yaw = getYaw()
 
@@ -215,7 +218,7 @@ object Player {
      * @return a list of the active [PotionEffect]s
      */
     @JvmStatic
-    fun getActivePotionEffects(): List<PotionEffect> = getPlayer()?.activeStatusEffects?.values?.map(::PotionEffect).orEmpty()
+    fun getActivePotionEffects(): List<PotionEffect> = toMC()?.activeStatusEffects?.values?.map(::PotionEffect).orEmpty()
 
     /**
      * Gets the current object that the player is looking at,
@@ -235,7 +238,7 @@ object Player {
      * @return the current held [Item]
      */
     @JvmStatic
-    fun getHeldItem(): Item? = getPlayer()?.inventory?.selectedSlot?.let {
+    fun getHeldItem(): Item? = toMC()?.inventory?.selectedSlot?.let {
         getInventory()?.getStackInSlot(it)
     }
 
@@ -246,7 +249,7 @@ object Player {
      */
     @JvmStatic
     fun setHeldItemIndex(index: Int) {
-        getPlayer()?.inventory?.selectedSlot = index
+        toMC()?.inventory?.selectedSlot = index
     }
 
     /**
@@ -255,7 +258,7 @@ object Player {
      * @return the current index
      */
     @JvmStatic
-    fun getHeldItemIndex(): Int = getPlayer()?.inventory?.selectedSlot ?: -1
+    fun getHeldItemIndex(): Int = toMC()?.inventory?.selectedSlot ?: -1
 
     /**
      * Gets the inventory of the player, i.e. the inventory accessed by 'e'.
@@ -263,7 +266,7 @@ object Player {
      * @return the player's inventory
      */
     @JvmStatic
-    fun getInventory(): Inventory? = getPlayer()?.inventory?.let(::Inventory)
+    fun getInventory(): Inventory? = toMC()?.inventory?.let(::Inventory)
 
     /**
      * Gets the display name for the player,
@@ -305,7 +308,7 @@ object Player {
     //  * @return the currently opened container
     //  */
     // @JvmStatic
-    // fun getContainer(): Inventory? = getPlayer()?.openContainer?.let(::Inventory)
+    // fun getContainer(): Inventory? = toMC()?.openContainer?.let(::Inventory)
 
     // /**
     //  * Draws the player in the GUI

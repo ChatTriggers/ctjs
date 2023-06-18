@@ -51,13 +51,13 @@
     // loadClass("org.lwjgl.input.Keyboard");
 
     // Libraries
-    loadClass("com.chattriggers.ctjs.minecraft.libs.ChatLib");
-    loadClass("com.chattriggers.ctjs.minecraft.libs.FileLib");
-    loadClass("com.chattriggers.ctjs.minecraft.libs.MathLib");
+    loadInstance("com.chattriggers.ctjs.minecraft.libs.ChatLib");
+    loadInstance("com.chattriggers.ctjs.minecraft.libs.FileLib");
+    loadInstance("com.chattriggers.ctjs.minecraft.libs.MathLib");
 
     loadClass("com.chattriggers.ctjs.minecraft.libs.renderer.Image");
     loadClass("com.chattriggers.ctjs.minecraft.libs.renderer.Rectangle");
-    loadClass("com.chattriggers.ctjs.minecraft.libs.renderer.Renderer");
+    loadInstance("com.chattriggers.ctjs.minecraft.libs.renderer.Renderer");
     loadClass("com.chattriggers.ctjs.minecraft.libs.renderer.Shape");
     loadClass("com.chattriggers.ctjs.minecraft.libs.renderer.Text");
 
@@ -75,15 +75,21 @@
 
     // Wrappers
     loadInstance("com.chattriggers.ctjs.engine.langs.js.JSClient", "Client");
-    loadClass("com.chattriggers.ctjs.minecraft.wrappers.CPS");
-    loadClass("com.chattriggers.ctjs.minecraft.wrappers.Player");
-    loadClass("com.chattriggers.ctjs.minecraft.wrappers.Scoreboard");
-    loadClass("com.chattriggers.ctjs.minecraft.wrappers.Server");
-    loadClass("com.chattriggers.ctjs.minecraft.wrappers.TabList");
-    loadClass("com.chattriggers.ctjs.minecraft.wrappers.World");
+    loadInstance("com.chattriggers.ctjs.minecraft.wrappers.CPS");
+    loadInstance("com.chattriggers.ctjs.minecraft.wrappers.Player");
+    loadInstance("com.chattriggers.ctjs.minecraft.wrappers.Scoreboard");
+    loadInstance("com.chattriggers.ctjs.minecraft.wrappers.Server");
+    loadInstance("com.chattriggers.ctjs.minecraft.wrappers.TabList");
+    loadInstance("com.chattriggers.ctjs.minecraft.wrappers.World");
+
+    loadClass("com.chattriggers.ctjs.minecraft.wrappers.entity.BlockEntity");
+    loadClass("com.chattriggers.ctjs.minecraft.wrappers.entity.Entity");
+    loadClass("com.chattriggers.ctjs.minecraft.wrappers.entity.LivingEntity");
+    loadClass("com.chattriggers.ctjs.minecraft.wrappers.entity.Particle");
+    loadClass("com.chattriggers.ctjs.minecraft.wrappers.entity.PlayerMP");
+    loadClass("com.chattriggers.ctjs.minecraft.wrappers.entity.Team");
 
     loadClass("com.chattriggers.ctjs.minecraft.wrappers.world.Chunk");
-    // loadClass("com.chattriggers.ctjs.minecraft.wrappers.entity.Particle");
     loadClass("com.chattriggers.ctjs.minecraft.wrappers.world.PotionEffect");
     loadClass("com.chattriggers.ctjs.minecraft.wrappers.world.PotionEffectType");
 
@@ -96,13 +102,9 @@
     loadClass("com.chattriggers.ctjs.utils.vec.Vec3f");
     loadClass("com.chattriggers.ctjs.utils.vec.Vec3i");
 
-    loadClass("com.chattriggers.ctjs.minecraft.wrappers.entity.Entity");
-    loadClass("com.chattriggers.ctjs.minecraft.wrappers.entity.LivingEntity");
-    loadClass("com.chattriggers.ctjs.minecraft.wrappers.entity.PlayerMP");
-    loadClass("com.chattriggers.ctjs.minecraft.wrappers.entity.Team");
-
     loadClass("com.chattriggers.ctjs.minecraft.wrappers.inventory.Inventory");
     loadClass("com.chattriggers.ctjs.minecraft.wrappers.inventory.Item");
+    loadClass("com.chattriggers.ctjs.minecraft.wrappers.inventory.ItemType");
     // loadClass("com.chattriggers.ctjs.minecraft.wrappers.inventory.Slot");
 
     loadClass("com.chattriggers.ctjs.minecraft.wrappers.inventory.action.Action");
@@ -159,7 +161,7 @@
         } else if (event instanceof org.spongepowered.asm.mixin.injection.callback.CallbackInfo) {
             event.cancel();
         } else {
-            throw new TypeError("event must be a CancellableEvent, CallbakcInfo, or CallbackInfoReturnable")
+            throw new TypeError("event must be a CancellableEvent, CallbackInfo, or CallbackInfoReturnable")
         }
     };
 

@@ -503,7 +503,7 @@ object Renderer {
      *
      * Takes a parameter with the following options:
      * - player: The player entity to draw. Can be a [PlayerMP] or [AbstractClientPlayerEntity].
-     *           Defaults to Player.getPlayer()
+     *           Defaults to Player.toMC()
      * - x: The x position on the screen to render the player
      * - y: The y position on the screen to render the player
      * - size: The size of the rendered player
@@ -527,8 +527,8 @@ object Renderer {
     fun drawPlayer(obj: NativeObject) {
         val entity = obj["player"].let {
             it as? AbstractClientPlayerEntity
-                ?: ((it as? PlayerMP)?.entity as? AbstractClientPlayerEntity)
-                ?: Player.getPlayer()
+                ?: ((it as? PlayerMP)?.toMC() as? AbstractClientPlayerEntity)
+                ?: Player.toMC()
                 ?: return
         }
 
