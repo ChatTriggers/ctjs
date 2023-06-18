@@ -25,6 +25,7 @@ internal class DynamicMixinGenerator(private val ctx: GenerationContext, private
                     is ModifyExpressionValue -> ModifyExpressionValueGenerator(ctx, id, injector).generate()
                     is ModifyReceiver -> ModifyReceiverGenerator(ctx, id, injector).generate()
                     is ModifyReturnValue -> ModifyReturnValueInjector(ctx, id, injector).generate()
+                    is WrapOperation -> WrapOperationGenerator(ctx, id, injector).generate()
                 }
             }
         }
