@@ -22,6 +22,7 @@ internal class DynamicMixinGenerator(private val ctx: GenerationContext, private
                     is Redirect -> RedirectGenerator(ctx, id, injector).generate()
                     is ModifyArg -> ModifyArgGenerator(ctx, id, injector).generate()
                     is ModifyArgs -> ModifyArgsGenerator(ctx, id, injector).generate()
+                    is ModifyConstant -> ModifyConstantGenerator(ctx, id, injector).generate()
                     is ModifyExpressionValue -> ModifyExpressionValueGenerator(ctx, id, injector).generate()
                     is ModifyReceiver -> ModifyReceiverGenerator(ctx, id, injector).generate()
                     is ModifyReturnValue -> ModifyReturnValueInjector(ctx, id, injector).generate()

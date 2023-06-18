@@ -1,6 +1,7 @@
 
 package com.chattriggers.ctjs.launch
 
+import com.chattriggers.ctjs.utils.descriptor
 import org.spongepowered.asm.mixin.injection.Constant as SPConstant
 
 /*
@@ -66,7 +67,18 @@ data class Constant(
     val slice: String?,
     val expandZeroConditions: List<SPConstant.Condition>?,
     val log: Boolean?,
-)
+) {
+    fun getTypeDescriptor() = when {
+        nullValue != null -> Any::class.descriptor() // Is this right?
+        intValue != null -> Descriptor.Primitive.INT
+        floatValue != null -> Descriptor.Primitive.FLOAT
+        longValue != null -> Descriptor.Primitive.LONG
+        doubleValue != null -> Descriptor.Primitive.DOUBLE
+        stringValue != null -> String::class.descriptor()
+        classValue != null -> Class::class.descriptor()
+        else -> error("Constant() expects one non-null type field")
+    }
+}
 
 sealed interface IInjector
 
@@ -114,6 +126,18 @@ data class ModifyArgs(
     val method: String,
     val slice: Slice?,
     val at: At,
+    val locals: List<Local>?,
+    val remap: Boolean?,
+    val require: Int?,
+    val expect: Int?,
+    val allow: Int?,
+    val constraints: String?,
+) : IInjector
+
+data class ModifyConstant(
+    val method: String,
+    val slice: List<Slice>?,
+    val constant: Constant,
     val locals: List<Local>?,
     val remap: Boolean?,
     val require: Int?,
