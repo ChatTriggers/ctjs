@@ -173,7 +173,11 @@ internal object Utils {
         error("Unable to match method $descriptor in class ${mappedClass.name.original}")
     }
 
-    fun getParameterFromLocal(local: Local, method: Mappings.MappedMethod): InjectorGenerator.Parameter {
+    fun getParameterFromLocal(
+        local: Local,
+        method: Mappings.MappedMethod,
+        name: String = "Local",
+    ): InjectorGenerator.Parameter {
         var modifiedLocal = local
 
         val descriptor = when {
@@ -183,7 +187,7 @@ internal object Utils {
             }
             local.parameterName != null -> {
                 require(local.type == null && local.index == null && local.ordinal == null) {
-                    "Local that specifies parameterName cannot specify type, index, or ordinal"
+                    "$name that specifies parameterName cannot specify type, index, or ordinal"
                 }
 
                 val parameter = method.parameters.find { p -> p.name.original == local.parameterName }
@@ -194,16 +198,16 @@ internal object Utils {
             local.type != null -> {
                 if (local.index != null) {
                     require(local.ordinal == null) {
-                        "Local that specifies a type and index cannot specify an ordinal"
+                        "$name that specifies a type and index cannot specify an ordinal"
                     }
                 } else {
                     require(local.ordinal != null) {
-                        "Local that specifies a type must also specify an index or ordinal"
+                        "$name that specifies a type must also specify an index or ordinal"
                     }
                 }
-                Descriptor.Object(local.type)
+                Descriptor.Parser(local.type).parseType(full = true)
             }
-            else -> error("Local must specify one of the following options: \"print\"; \"parameterName\"; " +
+            else -> error("$name must specify one of the following options: \"print\"; \"parameterName\"; " +
                 "\"type\" and either \"ordinal\" or \"index\"")
         }
 
