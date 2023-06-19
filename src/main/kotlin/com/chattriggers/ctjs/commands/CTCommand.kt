@@ -24,6 +24,7 @@ import net.minecraft.text.HoverEvent
 import java.awt.Desktop
 import java.io.File
 import java.io.IOException
+import kotlin.concurrent.thread
 
 object CTCommand {
     private const val idFixed = 90123 // ID for dumped chat
@@ -102,11 +103,11 @@ object CTCommand {
             ChatLib.chat("&cModule $moduleName is already installed!")
         } else {
             ChatLib.chat("&cImporting ${moduleName}...")
-            Reference.conditionalThread {
+            thread {
                 val (module, dependencies) = ModuleManager.importModule(moduleName)
                 if (module == null) {
                     ChatLib.chat("&cUnable to import module $moduleName")
-                    return@conditionalThread
+                    return@thread
                 }
 
                 val allModules = listOf(module) + dependencies

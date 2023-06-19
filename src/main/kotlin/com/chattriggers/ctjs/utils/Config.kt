@@ -20,14 +20,6 @@ object Config : Vigilant(File(CTJS.configLocation, "ChatTriggers.toml"), sorting
 
     @Property(
         PropertyType.SWITCH,
-        name = "Threaded loading",
-        category = "General",
-        description = "Load CT modules in a background thread"
-    )
-    var threadedLoading = true
-
-    @Property(
-        PropertyType.SWITCH,
         name = "Show module help on import",
         category = "General",
         description = "If a module is imported and it has a help message, display it in chat"

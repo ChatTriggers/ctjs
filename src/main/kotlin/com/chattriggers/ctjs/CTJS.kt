@@ -2,8 +2,7 @@ package com.chattriggers.ctjs
 
 import com.chattriggers.ctjs.commands.CTCommand
 import com.chattriggers.ctjs.commands.Command
-import com.chattriggers.ctjs.console.ConsoleManager
-import com.chattriggers.ctjs.console.RemoteConsoleHost
+import com.chattriggers.ctjs.console.*
 import com.chattriggers.ctjs.engine.module.ModuleManager
 import com.chattriggers.ctjs.minecraft.libs.renderer.Image
 import com.chattriggers.ctjs.minecraft.objects.Sound
@@ -11,7 +10,6 @@ import com.chattriggers.ctjs.minecraft.wrappers.Player
 import com.chattriggers.ctjs.triggers.TriggerType
 import com.chattriggers.ctjs.utils.Config
 import com.chattriggers.ctjs.utils.Initializer
-import com.chattriggers.ctjs.console.printTraceToConsole
 import com.google.gson.Gson
 import com.mojang.brigadier.CommandDispatcher
 import net.fabricmc.api.ClientModInitializer
@@ -36,16 +34,9 @@ class CTJS : ClientModInitializer {
             Command.pendingCommands.clear()
         }
 
-        // Ensure that reportHashedUUID always runs on a separate thread
-        // TODO: Do we still need an option to disable threaded loading?
-        if (Config.threadedLoading) {
-            thread {
-                initModuleManager()
-                reportHashedUUID()
-            }
-        } else {
-            initModuleManager()
-            thread { reportHashedUUID() }
+        thread {
+            ModuleManager.entryPass()
+            reportHashedUUID()
         }
 
         Config.loadData()
@@ -67,14 +58,6 @@ class CTJS : ClientModInitializer {
         val url = "${WEBSITE_ROOT}/api/statistics/track?hash=$hash&version=${Reference.MOD_VERSION}"
         val connection = makeWebRequest(url)
         connection.getInputStream()
-    }
-
-    private fun initModuleManager() {
-        try {
-            ModuleManager.entryPass()
-        } catch (e: Throwable) {
-            e.printTraceToConsole()
-        }
     }
 
     companion object {

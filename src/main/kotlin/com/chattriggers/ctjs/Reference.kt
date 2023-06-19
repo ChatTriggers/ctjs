@@ -56,7 +56,7 @@ object Reference {
         if (asCommand)
             ChatLib.chat("&cReloading ChatTriggers...")
 
-        conditionalThread {
+        thread {
             ModuleManager.setup()
             ModuleManager.entryPass()
 
@@ -68,21 +68,6 @@ object Reference {
             TriggerType.GAME_LOAD.triggerAll()
             if (World.isLoaded())
                 TriggerType.WORLD_LOAD.triggerAll()
-        }
-    }
-
-    @JvmStatic
-    fun conditionalThread(block: () -> Unit) {
-        if (Config.threadedLoading) {
-            thread {
-                try {
-                    block()
-                } catch (e: Throwable) {
-                    e.printTraceToConsole()
-                }
-            }
-        } else {
-            block()
         }
     }
 }
