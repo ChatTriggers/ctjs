@@ -28,11 +28,8 @@ object JSContextFactory : ContextFactory() {
         cx.errorReporter = JSErrorReporter(JSLoader.console)
         cx.wrapFactory = object : WrapFactory() {
             override fun wrap(cx: Context?, scope: Scriptable?, obj: Any?, staticType: Class<*>?): Any? {
-                if (obj is Collection<*>) {
-                    // TODO: Wrapping an array is somewhat slow
+                if (obj is Collection<*>)
                     return super.wrap(cx, scope, obj.toTypedArray(), staticType)
-                }
-
                 return super.wrap(cx, scope, obj, staticType)
             }
         }.apply { isJavaPrimitiveWrap = false }
