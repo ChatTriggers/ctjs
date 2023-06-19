@@ -24,6 +24,8 @@ import net.minecraft.client.network.ServerInfo
 import net.minecraft.client.option.KeyBinding
 import net.minecraft.network.packet.Packet
 import net.minecraft.util.Util
+import java.awt.Toolkit
+import java.awt.datatransfer.StringSelection
 import kotlin.math.roundToInt
 
 abstract class Client {
@@ -259,6 +261,17 @@ abstract class Client {
                 if (subtitle != null)
                     setSubtitle(UTextComponent(subtitle))
             }
+        }
+
+        /**
+         * Copies a string to the clipboard
+         *
+         * @param text The text to copy
+         */
+        @JvmStatic
+        fun copy(text: String) {
+            val selection = StringSelection(text)
+            Toolkit.getDefaultToolkit().systemClipboard.setContents(selection, selection)
         }
     }
 
