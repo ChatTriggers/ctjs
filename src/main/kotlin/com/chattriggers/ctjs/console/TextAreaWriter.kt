@@ -46,7 +46,6 @@ class TextAreaWriter(
     override fun close() {
     }
 
-    // TODO: Make println and roll this back before 3.0.0
     @JvmOverloads
     fun println(s: Any, logType: LogType = LogType.INFO, end: String = "\n", customColor: Color? = null) {
         currentLogType = logType

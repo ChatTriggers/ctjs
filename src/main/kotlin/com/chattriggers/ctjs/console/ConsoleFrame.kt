@@ -130,7 +130,6 @@ class ConsoleFrame(
         invokeLater { frame.dispatchEvent(WindowEvent(frame, WindowEvent.WINDOW_CLOSING)) }
     }
 
-    // TODO: Make println and roll this back before 3.0.0
     @JvmOverloads
     fun println(obj: Any, logType: LogType, end: String = "\n", customColor: Color? = null) {
         invokeLater {

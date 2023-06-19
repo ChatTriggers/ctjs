@@ -4,11 +4,11 @@
     function getJavaType(clazz) {
         const mappedName = Mappings.getMappedClassName(clazz);
         if (mappedName)
-            return Packages[mappedName.replace('/', '.')]
+            return Packages[mappedName.replace("/", ".")]
         return Packages[clazz];
     }
 
-    const Class = getJavaType('java.lang.Class');
+    const Class = getJavaType("java.lang.Class");
 
     function getJavaClass(clazz) {
         const type = getJavaType(clazz);
@@ -204,13 +204,16 @@
 
     const LogType = com.chattriggers.ctjs.utils.console.LogType;
 
-    // TODO: Make println and roll this back before 3.0.0
-    // simplified methods
-    global.print = function (toPrint, end = "\n", color = null) {
+    // TODO(breaking): Split into print and println, switched arg order for println
+    global.print = function (toPrint, color = null) {
+        println(toPrint, color, "");
+    }
+
+    global.println = function (toPrint, color = null, end = "\n") {
         if (toPrint === null) {
-            toPrint = 'null';
+            toPrint = "null";
         } else if (toPrint === undefined) {
-            toPrint = 'undefined';
+            toPrint = "undefined";
         }
 
         Console.println(toPrint, LogType.INFO, end, color);

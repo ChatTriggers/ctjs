@@ -11,8 +11,6 @@ import com.chattriggers.ctjs.minecraft.objects.display.Display
 import com.chattriggers.ctjs.minecraft.wrappers.Client
 import com.chattriggers.ctjs.minecraft.wrappers.World
 import com.chattriggers.ctjs.triggers.TriggerType
-import com.chattriggers.ctjs.utils.Config
-import com.chattriggers.ctjs.console.printTraceToConsole
 import kotlin.concurrent.thread
 
 object Reference {
