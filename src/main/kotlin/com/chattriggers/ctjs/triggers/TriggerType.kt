@@ -2,8 +2,16 @@ package com.chattriggers.ctjs.triggers
 
 import com.chattriggers.ctjs.engine.module.ModuleManager
 
+sealed interface ITriggerType {
+    val name: String
+
+    fun triggerAll(vararg args: Any?) {
+        ModuleManager.trigger(this, args)
+    }
+}
+
 // TODO(breaking): Removed a bunch of less-used triggers
-enum class TriggerType {
+enum class TriggerType : ITriggerType {
     // client
     CHAT,
     ACTION_BAR,
@@ -52,9 +60,7 @@ enum class TriggerType {
     // misc
     MIXIN,
     COMMAND,
-    OTHER;
-
-    fun triggerAll(vararg args: Any?) {
-        ModuleManager.trigger(this, args)
-    }
+    OTHER
 }
+
+data class CustomTriggerType(override val name: String) : ITriggerType

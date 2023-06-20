@@ -3,7 +3,7 @@ package com.chattriggers.ctjs.engine
 import com.chattriggers.ctjs.engine.langs.Lang
 import com.chattriggers.ctjs.engine.module.Module
 import com.chattriggers.ctjs.triggers.Trigger
-import com.chattriggers.ctjs.triggers.TriggerType
+import com.chattriggers.ctjs.triggers.ITriggerType
 import com.chattriggers.ctjs.console.Console
 import com.chattriggers.ctjs.console.ConsoleManager
 import com.chattriggers.ctjs.launch.Mixin
@@ -59,7 +59,7 @@ interface ILoader {
      * Tells the loader that it should activate all triggers
      * of a certain type with the specified arguments.
      */
-    fun exec(type: TriggerType, args: Array<out Any?>)
+    fun exec(type: ITriggerType, args: Array<out Any?>)
 
     /**
      * Gets the result from evaluating a certain line of code in this loader

@@ -5,7 +5,7 @@ import com.chattriggers.ctjs.minecraft.listeners.CancellableEvent
 import gg.essential.universal.wrappers.message.UTextComponent
 import org.mozilla.javascript.regexp.NativeRegExp
 
-class ChatTrigger(method: Any, type: TriggerType, loader: ILoader) : Trigger(method, type, loader) {
+class ChatTrigger(method: Any, type: ITriggerType, loader: ILoader) : Trigger(method, type, loader) {
     private lateinit var chatCriteria: Any
     private var formatted: Boolean = false
     private var caseInsensitive: Boolean = false
