@@ -40,6 +40,9 @@ object Reference {
         Client.scheduleTask {
             CTJS.images.forEach(Image::destroy)
             CTJS.sounds.forEach(Sound::destroy)
+
+            CTJS.images.clear()
+            CTJS.sounds.clear()
         }
 
         if (asCommand)
