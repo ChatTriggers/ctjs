@@ -12,8 +12,6 @@ import java.io.File
 import java.net.HttpURLConnection
 import javax.imageio.ImageIO
 
-// TODO: Allow the user to specify the format (and if not specified, extract it
-//       from the file extension if possible)
 class Image(var image: BufferedImage?) {
     private var texture: NativeImageBackedTexture? = null
     private val textureWidth = image?.width ?: 0
@@ -23,18 +21,7 @@ class Image(var image: BufferedImage?) {
         CTJS.images.add(this)
     }
 
-    @Deprecated(
-        message = "API is ambiguous, especially when called from JavaScript, and is relative to the assets directory",
-        replaceWith = ReplaceWith("Image.fromFile() /* or Image.fromUrl() */"),
-    )
-    @JvmOverloads
-    constructor(name: String, url: String? = null) : this(getBufferedImage(name, url))
-
-    @Deprecated(
-        message = "Use static method for consistency",
-        replaceWith = ReplaceWith("Image.fromFile()")
-    )
-    constructor(file: File) : this(ImageIO.read(file))
+    // TODO(breaking): Remove deprecated files
 
     fun getTextureWidth(): Int = textureWidth
 
@@ -79,7 +66,6 @@ class Image(var image: BufferedImage?) {
         TODO()
     }
 
-    @Suppress("DEPRECATION")
     companion object : Initializer {
         override fun init() {
             CTEvents.POST_RENDER_OVERLAY.register { _, _, _, _, _ ->
@@ -97,21 +83,21 @@ class Image(var image: BufferedImage?) {
          * if the file cannot be found.
          */
         @JvmStatic
-        fun fromFile(file: File) =  Image(file)
+        fun fromFile(file: File) =  Image(ImageIO.read(file))
 
         /**
          * Create an image object from a file path. Throws an exception
          * if the file cannot be found.
          */
         @JvmStatic
-        fun fromFile(file: String) = Image(File(file))
+        fun fromFile(file: String) = Image(ImageIO.read(File(file)))
 
         /**
          * Create an image object from a file path, relative to the assets directory.
          * Throws an exception if the file cannot be found.
          */
         @JvmStatic
-        fun fromAsset(name: String) = Image(File(CTJS.assetsDir, name))
+        fun fromAsset(name: String) = Image(ImageIO.read(File(CTJS.assetsDir, name)))
 
         /**
          * Creates an image object from a URL. Throws an exception if an image
@@ -122,18 +108,15 @@ class Image(var image: BufferedImage?) {
         fun fromUrl(url: String, cachedImageName: String? = null): Image {
             if (cachedImageName == null)
                 return Image(getImageFromUrl(url))
-            return Image(cachedImageName, url)
-        }
 
-        private fun getBufferedImage(name: String, url: String? = null): BufferedImage? {
-            val resourceFile = File(CTJS.assetsDir, name)
+            val resourceFile = File(CTJS.assetsDir, cachedImageName)
 
             if (resourceFile.exists())
-                return ImageIO.read(resourceFile)
+                return Image(ImageIO.read(resourceFile))
 
-            val image = getImageFromUrl(url!!)
+            val image = getImageFromUrl(url)
             ImageIO.write(image, "png", resourceFile)
-            return image
+            return Image(image)
         }
 
         private fun getImageFromUrl(url: String): BufferedImage {
