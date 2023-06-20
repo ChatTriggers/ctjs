@@ -10,6 +10,7 @@ import com.chattriggers.ctjs.engine.langs.Lang
 import com.chattriggers.ctjs.engine.langs.js.JSContextFactory
 import com.chattriggers.ctjs.engine.langs.js.JSLoader
 import com.chattriggers.ctjs.minecraft.libs.ChatLib
+import com.chattriggers.ctjs.minecraft.wrappers.World
 import com.chattriggers.ctjs.triggers.TriggerType
 import gg.essential.vigilance.impl.nightconfig.core.file.FileConfig
 import kotlinx.serialization.json.Json
@@ -44,7 +45,7 @@ object ModuleManager {
 
         File(Reference.DEFAULT_MODULES_FOLDER)
     }
-    val pendingOldModules = mutableListOf<Module>()
+    private val pendingOldModules = mutableListOf<Module>()
 
     @JvmStatic
     fun setup() {
@@ -182,13 +183,17 @@ object ModuleManager {
         return false
     }
 
+    fun reportOldVersions() {
+        pendingOldModules.forEach(::reportOldVersion)
+        pendingOldModules.clear()
+    }
+
     fun tryReportOldVersion(module: Module) {
-        // TODO:
-        // if (World.isLoaded()) {
-        reportOldVersion(module)
-        // } else {
-        //     pendingOldModules.add(module)
-        // }
+        if (World.isLoaded()) {
+            reportOldVersion(module)
+        } else {
+            pendingOldModules.add(module)
+        }
     }
 
     fun reportOldVersion(module: Module) {

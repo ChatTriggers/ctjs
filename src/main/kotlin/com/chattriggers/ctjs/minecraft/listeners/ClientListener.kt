@@ -17,6 +17,7 @@ import com.chattriggers.ctjs.triggers.TriggerType
 import com.chattriggers.ctjs.utils.Config
 import com.chattriggers.ctjs.utils.Initializer
 import com.chattriggers.ctjs.console.printToConsole
+import com.chattriggers.ctjs.engine.module.ModuleManager
 import gg.essential.universal.UMatrixStack
 import gg.essential.universal.UMinecraft
 import gg.essential.universal.wrappers.message.UTextComponent
@@ -147,6 +148,7 @@ object ClientListener : Initializer {
 
         ClientPlayConnectionEvents.JOIN.register { _, _, _ ->
             TriggerType.WORLD_LOAD.triggerAll()
+            ModuleManager.reportOldVersions()
         }
 
         ClientPlayConnectionEvents.DISCONNECT.register { _, _ ->
