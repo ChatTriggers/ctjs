@@ -13,7 +13,7 @@ class Text {
 
     private val lines = mutableListOf<String>()
 
-    private var color = 0xffffffff
+    private var color = 0xffffffff.toInt()
     private var formatted = true
     private var shadow = false
     private var align = Display.Align.LEFT
@@ -32,7 +32,7 @@ class Text {
 
     constructor(string: String, config: NativeObject) {
         setString(string)
-        setColor(config.getOption("color", 0xffffffff).toLong())
+        setColor(config.getOption("color", 0xffffffff).toInt())
         setFormatted(config.getOption("formatted", true).toBoolean())
         setShadow(config.getOption("shadow", false).toBoolean())
         setAlign(config.getOption("align", Display.Align.LEFT))
@@ -50,9 +50,9 @@ class Text {
         updateFormatting()
     }
 
-    fun getColor(): Long = color
+    fun getColor(): Int = color
 
-    fun setColor(color: Long) = apply { this.color = Renderer.fixAlpha(color) }
+    fun setColor(color: Int) = apply { this.color = Renderer.fixAlpha(color) }
 
     fun getFormatted(): Boolean = formatted
 

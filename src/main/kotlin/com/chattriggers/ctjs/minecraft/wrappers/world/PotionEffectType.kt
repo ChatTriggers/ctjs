@@ -1,8 +1,8 @@
 package com.chattriggers.ctjs.minecraft.wrappers.world
 
-import com.chattriggers.ctjs.utils.Color
 import gg.essential.universal.wrappers.message.UTextComponent
 import net.minecraft.entity.effect.StatusEffect
+import java.awt.Color
 
 class PotionEffectType(val type: StatusEffect) {
     /**

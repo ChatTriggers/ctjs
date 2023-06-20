@@ -2,9 +2,9 @@ package com.chattriggers.ctjs.minecraft.wrappers.entity
 
 import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer
 import com.chattriggers.ctjs.mixins.ParticleAccessor
-import com.chattriggers.ctjs.utils.Color
 import com.chattriggers.ctjs.utils.MCParticle
 import com.chattriggers.ctjs.utils.asMixin
+import java.awt.Color
 
 class Particle(val particle: MCParticle) {
     private val mixed: ParticleAccessor = particle.asMixin()
@@ -83,7 +83,7 @@ class Particle(val particle: MCParticle) {
      *
      * @return A [Color] with the R, G, B and A values
      */
-    fun getColor(): Color = Color(red, green, blue, alpha)
+    fun getColor() = Color(red, green, blue, alpha)
 
     fun setColor(color: Color) = setColor(color.rgb.toLong())
 

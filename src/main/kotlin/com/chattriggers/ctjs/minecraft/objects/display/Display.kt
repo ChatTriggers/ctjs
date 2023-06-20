@@ -17,8 +17,8 @@ abstract class Display() {
     private var shouldRender = true
     private var order = Order.DOWN
 
-    private var backgroundColor: Long = 0x50000000
-    private var textColor: Long = 0xffffffff
+    private var backgroundColor: Int = 0x50000000
+    private var textColor: Int = 0xffffffff.toInt()
     private var background = Background.NONE
     private var align = Align.LEFT
 
@@ -34,8 +34,8 @@ abstract class Display() {
     }
 
     constructor(config: NativeObject?) : this() {
-        setBackgroundColor(config.getOption("backgroundColor", 0x50000000).toLong())
-        setTextColor(config.getOption("textColor", 0xffffffff).toLong())
+        setBackgroundColor(config.getOption("backgroundColor", 0x50000000).toInt())
+        setTextColor(config.getOption("textColor", 0xffffffff).toInt())
         setBackground(config.getOption("background", Background.NONE))
         setAlign(config.getOption("align", Align.LEFT))
         setOrder(config.getOption("order", Order.DOWN))
@@ -46,15 +46,15 @@ abstract class Display() {
         setRegisterType(config.getOption("registerType", RegisterType.RENDER_OVERLAY))
     }
 
-    fun getBackgroundColor(): Long = backgroundColor
+    fun getBackgroundColor(): Int = backgroundColor
 
-    fun setBackgroundColor(backgroundColor: Long) = apply {
+    fun setBackgroundColor(backgroundColor: Int) = apply {
         this.backgroundColor = backgroundColor
     }
 
-    fun getTextColor(): Long = textColor
+    fun getTextColor(): Int = textColor
 
-    fun setTextColor(textColor: Long) = apply {
+    fun setTextColor(textColor: Int) = apply {
         this.textColor = textColor
     }
 

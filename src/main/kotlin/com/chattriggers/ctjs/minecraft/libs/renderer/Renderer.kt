@@ -20,13 +20,13 @@ import net.minecraft.client.render.Tessellator
 import net.minecraft.client.render.entity.EntityRendererFactory
 import org.joml.Matrix4f
 import org.joml.Quaternionf
-import org.lwjgl.opengl.GL11
 import org.mozilla.javascript.NativeObject
+import java.awt.Color
 import java.util.*
 import kotlin.math.*
 
 object Renderer {
-    var colorized: Long? = null
+    var colorized: Int? = null
     private var retainTransforms = false
     private var drawMode: DrawMode? = null
     private var firstVertex = true
@@ -95,7 +95,7 @@ object Renderer {
     val WHITE = color(255, 255, 255, 255)
 
     @JvmStatic
-    fun getColor(color: Int): Long {
+    fun getColor(color: Int): Int {
         return when (color) {
             0 -> BLACK
             1 -> DARK_BLUE
@@ -133,20 +133,20 @@ object Renderer {
 
     @JvmStatic
     @JvmOverloads
-    fun color(red: Long, green: Long, blue: Long, alpha: Long = 255): Long {
-        return (alpha.toInt().coerceIn(0, 255) * 0x1000000
-            + red.toInt().coerceIn(0, 255) * 0x10000
-            + green.toInt().coerceIn(0, 255) * 0x100
-            + blue.toInt().coerceIn(0, 255)).toLong()
+    fun color(red: Int, green: Int, blue: Int, alpha: Int = 255): Int {
+        return (alpha.coerceIn(0, 255) shl 24) or
+            (red.coerceIn(0, 255) shl 16) or
+            (green.coerceIn(0, 255) shl 8) or
+            blue.coerceIn(0, 255)
     }
 
     @JvmStatic
     @JvmOverloads
-    fun getRainbow(step: Float, speed: Float = 1f): Long {
-        val red = ((sin(step / speed) + 0.75) * 170).toLong()
-        val green = ((sin(step / speed + 2 * PI / 3) + 0.75) * 170).toLong()
-        val blue = ((sin(step / speed + 4 * PI / 3) + 0.75) * 170).toLong()
-        return color(red, green, blue, 255)
+    fun getRainbow(step: Float, speed: Float = 1f): Int {
+        val red = ((sin(step / speed) + 0.75) * 170).toInt()
+        val green = ((sin(step / speed + 2 * PI / 3) + 0.75) * 170).toInt()
+        val blue = ((sin(step / speed + 4 * PI / 3) + 0.75) * 170).toInt()
+        return color(red, green, blue)
     }
 
     @JvmStatic
@@ -305,7 +305,7 @@ object Renderer {
     @JvmStatic
     @JvmOverloads
     fun colorize(red: Float, green: Float, blue: Float, alpha: Float = 1f) = apply {
-        colorized = fixAlpha(color(red.toLong(), green.toLong(), blue.toLong(), alpha.toLong()))
+        colorized = fixAlpha(color(red.toInt(), green.toInt(), blue.toInt(), alpha.toInt()))
         worldRenderer.color(red.coerceIn(0f, 1f), green.coerceIn(0f, 1f), blue.coerceIn(0f, 1f), alpha.coerceIn(0f, 1f))
     }
 
@@ -326,8 +326,8 @@ object Renderer {
     fun getDrawMode() = drawMode
 
     @JvmStatic
-    fun fixAlpha(color: Long): Long {
-        val alpha = color shr 24 and 255
+    fun fixAlpha(color: Int): Int {
+        val alpha = color ushr 24 and 255
         return if (alpha < 10)
             (color and 0xFF_FF_FF) or 0xA_FF_FF_FF
         else color
@@ -350,7 +350,7 @@ object Renderer {
     }
 
     @JvmStatic
-    fun drawRect(color: Long, x: Float, y: Float, width: Float, height: Float) = apply {
+    fun drawRect(color: Int, x: Float, y: Float, width: Float, height: Float) = apply {
         val pos = mutableListOf(x, y, x + width, y + height)
         if (pos[0] > pos[2])
             Collections.swap(pos, 0, 2)
@@ -382,7 +382,7 @@ object Renderer {
     @JvmStatic
     @JvmOverloads
     fun drawLine(
-        color: Long,
+        color: Int,
         x1: Float,
         y1: Float,
         x2: Float,
@@ -414,7 +414,7 @@ object Renderer {
     @JvmStatic
     @JvmOverloads
     fun drawCircle(
-        color: Long,
+        color: Int,
         x: Float,
         y: Float,
         radius: Float,
@@ -631,13 +631,11 @@ object Renderer {
         this.matrixStack.pop()
     }
 
-    internal fun doColor(longColor: Long) {
-        val color = longColor.toInt()
-
+    internal fun doColor(color: Int) {
         if (colorized == null) {
-            val a = (color shr 24 and 255).toFloat() / 255.0f
-            val r = (color shr 16 and 255).toFloat() / 255.0f
-            val g = (color shr 8 and 255).toFloat() / 255.0f
+            val a = (color ushr 24 and 255).toFloat() / 255.0f
+            val r = (color ushr 16 and 255).toFloat() / 255.0f
+            val g = (color ushr 8 and 255).toFloat() / 255.0f
             val b = (color and 255).toFloat() / 255.0f
             colorize(r, g, b, a)
         }
