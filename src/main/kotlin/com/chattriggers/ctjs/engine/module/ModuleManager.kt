@@ -10,6 +10,7 @@ import com.chattriggers.ctjs.engine.langs.js.JSLoader
 import com.chattriggers.ctjs.launch.Mixin
 import com.chattriggers.ctjs.minecraft.libs.ChatLib
 import com.chattriggers.ctjs.minecraft.wrappers.World
+import com.chattriggers.ctjs.triggers.ITriggerType
 import com.chattriggers.ctjs.triggers.TriggerType
 import gg.essential.vigilance.impl.nightconfig.core.file.FileConfig
 import kotlinx.serialization.json.Json
@@ -239,7 +240,7 @@ object ModuleManager {
         loaders.forEach { it.clearTriggers() }
     }
 
-    fun trigger(type: TriggerType, arguments: Array<out Any?>) {
+    fun trigger(type: ITriggerType, arguments: Array<out Any?>) {
         loaders.forEach {
             it.exec(type, arguments)
         }

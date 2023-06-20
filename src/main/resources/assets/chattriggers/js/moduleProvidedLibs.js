@@ -166,6 +166,7 @@
     };
 
     global.register = (type, method) => TriggerRegister.register(type, method);
+    global.createCustomTrigger = name => TriggerRegister.createCustomTrigger(name);
 
     // String prototypes
     String.prototype.addFormatting = function () {

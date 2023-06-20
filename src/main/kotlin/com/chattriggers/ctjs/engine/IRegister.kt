@@ -2,12 +2,14 @@ package com.chattriggers.ctjs.engine
 
 import com.chattriggers.ctjs.minecraft.listeners.ClientListener
 import com.chattriggers.ctjs.triggers.*
-import java.lang.reflect.Method
 
 @Suppress("unused")
 interface IRegister {
     companion object {
-        private val methodMap = mutableMapOf<String, Method>()
+        private val methodMap = IRegister::class.java.methods.associateBy {
+            it.name.lowercase().drop("register".length)
+        }
+        private val customTriggers = mutableSetOf<CustomTriggerType>()
     }
 
     /**
@@ -26,15 +28,25 @@ interface IRegister {
             "register() expects a String as its first argument"
         }
 
-        val func = methodMap.getOrPut(triggerType) {
-            val name = triggerType.lowercase()
+        val type = triggerType.lowercase()
 
-            this::class.java.methods.firstOrNull {
-                it.name.lowercase() == "register$name"
-            } ?: throw NoSuchMethodException("No trigger type named '$triggerType'")
+        methodMap[type]?.let { return it.invoke(this, method) as Trigger }
+
+        val customType = CustomTriggerType(type)
+        if (customType in customTriggers)
+            return RegularTrigger(method, customType, getImplementationLoader())
+
+        throw NoSuchMethodException("No trigger type named '$triggerType'")
+    }
+
+    fun createCustomTrigger(name: String): Any {
+        val customType = CustomTriggerType(name.lowercase())
+        require(customType !in customTriggers) { "Cannot register duplicate custom trigger \"$name\"" }
+        customTriggers.add(customType)
+
+        return object {
+            fun trigger(vararg args: Any?) = customType.triggerAll(*args)
         }
-
-        return func.invoke(this, method) as Trigger
     }
 
     /**

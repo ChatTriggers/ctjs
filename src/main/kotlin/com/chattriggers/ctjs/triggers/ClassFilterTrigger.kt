@@ -7,7 +7,12 @@ import com.chattriggers.ctjs.utils.MCBlockEntity
 import com.chattriggers.ctjs.utils.MCEntity
 import net.minecraft.network.packet.Packet
 
-sealed class ClassFilterTrigger<Wrapped, Unwrapped>(method: Any, private val triggerType: TriggerType, loader: ILoader, private val wrappedClass: Class<Wrapped>) : Trigger(method, triggerType, loader) {
+sealed class ClassFilterTrigger<Wrapped, Unwrapped>(
+    method: Any,
+    private val triggerType: ITriggerType,
+    loader: ILoader,
+    private val wrappedClass: Class<Wrapped>,
+) : Trigger(method, triggerType, loader) {
     private var triggerClasses: List<Class<Unwrapped>> = emptyList()
 
     // TODO(breaking): remove setPacketClass & setPacketClasses
@@ -48,14 +53,29 @@ sealed class ClassFilterTrigger<Wrapped, Unwrapped>(method: Any, private val tri
     abstract fun unwrap(wrapped: Wrapped): Unwrapped
 }
 
-class RenderEntityTrigger(method: Any, loader: ILoader) : ClassFilterTrigger<Entity, MCEntity>(method, TriggerType.RENDER_ENTITY, loader, Entity::class.java) {
+class RenderEntityTrigger(method: Any, loader: ILoader) : ClassFilterTrigger<Entity, MCEntity>(
+    method,
+    TriggerType.RENDER_ENTITY,
+    loader,
+    Entity::class.java,
+) {
     override fun unwrap(wrapped: Entity): MCEntity = wrapped.toMC()
- }
+}
 
-class RenderBlockEntityTrigger(method: Any, loader: ILoader) : ClassFilterTrigger<BlockEntity, MCBlockEntity>(method, TriggerType.RENDER_BLOCK_ENTITY, loader, BlockEntity::class.java) {
+class RenderBlockEntityTrigger(method: Any, loader: ILoader) : ClassFilterTrigger<BlockEntity, MCBlockEntity>(
+    method,
+    TriggerType.RENDER_BLOCK_ENTITY,
+    loader,
+    BlockEntity::class.java
+) {
     override fun unwrap(wrapped: BlockEntity): MCBlockEntity = wrapped.toMC()
- }
+}
 
-class PacketTrigger(method: Any, triggerType: TriggerType, loader: ILoader) : ClassFilterTrigger<Packet<*>, Packet<*>>(method, triggerType, loader, Packet::class.java) {
+class PacketTrigger(method: Any, triggerType: ITriggerType, loader: ILoader) : ClassFilterTrigger<Packet<*>, Packet<*>>(
+    method,
+    triggerType,
+    loader,
+    Packet::class.java,
+) {
     override fun unwrap(wrapped: Packet<*>): Packet<*> = wrapped
 }

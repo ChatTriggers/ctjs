@@ -5,7 +5,7 @@ import com.chattriggers.ctjs.engine.ILoader
 
 abstract class Trigger protected constructor(
     var method: Any,
-    var type: TriggerType,
+    var type: ITriggerType,
     internal var loader: ILoader
 ) : Comparable<Trigger> {
     private var priority: Priority = Priority.NORMAL

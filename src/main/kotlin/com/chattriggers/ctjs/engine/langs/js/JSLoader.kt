@@ -11,7 +11,7 @@ import com.chattriggers.ctjs.launch.IInjector
 import com.chattriggers.ctjs.launch.Mixin
 import com.chattriggers.ctjs.launch.MixinCallback
 import com.chattriggers.ctjs.triggers.Trigger
-import com.chattriggers.ctjs.triggers.TriggerType
+import com.chattriggers.ctjs.triggers.ITriggerType
 import org.mozilla.javascript.*
 import org.mozilla.javascript.Function
 import org.mozilla.javascript.commonjs.module.ModuleScriptProvider
@@ -31,7 +31,7 @@ import kotlin.contracts.contract
 
 @OptIn(ExperimentalContracts::class)
 object JSLoader : ILoader {
-    private val triggers = ConcurrentHashMap<TriggerType, ConcurrentSkipListSet<Trigger>>()
+    private val triggers = ConcurrentHashMap<ITriggerType, ConcurrentSkipListSet<Trigger>>()
 
     private lateinit var moduleContext: Context
     private lateinit var evalContext: Context
@@ -51,7 +51,7 @@ object JSLoader : ILoader {
         MethodType.methodType(Any::class.java, Callable::class.java, Array<Any?>::class.java),
     )
 
-    override fun exec(type: TriggerType, args: Array<out Any?>) {
+    override fun exec(type: ITriggerType, args: Array<out Any?>) {
         triggers[type]?.forEach { it.trigger(args) }
     }
 
