@@ -23,6 +23,7 @@ import gg.essential.universal.wrappers.message.UTextComponent
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
 import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents
 import net.fabricmc.fabric.api.client.screen.v1.ScreenKeyboardEvents
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback
@@ -142,6 +143,14 @@ object ClientListener : Initializer {
             ScreenEvents.remove(screen).register {
                 TriggerType.GUI_CLOSED.triggerAll(screen)
             }
+        }
+
+        ClientPlayConnectionEvents.JOIN.register { _, _, _ ->
+            TriggerType.WORLD_LOAD.triggerAll()
+        }
+
+        ClientPlayConnectionEvents.DISCONNECT.register { _, _ ->
+            TriggerType.WORLD_UNLOAD.triggerAll()
         }
 
         CTEvents.PACKET_RECECIVED.register { packet, ctx ->
