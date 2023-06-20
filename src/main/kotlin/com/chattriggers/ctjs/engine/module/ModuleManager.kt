@@ -169,7 +169,10 @@ object ModuleManager {
 
         loadAssetsAndJars(newModules)
 
-        // TODO: Print warning to console if metadatas contain an asm key
+        newModules.forEach {
+            if (it.metadata.mixinEntry != null)
+                ChatLib.chat("&cModule ${it.name} has dynamic mixins which require a restart to take effect")
+        }
 
         entryPass(newModules)
 
