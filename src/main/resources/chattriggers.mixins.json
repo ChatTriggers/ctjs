@@ -19,6 +19,7 @@
         "ClientPlayerInteractionManagerMixin",
         "ClientWorldAccessor",
         "CreativeInventoryScreenMixin",
+        "EntityRenderDispatcherAccessor",
         "EntityRenderDispatcherMixin",
         "GameOptionsAccessor",
         "GameRendererMixin",
