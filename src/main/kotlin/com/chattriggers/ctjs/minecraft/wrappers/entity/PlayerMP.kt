@@ -1,11 +1,13 @@
 package com.chattriggers.ctjs.minecraft.wrappers.entity
 
+import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer
 import com.chattriggers.ctjs.minecraft.wrappers.Client
 import com.chattriggers.ctjs.mixins.PlayerEntityMixin
 import com.chattriggers.ctjs.utils.asMixin
 import gg.essential.universal.wrappers.message.UTextComponent
 import net.minecraft.client.network.PlayerListEntry
 import net.minecraft.entity.player.PlayerEntity
+import org.mozilla.javascript.NativeObject
 
 class PlayerMP(override val mcValue: PlayerEntity) : LivingEntity(mcValue) {
     fun isSpectator() = mcValue.isSpectator
@@ -39,24 +41,17 @@ class PlayerMP(override val mcValue: PlayerEntity) : LivingEntity(mcValue) {
         mcValue.asMixin<PlayerEntityMixin>().setOverriddenNametagName(textComponent.formattedText)
     }
 
+    // TODO(breaking): Takes NativeObject to align with Renderer.drawPlayer()
     /**
-     * Draws the player in the GUI
+     * Draws the player in the GUI. Takes the same parameters as [Renderer.drawPlayer]
+     * minus `player`.
+     *
+     * @see Renderer.drawPlayer
      */
-    // TODO:
-    // @JvmOverloads
-    // fun draw(
-    //     player: Any,
-    //     x: Int,
-    //     y: Int,
-    //     rotate: Boolean = false,
-    //     showNametag: Boolean = false,
-    //     showArmor: Boolean = true,
-    //     showCape: Boolean = true,
-    //     showHeldItem: Boolean = true,
-    //     showArrows: Boolean = true
-    // ) = apply {
-    //     Renderer.drawPlayer(player, x, y, rotate, showNametag, showArmor, showCape, showHeldItem, showArrows)
-    // }
+    fun draw(obj: NativeObject) = apply {
+        obj["player"] = this
+        Renderer.drawPlayer(obj)
+    }
 
     private fun getPlayerName(playerListEntry: PlayerListEntry?): UTextComponent {
         return playerListEntry?.displayName?.let(::UTextComponent)

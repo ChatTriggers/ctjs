@@ -9,7 +9,9 @@ import com.chattriggers.ctjs.minecraft.wrappers.world.PotionEffect
 import gg.essential.universal.UMath
 import gg.essential.universal.UMinecraft
 import gg.essential.universal.wrappers.message.UTextComponent
+import net.minecraft.client.gui.screen.ingame.HandledScreen
 import net.minecraft.client.network.ClientPlayerEntity
+import org.mozilla.javascript.NativeObject
 import java.util.*
 
 object Player : CTWrapper<ClientPlayerEntity?> {
@@ -297,36 +299,25 @@ object Player : CTWrapper<ClientPlayerEntity?> {
         asPlayerMP()?.setNametagName(textComponent)
     }
 
-    // TODO:
-    // @Deprecated("Use the better named method", ReplaceWith("getContainer()"))
-    // @JvmStatic
-    // fun getOpenedInventory(): Inventory? = getContainer()
-    //
-    // /**
-    //  * Gets the container the user currently has open, i.e. a chest.
-    //  *
-    //  * @return the currently opened container
-    //  */
-    // @JvmStatic
-    // fun getContainer(): Inventory? = toMC()?.openContainer?.let(::Inventory)
+    /**
+     * Gets the container the user currently has open, i.e. a chest.
+     *
+     * @return the currently opened container
+     */
+    @JvmStatic
+    fun getContainer(): Inventory? = (Client.getMinecraft().currentScreen as? HandledScreen<*>)?.let(::Inventory)
 
-    // /**
-    //  * Draws the player in the GUI
-    //  */
-    // @JvmStatic
-    // @JvmOverloads
-    // fun draw(
-    //     x: Int,
-    //     y: Int,
-    //     rotate: Boolean = false,
-    //     showNametag: Boolean = false,
-    //     showArmor: Boolean = true,
-    //     showCape: Boolean = true,
-    //     showHeldItem: Boolean = true,
-    //     showArrows: Boolean = true
-    // ) = apply {
-    //     Renderer.drawPlayer(this, x, y, rotate, showNametag, showArmor, showCape, showHeldItem, showArrows)
-    // }
+    // TODO(breaking): Takes NativeObject to align with Renderer.drawPlayer()
+    /**
+     * Draws the player in the GUI. Takes the same parameters as [Renderer.drawPlayer]
+     * minus `player`.
+     *
+     * @see Renderer.drawPlayer
+     */
+    fun draw(obj: NativeObject) = apply {
+        obj["player"] = this
+        Renderer.drawPlayer(obj)
+    }
 
     object armor {
         /**
