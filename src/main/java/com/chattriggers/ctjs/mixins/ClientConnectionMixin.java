@@ -34,7 +34,7 @@ public class ClientConnectionMixin {
         at = @At("HEAD"),
         cancellable = true
     )
-    void injectSendPacket(Packet<?> packet, @Nullable PacketCallbacks callbacks, CallbackInfo ci) {
+    private void injectSendPacket(Packet<?> packet, @Nullable PacketCallbacks callbacks, CallbackInfo ci) {
         TriggerType.PACKET_SENT.triggerAll(packet, ci);
     }
 }

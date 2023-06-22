@@ -16,7 +16,7 @@ public class PlayerEntityMixin {
     }
 
     @Inject(method = "getEntityName", at = @At("HEAD"), cancellable = true)
-    void injectGetName(CallbackInfoReturnable<String> cir) {
+    private void injectGetName(CallbackInfoReturnable<String> cir) {
         if (overriddenNametagName != null)
             cir.setReturnValue(overriddenNametagName);
     }

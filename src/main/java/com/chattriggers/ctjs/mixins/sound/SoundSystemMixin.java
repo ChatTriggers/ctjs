@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(SoundSystem.class)
 public class SoundSystemMixin {
     @Inject(method = "play(Lnet/minecraft/client/sound/SoundInstance;)V", at = @At("HEAD"), cancellable = true)
-    void injectPlay(SoundInstance sound, CallbackInfo ci) {
+    private void injectPlay(SoundInstance sound, CallbackInfo ci) {
         float volume = 0f;
         float pitch = 0f;
 
