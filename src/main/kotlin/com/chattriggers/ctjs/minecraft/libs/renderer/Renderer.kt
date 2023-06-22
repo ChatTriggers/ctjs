@@ -4,7 +4,7 @@ import com.chattriggers.ctjs.minecraft.libs.ChatLib
 import com.chattriggers.ctjs.minecraft.wrappers.Client
 import com.chattriggers.ctjs.minecraft.wrappers.Player
 import com.chattriggers.ctjs.minecraft.wrappers.entity.PlayerMP
-import com.chattriggers.ctjs.mixins.EntityRenderDispatcherMixin
+import com.chattriggers.ctjs.mixins.EntityRenderDispatcherAccessor
 import com.chattriggers.ctjs.utils.asMixin
 import com.chattriggers.ctjs.utils.getOrDefault
 import com.chattriggers.ctjs.utils.toRadians
@@ -21,7 +21,6 @@ import net.minecraft.client.render.entity.EntityRendererFactory
 import org.joml.Matrix4f
 import org.joml.Quaternionf
 import org.mozilla.javascript.NativeObject
-import java.awt.Color
 import java.util.*
 import kotlin.math.*
 
@@ -609,7 +608,7 @@ object Renderer {
         RenderSystem.runAsFancy {
             entityRenderer.render(entity, 0.0f, 1.0f, matrixStack.toMC(), vertexConsumers, light)
             if (entity.doesRenderOnFire()) {
-                entityRenderDispatcher.asMixin<EntityRenderDispatcherMixin>().invokeRenderFire(matrixStack.toMC(), vertexConsumers, entity)
+                entityRenderDispatcher.asMixin<EntityRenderDispatcherAccessor>().invokeRenderFire(matrixStack.toMC(), vertexConsumers, entity)
             }
         }
 
