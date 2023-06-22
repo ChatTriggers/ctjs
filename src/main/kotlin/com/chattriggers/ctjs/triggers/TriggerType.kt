@@ -26,8 +26,6 @@ enum class TriggerType : ITriggerType {
     MESSAGE_SENT,
     ITEM_TOOLTIP,
     PLAYER_INTERACT,
-    HIT_BLOCK,
-    BREAK_BLOCK,
     GUI_KEY,
     GUI_MOUSE_CLICK,
     GUI_MOUSE_DRAG,
