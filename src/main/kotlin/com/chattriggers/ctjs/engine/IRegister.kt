@@ -473,23 +473,6 @@ interface IRegister {
         return EventTrigger(method, TriggerType.PLAYER_INTERACT, getImplementationLoader())
     }
 
-    // TODO(breaking): Rename from blockbreak to breakblock
-    /**
-     * Registers a new trigger that runs before the player breaks a block
-     *
-     * Passes through one argument:
-     * - The block
-     *
-     * Available modifications:
-     * - [Trigger.setPriority] Sets the priority
-     *
-     * @param method The method to call when the event is fired
-     * @return The trigger for additional modification
-     */
-    fun registerBreakBlock(method: Any): RegularTrigger {
-        return RegularTrigger(method, TriggerType.BREAK_BLOCK, getImplementationLoader())
-    }
-
     /**
      * Registers a new trigger that runs before an entity is damaged
      *
@@ -754,25 +737,7 @@ interface IRegister {
         return EventTrigger(method, TriggerType.SPAWN_PARTICLE, getImplementationLoader())
     }
 
-    /**
-     * Registers a new trigger that runs whenever a block is left clicked
-     *
-     * Note: this is not continuously called while the block is being broken, only once
-     * when first left clicked.
-     *
-     * Passes through two arguments:
-     * - The [com.chattriggers.ctjs.minecraft.wrappers.world.block.Block] being hit
-     * - The event, which can be cancelled
-     *
-     * Available modifications:
-     * - [Trigger.setPriority] Sets the priority
-     *
-     * @param method The method to call when the event is fired
-     * @return The trigger for additional modification
-     */
-    fun registerHitBlock(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.HIT_BLOCK, getImplementationLoader())
-    }
+    // TODO(breaking): Removed hitblock & breakblock triggers. use playerinteract instead
 
     /**
      * Registers a new trigger that runs on a mixin event

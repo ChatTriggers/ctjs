@@ -18,6 +18,7 @@ import com.chattriggers.ctjs.utils.Config
 import com.chattriggers.ctjs.utils.Initializer
 import com.chattriggers.ctjs.console.printToConsole
 import com.chattriggers.ctjs.engine.module.ModuleManager
+import com.chattriggers.ctjs.minecraft.wrappers.inventory.Item
 import gg.essential.universal.UMatrixStack
 import gg.essential.universal.UMinecraft
 import gg.essential.universal.wrappers.message.UTextComponent
@@ -35,6 +36,7 @@ import net.fabricmc.fabric.api.event.player.UseEntityCallback
 import net.fabricmc.fabric.api.event.player.UseItemCallback
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.util.ActionResult
+import net.minecraft.util.Hand
 import net.minecraft.util.TypedActionResult
 import org.lwjgl.glfw.GLFW
 import org.mozilla.javascript.Context
@@ -191,11 +193,12 @@ object ClientListener : Initializer {
             }
         }
 
-        AttackBlockCallback.EVENT.register { _, _, _, pos, direction ->
+        AttackBlockCallback.EVENT.register { player, _, _, pos, direction ->
+            if (!player.world.isClient) return@register ActionResult.PASS
             val event = CancellableEvent()
 
             TriggerType.PLAYER_INTERACT.triggerAll(
-                PlayerInteraction.ATTACK_BLOCK,
+                PlayerInteraction.AttackBlock,
                 World.getBlockAt(BlockPos(pos)).withFace(BlockFace.fromMC(direction)),
                 event,
             )
@@ -203,11 +206,12 @@ object ClientListener : Initializer {
             if (event.isCancelled()) ActionResult.FAIL else ActionResult.PASS
         }
 
-        AttackEntityCallback.EVENT.register { _, _, _, entity, _ ->
+        AttackEntityCallback.EVENT.register { player, _, _, entity, _ ->
+            if (!player.world.isClient) return@register ActionResult.PASS
             val event = CancellableEvent()
 
             TriggerType.PLAYER_INTERACT.triggerAll(
-                PlayerInteraction.ATTACK_ENTITY,
+                PlayerInteraction.AttackEntity,
                 Entity.fromMC(entity),
                 event,
             )
@@ -215,23 +219,20 @@ object ClientListener : Initializer {
             if (event.isCancelled()) ActionResult.FAIL else ActionResult.PASS
         }
 
-        PlayerBlockBreakEvents.BEFORE.register { _, _, pos, state, _ ->
-            val event = CancellableEvent()
-
+        CTEvents.BREAK_BLOCK.register { pos ->
             TriggerType.PLAYER_INTERACT.triggerAll(
-                PlayerInteraction.BREAK_BLOCK,
-                Block(BlockType(state.block), BlockPos(pos)),
-                event,
+                PlayerInteraction.BreakBlock,
+                World.getBlockAt(BlockPos(pos)),
+                CancellableEvent(),
             )
-
-            !event.isCancelled()
         }
 
-        UseBlockCallback.EVENT.register { _, _, _, hitResult ->
+        UseBlockCallback.EVENT.register { player, _, hand, hitResult ->
+            if (!player.world.isClient) return@register ActionResult.PASS
             val event = CancellableEvent()
 
             TriggerType.PLAYER_INTERACT.triggerAll(
-                PlayerInteraction.USE_BLOCK,
+                PlayerInteraction.UseBlock(hand),
                 World.getBlockAt(BlockPos(hitResult.blockPos)).withFace(BlockFace.fromMC(hitResult.side)),
                 event,
             )
@@ -239,25 +240,29 @@ object ClientListener : Initializer {
             if (event.isCancelled()) ActionResult.FAIL else ActionResult.PASS
         }
 
-        UseEntityCallback.EVENT.register { _, _, _, entity, _ ->
+        UseEntityCallback.EVENT.register { player, _, hand, entity, _ ->
+            if (!player.world.isClient) return@register ActionResult.PASS
             val event = CancellableEvent()
 
             TriggerType.PLAYER_INTERACT.triggerAll(
-                PlayerInteraction.USE_ENTITY,
+                PlayerInteraction.UseEntity(hand),
                 Entity.fromMC(entity),
-                event
+                event,
             )
 
             if (event.isCancelled()) ActionResult.FAIL else ActionResult.PASS
         }
 
-        UseItemCallback.EVENT.register { _, _, _ ->
+        UseItemCallback.EVENT.register { player, _, hand ->
+            if (!player.world.isClient) return@register TypedActionResult.pass(null)
             val event = CancellableEvent()
 
+            val stack = player.getStackInHand(hand)
+
             TriggerType.PLAYER_INTERACT.triggerAll(
-                PlayerInteraction.USE_ITEM,
-                // TODO,
-                event
+                PlayerInteraction.UseItem(hand),
+                if (stack.isEmpty) null else Item(stack),
+                event,
             )
 
             if (event.isCancelled()) TypedActionResult.fail(null) else TypedActionResult.pass(null)
@@ -277,12 +282,12 @@ object ClientListener : Initializer {
     }
 
     // TODO(breaking): Difference cases here
-    enum class PlayerInteraction(val isLeftHand: Boolean) {
-        ATTACK_BLOCK(true),
-        ATTACK_ENTITY(true),
-        BREAK_BLOCK(true),
-        USE_BLOCK(false),
-        USE_ENTITY(false),
-        USE_ITEM(false),
+    sealed class PlayerInteraction(val mainHand: Boolean) {
+        object AttackBlock : PlayerInteraction(true)
+        object AttackEntity : PlayerInteraction(true)
+        object BreakBlock : PlayerInteraction(true)
+        class UseBlock(hand: Hand) : PlayerInteraction(hand == Hand.MAIN_HAND)
+        class UseEntity(hand: Hand) : PlayerInteraction(hand == Hand.MAIN_HAND)
+        class UseItem(hand: Hand) : PlayerInteraction(hand == Hand.MAIN_HAND)
     }
 }

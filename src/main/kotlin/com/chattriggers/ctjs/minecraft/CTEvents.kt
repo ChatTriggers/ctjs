@@ -4,6 +4,7 @@ import com.chattriggers.ctjs.minecraft.CTEvents.PacketReceivedCallback
 import com.chattriggers.ctjs.minecraft.CTEvents.RenderScreenCallback
 import com.chattriggers.ctjs.minecraft.CTEvents.VoidCallback
 import com.chattriggers.ctjs.utils.MCBlockEntity
+import com.chattriggers.ctjs.utils.MCBlockPos
 import com.chattriggers.ctjs.utils.MCEntity
 import net.fabricmc.fabric.api.event.EventFactory
 import net.minecraft.client.gui.Drawable
@@ -55,6 +56,10 @@ internal object CTEvents {
 
     fun interface GuiMouseDragCallback {
         fun process(dx: Double, dy: Double, mouseX: Double, mouseY: Double, button: Int, gui: Screen, ci: CallbackInfo)
+    }
+
+    fun interface BreakBlockCallback {
+        fun breakBlock(pos: MCBlockPos)
     }
 
     @JvmField
@@ -141,6 +146,13 @@ internal object CTEvents {
     val GUI_MOUSE_DRAG = make<GuiMouseDragCallback> { listeners ->
         GuiMouseDragCallback { dx, dy, mouseX, mouseY, button, screen, ci ->
             listeners.forEach { it.process(dx, dy, mouseX, mouseY, button, screen, ci) }
+        }
+    }
+
+    @JvmField
+    val BREAK_BLOCK = make<BreakBlockCallback> { listeners ->
+        BreakBlockCallback { pos ->
+            listeners.forEach { it.breakBlock(pos) }
         }
     }
 
