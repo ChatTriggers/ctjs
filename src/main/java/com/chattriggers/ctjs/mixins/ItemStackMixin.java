@@ -20,7 +20,7 @@ public class ItemStackMixin {
     public List<Text> overriddenTooltip = new ArrayList<>();
 
     @Inject(method = "getTooltip", at = @At("HEAD"), cancellable = true)
-    void injectGetTooltip(@Nullable PlayerEntity player, TooltipContext context, CallbackInfoReturnable<List<Text>> cir) {
+    private void injectGetTooltip(@Nullable PlayerEntity player, TooltipContext context, CallbackInfoReturnable<List<Text>> cir) {
         if (overrideTooltip)
             cir.setReturnValue(Objects.requireNonNull(overriddenTooltip));
     }

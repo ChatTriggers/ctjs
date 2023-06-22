@@ -26,7 +26,7 @@ public class MouseMixin {
             opcode = Opcodes.GETFIELD
         )
     )
-    void injectOnMouseButton(long window, int button, int action, int mods, CallbackInfo ci) {
+    private void injectOnMouseButton(long window, int button, int action, int mods, CallbackInfo ci) {
         MouseListener.onRawMouseInput(button, action);
     }
 
@@ -38,7 +38,7 @@ public class MouseMixin {
             opcode = Opcodes.GETFIELD
         )
     )
-    void injectOnMouseScroll(long window, double horizontal, double vertical, CallbackInfo ci) {
+    private void injectOnMouseScroll(long window, double horizontal, double vertical, CallbackInfo ci) {
         MouseListener.onRawMouseScroll(vertical);
     }
 
@@ -50,7 +50,7 @@ public class MouseMixin {
         ),
         cancellable = true
     )
-    void injectOnGuiMouseDrag(Screen screen, double d, double e, double f, double g, CallbackInfo ci) {
+    private void injectOnGuiMouseDrag(Screen screen, double d, double e, double f, double g, CallbackInfo ci) {
         if (screen != null) {
             CTEvents.GUI_MOUSE_DRAG.invoker().process(f, g, d, e, activeButton, screen, ci);
         }
