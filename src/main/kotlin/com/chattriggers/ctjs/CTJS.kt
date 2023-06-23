@@ -70,7 +70,7 @@ class CTJS : ClientModInitializer {
         internal val isDevelopment = FabricLoader.getInstance().isDevelopmentEnvironment
 
         val configLocation = File("./config")
-        val assetsDir = File(configLocation, "ChatTriggers/images/").apply { mkdirs() }
+        val assetsDir = File(configLocation, "ChatTriggers/assets/").apply { mkdirs() }
 
         internal val gson = Gson()
 
