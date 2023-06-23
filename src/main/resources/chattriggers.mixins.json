@@ -40,7 +40,9 @@
         "ScreenHandlerMixin",
         "SoundAccessor",
         "SoundManagerAccessor",
+        "SoundSystemAccessor",
         "SoundSystemMixin",
+        "SourceAccessor",
         "stdio.BootstrapMixin",
         "stdio.LoggerPrintStreamMixin"
     ],

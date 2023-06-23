@@ -2,27 +2,32 @@ package com.chattriggers.ctjs.minecraft.objects
 
 import com.chattriggers.ctjs.CTJS
 import com.chattriggers.ctjs.minecraft.wrappers.CTWrapper
+import com.chattriggers.ctjs.minecraft.wrappers.Client
 import com.chattriggers.ctjs.minecraft.wrappers.Player
 import com.chattriggers.ctjs.minecraft.wrappers.World
 import com.chattriggers.ctjs.mixins.AbstractSoundInstanceAccessor
 import com.chattriggers.ctjs.mixins.SoundAccessor
 import com.chattriggers.ctjs.mixins.SoundManagerAccessor
+import com.chattriggers.ctjs.mixins.SoundSystemAccessor
 import com.chattriggers.ctjs.utils.MCSound
 import com.chattriggers.ctjs.utils.asMixin
 import gg.essential.universal.UMinecraft
 import net.minecraft.client.sound.MovingSoundInstance
 import net.minecraft.client.sound.Sound.RegistrationType
-import net.minecraft.client.sound.SoundInstance
 import net.minecraft.client.sound.SoundInstance.AttenuationType as MCAttenuationType
-import net.minecraft.client.sound.SoundSystem
 import net.minecraft.client.sound.WeightedSoundSet
+import net.minecraft.resource.*
+import net.minecraft.resource.metadata.ResourceMetadata
+import net.minecraft.resource.metadata.ResourceMetadataReader
 import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvent
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.random.Random
 import org.mozilla.javascript.NativeObject
 import java.io.File
-import java.net.MalformedURLException
+import java.io.InputStream
+import java.nio.channels.Channels
+import java.nio.file.Files
 
 // TODO(breaking): Changed a bunch of fields on this class
 /**
@@ -33,10 +38,9 @@ import java.net.MalformedURLException
  * - source (String) - filename, relative to ChatTriggers assets directory
  *
  * OPTIONAL:
- * - priority (boolean) - whether this sound should be prioritized, defaults to false
  * - stream (boolean) - whether to stream this sound rather than preload it (should be true for large files), defaults to false
  *
- * CONFIGURABLE (can be set in config object, or changed later
+ * CONFIGURABLE (can be set in config object, or changed later):
  * - category (SoundCategory) - which category this sound should be a part of, see [setCategory].
  * - volume (float) - volume of the sound, see [setVolume]
  * - pitch (float) - pitch of the sound, see [setPitch]
@@ -49,15 +53,18 @@ import java.net.MalformedURLException
  * @param config the JavaScript config object
  */
 class Sound(private val config: NativeObject) {
-    private var soundSystem: SoundSystem = UMinecraft.getMinecraft().soundManager.asMixin<SoundManagerAccessor>().soundSystem
-    private var identifier: Identifier
-    private var soundImpl: SoundImpl
-    private var sound: MCSound
+    private lateinit var identifier: Identifier
+    private lateinit var soundImpl: SoundImpl
+    private lateinit var sound: MCSound
 
     private var volume = 1f
     private var pitch = 1f
+    private var isPaused = false
 
-    init {
+    private fun bootstrap() {
+        if (::sound.isInitialized)
+            return
+
         CTJS.sounds.add(this)
 
         val soundManagerAccessor = UMinecraft.getMinecraft().soundManager.asMixin<SoundManagerAccessor>()
@@ -66,34 +73,21 @@ class Sound(private val config: NativeObject) {
         val loop = config.getOrDefault("loop", false) as Boolean
         val loopDelay = (config.getOrDefault("loopDelay", 0) as Number).toInt()
         val stream = config.getOrDefault("stream", false) as Boolean
-
-        // TODO: What did this do in 1.8.9? Is this the same as MCSound::preload?
-        val priority = config.getOrDefault("priority", false) as Boolean
-
         val x = (config.getOrDefault("x", Player.getX()) as Number).toDouble()
         val y = (config.getOrDefault("y", Player.getY()) as Number).toDouble()
         val z = (config.getOrDefault("z", Player.getZ()) as Number).toDouble()
         val attenuation = (config.getOrDefault("attenuation", 16) as Number).toInt()
-
-        val resourceManager = UMinecraft.getMinecraft().resourceManager
-
-        val allSources = resourceManager.findResources(File(CTJS.assetsDir, source).absolutePath) {
-            it.path.endsWith(source)
-        }
-        if (allSources.isEmpty())
-            throw IllegalArgumentException("Unable to find Sound source \"$source\"")
-        if (allSources.size > 1)
-            throw IllegalArgumentException("Sound source \"$source\" is ambiguous")
-
-        val (id, resource) = allSources.iterator().next()
-        identifier = id
-        soundManagerAccessor.soundResources[identifier] = resource
-
         val category = config["category"]?.let(Category::from) ?: Category.MASTER
         val attenuationType = config["attenuationType"]?.let(AttenuationType::from) ?: AttenuationType.LINEAR
 
-        soundImpl = SoundImpl(SoundEvent.of(identifier), category.toMC(), attenuationType.toMC())
+        identifier = makeIdentifier(source)
+        val soundFile = File(CTJS.assetsDir, source)
+        require(soundFile.exists()) { "Cannot find sound resource \"$source\"" }
 
+        val resource = Resource(CTResourcePack, soundFile::inputStream, ResourceMetadata::NONE)
+        soundManagerAccessor.soundResources[identifier.withPrefixedPath("sounds/").withSuffixedPath(".ogg")] = resource
+
+        soundImpl = SoundImpl(SoundEvent.of(identifier), category.toMC(), attenuationType.toMC())
         sound = MCSound(
             identifier.toString(),
             { this.volume },
@@ -105,12 +99,8 @@ class Sound(private val config: NativeObject) {
             attenuation,
         )
 
-        // TODO: Subtitle?
         soundManagerAccessor.sounds[identifier] = WeightedSoundSet(identifier, null).apply {
             add(sound)
-
-            // TODO: Is this necessary?
-            preload(soundSystem)
         }
 
         setPosition(x, y, z)
@@ -127,6 +117,7 @@ class Sound(private val config: NativeObject) {
     }
 
     fun destroy() {
+        stop()
         val soundManagerAccessor = UMinecraft.getMinecraft().soundManager.asMixin<SoundManagerAccessor>()
         soundManagerAccessor.sounds.remove(identifier)
         soundManagerAccessor.soundResources.remove(identifier)
@@ -161,9 +152,7 @@ class Sound(private val config: NativeObject) {
      * @param z the z coordinate
      */
     fun setPosition(x: Double, y: Double, z: Double) = apply {
-        soundImpl.x_ = x
-        soundImpl.y_ = y
-        soundImpl.z_ = z
+        soundImpl.setPosition(x, y, z)
     }
 
     /**
@@ -182,7 +171,7 @@ class Sound(private val config: NativeObject) {
      */
     // TODO(breaking): Use enum instead of Int and changed name
     fun setAttenuationType(attenuationType: AttenuationType) = apply {
-        soundImpl.attenuationType_ = attenuationType.toMC()
+        soundImpl.attenuationType = attenuationType.toMC()
     }
 
     /**
@@ -205,41 +194,68 @@ class Sound(private val config: NativeObject) {
      */
     @JvmOverloads
     fun play(delay: Int = 0) {
-        soundSystem.play(soundImpl, delay)
+        bootstrap()
+
+        // soundSystem.play() does a lot of setup and, most importantly, creates a new
+        // source for the sound. If we have previously paused, we avoid all that setup
+        // and instead directly invoke the play method from OpenAL via Source.play
+        if (!isPaused) {
+            soundSystem.play(soundImpl, delay)
+        } else {
+            Client.scheduleTask(delay) {
+                isPaused = false
+                soundSystem.asMixin<SoundSystemAccessor>().sources[soundImpl]?.run {
+                    it.play()
+                }
+            }
+        }
     }
 
     /**
      * Pauses the sound, to be resumed later
      */
-    // TODO: Is this possible?
-    // fun pause() {
-    //     soundSystem.pauseAll(source)
-    // }
+    fun pause() {
+        bootstrap()
+        isPaused = true
+        soundSystem.asMixin<SoundSystemAccessor>().sources[soundImpl]?.run {
+            it.pause()
+        }
+    }
 
     /**
      * Completely stops the sound
      */
     fun stop() {
+        bootstrap()
         soundSystem.stop(soundImpl)
+        isPaused = false
     }
 
     /**
      * Immediately restarts the sound
      */
-    // TODO: Is this possible? Probably not, if pause() isn't
-    // fun rewind() {
-    //     soundSystem.rewind(source)
-    // }
+    fun rewind() {
+        stop()
+        play()
+    }
+
+    private fun makeIdentifier(source: String): Identifier {
+        return Identifier(
+            "ctjs",
+            source.replace(".ogg", "").lowercase().filter { it in validIdentChars } + "_${counter++}",
+        )
+    }
 
     private class SoundImpl(
         soundEvent: SoundEvent,
         soundCategory: SoundCategory,
-        var attenuationType_: MCAttenuationType,
+        attenuationType: MCAttenuationType,
     ) : MovingSoundInstance(soundEvent, soundCategory, Random.create()) {
         var categoryOverride: SoundCategory? = null
-        var x_ = 0.0
-        var y_ = 0.0
-        var z_ = 0.0
+
+        init {
+            this.attenuationType = attenuationType
+        }
 
         override fun tick() {
             if (!World.isLoaded())
@@ -250,20 +266,14 @@ class Sound(private val config: NativeObject) {
             return categoryOverride ?: super.getCategory()
         }
 
-        override fun getAttenuationType(): MCAttenuationType {
-            return attenuationType_
+        fun setPosition(x: Double, y: Double, z: Double) {
+            this.x = x
+            this.y = y
+            this.z = z
         }
 
-        override fun getX(): Double {
-            return x_
-        }
-
-        override fun getY(): Double {
-            return y_
-        }
-
-        override fun getZ(): Double {
-            return z_
+        fun setAttenuationType(attenuationType: MCAttenuationType) {
+            this.attenuationType = attenuationType
         }
     }
 
@@ -309,5 +319,56 @@ class Sound(private val config: NativeObject) {
                 else -> throw IllegalArgumentException("Cannot create Sound.Category from $value")
             }
         }
+    }
+
+    private object CTResourcePack : ResourcePack {
+        override fun close() {
+            throw NotImplementedError()
+        }
+
+        override fun openRoot(vararg segments: String): InputSupplier<InputStream>? {
+            val file = segments.fold(CTJS.assetsDir, ::File)
+            if (file.exists())
+                return InputSupplier { file.inputStream() }
+            return null
+        }
+
+        override fun open(type: ResourceType?, id: Identifier?): InputSupplier<InputStream>? {
+            throw NotImplementedError()
+        }
+
+        override fun findResources(
+            type: ResourceType?,
+            namespace: String?,
+            prefix: String?,
+            consumer: ResourcePack.ResultConsumer?
+        ) {
+            throw NotImplementedError()
+        }
+
+        override fun getNamespaces(type: ResourceType?): MutableSet<String> {
+            throw NotImplementedError()
+        }
+
+        override fun <T : Any?> parseMetadata(metaReader: ResourceMetadataReader<T>?): T? {
+            throw NotImplementedError()
+        }
+
+        override fun getName(): String {
+            return "CTJS_Sounds"
+        }
+    }
+
+    companion object {
+        private val soundSystem by lazy {
+            Client.getMinecraft().soundManager.asMixin<SoundManagerAccessor>().soundSystem
+        }
+
+        private val validIdentChars = setOf(
+            *('a'..'z').toList().toTypedArray(),
+            *('0'..'9').toList().toTypedArray(),
+            '_', '.', '-', '/',
+        )
+        private var counter = 0
     }
 }
