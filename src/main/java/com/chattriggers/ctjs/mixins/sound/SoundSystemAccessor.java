@@ -1,4 +1,4 @@
-package com.chattriggers.ctjs.mixins;
+package com.chattriggers.ctjs.mixins.sound;
 
 import net.minecraft.client.sound.Channel;
 import net.minecraft.client.sound.SoundInstance;

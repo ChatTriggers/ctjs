@@ -6,9 +6,9 @@ import com.chattriggers.ctjs.minecraft.wrappers.Client
 import com.chattriggers.ctjs.minecraft.wrappers.Player
 import com.chattriggers.ctjs.minecraft.wrappers.World
 import com.chattriggers.ctjs.mixins.AbstractSoundInstanceAccessor
-import com.chattriggers.ctjs.mixins.SoundAccessor
-import com.chattriggers.ctjs.mixins.SoundManagerAccessor
-import com.chattriggers.ctjs.mixins.SoundSystemAccessor
+import com.chattriggers.ctjs.mixins.sound.SoundAccessor
+import com.chattriggers.ctjs.mixins.sound.SoundManagerAccessor
+import com.chattriggers.ctjs.mixins.sound.SoundSystemAccessor
 import com.chattriggers.ctjs.utils.MCSound
 import com.chattriggers.ctjs.utils.asMixin
 import gg.essential.universal.UMinecraft
@@ -26,8 +26,6 @@ import net.minecraft.util.math.random.Random
 import org.mozilla.javascript.NativeObject
 import java.io.File
 import java.io.InputStream
-import java.nio.channels.Channels
-import java.nio.file.Files
 
 // TODO(breaking): Changed a bunch of fields on this class
 /**

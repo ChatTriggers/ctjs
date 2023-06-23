@@ -1,4 +1,4 @@
-package com.chattriggers.ctjs.mixins;
+package com.chattriggers.ctjs.mixins.sound;
 
 import com.chattriggers.ctjs.triggers.TriggerType;
 import com.chattriggers.ctjs.utils.vec.Vec3f;
