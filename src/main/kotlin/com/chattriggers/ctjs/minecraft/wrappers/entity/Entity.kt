@@ -10,6 +10,7 @@ import com.chattriggers.ctjs.utils.MCLivingEntity
 import gg.essential.universal.wrappers.message.UTextComponent
 import net.minecraft.entity.MovementType
 import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.predicate.entity.EntityPredicates
 import net.minecraft.registry.RegistryKey
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
@@ -190,8 +191,7 @@ open class Entity(override val mcValue: MCEntity) : CTWrapper<MCEntity> {
 
     fun isOnGround() = mcValue.isOnGround
 
-    // TODO: Test this
-    fun isCollided() = mcValue.collidedSoftly
+    fun isCollided() = World.toMC()?.getOtherEntities(mcValue, mcValue.boundingBox)?.isNotEmpty() ?: false
 
     fun getDistanceWalked() = mcValue.distanceTraveled / 0.6f
 
