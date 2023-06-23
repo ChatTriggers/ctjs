@@ -1,16 +1,24 @@
 package com.chattriggers.ctjs.minecraft.wrappers
 
 import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer
+import com.chattriggers.ctjs.minecraft.wrappers.entity.Entity
 import com.chattriggers.ctjs.minecraft.wrappers.entity.PlayerMP
 import com.chattriggers.ctjs.minecraft.wrappers.entity.Team
 import com.chattriggers.ctjs.minecraft.wrappers.inventory.Inventory
 import com.chattriggers.ctjs.minecraft.wrappers.inventory.Item
 import com.chattriggers.ctjs.minecraft.wrappers.world.PotionEffect
+import com.chattriggers.ctjs.minecraft.wrappers.world.block.Block
+import com.chattriggers.ctjs.minecraft.wrappers.world.block.BlockFace
+import com.chattriggers.ctjs.minecraft.wrappers.world.block.BlockPos
 import gg.essential.universal.UMath
 import gg.essential.universal.UMinecraft
 import gg.essential.universal.wrappers.message.UTextComponent
 import net.minecraft.client.gui.screen.ingame.HandledScreen
 import net.minecraft.client.network.ClientPlayerEntity
+import net.minecraft.util.Hand
+import net.minecraft.util.hit.BlockHitResult
+import net.minecraft.util.hit.EntityHitResult
+import net.minecraft.util.hit.HitResult
 import org.mozilla.javascript.NativeObject
 import java.util.*
 
@@ -224,26 +232,41 @@ object Player : CTWrapper<ClientPlayerEntity?> {
     @JvmStatic
     fun getActivePotionEffects(): List<PotionEffect> = toMC()?.activeStatusEffects?.values?.map(::PotionEffect).orEmpty()
 
+    // TODO(breaking): Return null instead of air BlockType for a miss
     /**
      * Gets the current object that the player is looking at,
-     * whether that be a block or an entity. Returns an air [BlockType] when not looking
+     * whether that be a block or an entity. Returns null when not looking
      * at anything.
      *
-     * @return the [Block], [Entity], [Sign], or [BlockType] being looked at
+     * @return the [Block] or [Entity] being looked at, or null if air
      */
     @JvmStatic
-    fun lookingAt(): Any {
-        TODO()
+    fun lookingAt(): Any? {
+        val target = Client.getMinecraft().crosshairTarget
+
+        return when (target?.type) {
+            HitResult.Type.MISS -> null
+            HitResult.Type.BLOCK -> {
+                val block = target as BlockHitResult
+                World.getBlockAt(BlockPos(block.blockPos)).withFace(BlockFace.fromMC(block.side))
+            }
+            HitResult.Type.ENTITY -> {
+                Entity.fromMC((target as EntityHitResult).entity)
+            }
+            null -> null
+        }
     }
 
     /**
-     * Gets the current item in the player's main hand.
+     * Gets the current item in the player's hand.
      *
+     * @param hand the hand of the item
      * @return the current held [Item]
      */
+    @JvmOverloads
     @JvmStatic
-    fun getHeldItem(): Item? = toMC()?.inventory?.selectedSlot?.let {
-        getInventory()?.getStackInSlot(it)
+    fun getHeldItem(hand: Hand = Hand.MAIN_HAND): Item? {
+        return toMC()?.getStackInHand(hand)?.let(::Item)
     }
 
     /**

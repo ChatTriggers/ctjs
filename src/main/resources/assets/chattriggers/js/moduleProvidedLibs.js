@@ -48,6 +48,7 @@
     loadClass("java.util.ArrayList");
     loadClass("java.util.HashMap");
     loadInstance("gg.essential.universal.UKeyboard", "Keyboard");
+    loadClass("net.minecraft.util.Hand");
 
     // Libraries
     loadInstance("com.chattriggers.ctjs.minecraft.libs.ChatLib");
