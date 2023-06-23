@@ -1,23 +1,17 @@
 package com.chattriggers.ctjs.console
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.awt.Color
 import java.io.*
 import java.net.Socket
 import java.util.concurrent.CompletableFuture
-import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Runs in a separate process and is responsible for rendering the CT consoles.
  *
  * Note that this should not reference any MC classes or CT classes outside of
  * this package.
- *
- * TODO: Move this to a separate gradle project to enforce the requirement above?
  *
  * @see RemoteConsoleHost
  */

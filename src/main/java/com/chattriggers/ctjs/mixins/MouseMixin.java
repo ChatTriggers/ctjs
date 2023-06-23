@@ -27,7 +27,7 @@ public class MouseMixin {
         )
     )
     void injectOnMouseButton(long window, int button, int action, int mods, CallbackInfo ci) {
-        MouseListener.onRawMouseInput(button, action, mods);
+        MouseListener.onRawMouseInput(button, action);
     }
 
     @Inject(
@@ -39,7 +39,7 @@ public class MouseMixin {
         )
     )
     void injectOnMouseScroll(long window, double horizontal, double vertical, CallbackInfo ci) {
-        MouseListener.onRawMouseScroll(horizontal, vertical);
+        MouseListener.onRawMouseScroll(vertical);
     }
 
     @Inject(

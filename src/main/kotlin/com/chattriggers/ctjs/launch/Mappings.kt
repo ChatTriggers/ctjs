@@ -24,7 +24,6 @@ internal object Mappings {
     private val mappedToUnmappedClassNames = mutableMapOf<String, String>()
 
     fun initialize() {
-        // TODO: Change modid to ctjs
         val container = FabricLoader.getInstance().getModContainer("chattriggers")
         val mappingVersion = container.get().metadata.getCustomValue("ctjs:yarn-mappings").asString
 

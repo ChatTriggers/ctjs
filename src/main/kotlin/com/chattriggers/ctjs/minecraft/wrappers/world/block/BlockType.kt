@@ -60,7 +60,6 @@ class BlockType(override val mcValue: MCBlock) : CTWrapper<MCBlock> {
      */
     fun getName() = UTextComponent(mcValue.name).formattedText
 
-    // TODO: Rename this method?
     fun getLightValue(): Int = getDefaultState().luminance
 
     fun getDefaultState() = mcValue.defaultState

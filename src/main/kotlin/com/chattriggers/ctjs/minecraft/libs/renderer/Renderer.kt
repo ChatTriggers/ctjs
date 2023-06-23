@@ -461,7 +461,6 @@ object Renderer {
         var newY = y
 
         ChatLib.addColor(text).split("\n").forEach {
-            // TODO: Support drawWithOutline
             if (shadow) {
                 fr.drawWithShadow(matrixStack.toMC(), it, x, newY, colorized?.toInt() ?: WHITE.toInt())
             } else {

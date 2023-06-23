@@ -14,11 +14,7 @@ import com.chattriggers.ctjs.triggers.TriggerType
 import kotlin.concurrent.thread
 
 object Reference {
-    // TODO: Figure out how to substitute these at build time
-    const val MOD_ID = "chattriggers"
-    const val MOD_NAME = "ChatTriggers"
     const val MOD_VERSION = "3.0.0"
-
     const val DEFAULT_MODULES_FOLDER = "./config/ChatTriggers/modules"
 
     var isLoaded = true

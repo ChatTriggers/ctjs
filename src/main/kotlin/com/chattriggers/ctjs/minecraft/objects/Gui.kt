@@ -35,7 +35,6 @@ abstract class Gui(title: UTextComponent) : Screen(title) {
 
     init {
         ScreenMouseEvents.afterMouseScroll(this).register { _, x, y, _, dy ->
-            // TODO: Pass in dx?
             onScroll?.trigger(arrayOf(x, y, dy))
         }
     }

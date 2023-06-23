@@ -66,9 +66,7 @@ internal object MouseListener : Initializer {
     }
 
     @JvmStatic
-    fun onRawMouseInput(button: Int, action: Int, modifiers: Int) {
-        // TODO: use modifiers?
-
+    fun onRawMouseInput(button: Int, action: Int) {
         if (!World.isLoaded()) {
             mouseState.clear()
             draggedState.clear()
@@ -92,9 +90,7 @@ internal object MouseListener : Initializer {
     }
 
     @JvmStatic
-    fun onRawMouseScroll(dx: Double, dy: Double) {
-        // TODO: Use dx?
-
+    fun onRawMouseScroll(dy: Double) {
         CTEvents.MOUSE_SCROLLED.invoker().process(
             Client.getMouseX(),
             Client.getMouseY(),

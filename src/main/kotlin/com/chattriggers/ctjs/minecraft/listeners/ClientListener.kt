@@ -129,11 +129,9 @@ object ClientListener : Initializer {
                 }
             }
 
-            // TODO: Use modifiers?
             ScreenKeyboardEvents.allowKeyPress(screen).register { _, key, scancode, _ ->
                 val event = CancellableEvent()
                 TriggerType.GUI_KEY.triggerAll(GLFW.glfwGetKeyName(key, scancode), key, screen, event)
-
                 !event.isCancelled()
             }
         }

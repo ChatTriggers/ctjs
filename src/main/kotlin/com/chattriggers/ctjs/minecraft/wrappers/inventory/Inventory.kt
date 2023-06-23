@@ -22,7 +22,6 @@ class Inventory {
         this.screen = container
     }
 
-    // TODO: Verify the last part of this description
     /**
      * Gets the total size of the Inventory.
      * The player's inventory size is 36, 27 for the main inventory, plus 9 for the hotbar.

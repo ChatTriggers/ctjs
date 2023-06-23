@@ -26,7 +26,6 @@ class Item(val stack: ItemStack) {
 
     fun getStackSize(): Int = stack.count
 
-    // TODO: Api that returns the Enchantment object?
     fun getEnchantments() = EnchantmentHelper.get(stack).mapKeys {
         EnchantmentHelper.getEnchantmentId(it.key)!!.toTranslationKey()?.replace("enchantment.", "")
     }

@@ -1,6 +1,5 @@
 package com.chattriggers.ctjs.minecraft.libs
 
-// TODO: This is almost useless, we should put some more stuff in here
 object MathLib {
     /**
      * Maps a number from one range to another.
