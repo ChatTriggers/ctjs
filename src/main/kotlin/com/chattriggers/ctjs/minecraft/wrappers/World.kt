@@ -3,6 +3,7 @@ package com.chattriggers.ctjs.minecraft.wrappers
 import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer
 import com.chattriggers.ctjs.minecraft.wrappers.entity.BlockEntity
 import com.chattriggers.ctjs.minecraft.wrappers.entity.Entity
+import com.chattriggers.ctjs.minecraft.wrappers.entity.Particle
 import com.chattriggers.ctjs.minecraft.wrappers.entity.PlayerMP
 import com.chattriggers.ctjs.minecraft.wrappers.world.Chunk
 import com.chattriggers.ctjs.minecraft.wrappers.world.block.Block
@@ -11,12 +12,14 @@ import com.chattriggers.ctjs.minecraft.wrappers.world.block.BlockType
 import com.chattriggers.ctjs.mixins.ClientChunkManagerAccessor
 import com.chattriggers.ctjs.mixins.ClientChunkMapAccessor
 import com.chattriggers.ctjs.mixins.ClientWorldAccessor
-import com.chattriggers.ctjs.utils.MCBlockPos
-import com.chattriggers.ctjs.utils.MCDifficulty
-import com.chattriggers.ctjs.utils.asMixin
+import com.chattriggers.ctjs.utils.*
+import com.mojang.brigadier.StringReader
 import gg.essential.universal.UMinecraft
 import net.minecraft.block.BlockState
 import net.minecraft.client.world.ClientWorld
+import net.minecraft.particle.ParticleEffect
+import net.minecraft.particle.ParticleType
+import net.minecraft.particle.ParticleTypes
 import net.minecraft.registry.Registries
 
 object World : CTWrapper<ClientWorld?> {
@@ -55,18 +58,9 @@ object World : CTWrapper<ClientWorld?> {
     @JvmStatic
     fun getMoonPhase(): Int = toMC()?.moonPhase ?: -1
 
-    // TODO
-    // @JvmStatic
-    // fun getSeed(): Long = toMC()?.seed ?: -1L
-    //
-    // @JvmStatic
-    // fun getType(): String {
-    //     //#if MC<=10809
-    //     return toMC()?.worldType?.worldTypeName.toString()
-    //     //#else
-    //     //$$ return toMC()?.worldType?.name.toString()
-    //     //#endif
-    // }
+    // TODO(breaking): Removed getSeed (server-side)
+
+    // TODO(breaking): Removed getType
 
     /**
      * Gets the [Block] at a location in the world.
@@ -244,7 +238,7 @@ object World : CTWrapper<ClientWorld?> {
          *
          * @return the array of name strings
          */
-        fun getParticleNames(): List<String> = Registries.PARTICLE_TYPE.keys.map { it.registry.path }.toList()
+        fun getParticleNames(): List<String> = Registries.PARTICLE_TYPE.keys.map { it.value.path }.toList()
 
         /**
          * Spawns a particle into the world with the given attributes,
@@ -259,35 +253,38 @@ object World : CTWrapper<ClientWorld?> {
          * @param zSpeed the motion the particle should have in the z direction
          * @return the newly spawned particle for further configuration
          */
-        // TODO:
-        // fun spawnParticle(
-        //     particle: String,
-        //     x: Double,
-        //     y: Double,
-        //     z: Double,
-        //     xSpeed: Double,
-        //     ySpeed: Double,
-        //     zSpeed: Double,
-        // ): Particle {
-        //     val particleType = EnumParticleTypes.valueOf(particle)
-        //
-        //     val fx = Client.getMinecraft().renderGlobal.spawnEntityFX(
-        //         particleType.particleID,
-        //         particleType.shouldIgnoreRange,
-        //         x,
-        //         y,
-        //         z,
-        //         xSpeed,
-        //         ySpeed,
-        //         zSpeed
-        //     )
-        //
-        //     return Particle(fx)
-        // }
-        //
-        // @JvmStatic
-        // fun spawnParticle(particle: MCParticle) {
-        //     Client.getMinecraft().effectRenderer.addEffect(particle)
-        // }
+        fun spawnParticle(
+            particle: String,
+            x: Double,
+            y: Double,
+            z: Double,
+            xSpeed: Double,
+            ySpeed: Double,
+            zSpeed: Double,
+        ): Particle {
+            @Suppress("UNCHECKED_CAST")
+            val particleType = Registries.PARTICLE_TYPE.get(particle.toIdentifier()) as? ParticleType<ParticleEffect>
+
+            requireNotNull(particleType) {
+                "Invalid particle parameter"
+            }
+
+            val fx = Client.getMinecraft().particleManager.addParticle(
+                particleType.parametersFactory.read(particleType, StringReader(particle)),
+                x,
+                y,
+                z,
+                xSpeed,
+                ySpeed,
+                zSpeed
+            )!!
+
+            return Particle(fx)
+        }
+
+        fun spawnParticle(particle: MCParticle): Particle {
+            Client.getMinecraft().particleManager.addParticle(particle)
+            return Particle(particle)
+        }
     }
 }
