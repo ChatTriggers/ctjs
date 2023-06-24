@@ -63,20 +63,6 @@ internal object CTEvents {
     }
 
     @JvmField
-    val PRE_RENDER_OVERLAY = make<RenderScreenCallback> { listeners ->
-        RenderScreenCallback { stack, mouseX, mouseY, drawable, partialTicks ->
-            listeners.forEach { it.render(stack, mouseX, mouseY, drawable, partialTicks) }
-        }
-    }
-
-    @JvmField
-    val POST_RENDER_OVERLAY = make<RenderScreenCallback> { listeners ->
-        RenderScreenCallback { stack, mouseX, mouseY, drawable, partialTicks ->
-            listeners.forEach { it.render(stack, mouseX, mouseY, drawable, partialTicks) }
-        }
-    }
-
-    @JvmField
     val RENDER_OVERLAY = make<RenderOverlayCallback> { listeners ->
         RenderOverlayCallback { stack, partialTicks ->
             listeners.forEach { it.render(stack, partialTicks) }

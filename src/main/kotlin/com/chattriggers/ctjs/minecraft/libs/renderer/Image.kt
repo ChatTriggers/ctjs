@@ -3,19 +3,21 @@ package com.chattriggers.ctjs.minecraft.libs.renderer
 import com.chattriggers.ctjs.CTJS
 import com.chattriggers.ctjs.minecraft.CTEvents
 import com.chattriggers.ctjs.utils.Initializer
-import net.minecraft.client.texture.DynamicTexture
 import net.minecraft.client.texture.NativeImage
 import net.minecraft.client.texture.NativeImageBackedTexture
+import org.lwjgl.system.MemoryUtil
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.net.HttpURLConnection
+import java.nio.ByteBuffer
 import javax.imageio.ImageIO
 
 class Image(var image: BufferedImage?) {
-    private var texture: NativeImageBackedTexture? = null
+    private var texture: Texture? = null
     private val textureWidth = image?.width ?: 0
     private val textureHeight = image?.height ?: 0
+    private val aspectRatio = if (textureHeight != 0) textureHeight.toDouble() / textureWidth else 0.0
 
     init {
         CTJS.images.add(this)
@@ -42,7 +44,7 @@ class Image(var image: BufferedImage?) {
             }
         }
 
-        return texture!!
+        return texture!!.texture
     }
 
     /**
@@ -50,25 +52,33 @@ class Image(var image: BufferedImage?) {
      * that way it can be garbage collected if not referenced in js code.
      */
     fun destroy() {
-        texture?.close()
-        CTJS.images.remove(this)
+        texture?.texture?.close()
+        texture?.buffer?.let(MemoryUtil::memFree)
     }
 
     @JvmOverloads
     fun draw(
         x: Double,
         y: Double,
-        width: Double = textureWidth.toDouble(),
-        height: Double = textureHeight.toDouble()
+        width: Double? = null,
+        height: Double? = null,
     ) = apply {
-        if (image != null) return@apply
+        val (drawWidth, drawHeight) = when {
+            width == null && height == null -> textureWidth.toDouble() to textureHeight.toDouble()
+            width == null -> height!! / aspectRatio to height
+            height == null -> width to width * aspectRatio
+            else -> width to height
+        }
 
-        TODO()
+        if (texture != null)
+            Renderer.drawImage(this, x, y, drawWidth, drawHeight)
     }
+
+    private data class Texture(val texture: NativeImageBackedTexture, val buffer: ByteBuffer)
 
     companion object : Initializer {
         override fun init() {
-            CTEvents.POST_RENDER_OVERLAY.register { _, _, _, _, _ ->
+            CTEvents.RENDER_OVERLAY.register { _, _ ->
                 for (image in CTJS.images) {
                     if (image.image != null) {
                         image.texture = image.image!!.toNativeTexture()
@@ -83,7 +93,7 @@ class Image(var image: BufferedImage?) {
          * if the file cannot be found.
          */
         @JvmStatic
-        fun fromFile(file: File) =  Image(ImageIO.read(file))
+        fun fromFile(file: File) = Image(ImageIO.read(file))
 
         /**
          * Create an image object from a file path. Throws an exception
@@ -120,18 +130,22 @@ class Image(var image: BufferedImage?) {
         }
 
         private fun getImageFromUrl(url: String): BufferedImage {
-            val conn = (CTJS.makeWebRequest(url) as HttpURLConnection).apply {
-                requestMethod = "GET"
-                doOutput = true
+            val req = CTJS.makeWebRequest(url)
+            if (req is HttpURLConnection) {
+                req.requestMethod = "GET"
+                req.doOutput = true
             }
 
-            return ImageIO.read(conn.inputStream)
+            return ImageIO.read(req.inputStream)
         }
 
-        private fun BufferedImage.toNativeTexture(): NativeImageBackedTexture {
+        private fun BufferedImage.toNativeTexture(): Texture {
             return ByteArrayOutputStream().use {
                 ImageIO.write(this, "png", it)
-                NativeImageBackedTexture(NativeImage.read(it.toByteArray()))
+                val buffer = MemoryUtil.memAlloc(it.size())
+                buffer.put(it.toByteArray())
+                buffer.rewind()
+                Texture(NativeImageBackedTexture(NativeImage.read(buffer)), buffer)
             }
         }
     }

@@ -428,8 +428,8 @@ object Renderer {
         var circleX = 1f
         var circleY = 0f
 
-        UGraphics.enableBlend()
-        UGraphics.tryBlendFuncSeparate(770, 771, 1, 0)
+        enableBlend()
+        tryBlendFuncSeparate(770, 771, 1, 0)
         doColor(color)
 
         worldRenderer.beginWithDefaultShader(this.drawMode?.toUC() ?: drawMode, UGraphics.CommonVertexFormats.POSITION)
@@ -448,7 +448,7 @@ object Renderer {
         worldRenderer.drawDirect()
 
         colorize(1f, 1f, 1f, 1f)
-        UGraphics.disableBlend()
+        disableBlend()
 
         resetTransformsIfNecessary()
     }
@@ -461,9 +461,9 @@ object Renderer {
 
         ChatLib.addColor(text).split("\n").forEach {
             if (shadow) {
-                fr.drawWithShadow(matrixStack.toMC(), it, x, newY, colorized?.toInt() ?: WHITE.toInt())
+                fr.drawWithShadow(matrixStack.toMC(), it, x, newY, colorized ?: WHITE)
             } else {
-                fr.draw(matrixStack.toMC(), it, x, newY, colorized?.toInt() ?: WHITE.toInt())
+                fr.draw(matrixStack.toMC(), it, x, newY, colorized ?: WHITE)
             }
 
             newY += fr.fontHeight
@@ -475,26 +475,29 @@ object Renderer {
     @JvmStatic
     fun drawStringWithShadow(text: String, x: Float, y: Float) = drawString(text, x, y, shadow = true)
 
-    // TODO:
-    // @JvmStatic
-    // fun drawImage(image: Image, x: Double, y: Double, width: Double, height: Double) {
-    //     if (colorized == null)
-    //         GlStateManager.color(1f, 1f, 1f, 1f)
-    //     GlStateManager.enableBlend()
-    //     GlStateManager.scale(1f, 1f, 50f)
-    //     GlStateManager.bindTexture(image.getTexture().glTextureId)
-    //     GlStateManager.enableTexture2D()
-    //
-    //     worldRenderer.begin(drawMode ?: 7, DefaultVertexFormats.POSITION_TEX)
-    //
-    //     worldRenderer.pos(x, y + height, 0.0).tex(0.0, 1.0).endVertex()
-    //     worldRenderer.pos(x + width, y + height, 0.0).tex(1.0, 1.0).endVertex()
-    //     worldRenderer.pos(x + width, y, 0.0).tex(1.0, 0.0).endVertex()
-    //     worldRenderer.pos(x, y, 0.0).tex(0.0, 0.0).endVertex()
-    //     tessellator.draw()
-    //
-    //     resetTransformsIfNecessary()
-    // }
+    @JvmStatic
+    fun drawImage(image: Image, x: Double, y: Double, width: Double, height: Double) {
+        if (colorized == null)
+            colorize(1f, 1f, 1f, 1f)
+
+        enableBlend()
+        scale(1f, 1f, 50f)
+
+        RenderSystem.setShaderTexture(0, image.getTexture().glId)
+
+        worldRenderer.beginWithDefaultShader(
+            drawMode?.toUC() ?: UGraphics.DrawMode.QUADS,
+            UGraphics.CommonVertexFormats.POSITION_TEXTURE,
+        )
+
+        worldRenderer.pos(matrixStack, x, y + height, 0.0).tex(0.0, 1.0).endVertex()
+        worldRenderer.pos(matrixStack, x + width, y + height, 0.0).tex(1.0, 1.0).endVertex()
+        worldRenderer.pos(matrixStack, x + width, y, 0.0).tex(1.0, 0.0).endVertex()
+        worldRenderer.pos(matrixStack, x, y, 0.0).tex(0.0, 0.0).endVertex()
+        worldRenderer.drawDirect()
+
+        resetTransformsIfNecessary()
+    }
 
     /**
      * Draws a player entity to the screen, similar to the one displayed in the inventory screen.

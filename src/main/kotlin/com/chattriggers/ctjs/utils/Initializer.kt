@@ -8,6 +8,7 @@ import com.chattriggers.ctjs.minecraft.objects.KeyBind
 import com.chattriggers.ctjs.minecraft.objects.display.Display
 import com.chattriggers.ctjs.minecraft.wrappers.CPS
 import com.chattriggers.ctjs.console.ConsoleManager
+import com.chattriggers.ctjs.minecraft.libs.renderer.Image
 
 internal interface Initializer {
     fun init()
@@ -18,6 +19,7 @@ internal interface Initializer {
             ConsoleManager,
             CPS,
             Display.Companion,
+            Image.Companion,
             KeyBind.Companion,
             ModuleUpdater,
             MouseListener,
