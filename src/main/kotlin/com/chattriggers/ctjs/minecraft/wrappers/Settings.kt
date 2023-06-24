@@ -27,9 +27,14 @@ class Settings : CTWrapper<GameOptions> {
 
     // TODO(breaking): Removed setDifficulty
 
+    val skin = SkinWrapper()
+    val sound = SoundWrapper()
+    val chat = ChatWrapper()
+    val video = VideoWrapper()
+
     // TODO(breaking): Changed all of these names to indicate they involve the parts
     //                 being enabled, not returning the parts themselves
-    val skin = object {
+    inner class SkinWrapper {
         fun isCapeEnabled() = toMC().isPlayerModelPartEnabled(PlayerModelPart.CAPE)
 
         fun setCapeEnabled(toggled: Boolean) {
@@ -73,7 +78,7 @@ class Settings : CTWrapper<GameOptions> {
         }
     }
 
-    val sound = object {
+    inner class SoundWrapper {
         fun getMasterVolume() = toMC().getSoundVolumeOption(SoundCategory.MASTER).value
 
         fun setMasterVolume(level: Double) {
@@ -129,7 +134,7 @@ class Settings : CTWrapper<GameOptions> {
         }
     }
 
-    val video = object {
+    inner class VideoWrapper {
         // TODO(breaking): Add "mode" suffix to this method name and use the enum instead of Boolean
         fun getGraphicsMode() = GraphicsMode.fromMC(toMC().graphicsMode.value)
 
@@ -214,7 +219,7 @@ class Settings : CTWrapper<GameOptions> {
         }
     }
 
-    val chat = object {
+    inner class ChatWrapper {
         // TODO(breaking): Use enum instead of String
         fun getVisibility() = ChatVisibility.fromMC(toMC().chatVisibility.value)
 
