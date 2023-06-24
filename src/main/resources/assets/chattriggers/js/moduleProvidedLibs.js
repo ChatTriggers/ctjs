@@ -47,8 +47,7 @@
     // Extra libs
     loadClass("java.util.ArrayList");
     loadClass("java.util.HashMap");
-    // TODO: UKeyboard?
-    // loadClass("org.lwjgl.input.Keyboard");
+    loadInstance("gg.essential.universal.UKeyboard", "Keyboard");
 
     // Libraries
     loadInstance("com.chattriggers.ctjs.minecraft.libs.ChatLib");

@@ -219,7 +219,8 @@ object JSLoader : ILoader {
 
                 INVOKE_MIXIN_CALL.bindTo(callback.method)
             } catch (e: Throwable) {
-                // TODO: More detail (how can we get the module name?)
+                // This is a pretty vague error, but the trace should make the issue clear
+                // since it will include the stack trace from the Mixed-into class
                 "Error loading mixin callback".printToConsole(console)
                 e.printTraceToConsole(console)
 

@@ -12,6 +12,7 @@ import com.chattriggers.ctjs.mixins.ClientChunkManagerAccessor
 import com.chattriggers.ctjs.mixins.ClientChunkMapAccessor
 import com.chattriggers.ctjs.mixins.ClientWorldAccessor
 import com.chattriggers.ctjs.utils.MCBlockPos
+import com.chattriggers.ctjs.utils.MCDifficulty
 import com.chattriggers.ctjs.utils.asMixin
 import gg.essential.universal.UMinecraft
 import net.minecraft.block.BlockState
@@ -30,8 +31,6 @@ object World : CTWrapper<ClientWorld?> {
     @JvmStatic
     fun getWorld(): ClientWorld? = toMC()
 
-
-
     @JvmStatic
     fun isLoaded(): Boolean = toMC() != null
 
@@ -46,9 +45,9 @@ object World : CTWrapper<ClientWorld?> {
     @JvmStatic
     fun getTime(): Long = toMC()?.time ?: -1L
 
-    // TODO: Use enum?
+    // TODO(breaking): Switched to enum
     @JvmStatic
-    fun getDifficulty(): String = toMC()?.difficulty.toString()
+    fun getDifficulty(): Settings.Difficulty? = toMC()?.difficulty?.let(Settings.Difficulty::fromMC)
 
     @JvmStatic
     fun getMoonPhase(): Int = toMC()?.moonPhase ?: -1
@@ -157,12 +156,12 @@ object World : CTWrapper<ClientWorld?> {
     }
 
     // TODO(breaking): Rename to getAllBlockEntitiesOfType
-     @JvmStatic
-     fun getAllBlockEntitiesOfType(clazz: Class<*>): List<BlockEntity> {
-         return getAllBlockEntities().filter {
-             clazz.isInstance(it.toMC())
-         }
-     }
+    @JvmStatic
+    fun getAllBlockEntitiesOfType(clazz: Class<*>): List<BlockEntity> {
+        return getAllBlockEntities().filter {
+            clazz.isInstance(it.toMC())
+        }
+    }
 
     /**
      * World border object to get border parameters

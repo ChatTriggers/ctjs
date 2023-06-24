@@ -174,12 +174,9 @@ abstract class KeyBind {
                     return@register
 
                 keyBinds.forEach {
-                    // TODO: This causes null pointers rarely, crashing the game.
-                    //  Catching solves this for now.
-                    try {
-                        it.onTick()
-                    } catch (ignored: Exception) {
-                    }
+                    // This used to cause crashes on legacy sometimes. If it starts crashing again,
+                    // we'll add the empty try-catch block back
+                    it.onTick()
                 }
             }
         }

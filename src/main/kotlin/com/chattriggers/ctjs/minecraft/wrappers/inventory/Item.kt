@@ -87,11 +87,9 @@ class Item(val stack: ItemStack) {
         val itemRenderer = Client.getMinecraft().itemRenderer
 
         Renderer.scale(scale, scale, 1f)
-        Renderer.translate(x / scale, y / scale, 0f)
+        Renderer.translate(x / scale, y / scale, z)
         Renderer.colorize(1f, 1f, 1f, 1f)
 
-        // TODO: Removed a few method calls from the old version, make sure they don't really
-        //       affect anything
         itemRenderer.renderInGui(Renderer.matrixStack.toMC(), stack, 0, 0)
 
         Renderer.resetTransformsIfNecessary()

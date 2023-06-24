@@ -1,5 +1,7 @@
 package com.chattriggers.ctjs.minecraft.wrappers
 
+import com.chattriggers.ctjs.utils.MCDifficulty
+import com.chattriggers.ctjs.utils.MCGraphicsMode
 import gg.essential.universal.UMinecraft
 import net.minecraft.client.option.GameOptions
 import net.minecraft.client.option.GraphicsMode
@@ -21,7 +23,6 @@ class Settings : CTWrapper<GameOptions> {
         toMC().fov.value = fov
     }
 
-    // TODO: Add Difficulty enum to this class if possible, or add a wrapper
     fun getDifficulty() = World.getDifficulty()
 
     // TODO(breaking): Removed setDifficulty
@@ -129,12 +130,11 @@ class Settings : CTWrapper<GameOptions> {
     }
 
     val video = object {
-        // TODO: Add this to Settings object or add a wrapper for it
         // TODO(breaking): Add "mode" suffix to this method name and use the enum instead of Boolean
-        fun getGraphicsMode() = toMC().graphicsMode.value
+        fun getGraphicsMode() = GraphicsMode.fromMC(toMC().graphicsMode.value)
 
         fun setGraphicsMode(mode: GraphicsMode) {
-            toMC().graphicsMode.value = mode
+            toMC().graphicsMode.value = mode.toMC()
         }
 
         fun getRenderDistance() = toMC().viewDistance.value
@@ -206,13 +206,6 @@ class Settings : CTWrapper<GameOptions> {
         fun setMipmapLevels(mipmapLevels: Int) {
             toMC().mipmapLevels.value = mipmapLevels
         }
-
-        // TODO: Does this exist?
-        // fun getVBOs() = getSettings().useVbo
-        //
-        // fun setVBOs(toggled: Boolean) {
-        //     getSettings().useVbo = toggled
-        // }
 
         fun getEntityShadows() = toMC().entityShadows.value
 
@@ -338,6 +331,29 @@ class Settings : CTWrapper<GameOptions> {
                 is ChatVisibility -> value
                 else -> throw IllegalArgumentException("Cannot create ChatVisibility from $value")
             }
+        }
+    }
+
+    enum class Difficulty(override val mcValue: MCDifficulty) : CTWrapper<MCDifficulty> {
+        PEACEFUL(MCDifficulty.PEACEFUL),
+        EASY(MCDifficulty.EASY),
+        NORMAL(MCDifficulty.NORMAL),
+        HARD(MCDifficulty.HARD);
+
+        companion object {
+            @JvmStatic
+            fun fromMC(mcValue: MCDifficulty) = values().first { it.mcValue == mcValue }
+        }
+    }
+
+    enum class GraphicsMode(override val mcValue: MCGraphicsMode) : CTWrapper<MCGraphicsMode> {
+        FAST(MCGraphicsMode.FAST),
+        FANCY(MCGraphicsMode.FANCY),
+        FABULOUS(MCGraphicsMode.FABULOUS);
+
+        companion object {
+            @JvmStatic
+            fun fromMC(mcValue: MCGraphicsMode) = values().first { it.mcValue == mcValue }
         }
     }
 }

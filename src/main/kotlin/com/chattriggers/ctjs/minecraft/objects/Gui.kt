@@ -320,10 +320,10 @@ abstract class Gui(title: UTextComponent) : Screen(title) {
         buttons.clear()
     }
 
-    // TODO: Should we even have this? Maybe add a wrapper?
-    fun getButton(buttonId: Int): ButtonWidget? = buttons[buttonId]
+    // TODO(breaking): Remove getButton (ButtonWidget doesn't really do anything that isn't already
+    //                 provided by the methods below)
 
-    fun getButtonVisibility(buttonId: Int): Boolean = getButton(buttonId)?.visible ?: false
+    fun getButtonVisibility(buttonId: Int): Boolean = buttons[buttonId]?.visible ?: false
 
     /**
      * Sets the visibility of a button
@@ -333,10 +333,10 @@ abstract class Gui(title: UTextComponent) : Screen(title) {
      * @return the Gui for method chaining
      */
     fun setButtonVisibility(buttonId: Int, visible: Boolean) = apply {
-        getButton(buttonId)?.visible = visible
+        buttons[buttonId]?.visible = visible
     }
 
-    fun getButtonEnabled(buttonId: Int): Boolean = getButton(buttonId)?.active ?: false
+    fun getButtonEnabled(buttonId: Int): Boolean = buttons[buttonId]?.active ?: false
 
     /**
      * Sets the enabled state of a button
@@ -346,10 +346,10 @@ abstract class Gui(title: UTextComponent) : Screen(title) {
      * @return the Gui for method chaining
      */
     fun setButtonEnabled(buttonId: Int, enabled: Boolean) = apply {
-        getButton(buttonId)?.active = enabled
+        buttons[buttonId]?.active = enabled
     }
 
-    fun getButtonWidth(buttonId: Int): Int = getButton(buttonId)?.width ?: 0
+    fun getButtonWidth(buttonId: Int): Int = buttons[buttonId]?.width ?: 0
 
     /**
      * Sets the button's width. Button textures break if the width is greater than 200
@@ -359,10 +359,10 @@ abstract class Gui(title: UTextComponent) : Screen(title) {
      * @return the Gui for method chaining
      */
     fun setButtonWidth(buttonId: Int, width: Int) = apply {
-        getButton(buttonId)?.width = width
+        buttons[buttonId]?.width = width
     }
 
-    fun getButtonHeight(buttonId: Int): Int = getButton(buttonId)?.height ?: 0
+    fun getButtonHeight(buttonId: Int): Int = buttons[buttonId]?.height ?: 0
 
     /**
      * Sets the button's height. Button textures break if the height is not 20
@@ -372,10 +372,10 @@ abstract class Gui(title: UTextComponent) : Screen(title) {
      * @return the Gui for method chaining
      */
     fun setButtonHeight(buttonId: Int, height: Int) = apply {
-        getButton(buttonId)?.asMixin<ClickableWidgetAccessor>()?.setHeight(height)
+        buttons[buttonId]?.asMixin<ClickableWidgetAccessor>()?.setHeight(height)
     }
 
-    fun getButtonX(buttonId: Int): Int = getButton(buttonId)?.x ?: 0
+    fun getButtonX(buttonId: Int): Int = buttons[buttonId]?.x ?: 0
 
     /**
      * Sets the button's x position
@@ -385,10 +385,10 @@ abstract class Gui(title: UTextComponent) : Screen(title) {
      * @return the Gui for method chaining
      */
     fun setButtonX(buttonId: Int, x: Int) = apply {
-        getButton(buttonId)?.x = x
+        buttons[buttonId]?.x = x
     }
 
-    fun getButtonY(buttonId: Int): Int = getButton(buttonId)?.y ?: 0
+    fun getButtonY(buttonId: Int): Int = buttons[buttonId]?.y ?: 0
 
     /**
      * Sets the button's y position
@@ -398,7 +398,7 @@ abstract class Gui(title: UTextComponent) : Screen(title) {
      * @return the Gui for method chaining
      */
     fun setButtonY(buttonId: Int, y: Int) = apply {
-        getButton(buttonId)?.y = y
+        buttons[buttonId]?.y = y
     }
 
     /**
@@ -410,7 +410,7 @@ abstract class Gui(title: UTextComponent) : Screen(title) {
      * @return the Gui for method chaining
      */
     fun setButtonLoc(buttonId: Int, x: Int, y: Int) = apply {
-        getButton(buttonId)?.apply {
+        buttons[buttonId]?.apply {
             this.x = x
             this.y = y
         }
