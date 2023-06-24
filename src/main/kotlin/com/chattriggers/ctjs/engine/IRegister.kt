@@ -134,13 +134,14 @@ interface IRegister {
         return RegularTrigger(method, TriggerType.CLICKED, getImplementationLoader())
     }
 
+    // TODO(breaking): Pass in raw scroll amount (i.e. no longer normalized to -1 or 1)
     /**
      * Registers a new trigger that runs before the mouse is scrolled.
      *
      * Passes through three arguments:
      * - The mouse x position
      * - The mouse y position
-     * - The scroll direction
+     * - The scroll amount
      *
      * Available modifications:
      * - [Trigger.setPriority] Sets the priority

@@ -47,7 +47,7 @@ internal object CTEvents {
     }
 
     fun interface MouseScrollCallback {
-        fun process(mouseX: Double, mouseY: Double, direction: Int)
+        fun process(mouseX: Double, mouseY: Double, delta: Double)
     }
 
     fun interface MouseDraggedCallback {
@@ -116,8 +116,8 @@ internal object CTEvents {
 
     @JvmField
     val MOUSE_SCROLLED = make<MouseScrollCallback> { listeners ->
-        MouseScrollCallback { mouseX, mouseY, direction ->
-            listeners.forEach { it.process(mouseX, mouseY, direction) }
+        MouseScrollCallback { mouseX, mouseY, delta ->
+            listeners.forEach { it.process(mouseX, mouseY, delta) }
         }
     }
 

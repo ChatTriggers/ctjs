@@ -91,10 +91,6 @@ internal object MouseListener : Initializer {
 
     @JvmStatic
     fun onRawMouseScroll(dy: Double) {
-        CTEvents.MOUSE_SCROLLED.invoker().process(
-            Client.getMouseX(),
-            Client.getMouseY(),
-            if (dy < 0) -1 else 1, // TODO: Maybe pass in raw amount?
-        )
+        CTEvents.MOUSE_SCROLLED.invoker().process(Client.getMouseX(), Client.getMouseY(), dy)
     }
 }
