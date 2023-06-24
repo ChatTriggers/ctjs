@@ -1,9 +1,10 @@
 package com.chattriggers.ctjs.minecraft.wrappers
 
-import com.chattriggers.ctjs.engine.langs.js.JSClient
 import com.chattriggers.ctjs.minecraft.listeners.ClientListener
 import com.chattriggers.ctjs.minecraft.objects.KeyBind
+import com.chattriggers.ctjs.minecraft.wrappers.inventory.Slot
 import com.chattriggers.ctjs.mixins.ChatScreenAccessor
+import com.chattriggers.ctjs.mixins.HandledScreenAccessor
 import com.chattriggers.ctjs.mixins.KeyBindingAccessor
 import com.chattriggers.ctjs.utils.asMixin
 import gg.essential.universal.UKeyboard
@@ -17,11 +18,13 @@ import net.minecraft.client.gui.screen.ChatScreen
 import net.minecraft.client.gui.screen.ConnectScreen
 import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.gui.screen.TitleScreen
+import net.minecraft.client.gui.screen.ingame.HandledScreen
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen
 import net.minecraft.client.network.ClientPlayNetworkHandler
 import net.minecraft.client.network.ServerAddress
 import net.minecraft.client.network.ServerInfo
 import net.minecraft.client.option.KeyBinding
+import net.minecraft.item.ItemStack
 import net.minecraft.network.packet.Packet
 import net.minecraft.util.Util
 import java.awt.Toolkit
@@ -299,19 +302,17 @@ abstract class Client {
             }
         }
 
-        // TODO:
-        // /**
-        //  * Gets the slot under the mouse in the current gui, if one exists.
-        //  *
-        //  * @return the [Slot] under the mouse
-        //  */
-        // @JvmStatic
-        // fun getSlotUnderMouse(): Slot? {
-        //     val screen: Screen? = get()
-        //     return if ((screen is GuiContainer) && (screen.slotUnderMouse != null)) {
-        //         Slot(screen.slotUnderMouse)
-        //     } else null
-        // }
+        /**
+         * Gets the slot under the mouse in the current gui, if one exists.
+         *
+         * @return the [Slot] under the mouse
+         */
+        fun getSlotUnderMouse(): Slot? {
+            val screen: Screen? = get()
+            return if (screen is HandledScreen<*>) {
+                screen.asMixin<HandledScreenAccessor>().invokeGetSlotAt(getMouseX(), getMouseY())?.let(::Slot)
+            } else null
+        }
 
         /**
          * Closes the currently open gui

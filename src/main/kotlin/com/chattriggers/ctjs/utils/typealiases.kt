@@ -17,3 +17,4 @@ typealias MCScoreboard = net.minecraft.scoreboard.Scoreboard
 typealias MCBlockEntity = net.minecraft.block.entity.BlockEntity
 typealias MCDifficulty = net.minecraft.world.Difficulty
 typealias MCGraphicsMode = net.minecraft.client.option.GraphicsMode
+typealias MCSlot = net.minecraft.screen.slot.Slot
