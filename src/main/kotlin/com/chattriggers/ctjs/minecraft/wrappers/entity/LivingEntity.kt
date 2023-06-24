@@ -1,9 +1,11 @@
 package com.chattriggers.ctjs.minecraft.wrappers.entity
 
+import com.chattriggers.ctjs.minecraft.wrappers.inventory.Item
 import com.chattriggers.ctjs.minecraft.wrappers.world.PotionEffect
 import com.chattriggers.ctjs.minecraft.wrappers.world.PotionEffectType
 import com.chattriggers.ctjs.utils.MCEntity
 import com.chattriggers.ctjs.utils.MCLivingEntity
+import net.minecraft.entity.EquipmentSlot
 import net.minecraft.entity.effect.StatusEffect
 
 // TODO(breaking): Rename from EntityLivingBase
@@ -20,17 +22,17 @@ open class LivingEntity(override val mcValue: MCLivingEntity) : Entity(mcValue) 
 
     fun canSeeEntity(other: Entity) = canSeeEntity(other.toMC())
 
+    // TODO(breaking): Rename to getStackInSlot to have same name as Inventory method
     /**
      * Gets the item currently in the entity's specified inventory slot.
-     * 0 for main hand, 1-4 for armor
-     * (2 for offhand in 1.12.2, and everything else shifted over).
+     * 0 for main hand, 1 for offhand, 2-5 for armor
      *
      * @param slot the slot to access
      * @return the item in said slot
      */
-//     fun getItemInSlot(slot: Int): Item? {
-//         return livingEntity.getItemStackFromSlot(EntityEquipmentSlot.values()[slot])?.let(::Item)
-//     }
+     fun getStackInSlot(slot: Int): Item? {
+         return mcValue.getEquippedStack(EquipmentSlot.values()[slot])?.let(::Item)
+     }
 
     fun getHP() = mcValue.health
 
