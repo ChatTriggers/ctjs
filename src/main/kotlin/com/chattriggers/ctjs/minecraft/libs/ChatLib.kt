@@ -29,7 +29,7 @@ object ChatLib {
      * @param text the text to be printed
      */
     @JvmStatic
-    fun chat(text: Any) {
+    fun chat(text: Any?) {
         when (text) {
             is String -> Message(text).chat()
             is Message -> text.chat()
@@ -45,7 +45,7 @@ object ChatLib {
      * @param text the text to show
      */
     @JvmStatic
-    fun actionBar(text: Any) {
+    fun actionBar(text: Any?) {
         when (text) {
             is String -> Message(text).actionBar()
             is Message -> text.actionBar()
@@ -61,7 +61,7 @@ object ChatLib {
      * @param text The message to simulate
      */
     @JvmStatic
-    fun simulateChat(text: Any) {
+    fun simulateChat(text: Any?) {
         when (text) {
             is String -> Message(text).apply { isRecursive = true }.chat()
             is Message -> text.apply { isRecursive = true }.chat()
