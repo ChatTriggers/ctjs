@@ -93,6 +93,12 @@ abstract class Client {
 
     companion object {
         @JvmStatic
+        val currentGui = CurrentGuiWrapper()
+
+        @JvmStatic
+        val camera = CameraWrapper()
+
+        @JvmStatic
         val settings = Settings()
 
         /**
@@ -278,13 +284,12 @@ abstract class Client {
         }
     }
 
-    object currentGui {
+    class CurrentGuiWrapper {
         /**
          * Gets the Java class name of the currently open gui, for example, "GuiChest"
          *
          * @return the class name of the current gui
          */
-        @JvmStatic
         fun getClassName(): String = get()?.javaClass?.simpleName ?: "null"
 
         /**
@@ -292,10 +297,8 @@ abstract class Client {
          *
          * @return the Minecraft gui
          */
-        @JvmStatic
         fun get(): Screen? = getMinecraft().currentScreen
 
-        @JvmStatic
         fun set(screen: Screen?) {
             scheduleTask {
                 getMinecraft().setScreen(screen)
@@ -317,20 +320,16 @@ abstract class Client {
         /**
          * Closes the currently open gui
          */
-        @JvmStatic
         fun close() {
             Player.toMC()?.closeScreen()
         }
     }
 
-    object camera {
-        @JvmStatic
+    class CameraWrapper {
         fun getX(): Double = getMinecraft().gameRenderer.camera.pos.x
 
-        @JvmStatic
         fun getY(): Double = getMinecraft().gameRenderer.camera.pos.y
 
-        @JvmStatic
         fun getZ(): Double = getMinecraft().gameRenderer.camera.pos.z
     }
 }

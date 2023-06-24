@@ -17,6 +17,8 @@ import java.util.*
 object Player : CTWrapper<ClientPlayerEntity?> {
     override val mcValue get() = UMinecraft.getMinecraft().player
 
+    val armor = ArmorWrapper()
+
     /**
      * Gets Minecraft's EntityPlayerSP object representing the user
      *
@@ -319,29 +321,25 @@ object Player : CTWrapper<ClientPlayerEntity?> {
         Renderer.drawPlayer(obj)
     }
 
-    object armor {
+    class ArmorWrapper {
         /**
          * @return the [Item] in the player's helmet slot or null if the slot is empty
          */
-        @JvmStatic
         fun getHelmet(): Item? = getInventory()?.getStackInSlot(39)
 
         /**
          * @return the [Item] in the player's chestplate slot or null if the slot is empty
          */
-        @JvmStatic
         fun getChestplate(): Item? = getInventory()?.getStackInSlot(38)
 
         /**
          * @return the [Item] in the player's leggings slot or null if the slot is empty
          */
-        @JvmStatic
         fun getLeggings(): Item? = getInventory()?.getStackInSlot(37)
 
         /**
          * @return the [Item] in the player's boots slot or null if the slot is empty
          */
-        @JvmStatic
         fun getBoots(): Item? = getInventory()?.getStackInSlot(36)
     }
 }

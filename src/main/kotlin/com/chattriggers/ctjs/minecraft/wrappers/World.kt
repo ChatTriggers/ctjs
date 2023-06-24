@@ -22,6 +22,9 @@ import net.minecraft.registry.Registries
 object World : CTWrapper<ClientWorld?> {
     override val mcValue get() = UMinecraft.getMinecraft().world
 
+    val spawn = SpawnWrapper()
+    val particle = ParticleWrapper()
+
     /**
      * Gets Minecraft's [ClientWorld] object
      *
@@ -211,13 +214,12 @@ object World : CTWrapper<ClientWorld?> {
     /**
      * World spawn object for getting spawn location.
      */
-    object spawn {
+    class SpawnWrapper {
         /**
          * Gets the spawn x location.
          *
          * @return the spawn x location.
          */
-        @JvmStatic
         fun getX(): Int = toMC()!!.spawnPos.x
 
         /**
@@ -225,7 +227,6 @@ object World : CTWrapper<ClientWorld?> {
          *
          * @return the spawn y location.
          */
-        @JvmStatic
         fun getY(): Int = toMC()!!.spawnPos.y
 
         /**
@@ -233,18 +234,16 @@ object World : CTWrapper<ClientWorld?> {
          *
          * @return the spawn z location.
          */
-        @JvmStatic
         fun getZ(): Int = toMC()!!.spawnPos.z
     }
 
-    object particle {
+    class ParticleWrapper {
         /**
          * Gets an array of all the different particle names you can pass
          * to [spawnParticle]
          *
          * @return the array of name strings
          */
-        @JvmStatic
         fun getParticleNames(): List<String> = Registries.PARTICLE_TYPE.keys.map { it.registry.path }.toList()
 
         /**
@@ -261,7 +260,6 @@ object World : CTWrapper<ClientWorld?> {
          * @return the newly spawned particle for further configuration
          */
         // TODO:
-        // @JvmStatic
         // fun spawnParticle(
         //     particle: String,
         //     x: Double,

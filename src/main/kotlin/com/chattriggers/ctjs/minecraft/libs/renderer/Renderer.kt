@@ -40,6 +40,8 @@ object Renderer {
     private lateinit var slimCTRenderPlayer: CTPlayerRenderer
     private lateinit var normalCTRenderPlayer: CTPlayerRenderer
 
+    val screen = ScreenWrapper()
+
     // The current partialTicks value
     @JvmStatic
     var partialTicks = 0f
@@ -697,14 +699,11 @@ object Renderer {
         }
     }
 
-    object screen {
-        @JvmStatic
+    class ScreenWrapper {
         fun getWidth(): Int = UMinecraft.getMinecraft().window.scaledWidth
 
-        @JvmStatic
         fun getHeight(): Int = UMinecraft.getMinecraft().window.scaledHeight
 
-        @JvmStatic
         fun getScale(): Double = UMinecraft.getMinecraft().window.scaleFactor
     }
 }
