@@ -3,6 +3,7 @@ package com.chattriggers.ctjs.minecraft.objects.display
 import com.chattriggers.ctjs.minecraft.CTEvents
 import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer
 import com.chattriggers.ctjs.utils.Initializer
+import com.chattriggers.ctjs.utils.InternalApi
 import com.chattriggers.ctjs.utils.getOption
 import gg.essential.universal.UMatrixStack
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents
@@ -254,10 +255,11 @@ class Display() {
     companion object : Initializer {
         private val displays = CopyOnWriteArrayList<Display>()
 
-        fun clearDisplays() {
+        internal fun clearDisplays() {
             displays.clear()
         }
 
+        @InternalApi
         override fun init() {
             CTEvents.RENDER_OVERLAY.register { stack, partialTicks ->
                 Renderer.matrixStack = UMatrixStack(stack)

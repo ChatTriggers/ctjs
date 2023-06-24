@@ -27,7 +27,7 @@ import java.io.File
 import java.io.IOException
 import kotlin.concurrent.thread
 
-object CTCommand {
+internal object CTCommand {
     private const val idFixed = 90123 // ID for dumped chat
     private var idFixedOffset = -1 // ID offset (increments)
 

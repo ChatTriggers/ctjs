@@ -18,6 +18,7 @@ object Reference {
     const val DEFAULT_MODULES_FOLDER = "./config/ChatTriggers/modules"
 
     var isLoaded = true
+        private set
 
     @JvmStatic
     fun unloadCT(asCommand: Boolean = true) {

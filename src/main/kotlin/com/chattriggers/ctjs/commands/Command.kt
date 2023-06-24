@@ -11,7 +11,7 @@ import com.mojang.brigadier.context.CommandContext
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
 
-class Command(
+internal class Command(
     val trigger: CommandTrigger,
     val name: String,
     private val aliases: Set<String>,

@@ -23,7 +23,7 @@ import java.security.MessageDigest
 import java.util.*
 import kotlin.concurrent.thread
 
-class CTJS : ClientModInitializer {
+internal class CTJS : ClientModInitializer {
     override fun onInitializeClient() {
         Initializer.initializers.forEach(Initializer::init)
 

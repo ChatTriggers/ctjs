@@ -1,3 +1,5 @@
+@file:InternalApi
+
 package com.chattriggers.ctjs.utils
 
 import com.chattriggers.ctjs.launch.Descriptor

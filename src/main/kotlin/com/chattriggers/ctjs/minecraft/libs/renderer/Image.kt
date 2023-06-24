@@ -3,6 +3,7 @@ package com.chattriggers.ctjs.minecraft.libs.renderer
 import com.chattriggers.ctjs.CTJS
 import com.chattriggers.ctjs.minecraft.CTEvents
 import com.chattriggers.ctjs.utils.Initializer
+import com.chattriggers.ctjs.utils.InternalApi
 import net.minecraft.client.texture.NativeImage
 import net.minecraft.client.texture.NativeImageBackedTexture
 import org.lwjgl.system.MemoryUtil
@@ -75,6 +76,7 @@ class Image(var image: BufferedImage?) {
     private data class Texture(val texture: NativeImageBackedTexture, val buffer: ByteBuffer)
 
     companion object : Initializer {
+        @InternalApi
         override fun init() {
             CTEvents.RENDER_OVERLAY.register { _, _ ->
                 for (image in CTJS.images) {

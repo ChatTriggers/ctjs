@@ -17,6 +17,7 @@ plugins {
     id("fabric-loom") version "1.2-SNAPSHOT"
     id("io.github.juuxel.loom-quiltflower") version "1.8.0"
     id("org.jetbrains.dokka") version "1.8.20"
+    id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.13.2"
 }
 
 version = property("mod_version")!!
@@ -64,6 +65,17 @@ loom {
 
 base {
     archivesName.set(property("archives_base_name") as String)
+}
+
+apiValidation {
+    ignoredPackages.add("com.chattriggers.ctjs.commands")
+    ignoredPackages.add("com.chattriggers.ctjs.console")
+    ignoredPackages.add("com.chattriggers.ctjs.engine")
+    ignoredPackages.add("com.chattriggers.ctjs.launch")
+    ignoredPackages.add("com.chattriggers.ctjs.minecraft.listeners")
+    ignoredPackages.add("com.chattriggers.ctjs.mixins")
+
+    nonPublicMarkers.add("com.chattriggers.ctjs.utils.InternalApi")
 }
 
 java {

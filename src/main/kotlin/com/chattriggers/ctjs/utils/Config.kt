@@ -180,6 +180,7 @@ object Config : Vigilant(File(CTJS.configLocation, "ChatTriggers.toml"), sorting
 
     // The listener properties above get called before the property is updated, so we have
     // to keep track of it ourselves and use the new value that is passed in
+    @InternalApi
     data class ConsoleSettings(
         var clearConsoleOnLoad: Boolean,
         var openConsoleOnError: Boolean,
