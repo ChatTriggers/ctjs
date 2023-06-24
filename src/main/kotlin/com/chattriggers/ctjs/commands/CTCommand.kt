@@ -11,6 +11,7 @@ import com.chattriggers.ctjs.minecraft.wrappers.Client
 import com.chattriggers.ctjs.utils.Config
 import com.chattriggers.ctjs.console.ConsoleManager
 import com.chattriggers.ctjs.console.printTraceToConsole
+import com.chattriggers.ctjs.engine.module.ModulesGui
 import com.chattriggers.ctjs.utils.toVersion
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.arguments.IntegerArgumentType
@@ -51,7 +52,7 @@ object CTCommand {
                             } else ChatLib.chat("&cFailed to delete $module")
                         })
             )
-            .then(literal("modules").onExecute { TODO() })
+            .then(literal("modules").onExecute { Client.currentGui.set(ModulesGui) })
             .then(
                 literal("console")
                     .then(argument("type", StringArgumentType.word())

@@ -138,8 +138,12 @@ class Text {
 
         for (i in 0 until maxLines) {
             if (i >= lines.size) break
-            Renderer.doColor(color)
-            Renderer.drawString(lines[i], getXAlign(lines[i], x ?: this.x), yHolder / scale, shadow)
+            // TODO: Pass in color param to Renderer.drawString?
+            if (shadow) {
+                Renderer.getFontRenderer().drawWithShadow(Renderer.matrixStack.toMC(), lines[i], x ?: this.x, yHolder, color)
+            } else {
+                Renderer.getFontRenderer().draw(Renderer.matrixStack.toMC(), lines[i], x ?: this.x, yHolder, color)
+            }
             yHolder += scale * 10
         }
         Renderer.disableBlend()
