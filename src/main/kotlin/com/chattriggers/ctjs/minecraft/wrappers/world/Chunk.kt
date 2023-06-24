@@ -1,13 +1,12 @@
 package com.chattriggers.ctjs.minecraft.wrappers.world
 
 import com.chattriggers.ctjs.minecraft.wrappers.CTWrapper
+import com.chattriggers.ctjs.minecraft.wrappers.World
 import com.chattriggers.ctjs.mixins.ChunkAccessor
-import com.chattriggers.ctjs.utils.MCChunk
-import com.chattriggers.ctjs.utils.asMixin
-import gg.essential.universal.UMinecraft
 import com.chattriggers.ctjs.minecraft.wrappers.entity.BlockEntity
-import net.minecraft.util.math.BlockPos
-import net.minecraft.world.LightType
+import com.chattriggers.ctjs.minecraft.wrappers.entity.Entity
+import com.chattriggers.ctjs.utils.*
+import net.minecraft.util.math.Box
 
 // TODO: Add more methods here?
 class Chunk(override val mcValue: MCChunk) : CTWrapper<MCChunk> {
@@ -36,73 +35,46 @@ class Chunk(override val mcValue: MCChunk) : CTWrapper<MCChunk> {
     fun getMinBlockZ() = getZ() * 16
 
     /**
-     * Gets the skylight level at the given position. This is the value seen in the debug (F3) menu
+     * Gets every entity in this chunk
      *
-     * @param x the x coordinate
-     * @param y the y coordinate
-     * @param z the z coordinate
-     * @return the skylight level at the location
+     * @return the entity list
      */
-    // TODO: Move this method somewhere else
-    fun getSkyLightLevel(x: Int, y: Int, z: Int): Int {
-        return UMinecraft.getMinecraft().world?.getLightLevel(LightType.SKY, BlockPos(x, y, z)) ?: 0
-    }
+    fun getAllEntities(): List<Entity> = getAllEntitiesOfType(MCEntity::class.java)
 
     /**
-     * Gets the block light level at the given position. This is the value seen in the debug (F3) menu
+     * Gets every entity in this chunk of a certain class
      *
-     * @param x the x coordinate
-     * @param y the y coordinate
-     * @param z the z coordinate
-     * @return the block light level at the location
+     * @param clazz the class to filter for (Use `Java.type().class` to get this)
+     * @return the entity list
      */
-    // TODO: Move this method somewhere else
-    fun getBlockLightLevel(x: Int, y: Int, z: Int): Int {
-        return UMinecraft.getMinecraft().world?.getLightLevel(LightType.BLOCK, BlockPos(x, y, z)) ?: 0
+    fun getAllEntitiesOfType(clazz: Class<MCEntity>): List<Entity> {
+        val box = Box(
+            MCBlockPos(getMinBlockX(), mcValue.bottomY, getMinBlockZ())
+        ).stretch(16.0, mcValue.topY.toDouble(), 16.0)
+
+        return World.toMC()?.getEntitiesByClass(clazz, box) { true }?.map(Entity::fromMC) ?: listOf()
     }
 
-    // TODO:
-    // /**
-    //  * Gets every entity in this chunk
-    //  *
-    //  * @return the entity list
-    //  */
-    // fun getAllEntities(): List<Entity> {
-    //     return chunk.entityLists.toList().flatten().map(::Entity)
-    // }
-    //
-    // /**
-    //  * Gets every entity in this chunk of a certain class
-    //  *
-    //  * @param clazz the class to filter for (Use `Java.type().class` to get this)
-    //  * @return the entity list
-    //  */
-    // fun getAllEntitiesOfType(clazz: Class<*>): List<Entity> {
-    //     return getAllEntities().filter {
-    //         clazz.isInstance(it.entity)
-    //     }
-    // }
-
     // TODO(breaking): Rename to getAllBlockEntities
-     /**
-      * Gets every block entity in this chunk
-      *
-      * @return the block entity list
-      */
-     fun getAllBlockEntities(): List<BlockEntity> {
-         return mcValue.asMixin<ChunkAccessor>().blockEntities.values.map(::BlockEntity)
-     }
+    /**
+     * Gets every block entity in this chunk
+     *
+     * @return the block entity list
+     */
+    fun getAllBlockEntities(): List<BlockEntity> {
+        return mcValue.asMixin<ChunkAccessor>().blockEntities.values.map(::BlockEntity)
+    }
 
     // TODO(breaking): Rename to getAllBlockEntitiesOfType
-     /**
-      * Gets every block entity in this chunk of a certain class
-      *
-      * @param clazz the class to filter for (Use `Java.type().class` to get this)
-      * @return the block entity list
-      */
-     fun getAllBlockEntitiesOfType(clazz: Class<*>): List<BlockEntity> {
-         return getAllBlockEntities().filter {
-             clazz.isInstance(it.toMC())
-         }
-     }
+    /**
+     * Gets every block entity in this chunk of a certain class
+     *
+     * @param clazz the class to filter for (Use `Java.type().class` to get this)
+     * @return the block entity list
+     */
+    fun getAllBlockEntitiesOfType(clazz: Class<*>): List<BlockEntity> {
+        return getAllBlockEntities().filter {
+            clazz.isInstance(it.toMC())
+        }
+    }
 }

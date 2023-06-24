@@ -19,8 +19,8 @@ import net.minecraft.block.BlockState
 import net.minecraft.client.world.ClientWorld
 import net.minecraft.particle.ParticleEffect
 import net.minecraft.particle.ParticleType
-import net.minecraft.particle.ParticleTypes
 import net.minecraft.registry.Registries
+import net.minecraft.world.LightType
 
 object World : CTWrapper<ClientWorld?> {
     override val mcValue get() = UMinecraft.getMinecraft().world
@@ -93,6 +93,46 @@ object World : CTWrapper<ClientWorld?> {
     @JvmStatic
     fun getBlockStateAt(pos: BlockPos): BlockState {
         return toMC()!!.getBlockState(pos.toMC())
+    }
+
+    /**
+     * Gets the skylight level at the given position. This is the value seen in the debug (F3) menu
+     *
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @param z the z coordinate
+     * @return the skylight level at the location
+     */
+    fun getSkyLightLevel(x: Int, y: Int, z: Int): Int = getSkyLightLevel(BlockPos(x, y, z))
+
+    /**
+     * Gets the skylight level at the given position. This is the value seen in the debug (F3) menu
+     *
+     * @param pos The block position
+     * @return the skylight level at the location
+     */
+    fun getSkyLightLevel(pos: BlockPos): Int {
+        return toMC()?.getLightLevel(LightType.SKY, pos.toMC()) ?: 0
+    }
+
+    /**
+     * Gets the block light level at the given position. This is the value seen in the debug (F3) menu
+     *
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @param z the z coordinate
+     * @return the block light level at the location
+     */
+    fun getBlockLightLevel(x: Int, y: Int, z: Int): Int = getBlockLightLevel(BlockPos(x, y, z))
+
+    /**
+     * Gets the block light level at the given position. This is the value seen in the debug (F3) menu
+     *
+     * @param pos The block position
+     * @return the block light level at the location
+     */
+    fun getBlockLightLevel(pos: BlockPos): Int {
+        return toMC()?.getLightLevel(LightType.BLOCK, pos.toMC()) ?: 0
     }
 
     /**
