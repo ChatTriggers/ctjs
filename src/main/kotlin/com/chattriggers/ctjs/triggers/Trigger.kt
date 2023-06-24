@@ -2,6 +2,7 @@ package com.chattriggers.ctjs.triggers
 
 import com.chattriggers.ctjs.Reference
 import com.chattriggers.ctjs.engine.js.JSLoader
+import com.chattriggers.ctjs.utils.InternalApi
 
 abstract class Trigger protected constructor(
     var method: Any,
@@ -49,12 +50,13 @@ abstract class Trigger protected constructor(
         JSLoader.removeTrigger(this)
     }
 
+    @InternalApi
     protected fun callMethod(args: Array<out Any?>) {
         if (Reference.isLoaded)
             JSLoader.trigger(this, method, args)
     }
 
-    abstract fun trigger(args: Array<out Any?>)
+    internal abstract fun trigger(args: Array<out Any?>)
 
     override fun compareTo(other: Trigger): Int {
         val ordCmp = priority.ordinal - other.priority.ordinal

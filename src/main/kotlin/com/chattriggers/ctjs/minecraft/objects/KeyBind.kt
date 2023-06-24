@@ -7,6 +7,7 @@ import com.chattriggers.ctjs.mixins.KeyBindingAccessor
 import com.chattriggers.ctjs.triggers.RegularTrigger
 import com.chattriggers.ctjs.triggers.TriggerType
 import com.chattriggers.ctjs.utils.Initializer
+import com.chattriggers.ctjs.utils.InternalApi
 import com.chattriggers.ctjs.utils.asMixin
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.minecraft.client.option.KeyBinding
@@ -160,8 +161,9 @@ class KeyBind {
         private val uniqueCategories = mutableMapOf<String, Int>()
         private val keyBinds = CopyOnWriteArrayList<KeyBind>()
 
-        fun getKeyBinds() = keyBinds
+        internal fun getKeyBinds() = keyBinds
 
+        @InternalApi
         override fun init() {
             ClientTickEvents.START_CLIENT_TICK.register {
                 if (!World.isLoaded())
@@ -173,6 +175,12 @@ class KeyBind {
                     it.onTick()
                 }
             }
+        }
+
+        internal fun clearKeyBinds() {
+            keyBinds.toList().forEach(::removeKeyBind)
+            customKeyBindings.clear()
+            keyBinds.clear()
         }
 
         private fun removeKeyBinding(keyBinding: KeyBinding) {
@@ -189,21 +197,13 @@ class KeyBind {
             }
         }
 
-        @JvmStatic
-        fun removeKeyBind(keyBind: KeyBind) {
+        private fun removeKeyBind(keyBind: KeyBind) {
             val keyBinding = keyBind.keyBinding
             if (keyBinding !in customKeyBindings) return
 
             removeKeyBinding(keyBinding)
             customKeyBindings.remove(keyBinding)
             keyBinds.remove(keyBind)
-        }
-
-        @JvmStatic
-        fun clearKeyBinds() {
-            keyBinds.toList().forEach(::removeKeyBind)
-            customKeyBindings.clear()
-            keyBinds.clear()
         }
 
         private fun addRawKeyBinding(keyBinding: KeyBinding) {

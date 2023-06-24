@@ -230,7 +230,7 @@ class ChatTrigger(method: Any, type: ITriggerType) : Trigger(method, type) {
      * - start
      * - end
      */
-    enum class Parameter constructor(vararg names: String) {
+    private enum class Parameter(vararg names: String) {
         CONTAINS("<c>", "<contains>", "c", "contains"),
         START("<s>", "<start>", "s", "start"),
         END("<e>", "<end>", "e", "end");

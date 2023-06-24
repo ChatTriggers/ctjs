@@ -2,6 +2,7 @@ package com.chattriggers.ctjs.minecraft.wrappers
 
 import com.chattriggers.ctjs.minecraft.CTEvents
 import com.chattriggers.ctjs.utils.Initializer
+import com.chattriggers.ctjs.utils.InternalApi
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import java.util.*
 import kotlin.math.max
@@ -11,6 +12,7 @@ object CPS : Initializer {
     private val leftClicks = ClicksTracker()
     private val rightClicks = ClicksTracker()
 
+    @InternalApi
     override fun init() {
         ClientTickEvents.START_CLIENT_TICK.register {
             leftClicks.tick()

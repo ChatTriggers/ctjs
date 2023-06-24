@@ -46,7 +46,7 @@ sealed class ClassFilterTrigger<Wrapped, Unwrapped>(
         return unwrap(arg as Wrapped)
     }
 
-    abstract fun unwrap(wrapped: Wrapped): Unwrapped
+    protected abstract fun unwrap(wrapped: Wrapped): Unwrapped
 }
 
 class RenderEntityTrigger(method: Any) : ClassFilterTrigger<Entity, MCEntity>(

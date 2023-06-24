@@ -1,10 +1,12 @@
 package com.chattriggers.ctjs.triggers
 
 import com.chattriggers.ctjs.engine.js.JSLoader
+import com.chattriggers.ctjs.utils.InternalApi
 
 sealed interface ITriggerType {
     val name: String
 
+    @InternalApi
     fun triggerAll(vararg args: Any?) {
         JSLoader.exec(this, args)
     }

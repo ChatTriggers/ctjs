@@ -14,7 +14,7 @@ abstract class Action(var slot: Int, var windowId: Int) {
         this.windowId = windowId
     }
 
-    abstract fun complete()
+    internal abstract fun complete()
 
     protected fun doClick(button: Int, mode: SlotActionType) {
         Client.getMinecraft().interactionManager?.clickSlot(

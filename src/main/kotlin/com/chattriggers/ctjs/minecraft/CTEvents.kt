@@ -1,7 +1,6 @@
 package com.chattriggers.ctjs.minecraft
 
 import com.chattriggers.ctjs.minecraft.CTEvents.PacketReceivedCallback
-import com.chattriggers.ctjs.minecraft.CTEvents.RenderScreenCallback
 import com.chattriggers.ctjs.minecraft.CTEvents.VoidCallback
 import com.chattriggers.ctjs.utils.MCBlockEntity
 import com.chattriggers.ctjs.utils.MCBlockPos
