@@ -4,7 +4,7 @@
     function getJavaType(clazz) {
         const mappedName = Mappings.getMappedClassName(clazz);
         if (mappedName)
-            return Packages[mappedName.replace("/", ".")]
+            return Packages[mappedName.replaceAll("/", ".")]
         return Packages[clazz];
     }
 
