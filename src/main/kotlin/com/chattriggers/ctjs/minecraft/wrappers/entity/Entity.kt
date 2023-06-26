@@ -211,40 +211,25 @@ open class Entity(override val mcValue: MCEntity) : CTWrapper<MCEntity> {
         DimensionType.values().first { it.toMC() == key }
     }
 
-    fun setPosition(x: Double, y: Double, z: Double) = apply {
-        mcValue.setPosition(x, y, z)
-    }
+    // TODO(breaking): remove setPosition
 
-    fun setAngles(yaw: Float, pitch: Float) = apply {
-        mcValue.pitch = pitch
-        mcValue.yaw = yaw
-    }
+    // TODO(breaking): remove setAngles
 
     fun getMaxInPortalTime() = mcValue.maxNetherPortalTime
 
-    fun setOnFire(seconds: Int) = apply {
-        mcValue.setOnFireFor(seconds)
-    }
+    // TODO(breaking): remove setOnFire
 
-    fun extinguish() = apply {
-        mcValue.extinguish()
-    }
+    // TODO(breaking): remove extinguish
 
-    fun move(x: Double, y: Double, z: Double) = apply {
-        mcValue.move(MovementType.SELF, Vec3d(x, y, z))
-    }
+    // TODO(breaking): remove move
 
     fun isSilent() = mcValue.isSilent
 
-    fun setIsSilent(silent: Boolean) = apply {
-        mcValue.isSilent = silent
-    }
+    // TODO(breaking): remove setIsSilent
 
     fun isInLava() = mcValue.isInLava
 
-    fun addVelocity(x: Double, y: Double, z: Double) = apply {
-        mcValue.addVelocity(x, y, z)
-    }
+    // TODO(breaking): remove addVelocity
 
     @JvmOverloads
     fun getLookVector(partialTicks: Float = Renderer.partialTicks) = mcValue.getRotationVec(partialTicks)
@@ -260,21 +245,15 @@ open class Entity(override val mcValue: MCEntity) : CTWrapper<MCEntity> {
 
     fun isSneaking() = mcValue.isSneaking
 
-    fun setIsSneaking(sneaking: Boolean) = apply {
-        mcValue.isSneaking = sneaking
-    }
+    // TODO(breaking): remove setIsSneaking
 
     fun isSprinting() = mcValue.isSprinting
 
-    fun setIsSprinting(sprinting: Boolean) = apply {
-        mcValue.isSprinting = sprinting
-    }
+    // TODO(breaking): remove setIsSprinting
 
     fun isInvisible() = mcValue.isInvisible
 
-    fun setIsInvisible(invisible: Boolean) = apply {
-        mcValue.isInvisible = invisible
-    }
+    // TODO(breaking): remove setIsInvisible
 
     fun isOutsideBorder() = World.toMC()?.worldBorder?.contains(mcValue.blockPos) ?: false
 
