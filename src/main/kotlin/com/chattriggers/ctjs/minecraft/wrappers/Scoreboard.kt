@@ -21,8 +21,6 @@ object Scoreboard : CTWrapper<MCScoreboard?> {
     @JvmStatic
     fun getSidebar(): ScoreboardObjective? = toMC()?.getObjectiveForSlot(1)
 
-    // TODO(breaking): Remove getScoreboardTitle
-
     /**
      * Gets the top-most string which is displayed on the scoreboard. (doesn't have a score on the side).
      * Be aware that this can contain color codes.

@@ -92,13 +92,11 @@ class Team(override val mcValue: MCTeam) : CTWrapper<MCTeam> {
     /**
      * Gets the team's name tag visibility
      */
-    // TODO(breaking): Use enum instead of String
     fun getNameTagVisibility() = Visibility.fromMC(mcValue.nameTagVisibilityRule)
 
     /**
      * Gets the team's death message visibility
      */
-    // TODO(breaking): Use enum instead of String
     fun getDeathMessageVisibility() = Visibility.fromMC(mcValue.deathMessageVisibilityRule)
 
     enum class Visibility(override val mcValue: AbstractTeam.VisibilityRule) : CTWrapper<AbstractTeam.VisibilityRule> {

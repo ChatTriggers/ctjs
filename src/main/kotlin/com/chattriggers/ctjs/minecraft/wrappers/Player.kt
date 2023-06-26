@@ -112,8 +112,6 @@ object Player : CTWrapper<ClientPlayerEntity?> {
     @JvmStatic
     fun getYaw(): Double = UMath.wrapAngleTo180(toMC()?.yaw?.toDouble() ?: 0.0)
 
-    // TODO(breaking): Remove getRawYaw (completely useless method)
-
     /**
      * Gets the player's username.
      *
@@ -122,7 +120,6 @@ object Player : CTWrapper<ClientPlayerEntity?> {
     @JvmStatic
     fun getName(): String = UMinecraft.getMinecraft().session.username
 
-    // TODO(breaking): getUUID returns UUID object now
     /**
      * Gets the Java UUID object of the player.
      * Use of [UUID.toString] in conjunction is recommended.
@@ -232,7 +229,6 @@ object Player : CTWrapper<ClientPlayerEntity?> {
     @JvmStatic
     fun getActivePotionEffects(): List<PotionEffect> = toMC()?.activeStatusEffects?.values?.map(::PotionEffect).orEmpty()
 
-    // TODO(breaking): Return null instead of air BlockType for a miss
     /**
      * Gets the current object that the player is looking at,
      * whether that be a block or an entity. Returns null when not looking
@@ -332,7 +328,6 @@ object Player : CTWrapper<ClientPlayerEntity?> {
     @JvmStatic
     fun getContainer(): Inventory? = (Client.getMinecraft().currentScreen as? HandledScreen<*>)?.let(::Inventory)
 
-    // TODO(breaking): Takes NativeObject to align with Renderer.drawPlayer()
     /**
      * Draws the player in the GUI. Takes the same parameters as [Renderer.drawPlayer]
      * minus `player`.

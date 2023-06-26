@@ -33,7 +33,6 @@ class NBTTagCompound(override val mcValue: MCNbtCompound) : NBTBase(mcValue) {
         TAG_LIST,
     }
 
-    // TODO(breaking): Wrap MCNbtLists to NBTTagLists
     fun getTag(key: String): NBTBase? = mcValue.get(key)?.let(::fromMC)
 
     fun getTagId(key: String) = mcValue.getType(key)
@@ -60,7 +59,6 @@ class NBTTagCompound(override val mcValue: MCNbtCompound) : NBTBase(mcValue) {
 
     fun getCompoundTag(key: String) = NBTTagCompound(mcValue.getCompound(key))
 
-    // TODO(breaking): Return wrapped NBTTagList
     fun getTagList(key: String, type: Int) = NBTTagList(mcValue.getList(key, type))
 
     fun get(key: String, type: NBTDataType, tagType: Int?): Any? {

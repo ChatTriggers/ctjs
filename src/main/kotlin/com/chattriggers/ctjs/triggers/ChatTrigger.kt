@@ -245,5 +245,5 @@ class ChatTrigger(method: Any, type: ITriggerType) : Trigger(method, type) {
         }
     }
 
-    class Event(val message: UTextComponent) : CancellableEvent()
+    class Event(@JvmField val message: UTextComponent) : CancellableEvent()
 }

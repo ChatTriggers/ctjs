@@ -7,7 +7,6 @@ import com.chattriggers.ctjs.minecraft.wrappers.world.block.BlockType
 import com.chattriggers.ctjs.utils.MCBlockEntity
 import net.minecraft.block.entity.BlockEntityType
 
-// TODO(breaking): Renamed from TileEntity to BlockEntity
 class BlockEntity(override val mcValue: MCBlockEntity) : CTWrapper<MCBlockEntity> {
 
     fun getX(): Int = getBlockPos().x

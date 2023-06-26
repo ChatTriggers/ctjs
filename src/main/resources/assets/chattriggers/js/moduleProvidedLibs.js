@@ -209,7 +209,6 @@
 
     const LogType = com.chattriggers.ctjs.utils.console.LogType;
 
-    // TODO(breaking): Split into print and println, switched arg order for println
     global.print = function (toPrint, color = null) {
         println(toPrint, color, "");
     }

@@ -30,8 +30,6 @@ open class Block(
 
     fun getState() = World.toMC()?.getBlockState(pos.toMC())
 
-    // TODO(breaking): remove getMetadata
-
     @JvmOverloads
     fun isEmittingPower(face: BlockFace? = null): Boolean {
         if (face != null)
@@ -39,18 +37,16 @@ open class Block(
         return BlockFace.values().any { isEmittingPower(it) }
     }
 
-    // TODO(breaking): Renamed this method from isPowered
-    fun isReceivingPower() = World.toMC()!!.isReceivingRedstonePower(pos.toMC())
-
-    // TODO(breaking): Renamed this method from getRedstoneStrength
-    fun getReceivingPower() = World.toMC()!!.getReceivedRedstonePower(pos.toMC())
-
     @JvmOverloads
     fun getEmittingPower(face: BlockFace? = null): Int {
         if (face != null)
             return World.toMC()!!.getEmittedRedstonePower(pos.toMC(), face.toMC())
         return BlockFace.values().asSequence().map(::getEmittingPower).firstOrNull { it != 0 } ?: 0
     }
+
+    fun isReceivingPower() = World.toMC()!!.isReceivingRedstonePower(pos.toMC())
+
+    fun getReceivingPower() = World.toMC()!!.getReceivedRedstonePower(pos.toMC())
 
     /**
      * Checks whether the block can be mined with the tool in the player's hand

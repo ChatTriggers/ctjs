@@ -43,7 +43,6 @@ class PlayerMP(override val mcValue: PlayerEntity) : LivingEntity(mcValue) {
         mcValue.asMixin<NameTagOverridable>().setOverriddenNametagName(textComponent)
     }
 
-    // TODO(breaking): Takes NativeObject to align with Renderer.drawPlayer()
     /**
      * Draws the player in the GUI. Takes the same parameters as [Renderer.drawPlayer]
      * minus `player`.

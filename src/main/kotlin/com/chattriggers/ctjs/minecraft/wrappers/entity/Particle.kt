@@ -38,8 +38,6 @@ class Particle(override val mcValue: MCParticle) : CTWrapper<MCParticle> {
         mcValue.scale(scale)
     }
 
-    // TODO(breaking): Removed multiplyVelocity
-
     /**
      * Sets the color of the particle.
      * @param red the red value between 0 and 1.

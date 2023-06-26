@@ -55,7 +55,7 @@ class Inventory {
      * @param item the item for checking
      * @return whether it can be shift clicked in
      */
-    fun isItemValidForSlot(slot: Int, item: Item) = inventory?.isValid(slot, item.stack) ?: true
+    fun isItemValidForSlot(slot: Int, item: Item) = inventory?.isValid(slot, item.mcValue) ?: true
 
     /**
      * @return a list of the [Item]s in an inventory

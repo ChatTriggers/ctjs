@@ -7,7 +7,6 @@ import com.chattriggers.ctjs.utils.toIdentifier
 import gg.essential.universal.wrappers.message.UTextComponent
 import net.minecraft.registry.Registries
 
-// TODO(breaking): Completely redid this API
 class ItemType(override val mcValue: MCItem) : CTWrapper<MCItem> {
     constructor(itemName: String) : this(Registries.ITEM[itemName.toIdentifier()])
 

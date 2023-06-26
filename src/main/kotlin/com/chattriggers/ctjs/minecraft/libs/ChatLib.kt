@@ -104,7 +104,6 @@ object ChatLib {
         else Client.getMinecraft().networkHandler?.sendChatCommand(text)
     }
 
-    // TODO(breaking): Now only clears all chats
     /**
      * Clear all chat messages
      */
@@ -385,8 +384,6 @@ object ChatLib {
             Client.getMinecraft().inGameHud.chatHud.messageHistory.add(index, message)
         }
     }
-
-    // TODO(breaking): Remove getChatMessage()
 
     // helper method to make sure player exists before putting something in chat
     fun checkPlayerExists(out: String): Boolean {

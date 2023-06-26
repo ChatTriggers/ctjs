@@ -59,7 +59,6 @@ object TabList : CTWrapper<PlayerListHud?> {
         } ?: emptyList()
     }
 
-    // TODO(breaking): Rename and return UTextComponent instead of UMessage
     @JvmStatic
     fun getHeaderComponent() = toMC()?.asMixin<PlayerListHudAccessor>()?.header?.let(::UTextComponent)
 
@@ -85,14 +84,12 @@ object TabList : CTWrapper<PlayerListHud?> {
     @JvmStatic
     fun clearHeader() = setHeader(null)
 
-    // TODO(breaking): Rename and return UTextComponent instead of UMessage
     @JvmStatic
     fun getFooterComponent() = toMC()?.asMixin<PlayerListHudAccessor>()?.footer?.let(::UTextComponent)
 
     @JvmStatic
     fun getFooter() = getFooterComponent()?.formattedText
 
-    // TODO(breaking): Rename and return UTextComponent instead of UMessage
     /**
      * Sets the footer text for the TabList.
      * If [footer] is null, it will remove the footer entirely

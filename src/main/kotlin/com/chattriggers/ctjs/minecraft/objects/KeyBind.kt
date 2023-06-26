@@ -63,7 +63,6 @@ class KeyBind {
         this.keyBinding = keyBinding
     }
 
-    // TODO(breaking): changed run to apply in all register function
     fun registerKeyPress(method: Any) = apply {
         onKeyPress = RegularTrigger(method, TriggerType.OTHER)
     }

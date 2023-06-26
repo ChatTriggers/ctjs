@@ -6,7 +6,6 @@ import net.minecraft.util.StringIdentifiable
 import net.minecraft.util.math.Direction
 import java.util.function.Predicate
 
-// TODO(breaking): Use UPPER_CASE for enum instances
 enum class BlockFace(
     private val oppositeIndex: Int,
     val axisDirection: AxisDirection,
@@ -114,7 +113,6 @@ enum class BlockFace(
     }
 
     companion object {
-        // TODO(breaking): Rename to fromMC
         @JvmStatic
         fun fromMC(facing: Direction) = when (facing) {
             Direction.DOWN -> DOWN
