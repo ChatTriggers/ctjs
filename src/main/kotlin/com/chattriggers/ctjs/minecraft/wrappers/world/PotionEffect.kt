@@ -4,7 +4,7 @@ import gg.essential.universal.wrappers.message.UTextComponent
 import net.minecraft.entity.effect.StatusEffect
 import net.minecraft.entity.effect.StatusEffectInstance
 
-// TODO(breaking): Redid this API a bit
+// TODO*(breaking): Redid this API a bit
 /**
  * Represents a specific instance of a [PotionEffectType]
  */
@@ -35,7 +35,7 @@ class PotionEffect(val effect: StatusEffectInstance) {
 
     val ambient get() = effect.isAmbient
 
-    // TODO(breaking): Renamed this method
+    // TODO*(breaking): Renamed this method
     val isInfinite get() = effect.isInfinite
 
     val showsParticles get() = effect.shouldShowParticles()

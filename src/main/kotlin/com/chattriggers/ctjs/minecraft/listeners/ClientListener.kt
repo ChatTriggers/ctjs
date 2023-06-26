@@ -52,7 +52,7 @@ object ClientListener : Initializer {
         packetContext = JSContextFactory.enterContext()
         Context.exit()
 
-        // TODO(breaking): Users now get the full message from the event by doing
+        // TODO*(breaking): Users now get the full message from the event by doing
         //                 "event.message" instead of "EventLib.getMessage(message)"
         ClientReceiveMessageEvents.ALLOW_CHAT.register { message, _, _, _, _ ->
             val textComponent = UTextComponent(message)

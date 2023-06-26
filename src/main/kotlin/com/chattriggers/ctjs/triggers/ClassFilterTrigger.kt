@@ -13,7 +13,7 @@ sealed class ClassFilterTrigger<Wrapped, Unwrapped>(
 ) : Trigger(method, triggerType) {
     private var triggerClasses: List<Class<Unwrapped>> = emptyList()
 
-    // TODO(breaking): remove setPacketClass & setPacketClasses
+    // TODO*(breaking): remove setPacketClass & setPacketClasses
 
     /**
      * Alias for `setFilteredClasses([A.class])`

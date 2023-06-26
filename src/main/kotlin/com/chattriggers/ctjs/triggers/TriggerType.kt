@@ -10,7 +10,7 @@ sealed interface ITriggerType {
     }
 }
 
-// TODO(breaking): Removed a bunch of less-used triggers
+// TODO*(breaking): Removed a bunch of less-used triggers
 enum class TriggerType : ITriggerType {
     // client
     CHAT,

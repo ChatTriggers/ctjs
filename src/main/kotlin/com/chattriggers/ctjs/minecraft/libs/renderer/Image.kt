@@ -23,7 +23,7 @@ class Image(var image: BufferedImage?) {
         CTJS.images.add(this)
     }
 
-    // TODO(breaking): Remove deprecated files
+    // TODO*(breaking): Remove deprecated constructors
 
     fun getTextureWidth(): Int = textureWidth
 

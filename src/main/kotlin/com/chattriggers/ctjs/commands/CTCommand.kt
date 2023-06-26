@@ -32,7 +32,7 @@ object CTCommand {
     private var idFixedOffset = -1 // ID offset (increments)
 
     fun register(dispatcher: CommandDispatcher<FabricClientCommandSource>) {
-        // TODO(breaking): Remove copy command and a bunch of aliases
+        // TODO*(breaking): Remove copy command and a bunch of aliases
         val command = literal("ct")
             .then(literal("load").onExecute { Reference.loadCT(asCommand = true) })
             .then(literal("unload").onExecute { Reference.unloadCT(asCommand = true) })

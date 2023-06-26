@@ -25,14 +25,14 @@ class Settings : CTWrapper<GameOptions> {
 
     fun getDifficulty() = World.getDifficulty()
 
-    // TODO(breaking): Removed setDifficulty
+    // TODO*(breaking): Removed setDifficulty
 
     val skin = SkinWrapper()
     val sound = SoundWrapper()
     val chat = ChatWrapper()
     val video = VideoWrapper()
 
-    // TODO(breaking): Changed all of these names to indicate they involve the parts
+    // TODO*(breaking): Changed all of these names to indicate they involve the parts
     //                 being enabled, not returning the parts themselves
     inner class SkinWrapper {
         fun isCapeEnabled() = toMC().isPlayerModelPartEnabled(PlayerModelPart.CAPE)
@@ -135,7 +135,7 @@ class Settings : CTWrapper<GameOptions> {
     }
 
     inner class VideoWrapper {
-        // TODO(breaking): Add "mode" suffix to this method name and use the enum instead of Boolean
+        // TODO*(breaking): Add "mode" suffix to this method name and use the enum instead of Boolean
         fun getGraphicsMode() = GraphicsMode.fromMC(toMC().graphicsMode.value)
 
         fun setGraphicsMode(mode: GraphicsMode) {
@@ -160,7 +160,7 @@ class Settings : CTWrapper<GameOptions> {
             toMC().maxFps.value = frameRate
         }
 
-        // TODO(breaking): remove get3dAnaglyph
+        // TODO*(breaking): remove get3dAnaglyph
 
         fun getBobbing() = toMC().bobView.value
 
@@ -180,14 +180,14 @@ class Settings : CTWrapper<GameOptions> {
             toMC().gamma.value = brightness
         }
 
-        // TODO(breaking): Use enum instead of Int
+        // TODO*(breaking): Use enum instead of Int
         fun getClouds() = CloudRenderMode.fromMC(toMC().cloudRenderMode.value)
 
         fun setClouds(clouds: CloudRenderMode) {
             toMC().cloudRenderMode.value = clouds.toMC()
         }
 
-        // TODO(breaking): Use enum instead of Int
+        // TODO*(breaking): Use enum instead of Int
         fun getParticles() = ParticlesMode.fromMC(toMC().particles.value)
 
         fun setParticles(particles: ParticlesMode) {
@@ -220,7 +220,7 @@ class Settings : CTWrapper<GameOptions> {
     }
 
     inner class ChatWrapper {
-        // TODO(breaking): Use enum instead of String
+        // TODO*(breaking): Use enum instead of String
         fun getVisibility() = ChatVisibility.fromMC(toMC().chatVisibility.value)
 
         fun setVisibility(visibility: ChatVisibility) {

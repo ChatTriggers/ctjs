@@ -27,7 +27,7 @@ import org.mozilla.javascript.NativeObject
 import java.io.File
 import java.io.InputStream
 
-// TODO(breaking): Changed a bunch of fields on this class
+// TODO*(breaking): Changed a bunch of fields on this class
 /**
  * Instances a new Sound with certain properties. These properties
  * should be passed through as a normal JavaScript object.
@@ -127,7 +127,7 @@ class Sound(private val config: NativeObject) {
      *
      * @param category the category
      */
-    // TODO(breaking): Changed from string to enum
+    // TODO*(breaking): Changed from string to enum
     fun setCategory(category: Category) = apply {
         soundImpl.categoryOverride = category.toMC()
     }
@@ -167,7 +167,7 @@ class Sound(private val config: NativeObject) {
      *
      * @param attenuationType the type of Attenuation
      */
-    // TODO(breaking): Use enum instead of Int and changed name
+    // TODO*(breaking): Use enum instead of Int and changed name
     fun setAttenuationType(attenuationType: AttenuationType) = apply {
         soundImpl.attenuationType = attenuationType.toMC()
     }
