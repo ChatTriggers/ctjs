@@ -1,5 +1,6 @@
 package com.chattriggers.ctjs.minecraft.wrappers.inventory
 
+import com.chattriggers.ctjs.TooltipOverridable
 import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer
 import com.chattriggers.ctjs.minecraft.wrappers.Client
 import com.chattriggers.ctjs.minecraft.wrappers.World
@@ -7,7 +8,6 @@ import com.chattriggers.ctjs.minecraft.wrappers.entity.Entity
 import com.chattriggers.ctjs.minecraft.wrappers.inventory.nbt.NBTTagCompound
 import com.chattriggers.ctjs.minecraft.wrappers.world.block.Block
 import com.chattriggers.ctjs.minecraft.wrappers.world.block.BlockPos
-import com.chattriggers.ctjs.mixins.ItemStackMixin
 import com.chattriggers.ctjs.utils.MCNbtCompound
 import com.chattriggers.ctjs.utils.asMixin
 import gg.essential.universal.wrappers.message.UTextComponent
@@ -60,14 +60,14 @@ class Item(val stack: ItemStack) {
     }
 
     fun setLore(lore: List<UTextComponent>) {
-        stack.asMixin<ItemStackMixin>().apply {
-            overriddenTooltip = lore
-            overrideTooltip = true
+        stack.asMixin<TooltipOverridable>().apply {
+            setTooltip(lore)
+            setShouldOverrideTooltip(true)
         }
     }
 
     fun resetLore() {
-        stack.asMixin<ItemStackMixin>().overrideTooltip = false
+        stack.asMixin<TooltipOverridable>().setShouldOverrideTooltip(false)
     }
 
     // TODO(breaking): Removed getRawNBT - was useless
