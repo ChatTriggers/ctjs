@@ -27,7 +27,6 @@ class NBTTagList(override val mcValue: MCNbtList) : NBTBase(mcValue) {
         mcValue.add(index, nbt)
     }
 
-    // TODO(breaking): Return wrapped element instead of raw element
     fun removeTag(index: Int) = fromMC(mcValue.removeAt(index))
 
     fun getShortAt(index: Int) = mcValue.getShort(index)

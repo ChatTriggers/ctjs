@@ -9,7 +9,6 @@ import com.chattriggers.ctjs.utils.toIdentifier
 import gg.essential.universal.wrappers.message.UTextComponent
 import net.minecraft.registry.Registries
 
-// TODO(breaking): rename mcBlock to block to match all other mc class fields inside wrappers
 /**
  * An immutable wrapper around Minecraft's Block object. Note
  * that this references a block "type", and not an actual block
@@ -23,7 +22,7 @@ class BlockType(override val mcValue: MCBlock) : CTWrapper<MCBlock> {
 
     constructor(blockID: Int) : this(ItemType(MCItem.byRawId(blockID)).getRegistryName())
 
-    constructor(item: Item) : this(MCBlock.getBlockFromItem(item.stack.item))
+    constructor(item: Item) : this(MCBlock.getBlockFromItem(item.mcValue.item))
 
     /**
      * Returns a [Block] based on this block and the
@@ -63,8 +62,6 @@ class BlockType(override val mcValue: MCBlock) : CTWrapper<MCBlock> {
     fun getLightValue(): Int = getDefaultState().luminance
 
     fun getDefaultState() = mcValue.defaultState
-
-    // TODO(breaking): Remove getDefaultMetadata and getHarvestLevel
 
     fun canProvidePower() = getDefaultState().emitsRedstonePower()
 

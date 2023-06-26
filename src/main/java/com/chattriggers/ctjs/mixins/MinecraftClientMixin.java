@@ -13,13 +13,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MinecraftClientMixin {
     @Inject(method = "joinWorld", at = @At("TAIL"))
     private void injectJoinWorld(ClientWorld world, CallbackInfo ci) {
-        // TODO(breaking): does not pass the event
         TriggerType.SERVER_CONNECT.triggerAll();
     }
 
     @Inject(method = "disconnect(Lnet/minecraft/client/gui/screen/Screen;)V", at = @At("HEAD"))
     private void injectDisconnect(Screen screen, CallbackInfo ci) {
-        // TODO(breaking): does not pass the event
         TriggerType.SERVER_DISCONNECT.triggerAll();
     }
 

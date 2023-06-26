@@ -55,7 +55,6 @@ class Chunk(override val mcValue: MCChunk) : CTWrapper<MCChunk> {
         return World.toMC()?.getEntitiesByClass(clazz, box) { true }?.map(Entity::fromMC) ?: listOf()
     }
 
-    // TODO(breaking): Rename to getAllBlockEntities
     /**
      * Gets every block entity in this chunk
      *
@@ -65,7 +64,6 @@ class Chunk(override val mcValue: MCChunk) : CTWrapper<MCChunk> {
         return mcValue.asMixin<ChunkAccessor>().blockEntities.values.map(::BlockEntity)
     }
 
-    // TODO(breaking): Rename to getAllBlockEntitiesOfType
     /**
      * Gets every block entity in this chunk of a certain class
      *

@@ -13,7 +13,6 @@ import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.gui.widget.ButtonWidget
 import net.minecraft.client.util.math.MatrixStack
 
-// TODO(breaking): Removed GuiHandler (does the same thing as Client.currentGui.set())
 class Gui(title: UTextComponent) : Screen(title) {
     private var onDraw: RegularTrigger? = null
     private var onClick: RegularTrigger? = null
@@ -49,10 +48,6 @@ class Gui(title: UTextComponent) : Screen(title) {
 
     fun isOpen(): Boolean = Client.getMinecraft().currentScreen === this
 
-    // TODO(breaking): Remove isControlDown, isAltDown, isShiftDown.
-    //                 Use the screen methods hasControlDown, hasAltDown, hasShiftDown instead.
-
-    // TODO(breaking): changed run to apply in all register function
     /**
      * Registers a method to be run while gui is open.
      * Registered method runs on draw.
@@ -259,7 +254,6 @@ class Gui(title: UTextComponent) : Screen(title) {
      */
     override fun mouseDragged(mouseX: Double, mouseY: Double, button: Int, deltaX: Double, deltaY: Double): Boolean {
         return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY).also {
-            // TODO(breaking): Removed timeSinceLastClick (could be readded)
             onMouseDragged?.trigger(arrayOf(mouseX, mouseY, button))
         }
     }
@@ -304,7 +298,6 @@ class Gui(title: UTextComponent) : Screen(title) {
      * @param button the button to add
      * @return the button ID for use in actionPerformed
      */
-    // TODO(breaking): Return ID instead of this
     fun addButton(button: ButtonWidget): Int {
         val id = nextButtonId++
         buttons[id] = button
@@ -322,7 +315,6 @@ class Gui(title: UTextComponent) : Screen(title) {
      * @param buttonText the label of the button
      * @return the button ID for use in actionPerformed
      */
-    // TODO(breaking): Return ID instead of this and doesn't accept an ID
     @JvmOverloads
     fun addButton(x: Int, y: Int, width: Int = 200, height: Int = 20, buttonText: UTextComponent): Int {
         val id = nextButtonId++
@@ -352,9 +344,6 @@ class Gui(title: UTextComponent) : Screen(title) {
         buttons.values.forEach(::remove)
         buttons.clear()
     }
-
-    // TODO(breaking): Remove getButton (ButtonWidget doesn't really do anything that isn't already
-    //                 provided by the methods below)
 
     fun getButtonVisibility(buttonId: Int): Boolean = buttons[buttonId]?.visible ?: false
 
@@ -448,6 +437,4 @@ class Gui(title: UTextComponent) : Screen(title) {
             this.y = y
         }
     }
-
-    // TODO(breaking): Deleted completely pointless drawing methods that had no reason to be here
 }

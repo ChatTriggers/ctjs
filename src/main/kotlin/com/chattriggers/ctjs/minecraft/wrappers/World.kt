@@ -40,8 +40,6 @@ object World : CTWrapper<ClientWorld?> {
     @JvmStatic
     fun isLoaded(): Boolean = toMC() != null
 
-    // TODO(breaking): Remove Sound methods in favor of the Sound class
-
     @JvmStatic
     fun isRaining(): Boolean = toMC()?.isRaining ?: false
 
@@ -51,16 +49,11 @@ object World : CTWrapper<ClientWorld?> {
     @JvmStatic
     fun getTime(): Long = toMC()?.time ?: -1L
 
-    // TODO(breaking): Switched to enum
     @JvmStatic
     fun getDifficulty(): Settings.Difficulty? = toMC()?.difficulty?.let(Settings.Difficulty::fromMC)
 
     @JvmStatic
     fun getMoonPhase(): Int = toMC()?.moonPhase ?: -1
-
-    // TODO(breaking): Removed getSeed (server-side)
-
-    // TODO(breaking): Removed getType
 
     /**
      * Gets the [Block] at a location in the world.
@@ -174,7 +167,6 @@ object World : CTWrapper<ClientWorld?> {
         }
     }
 
-    // TODO(breaking): Rename to getAllBlockEntities
     @JvmStatic
     fun getAllBlockEntities(): List<BlockEntity> {
         val chunks = toMC()
@@ -192,7 +184,6 @@ object World : CTWrapper<ClientWorld?> {
         return blockEntities
     }
 
-    // TODO(breaking): Rename to getAllBlockEntitiesOfType
     @JvmStatic
     fun getAllBlockEntitiesOfType(clazz: Class<*>): List<BlockEntity> {
         return getAllBlockEntities().filter {

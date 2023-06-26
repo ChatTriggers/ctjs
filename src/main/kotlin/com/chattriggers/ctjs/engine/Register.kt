@@ -132,7 +132,6 @@ object Register {
         return RegularTrigger(method, TriggerType.CLICKED)
     }
 
-    // TODO(breaking): Pass in raw scroll amount (i.e. no longer normalized to -1 or 1)
     /**
      * Registers a new trigger that runs before the mouse is scrolled.
      *
@@ -394,7 +393,6 @@ object Register {
         return RegularTrigger(method, TriggerType.GUI_CLOSED)
     }
 
-    // TODO(breaking): Changed params
     /**
      * Registers a new trigger that runs before an item is dropped.
      *
@@ -450,7 +448,6 @@ object Register {
         return EventTrigger(method, TriggerType.ITEM_TOOLTIP)
     }
 
-    // TODO(breaking): Changes second argument
     /**
      * Registers a new trigger that runs before the player interacts.
      *
@@ -536,9 +533,6 @@ object Register {
         return EventTrigger(method, TriggerType.GUI_KEY)
     }
 
-    // TODO(breaking): Remove guiMouseRelease
-
-    // TODO(breaking): Add mouse button state arg
     /**
      * Registers a new trigger that runs whenever the mouse is clicked with a
      * gui open
@@ -561,7 +555,6 @@ object Register {
         return EventTrigger(method, TriggerType.GUI_MOUSE_CLICK)
     }
 
-    // TODO(breaking): Add delta x and delta y args
     /**
      * Registers a new trigger that runs whenever a mouse button held and dragged
      * with a gui open
@@ -655,8 +648,6 @@ object Register {
         return RegularTrigger(method, TriggerType.SERVER_DISCONNECT)
     }
 
-    // TODO(breaking): Don't pass the position into the trigger (they can get it
-    //                 from the entity if its needed)
     /**
      * Registers a new trigger that runs whenever an entity is rendered
      *
@@ -677,9 +668,6 @@ object Register {
          return RenderEntityTrigger(method)
      }
 
-    //  TODO(breaking): Renamed to blockentity
-    // TODO(breaking): Don't pass the position into the trigger (they can get it
-    //                 from the blockentity if its needed)
     /**
      * Registers a new trigger that runs whenever a block entity is rendered
      *
@@ -718,7 +706,6 @@ object Register {
         return RegularTrigger(method, TriggerType.POST_GUI_RENDER)
     }
 
-    // TODO(breaking): Remove ParticleType parameter
     /**
      * Registers a new trigger that runs whenever a particle is spawned
      *
@@ -735,6 +722,4 @@ object Register {
     fun registerSpawnParticle(method: Any): EventTrigger {
         return EventTrigger(method, TriggerType.SPAWN_PARTICLE)
     }
-
-    // TODO(breaking): Removed hitblock & breakblock triggers. use playerinteract instead
 }

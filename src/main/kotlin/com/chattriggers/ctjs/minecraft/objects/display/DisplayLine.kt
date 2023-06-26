@@ -108,7 +108,6 @@ class DisplayLine {
         this.backgroundColor = backgroundColor
     }
 
-    //TODO(breaking): changed run to apply in all register function
     fun registerClicked(method: Any) = apply {
         onClicked = RegularTrigger(method, TriggerType.OTHER)
     }

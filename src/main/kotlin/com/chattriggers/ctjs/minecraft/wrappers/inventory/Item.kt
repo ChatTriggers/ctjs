@@ -2,6 +2,7 @@ package com.chattriggers.ctjs.minecraft.wrappers.inventory
 
 import com.chattriggers.ctjs.TooltipOverridable
 import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer
+import com.chattriggers.ctjs.minecraft.wrappers.CTWrapper
 import com.chattriggers.ctjs.minecraft.wrappers.Client
 import com.chattriggers.ctjs.minecraft.wrappers.World
 import com.chattriggers.ctjs.minecraft.wrappers.entity.Entity
@@ -18,61 +19,56 @@ import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemStack
 import net.minecraft.registry.Registries
 
-// TODO(breaking): Completely redid this API
-class Item(val stack: ItemStack) {
-    val type: ItemType = ItemType(stack.item)
+class Item(override val mcValue: ItemStack) : CTWrapper<ItemStack> {
+    val type: ItemType = ItemType(mcValue.item)
 
-    fun getHolder(): Entity? = stack.holder?.let(Entity::fromMC)
+    fun getHolder(): Entity? = mcValue.holder?.let(Entity::fromMC)
 
-    fun getStackSize(): Int = stack.count
+    fun getStackSize(): Int = mcValue.count
 
-    fun getEnchantments() = EnchantmentHelper.get(stack).mapKeys {
+    fun getEnchantments() = EnchantmentHelper.get(mcValue).mapKeys {
         EnchantmentHelper.getEnchantmentId(it.key)!!.toTranslationKey()?.replace("enchantment.", "")
     }
 
-    fun isEnchantable() = stack.isEnchantable
+    fun isEnchantable() = mcValue.isEnchantable
 
-    // TODO(breaking): fix typo in method name
-    fun isEnchanted() = stack.hasEnchantments()
+    fun isEnchanted() = mcValue.hasEnchantments()
 
-    fun canPlaceOn(pos: BlockPos) = stack.canPlaceOn(Registries.BLOCK, CachedBlockPosition(World.toMC(), pos.toMC(), false))
+    fun canPlaceOn(pos: BlockPos) = mcValue.canPlaceOn(Registries.BLOCK, CachedBlockPosition(World.toMC(), pos.toMC(), false))
 
     fun canPlaceOn(block: Block) = canPlaceOn(block.pos)
 
-    fun canHarvest(pos: BlockPos) = stack.canDestroy(Registries.BLOCK, CachedBlockPosition(World.toMC(), pos.toMC(), false))
+    fun canHarvest(pos: BlockPos) = mcValue.canDestroy(Registries.BLOCK, CachedBlockPosition(World.toMC(), pos.toMC(), false))
 
     fun canHarvest(block: Block) = canHarvest(block.pos)
 
     fun getDurability() = getMaxDamage() - getDamage()
 
-    fun getMaxDamage() = stack.maxDamage
+    fun getMaxDamage() = mcValue.maxDamage
 
-    fun getDamage() = stack.damage
+    fun getDamage() = mcValue.damage
 
-    // TODO(breaking): Rename isDamagable to isDamageable
-    fun isDamageable() = stack.isDamageable
+    fun isDamageable() = mcValue.isDamageable
 
-    fun getName(): String = UTextComponent(stack.name).formattedText
+    fun getName(): String = UTextComponent(mcValue.name).formattedText
 
     @JvmOverloads
     fun getLore(advanced: Boolean = false): List<UTextComponent>? = (getHolder()?.toMC() as? PlayerEntity)?.let {
-        stack.getTooltip(it, if (advanced) TooltipContext.ADVANCED else TooltipContext.BASIC).map(::UTextComponent)
+        mcValue.getTooltip(it, if (advanced) TooltipContext.ADVANCED else TooltipContext.BASIC).map(::UTextComponent)
     }
 
     fun setLore(lore: List<UTextComponent>) {
-        stack.asMixin<TooltipOverridable>().apply {
+        mcValue.asMixin<TooltipOverridable>().apply {
             setTooltip(lore)
             setShouldOverrideTooltip(true)
         }
     }
 
     fun resetLore() {
-        stack.asMixin<TooltipOverridable>().setShouldOverrideTooltip(false)
+        mcValue.asMixin<TooltipOverridable>().setShouldOverrideTooltip(false)
     }
 
-    // TODO(breaking): Removed getRawNBT - was useless
-
-    fun getNBT() = stack.nbt?.let(::NBTTagCompound) ?: NBTTagCompound(MCNbtCompound())
+    fun getNBT() = mcValue.nbt?.let(::NBTTagCompound) ?: NBTTagCompound(MCNbtCompound())
 
     /**
      * Renders the item icon to the client's overlay, with customizable overlay information.
@@ -90,7 +86,7 @@ class Item(val stack: ItemStack) {
         Renderer.translate(x / scale, y / scale, z)
         Renderer.colorize(1f, 1f, 1f, 1f)
 
-        itemRenderer.renderInGui(Renderer.matrixStack.toMC(), stack, 0, 0)
+        itemRenderer.renderInGui(Renderer.matrixStack.toMC(), mcValue, 0, 0)
 
         Renderer.resetTransformsIfNecessary()
     }

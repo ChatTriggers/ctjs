@@ -15,7 +15,7 @@ public class ClientPlayerEntityMixin {
     private void injectDropSelectedItem(boolean entireStack, CallbackInfoReturnable<Boolean> cir) {
         // dropping item while not in gui
         Item stack = Player.getHeldItem();
-        if (stack != null && !stack.getStack().isEmpty()) {
+        if (stack != null && !stack.getMcValue().isEmpty()) {
             TriggerType.DROP_ITEM.triggerAll(stack, entireStack, cir);
         }
     }

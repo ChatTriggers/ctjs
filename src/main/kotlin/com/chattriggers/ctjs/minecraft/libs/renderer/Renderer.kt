@@ -378,8 +378,6 @@ object Renderer {
         resetTransformsIfNecessary()
     }
 
-    // TODO(breaking): Removed drawShape in favor of Shape()
-
     @JvmStatic
     @JvmOverloads
     fun drawLine(
@@ -457,7 +455,6 @@ object Renderer {
 
     @JvmOverloads
     @JvmStatic
-    // TODO(breaking): Added color parameter in front of shadow parameter
     fun drawString(text: String, x: Float, y: Float, color: Int = colorized ?: WHITE, shadow: Boolean = false) {
         val fr = getFontRenderer()
         var newY = y
@@ -526,8 +523,6 @@ object Renderer {
      *
      * @param obj An options bag
      */
-    // TODO(breaking): Takes an object instead of 85 parameters, since more were added and the parameter list
-    //                 was far to large to be practical
     @JvmStatic
     fun drawPlayer(obj: NativeObject) {
         val entity = obj["player"].let {

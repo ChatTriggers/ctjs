@@ -88,8 +88,6 @@ open class Entity(override val mcValue: MCEntity) : CTWrapper<MCEntity> {
         return mcValue.vehicle?.let(::fromMC)
     }
 
-    // TODO(breaking): Removed getRider()
-
     /**
      * Returns a list of all entity riding this entity
      *
@@ -171,8 +169,6 @@ open class Entity(override val mcValue: MCEntity) : CTWrapper<MCEntity> {
      */
     fun getAir(): Int = mcValue.air
 
-    // TODO(breaking): remove setAir
-
     fun distanceTo(other: Entity): Float = distanceTo(other.mcValue)
 
     fun distanceTo(other: MCEntity): Float = mcValue.distanceTo(other)
@@ -203,32 +199,15 @@ open class Entity(override val mcValue: MCEntity) : CTWrapper<MCEntity> {
 
     fun isWet() = mcValue.isWet
 
-    // TODO(breaking): Remove isAirborne
-
-    // TODO(breaking): Use enum instead of int
     fun getDimension() = mcValue.world.dimensionKey.let { key ->
         DimensionType.values().first { it.toMC() == key }
     }
 
-    // TODO(breaking): remove setPosition
-
-    // TODO(breaking): remove setAngles
-
     fun getMaxInPortalTime() = mcValue.maxNetherPortalTime
-
-    // TODO(breaking): remove setOnFire
-
-    // TODO(breaking): remove extinguish
-
-    // TODO(breaking): remove move
 
     fun isSilent() = mcValue.isSilent
 
-    // TODO(breaking): remove setIsSilent
-
     fun isInLava() = mcValue.isInLava
-
-    // TODO(breaking): remove addVelocity
 
     @JvmOverloads
     fun getLookVector(partialTicks: Float = Renderer.partialTicks) = mcValue.getRotationVec(partialTicks)
@@ -240,23 +219,13 @@ open class Entity(override val mcValue: MCEntity) : CTWrapper<MCEntity> {
 
     fun canBePushed() = mcValue.isPushable
 
-    // TODO*(breaking): Remove dropItem
-
     fun isSneaking() = mcValue.isSneaking
-
-    // TODO(breaking): remove setIsSneaking
 
     fun isSprinting() = mcValue.isSprinting
 
-    // TODO(breaking): remove setIsSprinting
-
     fun isInvisible() = mcValue.isInvisible
 
-    // TODO(breaking): remove setIsInvisible
-
     fun isOutsideBorder() = World.toMC()?.worldBorder?.contains(mcValue.blockPos) ?: false
-
-    // TODO(breaking): Remove setIsOutsideBorder
 
     fun isBurning(): Boolean = mcValue.isOnFire
 

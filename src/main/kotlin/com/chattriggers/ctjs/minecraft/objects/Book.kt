@@ -7,7 +7,6 @@ import gg.essential.universal.wrappers.message.UTextComponent
 import net.minecraft.client.gui.screen.ingame.BookScreen
 import net.minecraft.text.StringVisitable
 
-// TODO(breaking): Changes UMessage usages to UText
 class Book {
     private var screen: BookScreen? = null
     private val customContents = CustomBookContents()
