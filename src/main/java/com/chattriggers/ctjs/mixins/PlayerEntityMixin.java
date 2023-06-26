@@ -1,23 +1,30 @@
 package com.chattriggers.ctjs.mixins;
 
+import com.chattriggers.ctjs.NameTagOverridable;
+import gg.essential.universal.wrappers.message.UTextComponent;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.text.MutableText;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(PlayerEntity.class)
-public class PlayerEntityMixin {
-    private String overriddenNametagName;
+public class PlayerEntityMixin implements NameTagOverridable {
+    @Unique
+    private UTextComponent overriddenNametagName;
 
-    public void setOverriddenNametagName(@Nullable String component) {
-        overriddenNametagName = component;
+    @ModifyVariable(method = "getDisplayName", at = @At(value = "STORE", ordinal = 0))
+    private MutableText injectGetName(MutableText original) {
+        if (overriddenNametagName != null)
+            return overriddenNametagName.getComponent();
+        return original;
     }
 
-    @Inject(method = "getEntityName", at = @At("HEAD"), cancellable = true)
-    private void injectGetName(CallbackInfoReturnable<String> cir) {
-        if (overriddenNametagName != null)
-            cir.setReturnValue(overriddenNametagName);
+    @Unique
+    @Override
+    public void setOverriddenNametagName(@Nullable UTextComponent component) {
+        overriddenNametagName = component;
     }
 }

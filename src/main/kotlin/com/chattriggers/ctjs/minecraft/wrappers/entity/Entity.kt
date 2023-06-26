@@ -144,7 +144,7 @@ open class Entity(override val mcValue: MCEntity) : CTWrapper<MCEntity> {
      *
      * @return the (custom) name of the entity as a [UTextComponent]
      */
-    open fun getNameComponent(): UTextComponent = UTextComponent(mcValue.name)
+    fun getNameComponent(): UTextComponent = UTextComponent(mcValue.name)
 
     /**
      * Gets the Java class name of the entity, for example "EntityVillager"
