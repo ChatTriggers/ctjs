@@ -1,12 +1,14 @@
 package com.chattriggers.ctjs.minecraft.wrappers.entity
 
+import com.chattriggers.ctjs.NameTagOverridable
 import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer
 import com.chattriggers.ctjs.minecraft.wrappers.Client
-import com.chattriggers.ctjs.mixins.PlayerEntityMixin
+import com.chattriggers.ctjs.utils.MCTeam
 import com.chattriggers.ctjs.utils.asMixin
 import gg.essential.universal.wrappers.message.UTextComponent
 import net.minecraft.client.network.PlayerListEntry
 import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.text.Text
 import org.mozilla.javascript.NativeObject
 
 class PlayerMP(override val mcValue: PlayerEntity) : LivingEntity(mcValue) {
@@ -38,7 +40,7 @@ class PlayerMP(override val mcValue: PlayerEntity) : LivingEntity(mcValue) {
      * @param textComponent the new name to display
      */
     fun setNametagName(textComponent: UTextComponent) {
-        mcValue.asMixin<PlayerEntityMixin>().setOverriddenNametagName(textComponent.formattedText)
+        mcValue.asMixin<NameTagOverridable>().setOverriddenNametagName(textComponent)
     }
 
     // TODO(breaking): Takes NativeObject to align with Renderer.drawPlayer()
@@ -55,9 +57,9 @@ class PlayerMP(override val mcValue: PlayerEntity) : LivingEntity(mcValue) {
 
     private fun getPlayerName(playerListEntry: PlayerListEntry?): UTextComponent {
         return playerListEntry?.displayName?.let(::UTextComponent)
-            ?: UTextComponent(net.minecraft.scoreboard.Team.decorateName(
+            ?: UTextComponent(MCTeam.decorateName(
                 playerListEntry?.scoreboardTeam,
-                playerListEntry?.displayName
+                Text.of(playerListEntry?.profile?.name)
             ))
     }
 
@@ -66,6 +68,4 @@ class PlayerMP(override val mcValue: PlayerEntity) : LivingEntity(mcValue) {
     override fun toString(): String {
         return "PlayerMP{name=${getName()}, ping=${getPing()}, livingEntity=${super.toString()}}"
     }
-
-    override fun getNameComponent() = getDisplayName()
 }
