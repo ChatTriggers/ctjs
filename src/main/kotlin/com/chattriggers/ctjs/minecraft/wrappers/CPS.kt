@@ -2,113 +2,79 @@ package com.chattriggers.ctjs.minecraft.wrappers
 
 import com.chattriggers.ctjs.minecraft.CTEvents
 import com.chattriggers.ctjs.utils.Initializer
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
+import java.util.*
+import kotlin.math.max
 import kotlin.math.roundToInt
 
 object CPS : Initializer {
-    private var sysTime = Client.getSystemTime()
-
-    private var leftClicks = mutableListOf<Int>()
-    private var rightClicks = mutableListOf<Int>()
-    private var leftClicksAverage = mutableListOf<Double>()
-    private var rightClicksAverage = mutableListOf<Double>()
-
-    private var leftClicksMax = 0
-    private var rightClicksMax = 0
+    private val leftClicks = ClicksTracker()
+    private val rightClicks = ClicksTracker()
 
     override fun init() {
-        CTEvents.RENDER_OVERLAY.register { _, _ ->
-            while (Client.getSystemTime() > sysTime + 50L) {
-                sysTime += 50L
-
-                decreaseClicks(leftClicks)
-                decreaseClicks(rightClicks)
-
-                leftClicksAverage.add(leftClicks.size.toDouble())
-                rightClicksAverage.add(rightClicks.size.toDouble())
-
-                limitAverage(leftClicksAverage)
-                limitAverage(rightClicksAverage)
-
-                clearOldLeft()
-                clearOldRight()
-
-                findMax()
-            }
+        ClientTickEvents.START_CLIENT_TICK.register {
+            leftClicks.tick()
+            rightClicks.tick()
         }
 
         CTEvents.MOUSE_CLICKED.register { _, _, button, pressed ->
             if (pressed) {
                 when (button) {
-                    0 -> leftClicks.add(20)
-                    1 -> rightClicks.add(20)
+                    0 -> leftClicks.click()
+                    1 -> rightClicks.click()
                 }
             }
         }
     }
 
     @JvmStatic
-    fun getLeftClicksMax(): Int = leftClicksMax
+    fun getLeftClicksMax(): Int = leftClicks.maxClicks
 
     @JvmStatic
-    fun getRightClicksMax(): Int = rightClicksMax
+    fun getRightClicksMax(): Int = rightClicks.maxClicks
 
     @JvmStatic
-    fun getLeftClicks(): Int = leftClicks.size
+    fun getLeftClicks(): Int = leftClicks.clicks.size
 
     @JvmStatic
-    fun getRightClicks(): Int = rightClicks.size
+    fun getRightClicks(): Int = rightClicks.clicks.size
 
     @JvmStatic
-    fun getLeftClicksAverage(): Int {
-        if (leftClicksAverage.isEmpty()) return 0
-
-        var clicks = 0.0
-        for (click in leftClicksAverage) clicks += click
-        return (clicks / leftClicksAverage.size).roundToInt()
-    }
+    fun getLeftClicksAverage(): Int = leftClicks.average()
 
     @JvmStatic
-    fun getRightClicksAverage(): Int {
-        if (rightClicksAverage.isEmpty()) return 0
+    fun getRightClicksAverage(): Int = rightClicks.average()
 
-        var clicks = 0.0
-        for (click in rightClicksAverage) clicks += click
-        return (clicks / rightClicksAverage.size).roundToInt()
-    }
+    private class ClicksTracker {
+        val clicks = mutableListOf<Int>()
+        var maxClicks = 0
+        private val runningAverages = LinkedList<Int>()
 
-    private fun limitAverage(average: MutableList<Double>) {
-        if (average.size > 100) average.removeAt(0)
-    }
-
-    private fun clearOldLeft() {
-        if (leftClicksAverage.isNotEmpty() && leftClicksAverage[leftClicksAverage.size - 1] == 0.0) {
-            leftClicksAverage.clear()
-            leftClicksMax = 0
+        fun click() {
+            clicks.add(20)
         }
-    }
 
-    private fun clearOldRight() {
-        if (rightClicksAverage.isNotEmpty() && rightClicksAverage[rightClicksAverage.size - 1] == 0.0) {
-            rightClicksAverage.clear()
-            rightClicksMax = 0
-        }
-    }
+        fun tick() {
+            // Decrease all existing click values
+            for (i in clicks.indices)
+                clicks[i]--
+            clicks.removeIf { it <= 0 }
 
-    private fun findMax() {
-        if (leftClicks.size > leftClicksMax) leftClicksMax = leftClicks.size
-        if (rightClicks.size > rightClicksMax) rightClicksMax = rightClicks.size
-    }
+            // Save the current CPS
+            runningAverages.add(clicks.size)
+            if (runningAverages.size > 100)
+                runningAverages.removeAt(0)
 
-    private fun decreaseClicks(clicks: MutableList<Int>) {
-        if (clicks.isNotEmpty()) {
-            val toRemove = mutableListOf<Int>()
-
-            for (i in clicks.indices) {
-                clicks[i] = clicks[i] - 1
-                if (clicks[i] == 0) toRemove.add(i)
+            maxClicks = if (runningAverages.lastOrNull() == 0) {
+                runningAverages.clear()
+                0
+            } else {
+                max(maxClicks, clicks.size)
             }
-
-            toRemove.sortedDescending().forEach(clicks::removeAt)
         }
+
+        fun average() = if (runningAverages.isNotEmpty()) {
+            runningAverages.average().roundToInt()
+        } else 0
     }
 }
