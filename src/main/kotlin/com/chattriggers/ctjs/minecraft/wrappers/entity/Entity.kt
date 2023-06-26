@@ -16,6 +16,7 @@ import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.dimension.DimensionTypes
 import java.util.*
+import kotlin.math.sqrt
 import net.minecraft.world.dimension.DimensionType as MCDimensionType
 
 open class Entity(override val mcValue: MCEntity) : CTWrapper<MCEntity> {
@@ -177,17 +178,11 @@ open class Entity(override val mcValue: MCEntity) : CTWrapper<MCEntity> {
 
     fun distanceTo(other: MCEntity): Float = mcValue.distanceTo(other)
 
-    // fun distanceTo(blockPos: BlockPos): Float = entity.getDistance(
-    //     blockPos.x.toDouble(),
-    //     blockPos.y.toDouble(),
-    //     blockPos.z.toDouble()
-    // ).toFloat()
-    //
-    // fun distanceTo(x: Float, y: Float, z: Float): Float = entity.distanceTo(
-    //     x.toDouble(),
-    //     y.toDouble(),
-    //     z.toDouble()
-    // ).toFloat()
+    fun distanceTo(blockPos: BlockPos): Double = distanceTo(
+        blockPos.x.toDouble(), blockPos.y.toDouble(), blockPos.z.toDouble(),
+    )
+
+    fun distanceTo(x: Double, y: Double, z: Double): Double = sqrt(mcValue.squaredDistanceTo(x, y, z))
 
     fun isOnGround() = mcValue.isOnGround
 
