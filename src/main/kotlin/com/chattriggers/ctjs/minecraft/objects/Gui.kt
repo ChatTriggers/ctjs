@@ -56,6 +56,7 @@ abstract class Gui(title: UTextComponent) : Screen(title) {
 
     fun isAltDown(): Boolean = isAltDown()
 
+    // TODO(breaking): changed run to apply in all register function
     /**
      * Registers a method to be run while gui is open.
      * Registered method runs on draw.
@@ -67,9 +68,8 @@ abstract class Gui(title: UTextComponent) : Screen(title) {
      * @param method the method to run
      * @return the trigger
      */
-    fun registerDraw(method: Any) = run {
+    fun registerDraw(method: Any) = apply {
         onDraw = RegularTrigger(method, TriggerType.OTHER, getLoader())
-        onDraw
     }
 
     /**
@@ -83,9 +83,8 @@ abstract class Gui(title: UTextComponent) : Screen(title) {
      * @param method the method to run
      * @return the trigger
      */
-    fun registerClicked(method: Any) = run {
+    fun registerClicked(method: Any) = apply {
         onClick = RegularTrigger(method, TriggerType.OTHER, getLoader())
-        onClick
     }
 
     /**
@@ -96,9 +95,8 @@ abstract class Gui(title: UTextComponent) : Screen(title) {
      * - int mouseY
      * - int scroll direction
      */
-    fun registerScrolled(method: Any) = run {
+    fun registerScrolled(method: Any) = apply {
         onScroll = RegularTrigger(method, TriggerType.OTHER, getLoader())
-        onScroll
     }
 
     /**
@@ -111,9 +109,8 @@ abstract class Gui(title: UTextComponent) : Screen(title) {
      * @param method the method to run
      * @return the trigger
      */
-    fun registerKeyTyped(method: Any) = run {
+    fun registerKeyTyped(method: Any) = apply {
         onKeyTyped = RegularTrigger(method, TriggerType.OTHER, getLoader())
-        onKeyTyped
     }
 
     /**
@@ -128,9 +125,8 @@ abstract class Gui(title: UTextComponent) : Screen(title) {
      * @param method the method to run
      * @return the trigger
      */
-    fun registerMouseDragged(method: Any) = run {
+    fun registerMouseDragged(method: Any) = apply {
         onMouseDragged = RegularTrigger(method, TriggerType.OTHER, getLoader())
-        onMouseDragged
     }
 
     /**
@@ -144,9 +140,8 @@ abstract class Gui(title: UTextComponent) : Screen(title) {
      * @param method the method to run
      * @return the trigger
      */
-    fun registerMouseReleased(method: Any) = run {
+    fun registerMouseReleased(method: Any) = apply {
         onMouseReleased = RegularTrigger(method, TriggerType.OTHER, getLoader())
-        onMouseReleased
     }
 
     /**
@@ -158,9 +153,8 @@ abstract class Gui(title: UTextComponent) : Screen(title) {
      * @param method the method to run
      * @return the trigger
      */
-    fun registerActionPerformed(method: Any) = run {
+    fun registerActionPerformed(method: Any) = apply {
         onActionPerformed = RegularTrigger(method, TriggerType.OTHER, getLoader())
-        onActionPerformed
     }
 
     /**
@@ -171,9 +165,8 @@ abstract class Gui(title: UTextComponent) : Screen(title) {
      * @param method the method to run
      * @return the trigger
      */
-    fun registerOpened(method: Any) = run {
+    fun registerOpened(method: Any) = apply {
         onOpened = RegularTrigger(method, TriggerType.OTHER, getLoader())
-        onOpened
     }
 
     /**
@@ -184,9 +177,53 @@ abstract class Gui(title: UTextComponent) : Screen(title) {
      * @param method the method to run
      * @return the trigger
      */
-    fun registerClosed(method: Any) = run {
+    fun registerClosed(method: Any) = apply {
         onClosed = RegularTrigger(method, TriggerType.OTHER, getLoader())
-        onClosed
+    }
+
+    fun unregisterDraw() = apply {
+        onDraw?.unregister()
+        onDraw = null
+    }
+
+    fun unregisterClicked() = apply {
+        onClick?.unregister()
+        onClick = null
+    }
+
+    fun unregisterScrolled() = apply {
+        onScroll?.unregister()
+        onScroll = null
+    }
+
+    fun unregisterKeyTyped() = apply {
+        onKeyTyped?.unregister()
+        onKeyTyped = null
+    }
+
+    fun unregisterMouseDragged() = apply {
+        onMouseDragged?.unregister()
+        onMouseDragged = null
+    }
+
+    fun unregisterMouseReleased() = apply {
+        onMouseReleased?.unregister()
+        onMouseReleased = null
+    }
+
+    fun unregisterActionPerformed() = apply {
+        onActionPerformed?.unregister()
+        onActionPerformed = null
+    }
+
+    fun unregisterOpened() = apply {
+        onOpened?.unregister()
+        onOpened = null
+    }
+
+    fun unregisterClosed() = apply {
+        onClosed?.unregister()
+        onClosed = null
     }
 
     override fun init() {
