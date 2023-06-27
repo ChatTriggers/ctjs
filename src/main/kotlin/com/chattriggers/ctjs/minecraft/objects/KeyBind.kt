@@ -64,19 +64,17 @@ abstract class KeyBind {
         this.keyBinding = keyBinding
     }
 
-    fun registerKeyPress(method: Any) = run {
+    // TODO(breaking): changed run to apply in all register function
+    fun registerKeyPress(method: Any) = apply {
         onKeyPress = RegularTrigger(method, TriggerType.OTHER, getLoader())
-        onKeyPress
     }
 
-    fun registerKeyRelease(method: Any) = run {
+    fun registerKeyRelease(method: Any) = apply {
         onKeyRelease = RegularTrigger(method, TriggerType.OTHER, getLoader())
-        onKeyRelease
     }
 
-    fun registerKeyDown(method: Any) = run {
+    fun registerKeyDown(method: Any) = apply {
         onKeyDown = RegularTrigger(method, TriggerType.OTHER, getLoader())
-        onKeyDown
     }
 
     fun unregisterKeyPress() = apply {
