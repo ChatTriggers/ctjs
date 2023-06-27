@@ -50,11 +50,8 @@ abstract class Gui(title: UTextComponent) : Screen(title) {
 
     fun isOpen(): Boolean = Client.getMinecraft().currentScreen === this
 
-    fun isControlDown(): Boolean = isControlDown()
-
-    fun isShiftDown(): Boolean = isShiftDown()
-
-    fun isAltDown(): Boolean = isAltDown()
+    // TODO(breaking): Remove isControlDown, isAltDown, isShiftDown.
+    //                 Use the screen methods hasControlDown, hasAltDown, hasShiftDown instead.
 
     /**
      * Registers a method to be run while gui is open.
