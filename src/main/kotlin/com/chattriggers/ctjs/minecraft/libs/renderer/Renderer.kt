@@ -457,15 +457,16 @@ object Renderer {
 
     @JvmOverloads
     @JvmStatic
-    fun drawString(text: String, x: Float, y: Float, shadow: Boolean = false) {
+    // TODO(breaking): Added color parameter in front of shadow parameter
+    fun drawString(text: String, x: Float, y: Float, color: Int = colorized ?: WHITE, shadow: Boolean = false) {
         val fr = getFontRenderer()
         var newY = y
 
         ChatLib.addColor(text).split("\n").forEach {
             if (shadow) {
-                fr.drawWithShadow(matrixStack.toMC(), it, x, newY, colorized ?: WHITE)
+                fr.drawWithShadow(matrixStack.toMC(), it, x, newY, color)
             } else {
-                fr.draw(matrixStack.toMC(), it, x, newY, colorized ?: WHITE)
+                fr.draw(matrixStack.toMC(), it, x, newY, color)
             }
 
             newY += fr.fontHeight
@@ -474,8 +475,9 @@ object Renderer {
         resetTransformsIfNecessary()
     }
 
+    @JvmOverloads
     @JvmStatic
-    fun drawStringWithShadow(text: String, x: Float, y: Float) = drawString(text, x, y, shadow = true)
+    fun drawStringWithShadow(text: String, x: Float, y: Float, color: Int = colorized ?: WHITE) = drawString(text, x, y, color, shadow = true)
 
     @JvmStatic
     fun drawImage(image: Image, x: Double, y: Double, width: Double, height: Double) {
