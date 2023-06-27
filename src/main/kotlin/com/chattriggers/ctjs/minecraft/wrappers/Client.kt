@@ -24,7 +24,7 @@ import net.minecraft.client.network.ClientPlayNetworkHandler
 import net.minecraft.client.network.ServerAddress
 import net.minecraft.client.network.ServerInfo
 import net.minecraft.client.option.KeyBinding
-import net.minecraft.item.ItemStack
+import net.minecraft.client.realms.gui.screen.RealmsMainScreen
 import net.minecraft.network.packet.Packet
 import net.minecraft.util.Util
 import java.awt.Toolkit
@@ -136,7 +136,16 @@ abstract class Client {
         @JvmStatic
         fun disconnect() {
             scheduleTask {
+                World.toMC()?.disconnect()
                 getMinecraft().disconnect()
+
+                getMinecraft().setScreen(
+                    when {
+                        getMinecraft().isInSingleplayer -> TitleScreen()
+                        getMinecraft().isConnectedToRealms -> RealmsMainScreen(TitleScreen())
+                        else -> MultiplayerScreen(TitleScreen())
+                    }
+                )
             }
         }
 
