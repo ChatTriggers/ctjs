@@ -22,11 +22,11 @@ interface Console {
     fun onConsoleSettingsChanged(settings: Config.ConsoleSettings)
 }
 
-fun Any.printToConsole(console: Console = ConsoleManager.getConsole(), logType: LogType = LogType.INFO) {
+fun Any.printToConsole(console: Console = ConsoleManager.generalConsole, logType: LogType = LogType.INFO) {
     console.println(this, logType)
 }
 
-fun Throwable.printTraceToConsole(console: Console = ConsoleManager.getConsole()) {
+fun Throwable.printTraceToConsole(console: Console = ConsoleManager.generalConsole) {
     this.printStackTrace()
     console.printStackTrace(this)
 }

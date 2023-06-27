@@ -26,12 +26,14 @@ class ConsoleFrame(
     }
 
     private val frame = JFrame(
-        "ChatTriggers ${init.modVersion} ${init.lang?.langName ?: "Default"} Console"
+        "ChatTriggers ${init.modVersion} ${if (init.isGeneral) "Default" else "JS"} Console"
     )
 
     private val textArea = JTextPane()
     private val inputField = RSyntaxTextArea(5, 1).apply {
-        syntaxEditingStyle = init.lang?.syntaxStyle ?: SyntaxConstants.SYNTAX_STYLE_NONE
+        syntaxEditingStyle = if (init.isGeneral) {
+            SyntaxConstants.SYNTAX_STYLE_NONE
+        } else SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT
         Theme.load(javaClass.getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/dark.xml")).apply(this)
         margin = Insets(5, 5, 5, 5)
         isCodeFoldingEnabled = true

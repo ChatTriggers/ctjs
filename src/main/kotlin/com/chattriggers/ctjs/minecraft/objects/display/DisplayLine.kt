@@ -1,6 +1,5 @@
 package com.chattriggers.ctjs.minecraft.objects.display
 
-import com.chattriggers.ctjs.engine.ILoader
 import com.chattriggers.ctjs.minecraft.CTEvents
 import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer
 import com.chattriggers.ctjs.minecraft.libs.renderer.Text
@@ -9,7 +8,7 @@ import com.chattriggers.ctjs.triggers.RegularTrigger
 import com.chattriggers.ctjs.triggers.TriggerType
 import org.mozilla.javascript.NativeObject
 
-abstract class DisplayLine {
+class DisplayLine {
     private lateinit var text: Text
 
     private var textWidth = 0f
@@ -111,19 +110,19 @@ abstract class DisplayLine {
 
     //TODO(breaking): changed run to apply in all register function
     fun registerClicked(method: Any) = apply {
-        onClicked = RegularTrigger(method, TriggerType.OTHER, getLoader())
+        onClicked = RegularTrigger(method, TriggerType.OTHER)
     }
 
     fun registerHovered(method: Any) = apply {
-        onHovered = RegularTrigger(method, TriggerType.OTHER, getLoader())
+        onHovered = RegularTrigger(method, TriggerType.OTHER)
     }
 
     fun registerMouseLeave(method: Any) = apply {
-        onMouseLeave = RegularTrigger(method, TriggerType.OTHER, getLoader())
+        onMouseLeave = RegularTrigger(method, TriggerType.OTHER)
     }
 
     fun registerDragged(method: Any) = apply {
-        onDragged = RegularTrigger(method, TriggerType.OTHER, getLoader())
+        onDragged = RegularTrigger(method, TriggerType.OTHER)
     }
 
     fun unregisterClicked() = apply {
@@ -215,8 +214,6 @@ abstract class DisplayLine {
             hovered = false
         }
     }
-
-    internal abstract fun getLoader(): ILoader
 
     override fun toString() =
         "DisplayLine{" +

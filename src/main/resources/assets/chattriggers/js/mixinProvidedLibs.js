@@ -10,7 +10,7 @@
         }
     }
 
-    const JSLoader = Java.type('com.chattriggers.ctjs.engine.langs.js.JSLoader').INSTANCE;
+    const JSLoader = Java.type('com.chattriggers.ctjs.engine.js.JSLoader').INSTANCE;
     global.Console = JSLoader.getConsole();
 
     const Condition = Java.type('org.spongepowered.asm.mixin.injection.Constant').Condition;

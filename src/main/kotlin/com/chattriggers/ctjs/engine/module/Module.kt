@@ -1,6 +1,5 @@
 package com.chattriggers.ctjs.engine.module
 
-import com.chattriggers.ctjs.engine.langs.Lang
 import com.chattriggers.ctjs.minecraft.libs.ChatLib
 import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer
 import com.chattriggers.ctjs.minecraft.libs.renderer.Text
@@ -10,7 +9,6 @@ import java.io.File
 class Module(val name: String, var metadata: ModuleMetadata, val folder: File) {
     var targetModVersion: Version? = null
     var requiredBy = mutableSetOf<String>()
-    lateinit var lang: Lang
 
     private val gui = object {
         var collapsed = true

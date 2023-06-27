@@ -4,6 +4,7 @@ import com.chattriggers.ctjs.CTJS
 import com.chattriggers.ctjs.triggers.CommandTrigger
 import com.chattriggers.ctjs.console.LogType
 import com.chattriggers.ctjs.console.printToConsole
+import com.chattriggers.ctjs.engine.js.JSLoader
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
@@ -54,7 +55,7 @@ class Command(
             .onExecute { trigger.trigger(emptyArray()) }
 
         if (hasConflict(name)) {
-            existingCommandWarning(name).printToConsole(trigger.loader.console, LogType.WARN)
+            existingCommandWarning(name).printToConsole(JSLoader.console, LogType.WARN)
             return
         }
 
@@ -63,7 +64,7 @@ class Command(
 
         for (name in aliases) {
             if (hasConflict(name)) {
-                existingCommandWarning(name).printToConsole(trigger.loader.console, LogType.WARN)
+                existingCommandWarning(name).printToConsole(JSLoader.console, LogType.WARN)
             } else {
                 dispatcher.register(literal(name).redirect(registeredCommand))
                 registeredAliases.add(name)

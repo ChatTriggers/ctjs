@@ -2,7 +2,6 @@ package com.chattriggers.ctjs.commands
 
 import com.chattriggers.ctjs.Reference
 import com.chattriggers.ctjs.commands.Command.Companion.onExecute
-import com.chattriggers.ctjs.engine.langs.Lang
 import com.chattriggers.ctjs.engine.module.ModuleManager
 import com.chattriggers.ctjs.minecraft.libs.ChatLib
 import com.chattriggers.ctjs.minecraft.listeners.ClientListener
@@ -11,6 +10,7 @@ import com.chattriggers.ctjs.minecraft.wrappers.Client
 import com.chattriggers.ctjs.utils.Config
 import com.chattriggers.ctjs.console.ConsoleManager
 import com.chattriggers.ctjs.console.printTraceToConsole
+import com.chattriggers.ctjs.engine.js.JSLoader
 import com.chattriggers.ctjs.engine.module.ModulesGui
 import com.chattriggers.ctjs.utils.toVersion
 import com.mojang.brigadier.CommandDispatcher
@@ -58,17 +58,13 @@ object CTCommand {
                     .then(argument("type", StringArgumentType.word())
                         .onExecute {
                             val type = StringArgumentType.getString(it, "type")
-                            val lang = if (type != null) {
-                                val matching = Lang.values().find { lang -> lang.langName == type }
-                                if (matching == null) {
-                                    it.source.sendError(UTextComponent("Unknown console type \"$type\""))
-                                    return@onExecute
-                                }
-                                matching
-                            } else null
-                            ConsoleManager.getConsole(lang).show()
+                            if (type == "js") {
+                                JSLoader.console.show()
+                            } else {
+                                ChatLib.chat("&cUnknown language \"$type\"")
+                            }
                         })
-                    .onExecute { ConsoleManager.getConsole().show() }
+                    .onExecute { ConsoleManager.generalConsole.show() }
             )
             .then(literal("config").onExecute { Client.currentGui.set(Config.gui()!!) })
             .then(

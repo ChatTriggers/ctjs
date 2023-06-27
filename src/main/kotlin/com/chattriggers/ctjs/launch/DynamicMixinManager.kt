@@ -1,6 +1,7 @@
 package com.chattriggers.ctjs.launch
 
-import com.chattriggers.ctjs.engine.ILoader
+import com.chattriggers.ctjs.engine.MixinDetails
+import com.chattriggers.ctjs.engine.js.JSLoader
 import com.chattriggers.ctjs.engine.module.ModuleManager
 import com.chattriggers.ctjs.launch.generation.DynamicMixinGenerator
 import com.chattriggers.ctjs.launch.generation.GenerationContext
@@ -17,34 +18,30 @@ internal object DynamicMixinManager {
     internal const val GENERATED_MIXIN = "ct-generated.mixins.json"
     internal const val GENERATED_PACKAGE = "com/chattriggers/ctjs/generated_mixins"
 
-    lateinit var mixins: Map<ILoader, Map<Mixin, ILoader.MixinDetails>>
+    lateinit var mixins: Map<Mixin, MixinDetails>
 
     fun initialize() {
-        mixins = ModuleManager.mixinSetup()
+        mixins = JSLoader.mixinSetup(ModuleManager.cachedModules)
     }
 
     fun applyAccessWideners() {
-        for (mixinMap in mixins.values) {
-            for ((mixin, details) in mixinMap) {
-                val mappedClass = Mappings.getMappedClass(mixin.target) ?: error("Unknown class name ${mixin.target}")
-                for ((field, isMutable) in details.fieldWideners)
-                    Utils.widenField(mappedClass, field, isMutable)
-                for ((method, isMutable) in details.methodWideners)
-                    Utils.widenMethod(mappedClass, method, isMutable)
-            }
+        for ((mixin, details) in mixins) {
+            val mappedClass = Mappings.getMappedClass(mixin.target) ?: error("Unknown class name ${mixin.target}")
+            for ((field, isMutable) in details.fieldWideners)
+                Utils.widenField(mappedClass, field, isMutable)
+            for ((method, isMutable) in details.methodWideners)
+                Utils.widenMethod(mappedClass, method, isMutable)
         }
     }
 
     fun applyMixins() {
         val dynamicMixins = mutableListOf<String>()
 
-        for ((loader, mixinMap) in ModuleManager.mixinSetup()) {
-            for ((mixin, details) in mixinMap) {
-                val ctx = GenerationContext(loader, mixin)
-                val generator = DynamicMixinGenerator(ctx, details)
-                ByteBasedStreamHandler[generator.generatedClassFullPath + ".class"] = generator.generate()
-                dynamicMixins += generator.generatedClassName
-            }
+        for ((mixin, details) in mixins) {
+            val ctx = GenerationContext(mixin)
+            val generator = DynamicMixinGenerator(ctx, details)
+            ByteBasedStreamHandler[generator.generatedClassFullPath + ".class"] = generator.generate()
+            dynamicMixins += generator.generatedClassName
         }
 
         ByteBasedStreamHandler[GENERATED_MIXIN] = createDynamicMixinsJson(dynamicMixins)

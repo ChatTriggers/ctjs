@@ -1,6 +1,5 @@
 package com.chattriggers.ctjs.triggers
 
-import com.chattriggers.ctjs.engine.ILoader
 import com.chattriggers.ctjs.minecraft.wrappers.entity.BlockEntity
 import com.chattriggers.ctjs.minecraft.wrappers.entity.Entity
 import com.chattriggers.ctjs.utils.MCBlockEntity
@@ -10,9 +9,8 @@ import net.minecraft.network.packet.Packet
 sealed class ClassFilterTrigger<Wrapped, Unwrapped>(
     method: Any,
     private val triggerType: ITriggerType,
-    loader: ILoader,
     private val wrappedClass: Class<Wrapped>,
-) : Trigger(method, triggerType, loader) {
+) : Trigger(method, triggerType) {
     private var triggerClasses: List<Class<Unwrapped>> = emptyList()
 
     // TODO(breaking): remove setPacketClass & setPacketClasses
@@ -53,28 +51,25 @@ sealed class ClassFilterTrigger<Wrapped, Unwrapped>(
     abstract fun unwrap(wrapped: Wrapped): Unwrapped
 }
 
-class RenderEntityTrigger(method: Any, loader: ILoader) : ClassFilterTrigger<Entity, MCEntity>(
+class RenderEntityTrigger(method: Any) : ClassFilterTrigger<Entity, MCEntity>(
     method,
     TriggerType.RENDER_ENTITY,
-    loader,
     Entity::class.java,
 ) {
     override fun unwrap(wrapped: Entity): MCEntity = wrapped.toMC()
 }
 
-class RenderBlockEntityTrigger(method: Any, loader: ILoader) : ClassFilterTrigger<BlockEntity, MCBlockEntity>(
+class RenderBlockEntityTrigger(method: Any) : ClassFilterTrigger<BlockEntity, MCBlockEntity>(
     method,
     TriggerType.RENDER_BLOCK_ENTITY,
-    loader,
     BlockEntity::class.java
 ) {
     override fun unwrap(wrapped: BlockEntity): MCBlockEntity = wrapped.toMC()
 }
 
-class PacketTrigger(method: Any, triggerType: ITriggerType, loader: ILoader) : ClassFilterTrigger<Packet<*>, Packet<*>>(
+class PacketTrigger(method: Any, triggerType: ITriggerType) : ClassFilterTrigger<Packet<*>, Packet<*>>(
     method,
     triggerType,
-    loader,
     Packet::class.java,
 ) {
     override fun unwrap(wrapped: Packet<*>): Packet<*> = wrapped

@@ -22,8 +22,8 @@
         class: getJavaClass,
     };
 
-    global.Thread = Java.type("com.chattriggers.ctjs.engine.langs.js.WrappedThread");
-    global.Console = Java.type("com.chattriggers.ctjs.engine.langs.js.JSLoader").INSTANCE.getConsole();
+    global.Thread = Java.type("com.chattriggers.ctjs.engine.js.WrappedThread");
+    global.Console = Java.type("com.chattriggers.ctjs.engine.js.JSLoader").INSTANCE.getConsole();
 
     global.sync = (func, lock) => new org.mozilla.javascript.Synchronizer(func, lock);
 
@@ -63,18 +63,18 @@
 
     // Objects
     loadClass("com.chattriggers.ctjs.minecraft.objects.Book");
-    loadClass("com.chattriggers.ctjs.engine.langs.js.JSKeyBind", "KeyBind");
+    loadClass("com.chattriggers.ctjs.minecraft.objects.KeyBind");
     loadClass("com.chattriggers.ctjs.minecraft.objects.Sound");
 
-    loadClass("com.chattriggers.ctjs.engine.langs.js.JSDisplay", "Display");
-    loadClass("com.chattriggers.ctjs.engine.langs.js.JSDisplayLine", "DisplayLine");
-    loadClass("com.chattriggers.ctjs.engine.langs.js.JSGui", "Gui");
+    loadClass("com.chattriggers.ctjs.minecraft.objects.display.Display");
+    loadClass("com.chattriggers.ctjs.minecraft.objects.display.DisplayLine");
+    loadClass("com.chattriggers.ctjs.minecraft.objects.Gui");
 
     loadClass("com.chattriggers.ctjs.minecraft.objects.Message");
     loadClass("gg.essential.universal.wrappers.message.UTextComponent", "TextComponent");
 
     // Wrappers
-    loadInstance("com.chattriggers.ctjs.engine.langs.js.JSClient", "Client");
+    loadInstance("com.chattriggers.ctjs.minecraft.wrappers.Client");
     loadInstance("com.chattriggers.ctjs.minecraft.wrappers.CPS");
     loadInstance("com.chattriggers.ctjs.minecraft.wrappers.Player");
     loadInstance("com.chattriggers.ctjs.minecraft.wrappers.Scoreboard");
@@ -119,7 +119,7 @@
     loadClass("com.chattriggers.ctjs.minecraft.wrappers.inventory.nbt.NBTTagList");
 
     // Triggers
-    loadInstance("com.chattriggers.ctjs.engine.langs.js.JSRegister", "TriggerRegister");
+    loadInstance("com.chattriggers.ctjs.engine.Register", "TriggerRegister");
 
     loadClass("com.chattriggers.ctjs.triggers.ChatTrigger", "OnChatTrigger");
     loadClass("com.chattriggers.ctjs.triggers.CommandTrigger", "OnCommandTrigger");

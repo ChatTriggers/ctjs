@@ -1,7 +1,7 @@
 package com.chattriggers.ctjs.minecraft.listeners
 
-import com.chattriggers.ctjs.engine.langs.js.JSContextFactory
-import com.chattriggers.ctjs.engine.langs.js.JSLoader
+import com.chattriggers.ctjs.engine.js.JSContextFactory
+import com.chattriggers.ctjs.engine.js.JSLoader
 import com.chattriggers.ctjs.minecraft.CTEvents
 import com.chattriggers.ctjs.minecraft.libs.ChatLib
 import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer

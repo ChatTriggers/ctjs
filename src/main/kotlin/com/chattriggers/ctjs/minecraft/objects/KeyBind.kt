@@ -1,6 +1,5 @@
 package com.chattriggers.ctjs.minecraft.objects
 
-import com.chattriggers.ctjs.engine.ILoader
 import com.chattriggers.ctjs.minecraft.wrappers.Client
 import com.chattriggers.ctjs.minecraft.wrappers.World
 import com.chattriggers.ctjs.mixins.GameOptionsAccessor
@@ -15,7 +14,7 @@ import net.minecraft.client.resource.language.I18n
 import org.apache.commons.lang3.ArrayUtils
 import java.util.concurrent.CopyOnWriteArrayList
 
-abstract class KeyBind {
+class KeyBind {
     private val keyBinding: KeyBinding
     private var onKeyPress: RegularTrigger? = null
     private var onKeyRelease: RegularTrigger? = null
@@ -66,15 +65,15 @@ abstract class KeyBind {
 
     // TODO(breaking): changed run to apply in all register function
     fun registerKeyPress(method: Any) = apply {
-        onKeyPress = RegularTrigger(method, TriggerType.OTHER, getLoader())
+        onKeyPress = RegularTrigger(method, TriggerType.OTHER)
     }
 
     fun registerKeyRelease(method: Any) = apply {
-        onKeyRelease = RegularTrigger(method, TriggerType.OTHER, getLoader())
+        onKeyRelease = RegularTrigger(method, TriggerType.OTHER)
     }
 
     fun registerKeyDown(method: Any) = apply {
-        onKeyDown = RegularTrigger(method, TriggerType.OTHER, getLoader())
+        onKeyDown = RegularTrigger(method, TriggerType.OTHER)
     }
 
     fun unregisterKeyPress() = apply {
@@ -150,8 +149,6 @@ abstract class KeyBind {
      * @param pressed True to press, False to release
      */
     fun setState(pressed: Boolean) = KeyBinding.setKeyPressed(keyBinding.asMixin<KeyBindingAccessor>().boundKey, pressed)
-
-    internal abstract fun getLoader(): ILoader
 
     override fun toString() = "KeyBind{" +
         "description=${getDescription()}, " +

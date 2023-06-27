@@ -1,10 +1,7 @@
-package com.chattriggers.ctjs.engine.langs.js
+package com.chattriggers.ctjs.engine.js
 
-import com.chattriggers.ctjs.console.LogType
-import com.chattriggers.ctjs.console.printToConsole
-import com.chattriggers.ctjs.console.printTraceToConsole
-import com.chattriggers.ctjs.engine.ILoader
-import com.chattriggers.ctjs.engine.langs.Lang
+import com.chattriggers.ctjs.console.*
+import com.chattriggers.ctjs.engine.MixinDetails
 import com.chattriggers.ctjs.engine.module.Module
 import com.chattriggers.ctjs.engine.module.ModuleManager.modulesFolder
 import com.chattriggers.ctjs.launch.IInjector
@@ -12,6 +9,7 @@ import com.chattriggers.ctjs.launch.Mixin
 import com.chattriggers.ctjs.launch.MixinCallback
 import com.chattriggers.ctjs.triggers.Trigger
 import com.chattriggers.ctjs.triggers.ITriggerType
+import org.apache.commons.io.FileUtils
 import org.mozilla.javascript.*
 import org.mozilla.javascript.Function
 import org.mozilla.javascript.commonjs.module.ModuleScriptProvider
@@ -23,6 +21,7 @@ import java.lang.invoke.MethodHandles
 import java.lang.invoke.MethodType
 import java.net.URI
 import java.net.URL
+import java.nio.charset.Charset
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentSkipListSet
 import kotlin.contracts.ExperimentalContracts
@@ -30,7 +29,7 @@ import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
 @OptIn(ExperimentalContracts::class)
-object JSLoader : ILoader {
+object JSLoader {
     private val triggers = ConcurrentHashMap<ITriggerType, ConcurrentSkipListSet<Trigger>>()
 
     private lateinit var moduleContext: Context
@@ -43,7 +42,7 @@ object JSLoader : ILoader {
     private var mixinsFinalized = false
     private var nextMixinId = 0
     private val mixinIdMap = mutableMapOf<Int, MixinCallback>()
-    private val mixins = mutableMapOf<Mixin, ILoader.MixinDetails>()
+    private val mixins = mutableMapOf<Mixin, MixinDetails>()
 
     private val INVOKE_MIXIN_CALL = MethodHandles.lookup().findStatic(
         JSLoader::class.java,
@@ -51,23 +50,10 @@ object JSLoader : ILoader {
         MethodType.methodType(Any::class.java, Callable::class.java, Array<Any?>::class.java),
     )
 
-    override fun exec(type: ITriggerType, args: Array<out Any?>) {
-        triggers[type]?.forEach { it.trigger(args) }
-    }
+    val console: Console
+        get() = ConsoleManager.jsConsole
 
-    override fun addTrigger(trigger: Trigger) {
-        triggers.getOrPut(trigger.type, ::ConcurrentSkipListSet).add(trigger)
-    }
-
-    override fun clearTriggers() {
-        triggers.clear()
-    }
-
-    override fun removeTrigger(trigger: Trigger) {
-        triggers[trigger.type]?.remove(trigger)
-    }
-
-    override fun setup(jars: List<URL>) {
+    fun setup(jars: List<URL>) {
         // Ensure all active mixins are invalidated
         // TODO: It would be nice to do this, but it's possible to have a @Redirect or similar
         //       mixin try to call it's handler between when we start loading and when we finish
@@ -93,7 +79,7 @@ object JSLoader : ILoader {
         mixinLibsLoaded = false
     }
 
-    override fun mixinSetup(modules: List<Module>): Map<Mixin, ILoader.MixinDetails> {
+    fun mixinSetup(modules: List<Module>): Map<Mixin, MixinDetails> {
         loadMixinLibs()
 
         wrapInContext {
@@ -113,14 +99,13 @@ object JSLoader : ILoader {
         return mixins
     }
 
-    override fun entrySetup(): Unit = wrapInContext {
+    fun entrySetup(): Unit = wrapInContext {
         if (!mixinLibsLoaded)
             loadMixinLibs()
 
         val moduleProvidedLibs = saveResource(
             "/assets/chattriggers/js/moduleProvidedLibs.js",
             File(modulesFolder.parentFile, "chattriggers-modules-provided-libs.js"),
-            true
         )
 
         try {
@@ -135,7 +120,7 @@ object JSLoader : ILoader {
         }
     }
 
-    override fun entryPass(module: Module, entryURI: URI): Unit = wrapInContext {
+    fun entryPass(module: Module, entryURI: URI): Unit = wrapInContext {
         try {
             require.loadCTModule(module.name, entryURI)
         } catch (e: Throwable) {
@@ -143,6 +128,22 @@ object JSLoader : ILoader {
             "Error loading module ${module.name}".printToConsole(console, LogType.ERROR)
             e.printTraceToConsole(console)
         }
+    }
+
+    fun exec(type: ITriggerType, args: Array<out Any?>) {
+        triggers[type]?.forEach { it.trigger(args) }
+    }
+
+    fun addTrigger(trigger: Trigger) {
+        triggers.getOrPut(trigger.type, ::ConcurrentSkipListSet).add(trigger)
+    }
+
+    fun clearTriggers() {
+        triggers.clear()
+    }
+
+    fun removeTrigger(trigger: Trigger) {
+        triggers[trigger.type]?.remove(trigger)
     }
 
     internal inline fun <T> wrapInContext(context: Context = moduleContext, crossinline block: () -> T): T {
@@ -166,15 +167,13 @@ object JSLoader : ILoader {
         }
     }
 
-    override fun eval(code: String): String {
+    fun eval(code: String): String {
         return wrapInContext(evalContext) {
             Context.toString(evalContext.evaluateString(scope, code, "<eval>", 1, null))
         }
     }
 
-    override fun getLanguage() = Lang.JS
-
-    override fun trigger(trigger: Trigger, method: Any, args: Array<out Any?>) {
+    fun trigger(trigger: Trigger, method: Any, args: Array<out Any?>) {
         wrapInContext {
             try {
                 require(method is Function) { "Need to pass actual function to the register function, not the name!" }
@@ -191,7 +190,6 @@ object JSLoader : ILoader {
         val mixinProvidedLibs = saveResource(
             "/assets/chattriggers/js/mixinProvidedLibs.js",
             File(modulesFolder.parentFile, "chattriggers-mixin-provided-libs.js"),
-            true,
         )
 
         wrapInContext {
@@ -208,7 +206,7 @@ object JSLoader : ILoader {
         }
     }
 
-    override fun invokeMixinLookup(id: Int): MixinCallback {
+    fun invokeMixinLookup(id: Int): MixinCallback {
         val callback = mixinIdMap[id] ?: error("Unknown mixin id $id for loader ${this::class.simpleName}")
 
         callback.handle = if (callback.method != null) {
@@ -260,7 +258,7 @@ object JSLoader : ILoader {
             val id = nextMixinId++
             MixinCallback(id, injector).also {
                 mixinIdMap[id] = it
-                mixins.getOrPut(mixin, ILoader::MixinDetails).injectors.add(it)
+                mixins.getOrPut(mixin, ::MixinDetails).injectors.add(it)
             }
         }
     }
@@ -272,7 +270,7 @@ object JSLoader : ILoader {
                     "have no effect until then!".printToConsole(console)
             }
         } else {
-            mixins.getOrPut(mixin, ILoader::MixinDetails).fieldWideners[fieldName] = isMutable
+            mixins.getOrPut(mixin, ::MixinDetails).fieldWideners[fieldName] = isMutable
         }
     }
 
@@ -283,11 +281,31 @@ object JSLoader : ILoader {
                     "have no effect until then!".printToConsole(console)
             }
         } else {
-            mixins.getOrPut(mixin, ILoader::MixinDetails).methodWideners[methodName] = isMutable
+            mixins.getOrPut(mixin, ::MixinDetails).methodWideners[methodName] = isMutable
         }
     }
 
-    class CTRequire(
+    /**
+     * Save a resource to the OS's filesystem from inside the jar
+     *
+     * @param resourceName name of the file inside the jar
+     * @param outputFile file to save to
+     */
+    private fun saveResource(resourceName: String?, outputFile: File): String {
+        require(resourceName != null && resourceName != "") {
+            "ResourcePath cannot be null or empty"
+        }
+
+        val parsedResourceName = resourceName.replace('\\', '/')
+        val resource = javaClass.getResourceAsStream(parsedResourceName)
+            ?: throw IllegalArgumentException("The embedded resource '$parsedResourceName' cannot be found.")
+
+        val res = resource.bufferedReader().readText()
+        FileUtils.write(outputFile, res, Charset.defaultCharset())
+        return res
+    }
+
+    private class CTRequire(
         moduleProvider: ModuleScriptProvider,
     ) : Require(moduleContext, scope, moduleProvider, null, null, false) {
         fun loadCTModule(cachedName: String, uri: URI): Scriptable {

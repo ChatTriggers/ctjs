@@ -1,7 +1,7 @@
 package com.chattriggers.ctjs.console
 
 import com.chattriggers.ctjs.Reference
-import com.chattriggers.ctjs.engine.ILoader
+import com.chattriggers.ctjs.engine.js.JSLoader
 import com.chattriggers.ctjs.minecraft.wrappers.Client
 import com.chattriggers.ctjs.utils.Config
 import kotlinx.coroutines.*
@@ -31,7 +31,7 @@ import kotlin.concurrent.thread
  * Each console gets its own Host/Client pair running on their own port, so there will be
  * `<number of loaders> + 1` sockets (the extra 1 is for the generic console).
  */
-class RemoteConsoleHost(private val loader: ILoader?) : Console {
+class RemoteConsoleHost(private val loader: JSLoader?) : Console {
     private val port = NEXT_PORT++
     private var running = true
     private lateinit var socketOut: PrintWriter
@@ -68,7 +68,7 @@ class RemoteConsoleHost(private val loader: ILoader?) : Console {
 
             val initMessage = InitMessage(
                 Reference.MOD_VERSION,
-                loader?.getLanguage(),
+                loader == null,
                 ConfigUpdateMessage.constructFromConfig(Config.ConsoleSettings.make()),
                 this::class.java.getResourceAsStream("/assets/chattriggers/FiraCode-Regular.otf")?.readAllBytes(),
             )

@@ -1,4 +1,4 @@
-package com.chattriggers.ctjs.engine.langs.js
+package com.chattriggers.ctjs.engine.js
 
 import com.chattriggers.ctjs.console.printTraceToConsole
 import org.mozilla.javascript.Context

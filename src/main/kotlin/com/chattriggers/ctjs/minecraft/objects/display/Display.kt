@@ -9,7 +9,7 @@ import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents
 import org.mozilla.javascript.NativeObject
 import java.util.concurrent.CopyOnWriteArrayList
 
-abstract class Display() {
+class Display() {
     private var lines = CopyOnWriteArrayList<DisplayLine>()
 
     private var renderX = 0f
@@ -90,12 +90,12 @@ abstract class Display() {
 
     fun setLine(index: Int, line: Any) = apply {
         while (lines.size - 1 < index)
-            lines.add(createDisplayLine(""))
+            lines.add(DisplayLine(""))
 
         lines[index] = when (line) {
-            is String -> createDisplayLine(line)
+            is String -> DisplayLine(line)
             is DisplayLine -> line
-            else -> createDisplayLine("")
+            else -> DisplayLine("")
         }
     }
 
@@ -110,9 +110,9 @@ abstract class Display() {
     @JvmOverloads
     fun addLine(index: Int = -1, line: Any) = apply {
         val toAdd = when (line) {
-            is String -> createDisplayLine(line)
+            is String -> DisplayLine(line)
             is DisplayLine -> line
-            else -> createDisplayLine("")
+            else -> DisplayLine("")
         }
 
         if (index == -1) {
@@ -123,9 +123,9 @@ abstract class Display() {
     fun addLines(vararg lines: Any) = apply {
         this.lines.addAll(lines.map {
             when (it) {
-                is String -> createDisplayLine(it)
+                is String -> DisplayLine(it)
                 is DisplayLine -> it
-                else -> createDisplayLine("")
+                else -> DisplayLine("")
             }
         })
     }
@@ -224,8 +224,6 @@ abstract class Display() {
 
         height = i
     }
-
-    internal abstract fun createDisplayLine(text: String): DisplayLine
 
     override fun toString() =
         "Display{" +

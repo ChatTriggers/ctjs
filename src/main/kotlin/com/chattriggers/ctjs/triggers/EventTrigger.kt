@@ -1,10 +1,9 @@
 package com.chattriggers.ctjs.triggers
 
-import com.chattriggers.ctjs.engine.ILoader
 import com.chattriggers.ctjs.minecraft.listeners.CancellableEvent
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 
-class EventTrigger(method: Any, triggerType: ITriggerType, loader: ILoader) : Trigger(method, triggerType, loader) {
+class EventTrigger(method: Any, triggerType: ITriggerType) : Trigger(method, triggerType) {
     private var triggerIfCanceled = true
 
     /**

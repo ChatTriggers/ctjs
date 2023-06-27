@@ -3,6 +3,7 @@ package com.chattriggers.ctjs.launch.generation
 import codes.som.koffee.ClassAssembly
 import codes.som.koffee.insns.InstructionAssembly
 import codes.som.koffee.insns.jvm.*
+import com.chattriggers.ctjs.engine.js.JSLoader
 import com.chattriggers.ctjs.launch.Descriptor
 import com.chattriggers.ctjs.launch.InvokeDynamicSupport
 import com.chattriggers.ctjs.launch.Local
@@ -67,7 +68,7 @@ internal abstract class InjectorGenerator(protected val ctx: GenerationContext, 
                 }
             }
 
-            getstatic(ctx.loader::class, "INSTANCE", ctx.loader::class)
+            getstatic(JSLoader::class, "INSTANCE", JSLoader::class)
 
             ldc(id)
 
@@ -111,20 +112,11 @@ internal abstract class InjectorGenerator(protected val ctx: GenerationContext, 
                 aastore
             }
 
-            val loaderType = ctx.loader::class.qualifiedName!!.replace('.', '/')
-            val loaderHandle = Handle(
-                Opcodes.H_GETSTATIC,
-                loaderType,
-                "INSTANCE",
-                "L$loaderType;",
-                false,
-            )
-
             invokedynamic(
                 assembleIndyName(targetMethod.name.original, type),
                 "([Ljava/lang/Object;)Ljava/lang/Object;",
                 InvokeDynamicSupport.BOOTSTRAP_HANDLE,
-                arrayOf(loaderHandle, id),
+                arrayOf(id),
             )
 
             when (returnType) {

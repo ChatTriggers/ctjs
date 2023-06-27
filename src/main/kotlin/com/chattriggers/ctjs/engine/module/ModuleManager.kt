@@ -4,14 +4,13 @@ import com.chattriggers.ctjs.CTJS
 import com.chattriggers.ctjs.Reference
 import com.chattriggers.ctjs.console.LogType
 import com.chattriggers.ctjs.console.printToConsole
-import com.chattriggers.ctjs.engine.ILoader
-import com.chattriggers.ctjs.engine.langs.js.JSContextFactory
-import com.chattriggers.ctjs.engine.langs.js.JSLoader
+import com.chattriggers.ctjs.engine.MixinDetails
+import com.chattriggers.ctjs.engine.js.JSContextFactory
+import com.chattriggers.ctjs.engine.js.JSLoader
 import com.chattriggers.ctjs.launch.Mixin
 import com.chattriggers.ctjs.minecraft.libs.ChatLib
 import com.chattriggers.ctjs.minecraft.wrappers.World
 import com.chattriggers.ctjs.triggers.ITriggerType
-import com.chattriggers.ctjs.triggers.TriggerType
 import gg.essential.vigilance.impl.nightconfig.core.file.FileConfig
 import kotlinx.serialization.json.Json
 import org.apache.commons.io.FileUtils
@@ -20,8 +19,6 @@ import java.io.File
 import java.net.URLClassLoader
 
 object ModuleManager {
-    private val loaders = listOf(JSLoader)
-
     val cachedModules = mutableListOf<Module>()
     val modulesFolder = run {
         // We can't use vigilance here as calling loadData starts another thread, which
@@ -71,20 +68,8 @@ object ModuleManager {
         loadAssetsAndJars(cachedModules)
     }
 
-    fun mixinSetup(): Map<ILoader, Map<Mixin, ILoader.MixinDetails>> {
-        val mixins = mutableMapOf<ILoader, Map<Mixin, ILoader.MixinDetails>>()
-
-        for (loader in loaders) {
-            mixins[loader] = loader.mixinSetup(cachedModules.filter {
-                it.lang == loader.getLanguage() && it.metadata.mixinEntry != null
-            })
-        }
-
-        return mixins
-    }
-
     private fun loadAssetsAndJars(modules: List<Module>) {
-        // Load their assets
+        // Load assets
         loadAssets(modules)
 
         // Normalize all metadata
@@ -102,41 +87,20 @@ object ModuleManager {
             }.toList()
         }.flatten()
 
-        // Setup all loaders
-        loaders.forEach {
-            it.setup(jars)
-        }
-
-        // Associate each module with a loader via its language
-        cachedModules.toList().forEach { module ->
-            for (loader in loaders) {
-                if (module.metadata.entry?.substringAfterLast('.', "") == loader.getLanguage().extension) {
-                    module.lang = loader.getLanguage()
-                    return@forEach
-                }
-            }
-
-            "Module ${module.name} has an unknown loader".printToConsole()
-            cachedModules.remove(module)
-        }
+        JSLoader.setup(jars)
     }
 
     fun entryPass(modules: List<Module> = cachedModules, completionListener: (percentComplete: Float) -> Unit = {}) {
-        loaders.forEach(ILoader::entrySetup)
+        JSLoader.entrySetup()
 
         val total = modules.count { it.metadata.entry != null }
         var completed = 0
 
         // Load the modules
-        loaders.forEach { loader ->
-            modules.filter {
-                it.lang == loader.getLanguage()
-            }.forEach {
-                loader.entryPass(it, File(it.folder, it.metadata.entry!!).toURI())
-
-                completed++
-                completionListener(completed.toFloat() / total)
-            }
+        modules.forEach {
+            JSLoader.entryPass(it, File(it.folder, it.metadata.entry!!).toURI())
+            completed++
+            completionListener(completed.toFloat() / total)
         }
     }
 
@@ -216,7 +180,7 @@ object ModuleManager {
         }
     }
 
-    fun reportOldVersion(module: Module) {
+    private fun reportOldVersion(module: Module) {
         ChatLib.chat(
             "&cWarning: the module \"${module.name}\" was made for an older version of CT, " +
                 "so it may not work correctly."
@@ -237,12 +201,6 @@ object ModuleManager {
 
     fun teardown() {
         cachedModules.clear()
-        loaders.forEach { it.clearTriggers() }
-    }
-
-    fun trigger(type: ITriggerType, arguments: Array<out Any?>) {
-        loaders.forEach {
-            it.exec(type, arguments)
-        }
+        JSLoader.clearTriggers()
     }
 }

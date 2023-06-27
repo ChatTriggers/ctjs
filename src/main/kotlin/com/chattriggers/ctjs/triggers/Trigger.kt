@@ -1,12 +1,11 @@
 package com.chattriggers.ctjs.triggers
 
 import com.chattriggers.ctjs.Reference
-import com.chattriggers.ctjs.engine.ILoader
+import com.chattriggers.ctjs.engine.js.JSLoader
 
 abstract class Trigger protected constructor(
     var method: Any,
     var type: ITriggerType,
-    internal var loader: ILoader
 ) : Comparable<Trigger> {
     private var priority: Priority = Priority.NORMAL
 
@@ -39,7 +38,7 @@ abstract class Trigger protected constructor(
     //       the init block above, and thus the child class version will not be
     //       run initially
     open fun register() = apply {
-        loader.addTrigger(this)
+        JSLoader.addTrigger(this)
     }
 
     /**
@@ -47,13 +46,12 @@ abstract class Trigger protected constructor(
      * @return the trigger for method chaining
      */
     open fun unregister() = apply {
-        loader.removeTrigger(this)
+        JSLoader.removeTrigger(this)
     }
 
     protected fun callMethod(args: Array<out Any?>) {
-        if (!Reference.isLoaded) return
-
-        loader.trigger(this, method, args)
+        if (Reference.isLoaded)
+            JSLoader.trigger(this, method, args)
     }
 
     abstract fun trigger(args: Array<out Any?>)

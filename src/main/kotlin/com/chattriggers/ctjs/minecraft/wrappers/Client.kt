@@ -31,7 +31,206 @@ import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 import kotlin.math.roundToInt
 
-abstract class Client {
+object Client {
+    @JvmStatic
+    val currentGui = CurrentGuiWrapper()
+
+    @JvmStatic
+    val camera = CameraWrapper()
+
+    @JvmStatic
+    val settings = Settings()
+
+    /**
+     * Gets Minecraft's Minecraft object
+     *
+     * @return The Minecraft object
+     */
+    @JvmStatic
+    fun getMinecraft(): MinecraftClient = UMinecraft.getMinecraft()
+
+    /**
+     * Gets Minecraft's NetHandlerPlayClient object
+     *
+     * @return The NetHandlerPlayClient object
+     */
+    @JvmStatic
+    fun getConnection(): ClientPlayNetworkHandler? = getMinecraft().networkHandler
+
+    /**
+     * Schedule's a task to run on Minecraft's main thread in [delay] ticks.
+     * Defaults to the next tick.
+     * @param delay The delay in ticks
+     * @param callback The task to run on the main thread
+     */
+    @JvmOverloads
+    @JvmStatic
+    fun scheduleTask(delay: Int = 0, callback: () -> Unit) {
+        ClientListener.addTask(delay, callback)
+    }
+
+    /**
+     * Quits the client back to the main menu.
+     * This acts just like clicking the "Disconnect" or "Save and quit to title" button.
+     */
+    @JvmStatic
+    fun disconnect() {
+        scheduleTask {
+            World.toMC()?.disconnect()
+            getMinecraft().disconnect()
+
+            getMinecraft().setScreen(
+                when {
+                    getMinecraft().isInSingleplayer -> TitleScreen()
+                    getMinecraft().isConnectedToRealms -> RealmsMainScreen(TitleScreen())
+                    else -> MultiplayerScreen(TitleScreen())
+                }
+            )
+        }
+    }
+
+    /**
+     * Connects to the server with the given ip.
+     * @param ip The ip to connect to
+     */
+    @JvmStatic
+    fun connect(ip: String, port: Int = 25565) {
+        scheduleTask {
+            ConnectScreen.connect(
+                MultiplayerScreen(TitleScreen()),
+                getMinecraft(),
+                ServerAddress(ip, port),
+                ServerInfo("Server", ip, false)
+            )
+        }
+    }
+
+    /**
+     * Gets the Minecraft ChatHud object for the chat gui
+     *
+     * @return The GuiNewChat object for the chat gui
+     */
+    @JvmStatic
+    fun getChatGUI(): ChatHud? = getMinecraft().inGameHud?.chatHud
+
+    @JvmStatic
+    fun isInChat(): Boolean = getMinecraft().currentScreen is ChatScreen
+
+    @JvmStatic
+    fun getTabGui(): PlayerListHud? = getMinecraft().inGameHud?.playerListHud
+
+    @JvmStatic
+    fun isInTab(): Boolean = getMinecraft().options.playerListKey.isPressed
+
+    /**
+     * Gets whether the Minecraft window is active
+     * and in the foreground of the user's screen.
+     *
+     * @return true if the game is active, false otherwise
+     */
+    @JvmStatic
+    fun isTabbedIn(): Boolean = getMinecraft().isWindowFocused
+
+    @JvmStatic
+    fun isControlDown(): Boolean = UKeyboard.isCtrlKeyDown()
+
+    @JvmStatic
+    fun isShiftDown(): Boolean = UKeyboard.isShiftKeyDown()
+
+    @JvmStatic
+    fun isAltDown(): Boolean = UKeyboard.isAltKeyDown()
+
+    @JvmStatic
+    fun getFPS(): Int = getMinecraft().currentFps
+
+    @JvmStatic
+    fun getVersion(): String = getMinecraft().gameVersion
+
+    @JvmStatic
+    fun getMaxMemory(): Long = Runtime.getRuntime().maxMemory()
+
+    @JvmStatic
+    fun getTotalMemory(): Long = Runtime.getRuntime().totalMemory()
+
+    @JvmStatic
+    fun getFreeMemory(): Long = Runtime.getRuntime().freeMemory()
+
+    @JvmStatic
+    fun getMemoryUsage(): Int = ((getTotalMemory() - getFreeMemory()) * 100 / getMaxMemory().toFloat()).roundToInt()
+
+    @JvmStatic
+    fun getSystemTime(): Long = Util.getMeasuringTimeMs()
+
+    @JvmStatic
+    fun getMouseX() = UMouse.Scaled.x
+
+    @JvmStatic
+    fun getMouseY() = UMouse.Scaled.y
+
+    @JvmStatic
+    fun isInGui(): Boolean = currentGui.get() != null
+
+    /**
+     * Gets the chat message currently typed into the chat gui.
+     *
+     * @return A blank string if the gui isn't open, otherwise, the message
+     */
+    @JvmStatic
+    fun getCurrentChatMessage(): String {
+        return if (isInChat()) {
+            val chatGui = getMinecraft().currentScreen as ChatScreen
+            chatGui.asMixin<ChatScreenAccessor>().chatField.text
+        } else ""
+    }
+
+    /**
+     * Sets the current chat message, if the chat gui is not open, one will be opened.
+     *
+     * @param message the message to put in the chat text box.
+     */
+    @JvmStatic
+    fun setCurrentChatMessage(message: String) {
+        if (isInChat()) {
+            val chatGui = getMinecraft().currentScreen as ChatScreen
+            chatGui.asMixin<ChatScreenAccessor>().chatField.text = message
+        } else getMinecraft().setScreen(ChatScreen(message))
+    }
+
+    @JvmStatic
+    fun sendPacket(packet: Packet<*>) {
+        getConnection()?.connection?.send(packet)
+    }
+
+    /**
+     * Display a title.
+     *
+     * @param title title text
+     * @param subtitle subtitle text
+     * @param fadeIn time to fade in
+     * @param time time to stay on screen
+     * @param fadeOut time to fade out
+     */
+    @JvmStatic
+    fun showTitle(title: String?, subtitle: String?, fadeIn: Int, time: Int, fadeOut: Int) {
+        getMinecraft().inGameHud.apply {
+            setTitleTicks(fadeIn, time, fadeOut)
+            if (title != null)
+                setTitle(UTextComponent(title))
+            if (subtitle != null)
+                setSubtitle(UTextComponent(subtitle))
+        }
+    }
+
+    /**
+     * Copies a string to the clipboard
+     *
+     * @param text The text to copy
+     */
+    @JvmStatic
+    fun copy(text: String) {
+        val selection = StringSelection(text)
+        Toolkit.getDefaultToolkit().systemClipboard.setContents(selection, selection)
+    }
     /**
      * Get the [KeyBinding] from an already existing Minecraft KeyBinding, otherwise, returns null.
      *
@@ -43,7 +242,7 @@ abstract class Client {
         return KeyBind.getKeyBinds().find { it.getKeyCode() == keyCode }
             ?: getMinecraft().options.allKeys
                 .find { it.asMixin<KeyBindingAccessor>().boundKey.code == keyCode }
-                ?.let(::makeKeyBind)
+                ?.let(::KeyBind)
     }
 
     /**
@@ -56,7 +255,7 @@ abstract class Client {
      * @see [org.lwjgl.input.Keyboard](http://legacy.lwjgl.org/javadoc/org/lwjgl/input/Keyboard.html)
      */
     fun getKeyBindFromKey(keyCode: Int, description: String, category: String): KeyBind {
-        return getKeyBindFromKey(keyCode) ?: makeKeyBind(description, keyCode, category)
+        return getKeyBindFromKey(keyCode) ?: KeyBind(description, keyCode, category)
     }
 
     /**
@@ -84,213 +283,7 @@ abstract class Client {
             .find { it.getDescription() == description }
             ?: getMinecraft().options.allKeys
                 .find { it.translationKey == description }
-                ?.let(::makeKeyBind)
-    }
-
-    protected abstract fun makeKeyBind(category: String, key: Int, description: String): KeyBind
-
-    protected abstract fun makeKeyBind(keyBinding: KeyBinding): KeyBind
-
-    companion object {
-        @JvmStatic
-        val currentGui = CurrentGuiWrapper()
-
-        @JvmStatic
-        val camera = CameraWrapper()
-
-        @JvmStatic
-        val settings = Settings()
-
-        /**
-         * Gets Minecraft's Minecraft object
-         *
-         * @return The Minecraft object
-         */
-        @JvmStatic
-        fun getMinecraft(): MinecraftClient = UMinecraft.getMinecraft()
-
-        /**
-         * Gets Minecraft's NetHandlerPlayClient object
-         *
-         * @return The NetHandlerPlayClient object
-         */
-        @JvmStatic
-        fun getConnection(): ClientPlayNetworkHandler? = getMinecraft().networkHandler
-
-        /**
-         * Schedule's a task to run on Minecraft's main thread in [delay] ticks.
-         * Defaults to the next tick.
-         * @param delay The delay in ticks
-         * @param callback The task to run on the main thread
-         */
-        @JvmOverloads
-        @JvmStatic
-        fun scheduleTask(delay: Int = 0, callback: () -> Unit) {
-            ClientListener.addTask(delay, callback)
-        }
-
-        /**
-         * Quits the client back to the main menu.
-         * This acts just like clicking the "Disconnect" or "Save and quit to title" button.
-         */
-        @JvmStatic
-        fun disconnect() {
-            scheduleTask {
-                World.toMC()?.disconnect()
-                getMinecraft().disconnect()
-
-                getMinecraft().setScreen(
-                    when {
-                        getMinecraft().isInSingleplayer -> TitleScreen()
-                        getMinecraft().isConnectedToRealms -> RealmsMainScreen(TitleScreen())
-                        else -> MultiplayerScreen(TitleScreen())
-                    }
-                )
-            }
-        }
-
-        /**
-         * Connects to the server with the given ip.
-         * @param ip The ip to connect to
-         */
-        @JvmStatic
-        fun connect(ip: String, port: Int = 25565) {
-            scheduleTask {
-                ConnectScreen.connect(
-                    MultiplayerScreen(TitleScreen()),
-                    getMinecraft(),
-                    ServerAddress(ip, port),
-                    ServerInfo("Server", ip, false)
-                )
-            }
-        }
-
-        /**
-         * Gets the Minecraft ChatHud object for the chat gui
-         *
-         * @return The GuiNewChat object for the chat gui
-         */
-        @JvmStatic
-        fun getChatGUI(): ChatHud? = getMinecraft().inGameHud?.chatHud
-
-        @JvmStatic
-        fun isInChat(): Boolean = getMinecraft().currentScreen is ChatScreen
-
-        @JvmStatic
-        fun getTabGui(): PlayerListHud? = getMinecraft().inGameHud?.playerListHud
-
-        @JvmStatic
-        fun isInTab(): Boolean = getMinecraft().options.playerListKey.isPressed
-
-        /**
-         * Gets whether the Minecraft window is active
-         * and in the foreground of the user's screen.
-         *
-         * @return true if the game is active, false otherwise
-         */
-        @JvmStatic
-        fun isTabbedIn(): Boolean = getMinecraft().isWindowFocused
-
-        @JvmStatic
-        fun isControlDown(): Boolean = UKeyboard.isCtrlKeyDown()
-
-        @JvmStatic
-        fun isShiftDown(): Boolean = UKeyboard.isShiftKeyDown()
-
-        @JvmStatic
-        fun isAltDown(): Boolean = UKeyboard.isAltKeyDown()
-
-        @JvmStatic
-        fun getFPS(): Int = getMinecraft().currentFps
-
-        @JvmStatic
-        fun getVersion(): String = getMinecraft().gameVersion
-
-        @JvmStatic
-        fun getMaxMemory(): Long = Runtime.getRuntime().maxMemory()
-
-        @JvmStatic
-        fun getTotalMemory(): Long = Runtime.getRuntime().totalMemory()
-
-        @JvmStatic
-        fun getFreeMemory(): Long = Runtime.getRuntime().freeMemory()
-
-        @JvmStatic
-        fun getMemoryUsage(): Int = ((getTotalMemory() - getFreeMemory()) * 100 / getMaxMemory().toFloat()).roundToInt()
-
-        @JvmStatic
-        fun getSystemTime(): Long = Util.getMeasuringTimeMs()
-
-        @JvmStatic
-        fun getMouseX() = UMouse.Scaled.x
-
-        @JvmStatic
-        fun getMouseY() = UMouse.Scaled.y
-
-        @JvmStatic
-        fun isInGui(): Boolean = currentGui.get() != null
-
-        /**
-         * Gets the chat message currently typed into the chat gui.
-         *
-         * @return A blank string if the gui isn't open, otherwise, the message
-         */
-        @JvmStatic
-        fun getCurrentChatMessage(): String {
-            return if (isInChat()) {
-                val chatGui = getMinecraft().currentScreen as ChatScreen
-                chatGui.asMixin<ChatScreenAccessor>().chatField.text
-            } else ""
-        }
-
-        /**
-         * Sets the current chat message, if the chat gui is not open, one will be opened.
-         *
-         * @param message the message to put in the chat text box.
-         */
-        @JvmStatic
-        fun setCurrentChatMessage(message: String) {
-            if (isInChat()) {
-                val chatGui = getMinecraft().currentScreen as ChatScreen
-                chatGui.asMixin<ChatScreenAccessor>().chatField.text = message
-            } else getMinecraft().setScreen(ChatScreen(message))
-        }
-
-        @JvmStatic
-        fun sendPacket(packet: Packet<*>) {
-            getConnection()?.connection?.send(packet)
-        }
-
-        /**
-         * Display a title.
-         *
-         * @param title title text
-         * @param subtitle subtitle text
-         * @param fadeIn time to fade in
-         * @param time time to stay on screen
-         * @param fadeOut time to fade out
-         */
-        @JvmStatic
-        fun showTitle(title: String?, subtitle: String?, fadeIn: Int, time: Int, fadeOut: Int) {
-            getMinecraft().inGameHud.apply {
-                setTitleTicks(fadeIn, time, fadeOut)
-                if (title != null)
-                    setTitle(UTextComponent(title))
-                if (subtitle != null)
-                    setSubtitle(UTextComponent(subtitle))
-            }
-        }
-
-        /**
-         * Copies a string to the clipboard
-         *
-         * @param text The text to copy
-         */
-        @JvmStatic
-        fun copy(text: String) {
-            val selection = StringSelection(text)
-            Toolkit.getDefaultToolkit().systemClipboard.setContents(selection, selection)
-        }
+                ?.let(::KeyBind)
     }
 
     class CurrentGuiWrapper {

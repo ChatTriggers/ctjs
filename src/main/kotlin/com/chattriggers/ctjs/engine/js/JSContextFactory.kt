@@ -1,9 +1,7 @@
-package com.chattriggers.ctjs.engine.langs.js
+package com.chattriggers.ctjs.engine.js
 
 import com.chattriggers.ctjs.CTJS
 import com.chattriggers.ctjs.launch.CTJavaObjectMappingProvider
-import com.chattriggers.ctjs.launch.Mappings
-import net.fabricmc.loader.api.FabricLoader
 import org.mozilla.javascript.Context
 import org.mozilla.javascript.Context.EMIT_DEBUG_OUTPUT
 import org.mozilla.javascript.Context.FEATURE_LOCATION_INFORMATION_IN_ERROR

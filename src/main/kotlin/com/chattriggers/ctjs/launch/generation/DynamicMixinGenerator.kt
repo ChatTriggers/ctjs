@@ -3,14 +3,14 @@ package com.chattriggers.ctjs.launch.generation
 import codes.som.koffee.assembleClass
 import codes.som.koffee.modifiers.public
 import com.chattriggers.ctjs.CTJS
-import com.chattriggers.ctjs.engine.ILoader
+import com.chattriggers.ctjs.engine.MixinDetails
 import com.chattriggers.ctjs.launch.*
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.Opcodes
 import java.io.File
 import org.spongepowered.asm.mixin.Mixin as SPMixin
 
-internal class DynamicMixinGenerator(private val ctx: GenerationContext, private val details: ILoader.MixinDetails) {
+internal class DynamicMixinGenerator(private val ctx: GenerationContext, private val details: MixinDetails) {
     val generatedClassName = "CTMixin_\$${ctx.mixin.target.replace('.', '_')}\$_${mixinCounter++}"
     val generatedClassFullPath = "${DynamicMixinManager.GENERATED_PACKAGE}/$generatedClassName"
 

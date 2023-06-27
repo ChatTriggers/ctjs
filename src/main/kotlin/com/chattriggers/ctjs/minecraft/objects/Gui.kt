@@ -1,6 +1,5 @@
 package com.chattriggers.ctjs.minecraft.objects
 
-import com.chattriggers.ctjs.engine.ILoader
 import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer
 import com.chattriggers.ctjs.minecraft.wrappers.Client
 import com.chattriggers.ctjs.mixins.ClickableWidgetAccessor
@@ -15,7 +14,7 @@ import net.minecraft.client.gui.widget.ButtonWidget
 import net.minecraft.client.util.math.MatrixStack
 
 // TODO(breaking): Removed GuiHandler (does the same thing as Client.currentGui.set())
-abstract class Gui(title: UTextComponent) : Screen(title) {
+class Gui(title: UTextComponent) : Screen(title) {
     private var onDraw: RegularTrigger? = null
     private var onClick: RegularTrigger? = null
     private var onScroll: RegularTrigger? = null
@@ -66,7 +65,7 @@ abstract class Gui(title: UTextComponent) : Screen(title) {
      * @return the trigger
      */
     fun registerDraw(method: Any) = apply {
-        onDraw = RegularTrigger(method, TriggerType.OTHER, getLoader())
+        onDraw = RegularTrigger(method, TriggerType.OTHER)
     }
 
     /**
@@ -81,7 +80,7 @@ abstract class Gui(title: UTextComponent) : Screen(title) {
      * @return the trigger
      */
     fun registerClicked(method: Any) = apply {
-        onClick = RegularTrigger(method, TriggerType.OTHER, getLoader())
+        onClick = RegularTrigger(method, TriggerType.OTHER)
     }
 
     /**
@@ -93,7 +92,7 @@ abstract class Gui(title: UTextComponent) : Screen(title) {
      * - int scroll direction
      */
     fun registerScrolled(method: Any) = apply {
-        onScroll = RegularTrigger(method, TriggerType.OTHER, getLoader())
+        onScroll = RegularTrigger(method, TriggerType.OTHER)
     }
 
     /**
@@ -107,7 +106,7 @@ abstract class Gui(title: UTextComponent) : Screen(title) {
      * @return the trigger
      */
     fun registerKeyTyped(method: Any) = apply {
-        onKeyTyped = RegularTrigger(method, TriggerType.OTHER, getLoader())
+        onKeyTyped = RegularTrigger(method, TriggerType.OTHER)
     }
 
     /**
@@ -123,7 +122,7 @@ abstract class Gui(title: UTextComponent) : Screen(title) {
      * @return the trigger
      */
     fun registerMouseDragged(method: Any) = apply {
-        onMouseDragged = RegularTrigger(method, TriggerType.OTHER, getLoader())
+        onMouseDragged = RegularTrigger(method, TriggerType.OTHER)
     }
 
     /**
@@ -138,7 +137,7 @@ abstract class Gui(title: UTextComponent) : Screen(title) {
      * @return the trigger
      */
     fun registerMouseReleased(method: Any) = apply {
-        onMouseReleased = RegularTrigger(method, TriggerType.OTHER, getLoader())
+        onMouseReleased = RegularTrigger(method, TriggerType.OTHER)
     }
 
     /**
@@ -151,7 +150,7 @@ abstract class Gui(title: UTextComponent) : Screen(title) {
      * @return the trigger
      */
     fun registerActionPerformed(method: Any) = apply {
-        onActionPerformed = RegularTrigger(method, TriggerType.OTHER, getLoader())
+        onActionPerformed = RegularTrigger(method, TriggerType.OTHER)
     }
 
     /**
@@ -163,7 +162,7 @@ abstract class Gui(title: UTextComponent) : Screen(title) {
      * @return the trigger
      */
     fun registerOpened(method: Any) = apply {
-        onOpened = RegularTrigger(method, TriggerType.OTHER, getLoader())
+        onOpened = RegularTrigger(method, TriggerType.OTHER)
     }
 
     /**
@@ -175,7 +174,7 @@ abstract class Gui(title: UTextComponent) : Screen(title) {
      * @return the trigger
      */
     fun registerClosed(method: Any) = apply {
-        onClosed = RegularTrigger(method, TriggerType.OTHER, getLoader())
+        onClosed = RegularTrigger(method, TriggerType.OTHER)
     }
 
     fun unregisterDraw() = apply {
@@ -451,6 +450,4 @@ abstract class Gui(title: UTextComponent) : Screen(title) {
     }
 
     // TODO(breaking): Deleted completely pointless drawing methods that had no reason to be here
-
-    internal abstract fun getLoader(): ILoader
 }

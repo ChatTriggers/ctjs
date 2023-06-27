@@ -4,13 +4,11 @@ import com.chattriggers.ctjs.minecraft.listeners.ClientListener
 import com.chattriggers.ctjs.triggers.*
 
 @Suppress("unused")
-interface IRegister {
-    companion object {
-        private val methodMap = IRegister::class.java.methods.associateBy {
-            it.name.lowercase().drop("register".length)
-        }
-        private val customTriggers = mutableSetOf<CustomTriggerType>()
+object Register {
+    private val methodMap = Register::class.java.methods.associateBy {
+        it.name.lowercase().drop("register".length)
     }
+    private val customTriggers = mutableSetOf<CustomTriggerType>()
 
     /**
      * Helper method register a trigger.
@@ -34,7 +32,7 @@ interface IRegister {
 
         val customType = CustomTriggerType(type)
         if (customType in customTriggers)
-            return RegularTrigger(method, customType, getImplementationLoader())
+            return RegularTrigger(method, customType)
 
         throw NoSuchMethodException("No trigger type named '$triggerType'")
     }
@@ -66,7 +64,7 @@ interface IRegister {
      * @return The trigger for additional modification
      */
     fun registerChat(method: Any): ChatTrigger {
-        return ChatTrigger(method, TriggerType.CHAT, getImplementationLoader())
+        return ChatTrigger(method, TriggerType.CHAT)
     }
 
     /**
@@ -86,7 +84,7 @@ interface IRegister {
      * @return The trigger for additional modification
      */
     fun registerActionBar(method: Any): ChatTrigger {
-        return ChatTrigger(method, TriggerType.ACTION_BAR, getImplementationLoader())
+        return ChatTrigger(method, TriggerType.ACTION_BAR)
     }
 
     /**
@@ -99,7 +97,7 @@ interface IRegister {
      * @return The trigger for additional modification
      */
     fun registerWorldLoad(method: Any): RegularTrigger {
-        return RegularTrigger(method, TriggerType.WORLD_LOAD, getImplementationLoader())
+        return RegularTrigger(method, TriggerType.WORLD_LOAD)
     }
 
     /**
@@ -112,7 +110,7 @@ interface IRegister {
      * @return The trigger for additional modification
      */
     fun registerWorldUnload(method: Any): RegularTrigger {
-        return RegularTrigger(method, TriggerType.WORLD_UNLOAD, getImplementationLoader())
+        return RegularTrigger(method, TriggerType.WORLD_UNLOAD)
     }
 
     /**
@@ -131,7 +129,7 @@ interface IRegister {
      * @return The trigger for additional modification
      */
     fun registerClicked(method: Any): RegularTrigger {
-        return RegularTrigger(method, TriggerType.CLICKED, getImplementationLoader())
+        return RegularTrigger(method, TriggerType.CLICKED)
     }
 
     // TODO(breaking): Pass in raw scroll amount (i.e. no longer normalized to -1 or 1)
@@ -150,7 +148,7 @@ interface IRegister {
      * @return The trigger for additional modification
      */
     fun registerScrolled(method: Any): RegularTrigger {
-        return RegularTrigger(method, TriggerType.SCROLLED, getImplementationLoader())
+        return RegularTrigger(method, TriggerType.SCROLLED)
     }
 
     /**
@@ -170,7 +168,7 @@ interface IRegister {
      * @return The trigger for additional modification
      */
     fun registerDragged(method: Any): RegularTrigger {
-        return RegularTrigger(method, TriggerType.DRAGGED, getImplementationLoader())
+        return RegularTrigger(method, TriggerType.DRAGGED)
     }
 
     /**
@@ -192,7 +190,7 @@ interface IRegister {
      * @return The trigger for additional modification
      */
     fun registerSoundPlay(method: Any): SoundPlayTrigger {
-        return SoundPlayTrigger(method, getImplementationLoader())
+        return SoundPlayTrigger(method)
     }
 
     /**
@@ -208,7 +206,7 @@ interface IRegister {
      * @return The trigger for additional modification
      */
     fun registerTick(method: Any): RegularTrigger {
-        return RegularTrigger(method, TriggerType.TICK, getImplementationLoader())
+        return RegularTrigger(method, TriggerType.TICK)
     }
 
     /**
@@ -228,7 +226,7 @@ interface IRegister {
      * @return The trigger for additional modification
      */
     fun registerStep(method: Any): StepTrigger {
-        return StepTrigger(method, getImplementationLoader())
+        return StepTrigger(method)
     }
 
     @Deprecated("Use renderPreWorld", ReplaceWith("registerPreRenderWorld"))
@@ -247,7 +245,7 @@ interface IRegister {
      * @return The trigger for additional modification
      */
     fun registerPreRenderWorld(method: Any): RegularTrigger {
-        return RegularTrigger(method, TriggerType.PRE_RENDER_WORLD, getImplementationLoader())
+        return RegularTrigger(method, TriggerType.PRE_RENDER_WORLD)
     }
 
     /**
@@ -263,7 +261,7 @@ interface IRegister {
      * @return The trigger for additional modification
      */
     fun registerPostRenderWorld(method: Any): RegularTrigger {
-        return RegularTrigger(method, TriggerType.POST_RENDER_WORLD, getImplementationLoader())
+        return RegularTrigger(method, TriggerType.POST_RENDER_WORLD)
     }
 
     /**
@@ -279,7 +277,7 @@ interface IRegister {
      * @return The trigger for additional modification
      */
     fun registerRenderOverlay(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.RENDER_OVERLAY, getImplementationLoader())
+        return EventTrigger(method, TriggerType.RENDER_OVERLAY)
     }
 
     /**
@@ -296,7 +294,7 @@ interface IRegister {
      * @return The trigger for additional modification
      */
     fun registerRenderPlayerList(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.RENDER_PLAYER_LIST, getImplementationLoader())
+        return EventTrigger(method, TriggerType.RENDER_PLAYER_LIST)
     }
 
     /**
@@ -313,7 +311,7 @@ interface IRegister {
      * @return The trigger for additional modification
      */
     fun registerDrawBlockHighlight(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.BLOCK_HIGHLIGHT, getImplementationLoader())
+        return EventTrigger(method, TriggerType.BLOCK_HIGHLIGHT)
     }
 
     /**
@@ -329,7 +327,7 @@ interface IRegister {
      * @return The trigger for additional modification
      */
     fun registerGameLoad(method: Any): RegularTrigger {
-        return RegularTrigger(method, TriggerType.GAME_LOAD, getImplementationLoader())
+        return RegularTrigger(method, TriggerType.GAME_LOAD)
     }
 
     /**
@@ -344,7 +342,7 @@ interface IRegister {
      * @return The trigger for additional modification
      */
     fun registerGameUnload(method: Any): RegularTrigger {
-        return RegularTrigger(method, TriggerType.GAME_UNLOAD, getImplementationLoader())
+        return RegularTrigger(method, TriggerType.GAME_UNLOAD)
     }
 
     /**
@@ -361,7 +359,7 @@ interface IRegister {
      * @return The trigger for additional modification
      */
     fun registerCommand(method: Any): CommandTrigger {
-        return CommandTrigger(method, getImplementationLoader())
+        return CommandTrigger(method)
     }
 
     /**
@@ -377,7 +375,7 @@ interface IRegister {
      * @return The trigger for additional modification
      */
     fun registerGuiOpened(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.GUI_OPENED, getImplementationLoader())
+        return EventTrigger(method, TriggerType.GUI_OPENED)
     }
 
     /**
@@ -393,7 +391,7 @@ interface IRegister {
      * @return The trigger for additional modification
      */
     fun registerGuiClosed(method: Any): RegularTrigger {
-        return RegularTrigger(method, TriggerType.GUI_CLOSED, getImplementationLoader())
+        return RegularTrigger(method, TriggerType.GUI_CLOSED)
     }
 
     // TODO(breaking): Changed params
@@ -412,7 +410,7 @@ interface IRegister {
      * @return The trigger for additional modification
      */
     fun registerDropItem(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.DROP_ITEM, getImplementationLoader())
+        return EventTrigger(method, TriggerType.DROP_ITEM)
     }
 
     /**
@@ -429,7 +427,7 @@ interface IRegister {
      * @return The trigger for additional modification
      */
     fun registerMessageSent(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.MESSAGE_SENT, getImplementationLoader())
+        return EventTrigger(method, TriggerType.MESSAGE_SENT)
     }
 
     /**
@@ -449,7 +447,7 @@ interface IRegister {
      * @return The trigger for additional modification
      */
     fun registerItemTooltip(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.ITEM_TOOLTIP, getImplementationLoader())
+        return EventTrigger(method, TriggerType.ITEM_TOOLTIP)
     }
 
     // TODO(breaking): Changes second argument
@@ -471,7 +469,7 @@ interface IRegister {
      * @return The trigger for additional modification
      */
     fun registerPlayerInteract(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.PLAYER_INTERACT, getImplementationLoader())
+        return EventTrigger(method, TriggerType.PLAYER_INTERACT)
     }
 
     /**
@@ -485,7 +483,7 @@ interface IRegister {
      * @return The trigger for additional modification
      */
     fun registerEntityDamage(method: Any): RegularTrigger {
-        return RegularTrigger(method, TriggerType.ENTITY_DAMAGE, getImplementationLoader())
+        return RegularTrigger(method, TriggerType.ENTITY_DAMAGE)
     }
 
     /**
@@ -498,7 +496,7 @@ interface IRegister {
      * @return The trigger for additional modification
      */
     fun registerEntityDeath(method: Any): RegularTrigger {
-        return RegularTrigger(method, TriggerType.ENTITY_DEATH, getImplementationLoader())
+        return RegularTrigger(method, TriggerType.ENTITY_DEATH)
     }
 
     /**
@@ -516,7 +514,7 @@ interface IRegister {
      * @return The trigger for additional modification
      */
     fun registerGuiRender(method: Any): RegularTrigger {
-        return RegularTrigger(method, TriggerType.GUI_RENDER, getImplementationLoader())
+        return RegularTrigger(method, TriggerType.GUI_RENDER)
     }
 
     /**
@@ -535,7 +533,7 @@ interface IRegister {
      * @return The trigger for additional modification
      */
     fun registerGuiKey(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.GUI_KEY, getImplementationLoader())
+        return EventTrigger(method, TriggerType.GUI_KEY)
     }
 
     // TODO(breaking): Remove guiMouseRelease
@@ -560,7 +558,7 @@ interface IRegister {
      * @return The trigger for additional modification
      */
     fun registerGuiMouseClick(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.GUI_MOUSE_CLICK, getImplementationLoader())
+        return EventTrigger(method, TriggerType.GUI_MOUSE_CLICK)
     }
 
     // TODO(breaking): Add delta x and delta y args
@@ -584,7 +582,7 @@ interface IRegister {
      * @return The trigger for additional modification
      */
     fun registerGuiMouseDrag(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.GUI_MOUSE_DRAG, getImplementationLoader())
+        return EventTrigger(method, TriggerType.GUI_MOUSE_DRAG)
     }
 
     /**
@@ -603,7 +601,7 @@ interface IRegister {
      * @return The trigger for additional modification
      */
     fun registerPacketSent(method: Any): PacketTrigger {
-        return PacketTrigger(method, TriggerType.PACKET_SENT, getImplementationLoader())
+        return PacketTrigger(method, TriggerType.PACKET_SENT)
     }
 
     /**
@@ -622,7 +620,7 @@ interface IRegister {
      * @return The trigger for additional modification
      */
     fun registerPacketReceived(method: Any): PacketTrigger {
-        return PacketTrigger(method, TriggerType.PACKET_RECEIVED, getImplementationLoader())
+        return PacketTrigger(method, TriggerType.PACKET_RECEIVED)
     }
 
     /**
@@ -638,7 +636,7 @@ interface IRegister {
      * @return The trigger for additional modification
      */
     fun registerServerConnect(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.SERVER_CONNECT, getImplementationLoader())
+        return EventTrigger(method, TriggerType.SERVER_CONNECT)
     }
 
     /**
@@ -654,7 +652,7 @@ interface IRegister {
      * @return The trigger for additional modification
      */
     fun registerServerDisconnect(method: Any): RegularTrigger {
-        return RegularTrigger(method, TriggerType.SERVER_DISCONNECT, getImplementationLoader())
+        return RegularTrigger(method, TriggerType.SERVER_DISCONNECT)
     }
 
     // TODO(breaking): Don't pass the position into the trigger (they can get it
@@ -676,7 +674,7 @@ interface IRegister {
      * @return The trigger for additional modification
      */
      fun registerRenderEntity(method: Any): RenderEntityTrigger {
-         return RenderEntityTrigger(method, getImplementationLoader())
+         return RenderEntityTrigger(method)
      }
 
     //  TODO(breaking): Renamed to blockentity
@@ -699,7 +697,7 @@ interface IRegister {
      * @return The trigger for additional modification
      */
      fun registerRenderBlockEntity(method: Any): RenderBlockEntityTrigger {
-         return RenderBlockEntityTrigger(method, getImplementationLoader())
+         return RenderBlockEntityTrigger(method)
      }
 
     /**
@@ -717,7 +715,7 @@ interface IRegister {
      * @return The trigger for additional modification
      */
     fun registerPostGuiRender(method: Any): RegularTrigger {
-        return RegularTrigger(method, TriggerType.POST_GUI_RENDER, getImplementationLoader())
+        return RegularTrigger(method, TriggerType.POST_GUI_RENDER)
     }
 
     // TODO(breaking): Remove ParticleType parameter
@@ -735,10 +733,8 @@ interface IRegister {
      * @return The trigger for additional modification
      */
     fun registerSpawnParticle(method: Any): EventTrigger {
-        return EventTrigger(method, TriggerType.SPAWN_PARTICLE, getImplementationLoader())
+        return EventTrigger(method, TriggerType.SPAWN_PARTICLE)
     }
 
     // TODO(breaking): Removed hitblock & breakblock triggers. use playerinteract instead
-
-    fun getImplementationLoader(): ILoader
 }

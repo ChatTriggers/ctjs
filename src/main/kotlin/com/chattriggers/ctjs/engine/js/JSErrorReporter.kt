@@ -1,4 +1,4 @@
-package com.chattriggers.ctjs.engine.langs.js
+package com.chattriggers.ctjs.engine.js
 
 import com.chattriggers.ctjs.console.Console
 import org.mozilla.javascript.ErrorReporter

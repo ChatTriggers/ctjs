@@ -1,7 +1,6 @@
 package com.chattriggers.ctjs.console
 
-import com.chattriggers.ctjs.engine.langs.Lang
-import com.chattriggers.ctjs.engine.langs.js.JSLoader
+import com.chattriggers.ctjs.engine.js.JSLoader
 import com.chattriggers.ctjs.minecraft.wrappers.Client
 import com.chattriggers.ctjs.utils.Config
 import com.chattriggers.ctjs.utils.Initializer
@@ -12,23 +11,21 @@ import net.minecraft.client.util.InputUtil
 import org.lwjgl.glfw.GLFW
 
 object ConsoleManager : Initializer {
-    private val consoles = mutableMapOf<Lang?, Console>()
-    private val keybindings = mutableMapOf<Lang?, KeyBinding>()
+    val generalConsole = RemoteConsoleHost(null)
+    val jsConsole = RemoteConsoleHost(JSLoader)
 
-    init {
-        consoles[null] = RemoteConsoleHost(null)
-        consoles[Lang.JS] = RemoteConsoleHost(JSLoader)
-    }
+    private val consoles = listOf(generalConsole, jsConsole)
+    private val keyBinds = mutableMapOf<Console, KeyBinding>()
 
     override fun init() {
-        keybindings[null] = KeyBindingHelper.registerKeyBinding(KeyBinding(
+        keyBinds[generalConsole] = KeyBindingHelper.registerKeyBinding(KeyBinding(
             "chattriggers.key.binding.console.general",
             InputUtil.Type.KEYSYM,
             GLFW.GLFW_KEY_UNKNOWN,
             "chattriggers.key.category.console",
         ))
 
-        keybindings[Lang.JS] = KeyBindingHelper.registerKeyBinding(KeyBinding(
+        keyBinds[jsConsole] = KeyBindingHelper.registerKeyBinding(KeyBinding(
             "chattriggers.key.binding.console.js",
             InputUtil.Type.KEYSYM,
             GLFW.GLFW_KEY_GRAVE_ACCENT,
@@ -36,28 +33,26 @@ object ConsoleManager : Initializer {
         ))
 
         ClientTickEvents.END_CLIENT_TICK.register {
-            for ((lang, binding) in keybindings) {
+            for ((console, binding) in keyBinds) {
                 if (binding.wasPressed())
-                    consoles[lang]!!.show()
+                    console.show()
             }
         }
     }
 
     fun onConsoleSettingsChanged(settings: Config.ConsoleSettings) {
-        consoles.values.forEach { it.onConsoleSettingsChanged(settings) }
+        consoles.forEach { it.onConsoleSettingsChanged(settings) }
     }
-
-    fun getConsole(lang: Lang? = null) = consoles[lang]!!
 
     fun clearConsoles() {
         if (Config.clearConsoleOnLoad) {
             Client.scheduleTask {
-                consoles.values.forEach(Console::clear)
+                consoles.forEach(Console::clear)
             }
         }
     }
 
     fun closeConsoles() {
-        consoles.values.forEach(Console::close)
+        consoles.forEach(Console::close)
     }
 }
