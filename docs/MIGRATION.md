@@ -1,7 +1,7 @@
 # 3.0.0 Migration Guide
 
-3.0.0 include a massive list of exciting features and breaking changes; this document
-will serve as a guide for module authors updating their modules.
+3.0.0 includes a massive list of exciting features and breaking changes.\
+This document will serve as a guide for module authors updating their modules.
 
 ## New Features
 
