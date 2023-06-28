@@ -33,7 +33,8 @@ import java.io.InputStream
  * should be passed through as a normal JavaScript object.
  *
  * REQUIRED:
- * - source (String) - filename, relative to ChatTriggers assets directory
+ * - source (String) - an namespaced-identifier (e.g. `minecraft:music_disc.cat`) for a Minecraft sound, or a filename
+ *                     relative to ChatTriggers assets directory
  *
  * OPTIONAL:
  * - stream (boolean) - whether to stream this sound rather than preload it (should be true for large files), defaults to false
@@ -54,6 +55,7 @@ class Sound(private val config: NativeObject) {
     private lateinit var identifier: Identifier
     private lateinit var soundImpl: SoundImpl
     private lateinit var sound: MCSound
+    private var isCustom = false
 
     private var volume = 1f
     private var pitch = 1f
@@ -78,12 +80,18 @@ class Sound(private val config: NativeObject) {
         val category = config["category"]?.let(Category::from) ?: Category.MASTER
         val attenuationType = config["attenuationType"]?.let(AttenuationType::from) ?: AttenuationType.LINEAR
 
-        identifier = makeIdentifier(source)
-        val soundFile = File(CTJS.assetsDir, source)
-        require(soundFile.exists()) { "Cannot find sound resource \"$source\"" }
+        val sourceIdentifier = Identifier.tryParse(source)
+        if (sourceIdentifier != null) {
+            identifier = sourceIdentifier
+        } else {
+            isCustom = true
+            identifier = makeIdentifier(source)
+            val soundFile = File(CTJS.assetsDir, source)
+            require(soundFile.exists()) { "Cannot find sound resource \"$source\"" }
 
-        val resource = Resource(CTResourcePack, soundFile::inputStream, ResourceMetadata::NONE)
-        soundManagerAccessor.soundResources[identifier.withPrefixedPath("sounds/").withSuffixedPath(".ogg")] = resource
+            val resource = Resource(CTResourcePack, soundFile::inputStream, ResourceMetadata::NONE)
+            soundManagerAccessor.soundResources[identifier.withPrefixedPath("sounds/").withSuffixedPath(".ogg")] = resource
+        }
 
         soundImpl = SoundImpl(SoundEvent.of(identifier), category.toMC(), attenuationType.toMC())
         sound = MCSound(
@@ -97,8 +105,10 @@ class Sound(private val config: NativeObject) {
             attenuation,
         )
 
-        soundManagerAccessor.sounds[identifier] = WeightedSoundSet(identifier, null).apply {
-            add(sound)
+        if (isCustom) {
+            soundManagerAccessor.sounds[identifier] = WeightedSoundSet(identifier, null).apply {
+                add(sound)
+            }
         }
 
         setPosition(x, y, z)
@@ -116,9 +126,11 @@ class Sound(private val config: NativeObject) {
 
     fun destroy() {
         stop()
-        val soundManagerAccessor = UMinecraft.getMinecraft().soundManager.asMixin<SoundManagerAccessor>()
-        soundManagerAccessor.sounds.remove(identifier)
-        soundManagerAccessor.soundResources.remove(identifier)
+        if (isCustom) {
+            val soundManagerAccessor = UMinecraft.getMinecraft().soundManager.asMixin<SoundManagerAccessor>()
+            soundManagerAccessor.sounds.remove(identifier)
+            soundManagerAccessor.soundResources.remove(identifier)
+        }
     }
 
     /**
