@@ -21,7 +21,7 @@ internal object DynamicMixinManager {
     lateinit var mixins: Map<Mixin, MixinDetails>
 
     fun initialize() {
-        mixins = JSLoader.mixinSetup(ModuleManager.cachedModules)
+        mixins = JSLoader.mixinSetup(ModuleManager.cachedModules.filter { it.metadata.mixinEntry != null })
     }
 
     fun applyAccessWideners() {
