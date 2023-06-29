@@ -4,13 +4,10 @@ import com.chattriggers.ctjs.CTJS
 import com.chattriggers.ctjs.Reference
 import com.chattriggers.ctjs.console.LogType
 import com.chattriggers.ctjs.console.printToConsole
-import com.chattriggers.ctjs.engine.MixinDetails
 import com.chattriggers.ctjs.engine.js.JSContextFactory
 import com.chattriggers.ctjs.engine.js.JSLoader
-import com.chattriggers.ctjs.launch.Mixin
 import com.chattriggers.ctjs.minecraft.libs.ChatLib
 import com.chattriggers.ctjs.minecraft.wrappers.World
-import com.chattriggers.ctjs.triggers.ITriggerType
 import gg.essential.vigilance.impl.nightconfig.core.file.FileConfig
 import kotlinx.serialization.json.Json
 import org.apache.commons.io.FileUtils
@@ -47,9 +44,6 @@ object ModuleManager {
     @JvmStatic
     fun setup() {
         modulesFolder.mkdirs()
-
-        // Download pending modules
-        ModuleUpdater.importPendingModules()
 
         // Get existing modules
         val installedModules = getFoldersInDir(modulesFolder).map(::parseModule).distinctBy {
@@ -97,7 +91,9 @@ object ModuleManager {
         var completed = 0
 
         // Load the modules
-        modules.forEach {
+        modules.filter {
+            it.metadata.entry != null
+        }.forEach {
             JSLoader.entryPass(it, File(it.folder, it.metadata.entry!!).toURI())
             completed++
             completionListener(completed.toFloat() / total)
