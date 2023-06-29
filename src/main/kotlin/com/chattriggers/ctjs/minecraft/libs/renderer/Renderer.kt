@@ -663,19 +663,6 @@ object Renderer {
         resetTransformsIfNecessary()
     }
 
-    private fun area(points: Array<out List<Float>>): Float {
-        var area = 0f
-
-        for (i in points.indices) {
-            val (x1, y1) = points[i]
-            val (x2, y2) = points[(i + 1) % points.size]
-
-            area += x1 * y2 - x2 * y1
-        }
-
-        return area / 2
-    }
-
     internal fun resetTransformsIfNecessary() {
         if (!retainTransforms) {
             colorized = null

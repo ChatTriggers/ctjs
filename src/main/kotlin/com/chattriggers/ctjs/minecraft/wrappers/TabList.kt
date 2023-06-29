@@ -6,11 +6,14 @@ import com.chattriggers.ctjs.utils.asMixin
 import com.google.common.collect.ComparisonChain
 import com.google.common.collect.Ordering
 import gg.essential.universal.wrappers.message.UTextComponent
+import net.minecraft.client.gui.hud.PlayerListHud
 import net.minecraft.client.network.PlayerListEntry
 import net.minecraft.text.Text
 import net.minecraft.world.GameMode
 
-object TabList {
+object TabList : CTWrapper<PlayerListHud?> {
+    override val mcValue get() = Client.getTabGui()
+
     private val playerComparator = Ordering.from(PlayerComparator())
 
     /**
@@ -33,11 +36,11 @@ object TabList {
 
     @JvmStatic
     fun getNames(): List<String> {
-        if (Client.getTabGui() == null) return listOf()
+        if (toMC() == null) return listOf()
 
         return playerComparator
             .sortedCopy(Player.toMC()!!.networkHandler.playerList)
-            .map { UTextComponent(Client.getTabGui()!!.getPlayerName(it)).formattedText }
+            .map { UTextComponent(toMC()!!.getPlayerName(it)).formattedText }
     }
 
     /**
@@ -58,7 +61,7 @@ object TabList {
 
     // TODO(breaking): Rename and return UTextComponent instead of UMessage
     @JvmStatic
-    fun getHeaderComponent() = Client.getTabGui()?.asMixin<PlayerListHudAccessor>()?.header?.let(::UTextComponent)
+    fun getHeaderComponent() = toMC()?.asMixin<PlayerListHudAccessor>()?.header?.let(::UTextComponent)
 
     @JvmStatic
     fun getHeader() = getHeaderComponent()?.formattedText
@@ -72,10 +75,10 @@ object TabList {
     @JvmStatic
     fun setHeader(header: Any?) {
         when (header) {
-            is String -> Client.getTabGui()?.setHeader(UTextComponent(header))
-            is UTextComponent -> Client.getTabGui()?.setHeader(header)
-            is Text -> Client.getTabGui()?.setHeader(header)
-            null -> Client.getTabGui()?.setHeader(null)
+            is String -> toMC()?.setHeader(UTextComponent(header))
+            is UTextComponent -> toMC()?.setHeader(header)
+            is Text -> toMC()?.setHeader(header)
+            null -> toMC()?.setHeader(null)
         }
     }
 
@@ -84,7 +87,7 @@ object TabList {
 
     // TODO(breaking): Rename and return UTextComponent instead of UMessage
     @JvmStatic
-    fun getFooterComponent() = Client.getTabGui()?.asMixin<PlayerListHudAccessor>()?.footer?.let(::UTextComponent)
+    fun getFooterComponent() = toMC()?.asMixin<PlayerListHudAccessor>()?.footer?.let(::UTextComponent)
 
     @JvmStatic
     fun getFooter() = getFooterComponent()?.formattedText
@@ -99,10 +102,10 @@ object TabList {
     @JvmStatic
     fun setFooter(footer: Any?) {
         when (footer) {
-            is String -> Client.getTabGui()?.setFooter(UTextComponent(footer))
-            is UTextComponent -> Client.getTabGui()?.setFooter(footer)
-            is Text -> Client.getTabGui()?.setFooter(footer)
-            null -> Client.getTabGui()?.setFooter(null)
+            is String -> toMC()?.setFooter(UTextComponent(footer))
+            is UTextComponent -> toMC()?.setFooter(footer)
+            is Text -> toMC()?.setFooter(footer)
+            null -> toMC()?.setFooter(null)
         }
     }
 

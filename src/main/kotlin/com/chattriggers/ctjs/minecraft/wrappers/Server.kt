@@ -1,8 +1,14 @@
 package com.chattriggers.ctjs.minecraft.wrappers
 
 import gg.essential.universal.wrappers.message.UTextComponent
+import net.minecraft.client.network.ServerInfo
 
-object Server {
+object Server : CTWrapper<ServerInfo?> {
+    override val mcValue get() = Client.getMinecraft().currentServerEntry
+
+    @JvmStatic
+    fun isSingleplayer(): Boolean = Client.getMinecraft().isInSingleplayer
+
     /**
      * Gets the current server's IP, or "localhost" if the player
      * is in a single-player world.
@@ -11,10 +17,10 @@ object Server {
      */
     @JvmStatic
     fun getIP(): String {
-        if (Client.getMinecraft().isInSingleplayer)
+        if (isSingleplayer())
             return "localhost"
 
-        return Client.getMinecraft().currentServerEntry?.address ?: ""
+        return toMC()?.address ?: ""
     }
 
     /**
@@ -25,10 +31,10 @@ object Server {
      */
     @JvmStatic
     fun getName(): String {
-        if (Client.getMinecraft().isInSingleplayer)
+        if (isSingleplayer())
             return "SinglePlayer"
 
-        return Client.getMinecraft().currentServerEntry?.name ?: ""
+        return toMC()?.name ?: ""
     }
 
     /**
@@ -39,30 +45,29 @@ object Server {
      */
     @JvmStatic
     fun getMOTD(): String {
-        if (Client.getMinecraft().isInSingleplayer)
+        if (isSingleplayer())
             return "SinglePlayer"
 
-        return Client.getMinecraft().currentServerEntry?.label?.let(::UTextComponent)?.formattedText ?: ""
+        return toMC()?.label?.let(::UTextComponent)?.formattedText ?: ""
     }
 
+    // TODO(breaking): Return -1 if not in a world
     /**
      * Gets the ping to the current server, or 5 if the player
-     * is in a single-player world.
+     * is in a single-player world. Returns -1 if not in a world
      *
      * @return The ping to the current server
      */
     @JvmStatic
     fun getPing(): Long {
-        val player = Player.toMC()
-
-        if (player == null
-            || Client.getMinecraft().isInSingleplayer
-            || Client.getMinecraft().currentServerEntry == null
-        ) {
+        if (isSingleplayer()) {
             return 5L
         }
 
+        val player = Player.toMC() ?: return -1L
+
         return Client.getConnection()?.getPlayerListEntry(player.uuid)?.latency?.toLong()
-            ?: Client.getMinecraft().currentServerEntry?.ping ?: -1L
+            ?: toMC()?.ping
+            ?: -1L
     }
 }
