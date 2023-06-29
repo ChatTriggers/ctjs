@@ -74,6 +74,7 @@
     loadClass("gg.essential.universal.wrappers.message.UTextComponent", "TextComponent");
 
     // Wrappers
+    loadInstance("com.chattriggers.ctjs.minecraft.wrappers.BossBars");
     loadInstance("com.chattriggers.ctjs.minecraft.wrappers.Client");
     loadInstance("com.chattriggers.ctjs.minecraft.wrappers.CPS");
     loadInstance("com.chattriggers.ctjs.minecraft.wrappers.Player");
