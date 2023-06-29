@@ -73,6 +73,11 @@ class Command(
     }
 
     fun unregister() {
+        if (this in pendingCommands) {
+            pendingCommands.remove(this)
+            return
+        }
+
         CTJS.commandDispatcher!!.root.children.removeIf {
             it.name == name || it.name in registeredAliases
         }

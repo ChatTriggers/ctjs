@@ -58,6 +58,7 @@ class CommandTrigger(method: Any) : Trigger(method, TriggerType.COMMAND) {
     fun setAliases(vararg args: String) = apply {
         check(::commandName.isInitialized) { "Command name must be set before aliases!" }
 
+        aliases.clear()
         aliases.addAll(args)
         reInstance()
     }
