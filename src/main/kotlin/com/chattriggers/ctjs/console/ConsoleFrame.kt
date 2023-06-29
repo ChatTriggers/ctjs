@@ -180,23 +180,23 @@ class ConsoleFrame(
         currentConfig = config
 
         val (fg, bg) = if (config.customTheme) {
-            Color(config.foregroundColor) to Color(config.backgroundColor)
+            Color(config.textColor) to Color(config.backgroundColor)
         } else {
             when (config.theme) {
-                "ashes.dark" -> Color(199, 204, 209) to Color(28, 32, 35)
-                "atelierforest.dark" -> Color(199, 204, 209) to Color(28, 32, 35)
-                "isotope.dark" -> Color(208, 208, 208) to Color(0, 0, 0)
-                "codeschool.dark" -> Color(126, 162, 180) to Color(22, 27, 29)
-                "gotham" -> Color(152, 209, 206) to Color(10, 15, 20)
-                "hybrid" -> Color(197, 200, 198) to Color(29, 31, 33)
-                "3024.light" -> Color(74, 69, 67) to Color(247, 247, 247)
-                "chalk.light" -> Color(48, 48, 48) to Color(245, 245, 245)
-                "blue" -> Color(221, 223, 235) to Color(15, 18, 32)
-                "slate" -> Color(193, 199, 208) to Color(33, 36, 41)
-                "red" -> Color(231, 210, 212) to Color(26, 9, 11)
-                "green" -> Color(47, 227, 149) to Color(6, 10, 10)
-                "aids" -> Color(192, 20, 214) to Color(251, 251, 28)
-                "default.dark" -> Color(208, 208, 208) to Color(41, 49, 52)
+                0 -> Color(208, 208, 208) to Color(41, 49, 52)
+                1 -> Color(199, 204, 209) to Color(28, 32, 35)
+                2 -> Color(199, 204, 209) to Color(28, 32, 35)
+                3 -> Color(208, 208, 208) to Color(0, 0, 0)
+                4 -> Color(126, 162, 180) to Color(22, 27, 29)
+                5 -> Color(152, 209, 206) to Color(10, 15, 20)
+                6 -> Color(197, 200, 198) to Color(29, 31, 33)
+                7 -> Color(74, 69, 67) to Color(247, 247, 247)
+                8 -> Color(48, 48, 48) to Color(245, 245, 245)
+                9 -> Color(221, 223, 235) to Color(15, 18, 32)
+                10 -> Color(193, 199, 208) to Color(33, 36, 41)
+                11 -> Color(231, 210, 212) to Color(26, 9, 11)
+                12 -> Color(47, 227, 149) to Color(6, 10, 10)
+                13 -> Color(192, 20, 214) to Color(251, 251, 28)
                 else -> Color(208, 208, 208) to Color(21, 21, 21)
             }
         }

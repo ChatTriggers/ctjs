@@ -2,31 +2,26 @@ package com.chattriggers.ctjs.console
 
 import com.chattriggers.ctjs.engine.langs.Lang
 import com.chattriggers.ctjs.utils.Config
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.encodeToStream
-import java.io.ByteArrayOutputStream
 
 @Serializable
 sealed class H2CMessage
 
 @Serializable
 class ConfigUpdateMessage(
-    val foregroundColor: Int,
+    val textColor: Int,
     val backgroundColor: Int,
     val warningColor: Int,
     val errorColor: Int,
     val openConsoleOnError: Boolean,
     val customTheme: Boolean,
-    val theme: String,
+    val theme: Int,
     val useFiraCode: Boolean,
     val fontSize: Int,
 ) : H2CMessage() {
     companion object {
         fun constructFromConfig(settings: Config.ConsoleSettings) = ConfigUpdateMessage(
-            settings.consoleForegroundColor.rgb,
+            settings.consoleTextColor.rgb,
             settings.consoleBackgroundColor.rgb,
             settings.consoleWarningColor.rgb,
             settings.consoleErrorColor.rgb,
