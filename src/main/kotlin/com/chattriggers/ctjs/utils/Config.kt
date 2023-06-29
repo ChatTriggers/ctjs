@@ -97,18 +97,34 @@ object Config : Vigilant(File(CTJS.configLocation, "ChatTriggers.toml"), sorting
     var customTheme = false
 
     @Property(
-        PropertyType.TEXT,
-        name = "Console custom theme",
+        PropertyType.SELECTOR,
+        name = "Console theme",
         category = "Console",
+        options = [
+            "Default Dark",
+            "Ashes Dark",
+            "Atelierforest Dark",
+            "Isotope Dark",
+            "Codeschool Dark",
+            "Gotham",
+            "Hybrid",
+            "3024 Light",
+            "Chalk Light",
+            "Blue",
+            "Slate",
+            "Red",
+            "Green",
+            "Aids"
+        ]
     )
-    var consoleTheme = "default.dark"
+    var consoleTheme = 0
 
     @Property(
         PropertyType.COLOR,
-        name = "Console foreground color",
+        name = "Console Text color",
         category = "Console",
     )
-    var consoleForegroundColor = Color(208, 208, 208)
+    var consoleTextColor = Color(208, 208, 208)
 
     @Property(
         PropertyType.COLOR,
@@ -134,13 +150,18 @@ object Config : Vigilant(File(CTJS.configLocation, "ChatTriggers.toml"), sorting
     init {
         initialize()
 
+        addDependency("consoleTextColor", "customTheme")
+        addDependency("consoleBackgroundColor", "customTheme")
+        addDependency("consoleErrorColor", "customTheme")
+        addDependency("consoleWarningColor", "customTheme")
+
         listenToConsoleProperty(::clearConsoleOnLoad)
         listenToConsoleProperty(::openConsoleOnError)
         listenToConsoleProperty(::consoleFiraCodeFont)
         listenToConsoleProperty(::consoleFontSize)
         listenToConsoleProperty(::customTheme)
         listenToConsoleProperty(::consoleTheme)
-        listenToConsoleProperty(::consoleForegroundColor)
+        listenToConsoleProperty(::consoleTextColor)
         listenToConsoleProperty(::consoleBackgroundColor)
         listenToConsoleProperty(::consoleErrorColor)
         listenToConsoleProperty(::consoleWarningColor)
@@ -165,8 +186,8 @@ object Config : Vigilant(File(CTJS.configLocation, "ChatTriggers.toml"), sorting
         var consoleFiraCodeFont: Boolean,
         var consoleFontSize: Int,
         var customTheme: Boolean,
-        var consoleTheme: String,
-        var consoleForegroundColor: Color,
+        var consoleTheme: Int,
+        var consoleTextColor: Color,
         var consoleBackgroundColor: Color,
         var consoleErrorColor: Color,
         var consoleWarningColor: Color,
@@ -179,7 +200,7 @@ object Config : Vigilant(File(CTJS.configLocation, "ChatTriggers.toml"), sorting
                 consoleFontSize,
                 customTheme,
                 consoleTheme,
-                consoleForegroundColor,
+                consoleTextColor,
                 consoleBackgroundColor,
                 consoleErrorColor,
                 consoleWarningColor,

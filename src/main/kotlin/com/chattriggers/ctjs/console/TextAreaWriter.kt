@@ -23,7 +23,7 @@ class TextAreaWriter(
         val config = configGetter()
 
         val color = customColor ?: when (currentLogType) {
-            LogType.INFO -> Color(config.foregroundColor)
+            LogType.INFO -> Color(config.textColor)
             LogType.WARN -> Color(config.warningColor)
             LogType.ERROR -> Color(config.errorColor)
         }
