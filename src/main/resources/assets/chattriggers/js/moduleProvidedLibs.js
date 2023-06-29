@@ -156,8 +156,9 @@
     loadClass("org.lwjgl.opengl.GL44");
     loadClass("org.lwjgl.opengl.GL45");
 
+    loadClass("com.chattriggers.ctjs.minecraft.listeners.CancellableEvent");
     global.cancel = event => {
-        if (event instanceof com.chattriggers.ctjs.minecraft.listeners.CancellableEvent) {
+        if (event instanceof CancellableEvent) {
             event.setCanceled(true);
         } else if (event instanceof org.spongepowered.asm.mixin.injection.callback.CallbackInfo) {
             event.cancel();
