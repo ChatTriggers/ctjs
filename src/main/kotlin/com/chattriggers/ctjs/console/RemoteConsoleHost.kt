@@ -35,6 +35,7 @@ class RemoteConsoleHost(private val loader: JSLoader?) : Console {
     private val port = NEXT_PORT++
     private var running = true
     private lateinit var socketOut: PrintWriter
+    private lateinit var process: Process
 
     // We will buffer all message that are attempted to be sent until we connect to a
     // client socket. This allows us to handle early events (e.g. errors that happen during
@@ -50,7 +51,7 @@ class RemoteConsoleHost(private val loader: JSLoader?) : Console {
         // Spawn the Client process. This remote process can be easily debugged in IntelliJ by
         // adding the Remote JVM Debug command line arguments after the class path argument, and
         // then simply placing a breakpoint anywhere in the RemoteConsoleClient class.
-        ProcessBuilder()
+        process = ProcessBuilder()
             .directory(File("."))
             .command(
                 "java",
@@ -113,7 +114,10 @@ class RemoteConsoleHost(private val loader: JSLoader?) : Console {
 
     override fun show() = trySendMessage(OpenMessage)
 
-    override fun close() = trySendMessage(CloseMessage)
+    override fun close() {
+        trySendMessage(CloseMessage)
+        process.destroy()
+    }
 
     override fun onConsoleSettingsChanged(settings: Config.ConsoleSettings) =
         trySendMessage(ConfigUpdateMessage.constructFromConfig(settings))
