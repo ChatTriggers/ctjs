@@ -21,12 +21,25 @@ import java.util.Objects;
 
 @Mixin(GameRenderer.class)
 public class GameRendererMixin {
-    @Inject(method = "renderWorld", at = @At("HEAD"))
+    @Inject(
+        method = "renderWorld",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/client/render/WorldRenderer;render(Lnet/minecraft/client/util/math/MatrixStack;FJZLnet/minecraft/client/render/Camera;Lnet/minecraft/client/render/GameRenderer;Lnet/minecraft/client/render/LightmapTextureManager;Lorg/joml/Matrix4f;)V"
+        )
+    )
     private void injectPreRenderWorld(float tickDelta, long limitTime, MatrixStack matrices, CallbackInfo ci) {
         CTEvents.PRE_RENDER_WORLD.invoker().render(matrices, tickDelta);
     }
 
-    @Inject(method = "renderWorld", at = @At("TAIL"))
+    @Inject(
+        method = "renderWorld",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/client/render/WorldRenderer;render(Lnet/minecraft/client/util/math/MatrixStack;FJZLnet/minecraft/client/render/Camera;Lnet/minecraft/client/render/GameRenderer;Lnet/minecraft/client/render/LightmapTextureManager;Lorg/joml/Matrix4f;)V",
+            shift = At.Shift.AFTER
+        )
+    )
     private void injectPostRenderWorld(float tickDelta, long limitTime, MatrixStack matrices, CallbackInfo ci) {
         CTEvents.POST_RENDER_WORLD.invoker().render(matrices, tickDelta);
     }
