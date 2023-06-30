@@ -52,6 +52,9 @@ object Player : CTWrapper<ClientPlayerEntity?> {
     fun getZ(): Double = toMC()?.z ?: 0.0
 
     @JvmStatic
+    fun getPos(): BlockPos = BlockPos(getX(), getY(), getZ())
+
+    @JvmStatic
     fun getLastX(): Double = toMC()?.lastRenderX ?: 0.0
 
     @JvmStatic
