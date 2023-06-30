@@ -5,6 +5,7 @@ import com.chattriggers.ctjs.minecraft.wrappers.entity.Entity
 import com.chattriggers.ctjs.utils.MCBlockPos
 import com.chattriggers.ctjs.utils.vec.Vec3i
 import kotlin.math.floor
+import kotlin.math.sqrt
 
 class BlockPos(x: Int, y: Int, z: Int) : Vec3i(x, y, z), CTWrapper<MCBlockPos> {
     override val mcValue = MCBlockPos(x, y, z)
@@ -52,5 +53,12 @@ class BlockPos(x: Int, y: Int, z: Int) : Vec3i(x, y, z), CTWrapper<MCBlockPos> {
     @JvmOverloads
     fun offset(facing: BlockFace, n: Int = 1): BlockPos {
         return BlockPos(x + facing.getOffsetX() * n, y + facing.getOffsetY() * n, z + facing.getOffsetZ() * n)
+    }
+
+    fun distanceTo(other: BlockPos): Double {
+        val x = (mcValue.x - other.x).toDouble()
+        val y = (mcValue.y - other.y).toDouble()
+        val z = (mcValue.z - other.z).toDouble()
+        return sqrt(x * x + y * y + z * z)
     }
 }
