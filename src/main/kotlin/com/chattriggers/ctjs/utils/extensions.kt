@@ -19,6 +19,10 @@ fun String.toIdentifier(): Identifier {
 // A helper function that makes the intent explicit and reduces parens
 inline fun <reified T> Any.asMixin() = this as T
 
+inline fun <reified T> NativeObject?.get(key: String): T? {
+    return this?.get(key) as? T
+}
+
 fun NativeObject?.getOption(key: String, default: Any): String {
     return (this?.get(key) ?: default).toString()
 }

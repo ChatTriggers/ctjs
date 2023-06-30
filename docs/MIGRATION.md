@@ -155,8 +155,14 @@ Here is a list of targeted changes for various different APIs:
 - `Renderer`/`Tessellator`
   - `Tessellator` has been removed. Instead, all of its methods have been added to `Renderer`. This means that all rendering is done through the same unified API
   - Removed `drawShape`. Instead, create a `Shape` and invoke its `draw()` method
+  - Renamed `color()` to `getColor()`
+  - `begin()` now no longer translates to the player's camera position. Instead, use `Renderer.translateToPlayer()`
+  - `begin()` now takes a `Renderer.VertexFormat` as an optional second argument
   - `drawString` now takes an optional `color` parameter as its 4th argument
   - `drawPlayer` now takes an object, as even more parameters were added. Check the javadocs for a full description of the parameters
+  - Added `drawString3D()` to replace `Tessellator.drawString()`
+  - Removed `drawLine()`'s `drawMode` argument
+  - Removed `drawCircle()`'s `drawMode` argument
 - `Gui`/`GuiHandler`
   - `GuiHandler` has been removed. It only had one relevant method (`openGui()`), which can be replaced by `Client.currentGui.set()`
   - Removed `isControlDown()`, `isAltDown()`, and `isShiftDown()`. Instead, use the method that already exist on `Screen`: `hasControlDown()`, `hasAltDown()`, and `hasShiftDown()`

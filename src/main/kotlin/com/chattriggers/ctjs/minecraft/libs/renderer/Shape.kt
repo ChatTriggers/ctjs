@@ -10,7 +10,7 @@ import kotlin.math.sin
 class Shape(private var color: Int) {
     private val vertexes = mutableListOf<Vec2f>()
     private val reversedVertexes = vertexes.asReversed()
-    private var drawMode = 9
+    private var drawMode = Renderer.DrawMode.QUADS
     private var area = 0f
 
     fun copy(): Shape = clone()
@@ -26,22 +26,12 @@ class Shape(private var color: Int) {
 
     fun setColor(color: Int) = apply { this.color = Renderer.fixAlpha(color) }
 
-    fun getDrawMode(): Int = drawMode
+    fun getDrawMode(): Renderer.DrawMode = drawMode
 
     /**
-     * Sets the GL draw mode of the shape. Possible draw modes are:
-     * 0 = points
-     * 1 = lines
-     * 2 = line loop
-     * 3 = line strip
-     * 5 = triangles
-     * 5 = triangle strip
-     * 6 = triangle fan
-     * 7 = quads
-     * 8 = quad strip
-     * 9 = polygon
+     * Sets the GL draw mode of the shape
      */
-    fun setDrawMode(drawMode: Int) = apply { this.drawMode = drawMode }
+    fun setDrawMode(drawMode: Renderer.DrawMode) = apply { this.drawMode = drawMode }
 
     fun getVertexes(): List<Vec2f> = vertexes
 
@@ -80,7 +70,7 @@ class Shape(private var color: Int) {
         addVertex(x2 - i, y2 - j)
         addVertex(x1 - i, y1 - j)
 
-        drawMode = 7
+        drawMode = Renderer.DrawMode.QUADS
     }
 
     /**
@@ -107,7 +97,7 @@ class Shape(private var color: Int) {
             addVertex(circleX * radius + x, circleY * radius + y)
         }
 
-        drawMode = 5
+        drawMode = Renderer.DrawMode.TRIANGLE_STRIP
     }
 
     fun draw() = apply {

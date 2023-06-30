@@ -3,17 +3,21 @@ package com.chattriggers.ctjs.minecraft.libs.renderer
 import com.chattriggers.ctjs.minecraft.libs.ChatLib
 import com.chattriggers.ctjs.minecraft.wrappers.Client
 import com.chattriggers.ctjs.minecraft.wrappers.Player
+import com.chattriggers.ctjs.minecraft.wrappers.Settings
 import com.chattriggers.ctjs.minecraft.wrappers.entity.PlayerMP
 import com.chattriggers.ctjs.mixins.EntityRenderDispatcherAccessor
-import com.chattriggers.ctjs.utils.asMixin
-import com.chattriggers.ctjs.utils.getOrDefault
-import com.chattriggers.ctjs.utils.toRadians
+import com.chattriggers.ctjs.utils.*
 import com.chattriggers.ctjs.utils.vec.Vec3f
 import com.mojang.blaze3d.systems.RenderSystem
+import gg.essential.elementa.dsl.component1
+import gg.essential.elementa.dsl.component2
+import gg.essential.elementa.dsl.component3
+import gg.essential.elementa.dsl.component4
 import gg.essential.universal.UGraphics
 import gg.essential.universal.UMatrixStack
 import gg.essential.universal.UMinecraft
 import net.minecraft.client.MinecraftClient
+import net.minecraft.client.font.TextRenderer
 import net.minecraft.client.network.AbstractClientPlayerEntity
 import net.minecraft.client.render.DiffuseLighting
 import net.minecraft.client.render.Tessellator
@@ -21,10 +25,13 @@ import net.minecraft.client.render.entity.EntityRendererFactory
 import org.joml.Matrix4f
 import org.joml.Quaternionf
 import org.mozilla.javascript.NativeObject
+import java.awt.Color
 import java.util.*
 import kotlin.math.*
 
 object Renderer {
+    private val NEWLINE_REGEX = """\n|\r\n?""".toRegex()
+
     @JvmField
     var colorized: Int? = null
     private var retainTransforms = false
@@ -50,52 +57,52 @@ object Renderer {
         internal set
 
     @JvmField
-    val BLACK = color(0, 0, 0, 255)
+    val BLACK = getColor(0, 0, 0, 255)
 
     @JvmField
-    val DARK_BLUE = color(0, 0, 190, 255)
+    val DARK_BLUE = getColor(0, 0, 190, 255)
 
     @JvmField
-    val DARK_GREEN = color(0, 190, 0, 255)
+    val DARK_GREEN = getColor(0, 190, 0, 255)
 
     @JvmField
-    val DARK_AQUA = color(0, 190, 190, 255)
+    val DARK_AQUA = getColor(0, 190, 190, 255)
 
     @JvmField
-    val DARK_RED = color(190, 0, 0, 255)
+    val DARK_RED = getColor(190, 0, 0, 255)
 
     @JvmField
-    val DARK_PURPLE = color(190, 0, 190, 255)
+    val DARK_PURPLE = getColor(190, 0, 190, 255)
 
     @JvmField
-    val GOLD = color(217, 163, 52, 255)
+    val GOLD = getColor(217, 163, 52, 255)
 
     @JvmField
-    val GRAY = color(190, 190, 190, 255)
+    val GRAY = getColor(190, 190, 190, 255)
 
     @JvmField
-    val DARK_GRAY = color(63, 63, 63, 255)
+    val DARK_GRAY = getColor(63, 63, 63, 255)
 
     @JvmField
-    val BLUE = color(63, 63, 254, 255)
+    val BLUE = getColor(63, 63, 254, 255)
 
     @JvmField
-    val GREEN = color(63, 254, 63, 255)
+    val GREEN = getColor(63, 254, 63, 255)
 
     @JvmField
-    val AQUA = color(63, 254, 254, 255)
+    val AQUA = getColor(63, 254, 254, 255)
 
     @JvmField
-    val RED = color(254, 63, 63, 255)
+    val RED = getColor(254, 63, 63, 255)
 
     @JvmField
-    val LIGHT_PURPLE = color(254, 63, 254, 255)
+    val LIGHT_PURPLE = getColor(254, 63, 254, 255)
 
     @JvmField
-    val YELLOW = color(254, 254, 63, 255)
+    val YELLOW = getColor(254, 254, 63, 255)
 
     @JvmField
-    val WHITE = color(255, 255, 255, 255)
+    val WHITE = getColor(255, 255, 255, 255)
 
     @JvmStatic
     fun getColor(color: Int): Int {
@@ -136,7 +143,7 @@ object Renderer {
 
     @JvmStatic
     @JvmOverloads
-    fun color(red: Int, green: Int, blue: Int, alpha: Int = 255): Int {
+    fun getColor(red: Int, green: Int, blue: Int, alpha: Int = 255): Int {
         return (alpha.coerceIn(0, 255) shl 24) or
             (red.coerceIn(0, 255) shl 16) or
             (green.coerceIn(0, 255) shl 8) or
@@ -149,7 +156,7 @@ object Renderer {
         val red = ((sin(step / speed) + 0.75) * 170).toInt()
         val green = ((sin(step / speed + 2 * PI / 3) + 0.75) * 170).toInt()
         val blue = ((sin(step / speed + 4 * PI / 3) + 0.75) * 170).toInt()
-        return color(red, green, blue)
+        return getColor(red, green, blue)
     }
 
     @JvmStatic
@@ -226,36 +233,34 @@ object Renderer {
         matrixStack.pop()
     }
 
+    @JvmStatic
+    fun translateToPlayer() = apply {
+        translate(-Client.camera.getX().toFloat(), -Client.camera.getY().toFloat(), -Client.camera.getZ().toFloat())
+    }
+
     /**
-     * Begin drawing with the Renderer with default draw mode of quads and textured
+     * Begin drawing with the world renderer
      *
      * @param drawMode the GL draw mode
-     * @param textured if the Renderer is textured
+     * @param vertexFormat The [VertexFormat] to use for drawing
      * @return the Renderer to allow for method chaining
      * @see com.chattriggers.ctjs.minecraft.libs.renderer.Shape.setDrawMode
      */
     @JvmStatic
     @JvmOverloads
-    fun begin(drawMode: DrawMode? = Renderer.drawMode, textured: Boolean = true) = apply {
+    fun begin(
+        drawMode: DrawMode? = Renderer.drawMode,
+        vertexFormat: VertexFormat = VertexFormat.POSITION,
+    ) = apply {
         pushMatrix()
         enableBlend()
         tryBlendFuncSeparate(770, 771, 1, 0)
 
-        translate(-Client.camera.getX().toFloat(), -Client.camera.getY().toFloat(), -Client.camera.getZ().toFloat())
-
-        worldRenderer.beginWithDefaultShader(
-            drawMode?.toUC() ?: UGraphics.DrawMode.QUADS,
-            if (textured) UGraphics.CommonVertexFormats.POSITION_TEXTURE else UGraphics.CommonVertexFormats.POSITION,
-        )
+        worldRenderer.beginWithDefaultShader(drawMode?.toUC() ?: UGraphics.DrawMode.QUADS, vertexFormat.toUC())
 
         firstVertex = true
         began = true
     }
-
-    @JvmStatic
-    @JvmOverloads
-    fun begin(drawMode: Int, textured: Boolean = true) =
-        begin(DrawMode.fromUC(UGraphics.DrawMode.fromGl(drawMode)), textured)
 
     /**
      * Sets a new vertex in the Tessellator.
@@ -290,6 +295,24 @@ object Renderer {
 
     @JvmStatic
     @JvmOverloads
+    fun color(x: Float, y: Float, z: Float, a: Float = 1f) = apply {
+        worldRenderer.color(x, y, z, a)
+    }
+
+    @JvmStatic
+    @JvmOverloads
+    fun color(x: Int, y: Int, z: Int, a: Int = 255) = apply {
+        worldRenderer.color(x, y, z, a)
+    }
+
+    @JvmStatic
+    fun color(color: Int) = apply {
+        val (r, g, b, a) = Color(color)
+        color(r, g, b, a)
+    }
+
+    @JvmStatic
+    @JvmOverloads
     fun translate(x: Float, y: Float, z: Float = 0.0F) = apply {
         matrixStack.translate(x, y, z)
     }
@@ -306,9 +329,14 @@ object Renderer {
     }
 
     @JvmStatic
+    fun multiply(quaternion: Quaternionf) = apply {
+        matrixStack.multiply(quaternion)
+    }
+
+    @JvmStatic
     @JvmOverloads
     fun colorize(red: Float, green: Float, blue: Float, alpha: Float = 1f) = apply {
-        colorized = fixAlpha(color(red.toInt(), green.toInt(), blue.toInt(), alpha.toInt()))
+        colorized = fixAlpha(getColor(red.toInt(), green.toInt(), blue.toInt(), alpha.toInt()))
         RenderSystem.setShaderColor(red.coerceIn(0f, 1f), green.coerceIn(0f, 1f), blue.coerceIn(0f, 1f), alpha.coerceIn(0f, 1f))
     }
 
@@ -360,28 +388,22 @@ object Renderer {
         if (pos[1] > pos[3])
             Collections.swap(pos, 1, 3)
 
-        UGraphics.enableBlend()
-        UGraphics.tryBlendFuncSeparate(770, 771, 1, 0)
         doColor(color)
 
-        worldRenderer.beginWithDefaultShader(
-            drawMode?.toUC() ?: UGraphics.DrawMode.QUADS,
-            UGraphics.CommonVertexFormats.POSITION
-        )
-            .pos(matrixStack, pos[0].toDouble(), pos[3].toDouble(), 0.0).endVertex()
-            .pos(matrixStack, pos[2].toDouble(), pos[3].toDouble(), 0.0).endVertex()
-            .pos(matrixStack, pos[2].toDouble(), pos[1].toDouble(), 0.0).endVertex()
-            .pos(matrixStack, pos[0].toDouble(), pos[1].toDouble(), 0.0).endVertex()
-            .drawDirect()
+        begin(drawMode ?: DrawMode.QUADS)
+        pos(pos[0], pos[3], 0f)
+        pos(pos[2], pos[3], 0f)
+        pos(pos[2], pos[1], 0f)
+        pos(pos[0], pos[1], 0f)
+        draw()
 
         colorize(1f, 1f, 1f, 1f)
-        UGraphics.disableBlend()
+        disableBlend()
 
         resetTransformsIfNecessary()
     }
 
     @JvmStatic
-    @JvmOverloads
     fun drawLine(
         color: Int,
         x1: Float,
@@ -389,38 +411,33 @@ object Renderer {
         x2: Float,
         y2: Float,
         thickness: Float,
-        drawMode: UGraphics.DrawMode = UGraphics.DrawMode.QUADS,
     ) {
         val theta = -atan2(y2 - y1, x2 - x1)
         val i = sin(theta) * (thickness / 2)
         val j = cos(theta) * (thickness / 2)
 
-        UGraphics.enableBlend()
-        UGraphics.tryBlendFuncSeparate(770, 771, 1, 0)
         doColor(color)
 
-        worldRenderer.beginWithDefaultShader(this.drawMode?.toUC() ?: drawMode, UGraphics.CommonVertexFormats.POSITION)
-            .pos(matrixStack, (x1 + i).toDouble(), (y1 + j).toDouble(), 0.0).endVertex()
-            .pos(matrixStack, (x2 + i).toDouble(), (y2 + j).toDouble(), 0.0).endVertex()
-            .pos(matrixStack, (x2 - i).toDouble(), (y2 - j).toDouble(), 0.0).endVertex()
-            .pos(matrixStack, (x1 - i).toDouble(), (y1 - j).toDouble(), 0.0).endVertex()
-            .drawDirect()
+        begin(DrawMode.QUADS, VertexFormat.POSITION)
+        pos(x1 + i, y1 + j, 0f)
+        pos(x2 + i, y2 + j, 0f)
+        pos(x2 - i, y2 - j, 0f)
+        pos(x1 - i, y1 - j, 0f)
+        draw()
 
         colorize(1f, 1f, 1f, 1f)
-        UGraphics.disableBlend()
+        disableBlend()
 
         resetTransformsIfNecessary()
     }
 
     @JvmStatic
-    @JvmOverloads
     fun drawCircle(
         color: Int,
         x: Float,
         y: Float,
         radius: Float,
         steps: Int,
-        drawMode: UGraphics.DrawMode = UGraphics.DrawMode.TRIANGLE_STRIP,
     ) {
         val theta = 2 * PI / steps
         val cos = cos(theta).toFloat()
@@ -430,24 +447,20 @@ object Renderer {
         var circleX = 1f
         var circleY = 0f
 
-        enableBlend()
-        tryBlendFuncSeparate(770, 771, 1, 0)
         doColor(color)
 
-        worldRenderer.beginWithDefaultShader(this.drawMode?.toUC() ?: drawMode, UGraphics.CommonVertexFormats.POSITION)
+        begin(Renderer.DrawMode.TRIANGLE_STRIP)
 
         for (i in 0..steps) {
-            worldRenderer.pos(matrixStack, x.toDouble(), y.toDouble(), 0.0).endVertex()
-            worldRenderer.pos(matrixStack, (circleX * radius + x).toDouble(), (circleY * radius + y).toDouble(), 0.0)
-                .endVertex()
+            pos(x, y, 0f)
+            pos(circleX * radius + x, circleY * radius + y, 0f)
             xHolder = circleX
             circleX = cos * circleX - sin * circleY
             circleY = sin * xHolder + cos * circleY
-            worldRenderer.pos(matrixStack, (circleX * radius + x).toDouble(), (circleY * radius + y).toDouble(), 0.0)
-                .endVertex()
+            pos(circleX * radius + x, circleY * radius + y, 0f)
         }
 
-        worldRenderer.drawDirect()
+        draw()
 
         colorize(1f, 1f, 1f, 1f)
         disableBlend()
@@ -461,14 +474,14 @@ object Renderer {
         val fr = getFontRenderer()
         var newY = y
 
-        ChatLib.addColor(text).split("\n").forEach {
+        splitText(text).lines.forEach {
             if (shadow) {
                 fr.drawWithShadow(matrixStack.toMC(), it, x, newY, color)
             } else {
                 fr.draw(matrixStack.toMC(), it, x, newY, color)
             }
 
-            newY += fr.fontHeight
+            newY += fr.fontHeight + 1
         }
 
         resetTransformsIfNecessary()
@@ -477,6 +490,136 @@ object Renderer {
     @JvmOverloads
     @JvmStatic
     fun drawStringWithShadow(text: String, x: Float, y: Float, color: Int = colorized ?: WHITE) = drawString(text, x, y, color, shadow = true)
+
+    /**
+     * Renders floating lines of text in the 3D world at a specific position.
+     *
+     * @param text The string array of text to render
+     * @param x X coordinate in the game world
+     * @param y Y coordinate in the game world
+     * @param z Z coordinate in the game world
+     * @param color the color of the text
+     * @param renderBlackBox render a pretty black border behind the text
+     * @param scale the scale of the text
+     * @param increase whether to scale the text up as the player moves away
+     */
+    @JvmStatic
+    @JvmOverloads
+    fun drawString3D(
+        text: String,
+        x: Float,
+        y: Float,
+        z: Float,
+        color: Int = colorized ?: WHITE,
+        renderBlackBox: Boolean = true,
+        scale: Float = 1f,
+        increase: Boolean = false,
+        centered: Boolean = true,
+    ) {
+        val (lines, width, height) = splitText(text)
+
+        val fontRenderer = getFontRenderer()
+        val camera = Client.getMinecraft().gameRenderer.camera
+        val renderPos = Vec3f(
+            x - camera.pos.x.toFloat(),
+            y - camera.pos.y.toFloat(),
+            z - camera.pos.z.toFloat(),
+        )
+
+        val lScale = scale * if (increase) {
+            val distance = sqrt(renderPos.x * renderPos.x + renderPos.y * renderPos.y + renderPos.z * renderPos.z)
+            val multiplier = distance / 120f //mobs only render ~120 blocks away
+            multiplier
+        } else {
+            0.025f
+        }
+
+        colorize(1f, 1f, 1f, 0.5f)
+        pushMatrix()
+        translate(renderPos.x, renderPos.y, renderPos.z)
+        multiply(camera.rotation)
+        scale(-lScale, -lScale, lScale)
+
+        val opacity = (Settings.toMC().getTextBackgroundOpacity(0.25f) * 255).toInt() shl 24
+
+        val xShift = -(width / 2)
+        val yShift = -(height / 2)
+
+        val vertexConsumers = MinecraftClient.getInstance().bufferBuilders.entityVertexConsumers
+        var yOffset = 0
+
+        for (line in lines) {
+            val centerShift = if (centered) {
+                xShift + (fontRenderer.getWidth(line).toFloat() / 2)
+            } else 0f
+
+            pushMatrix()
+            val matrix = matrixStack.toMC().peek().positionMatrix
+
+            if (renderBlackBox) {
+                fontRenderer.draw(
+                    line,
+                    xShift - centerShift,
+                    yShift + yOffset,
+                    553648127,
+                    false,
+                    matrix,
+                    vertexConsumers,
+                    TextRenderer.TextLayerType.NORMAL,
+                    opacity,
+                    0xf00000,
+                )
+            }
+
+            fontRenderer.draw(
+                line,
+                xShift - centerShift,
+                yShift + yOffset,
+                color,
+                false,
+                matrix,
+                vertexConsumers,
+                TextRenderer.TextLayerType.NORMAL,
+                0,
+                0xf00000,
+            )
+
+            popMatrix()
+
+            yOffset += fontRenderer.fontHeight + 1
+        }
+
+        popMatrix()
+    }
+
+    /**
+     * A variant of drawString3D that takes an object instead of positional parameters
+     */
+    @JvmStatic
+    fun drawString3D(obj: NativeObject) {
+        drawString3D(
+            obj.get<String>("text") ?: error("Expected \"text\" property in object passed to Renderer.drawString3D"),
+            obj.get<Number>("x")?.toFloat() ?: error("Expected \"x\" property in object passed to Renderer.drawString3D"),
+            obj.get<Number>("y")?.toFloat() ?: error("Expected \"y\" property in object passed to Renderer.drawString3D"),
+            obj.get<Number>("z")?.toFloat() ?: error("Expected \"z\" property in object passed to Renderer.drawString3D"),
+            obj.get<Number>("color")?.toInt() ?: colorized ?: WHITE,
+            obj.get<Boolean>("renderBlackBox") ?: true,
+            obj.get<Number>("scale")?.toFloat() ?: 1f,
+            obj.get<Boolean>("increase") ?: false,
+            obj.get<Boolean>("centered") ?: true,
+        )
+    }
+
+    private data class TextLines(val lines: List<String>, val width: Float, val height: Float)
+
+    private fun splitText(text: String): TextLines {
+        val lines = ChatLib.addColor(text).split(NEWLINE_REGEX)
+        return TextLines(
+            lines,
+            lines.maxOf { getFontRenderer().getWidth(it) }.toFloat(),
+            (getFontRenderer().fontHeight * lines.size + (lines.size - 1)).toFloat(),
+        )
+    }
 
     @JvmStatic
     fun drawImage(image: Image, x: Double, y: Double, width: Double, height: Double) {
@@ -635,13 +778,11 @@ object Renderer {
 
     internal fun doColor(color: Int) {
         if (colorized == null) {
-            val a = (color ushr 24 and 255).toFloat() / 255.0f
-            val r = (color ushr 16 and 255).toFloat() / 255.0f
-            val g = (color ushr 8 and 255).toFloat() / 255.0f
-            val b = (color and 255).toFloat() / 255.0f
+            val (r, g, b, a) = Color(color)
             colorize(r, g, b, a)
         }
     }
+
 
     /**
      * Finalizes vertices and draws the Renderer.
@@ -653,7 +794,7 @@ object Renderer {
         began = false
 
         worldRenderer.endVertex()
-        tessellator.draw()
+        worldRenderer.drawDirect()
 
         colorize(1f, 1f, 1f, 1f)
         disableBlend()
@@ -682,6 +823,24 @@ object Renderer {
         companion object {
             @JvmStatic
             fun fromUC(ucValue: UGraphics.DrawMode) = values().first { it.ucValue == ucValue }
+        }
+    }
+
+    enum class VertexFormat(private val ucValue: UGraphics.CommonVertexFormats) {
+        POSITION(UGraphics.CommonVertexFormats.POSITION),
+        POSITION_COLOR(UGraphics.CommonVertexFormats.POSITION_COLOR),
+        POSITION_TEXTURE(UGraphics.CommonVertexFormats.POSITION_TEXTURE),
+        POSITION_TEXTURE_COLOR(UGraphics.CommonVertexFormats.POSITION_TEXTURE_COLOR),
+        POSITION_COLOR_TEXTURE_LIGHT(UGraphics.CommonVertexFormats.POSITION_COLOR_TEXTURE_LIGHT),
+        POSITION_TEXTURE_LIGHT_COLOR(UGraphics.CommonVertexFormats.POSITION_TEXTURE_LIGHT_COLOR),
+        POSITION_TEXTURE_COLOR_LIGHT(UGraphics.CommonVertexFormats.POSITION_TEXTURE_COLOR_LIGHT),
+        POSITION_TEXTURE_COLOR_NORMAL(UGraphics.CommonVertexFormats.POSITION_TEXTURE_COLOR_NORMAL);
+
+        fun toUC() = ucValue
+
+        companion object {
+            @JvmStatic
+            fun fromUC(ucValue: UGraphics.CommonVertexFormats) = values().first { it.ucValue == ucValue }
         }
     }
 
