@@ -25,6 +25,7 @@ import java.util.*
 import kotlin.math.*
 
 object Renderer {
+    @JvmField
     var colorized: Int? = null
     private var retainTransforms = false
     private var drawMode: DrawMode? = null
@@ -40,6 +41,7 @@ object Renderer {
     private lateinit var slimCTRenderPlayer: CTPlayerRenderer
     private lateinit var normalCTRenderPlayer: CTPlayerRenderer
 
+    @JvmField
     val screen = ScreenWrapper()
 
     // The current partialTicks value
@@ -47,52 +49,52 @@ object Renderer {
     var partialTicks = 0f
         internal set
 
-    @JvmStatic
+    @JvmField
     val BLACK = color(0, 0, 0, 255)
 
-    @JvmStatic
+    @JvmField
     val DARK_BLUE = color(0, 0, 190, 255)
 
-    @JvmStatic
+    @JvmField
     val DARK_GREEN = color(0, 190, 0, 255)
 
-    @JvmStatic
+    @JvmField
     val DARK_AQUA = color(0, 190, 190, 255)
 
-    @JvmStatic
+    @JvmField
     val DARK_RED = color(190, 0, 0, 255)
 
-    @JvmStatic
+    @JvmField
     val DARK_PURPLE = color(190, 0, 190, 255)
 
-    @JvmStatic
+    @JvmField
     val GOLD = color(217, 163, 52, 255)
 
-    @JvmStatic
+    @JvmField
     val GRAY = color(190, 190, 190, 255)
 
-    @JvmStatic
+    @JvmField
     val DARK_GRAY = color(63, 63, 63, 255)
 
-    @JvmStatic
+    @JvmField
     val BLUE = color(63, 63, 254, 255)
 
-    @JvmStatic
+    @JvmField
     val GREEN = color(63, 254, 63, 255)
 
-    @JvmStatic
+    @JvmField
     val AQUA = color(63, 254, 254, 255)
 
-    @JvmStatic
+    @JvmField
     val RED = color(254, 63, 63, 255)
 
-    @JvmStatic
+    @JvmField
     val LIGHT_PURPLE = color(254, 63, 254, 255)
 
-    @JvmStatic
+    @JvmField
     val YELLOW = color(254, 254, 63, 255)
 
-    @JvmStatic
+    @JvmField
     val WHITE = color(255, 255, 255, 255)
 
     @JvmStatic

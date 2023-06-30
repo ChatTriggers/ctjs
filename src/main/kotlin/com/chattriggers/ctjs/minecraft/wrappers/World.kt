@@ -25,8 +25,14 @@ import net.minecraft.world.LightType
 object World : CTWrapper<ClientWorld?> {
     override val mcValue get() = UMinecraft.getMinecraft().world
 
+    @JvmField
     val spawn = SpawnWrapper()
+
+    @JvmField
     val particle = ParticleWrapper()
+
+    @JvmField
+    val border = BorderWrapper()
 
     /**
      * Gets Minecraft's [ClientWorld] object
@@ -96,6 +102,7 @@ object World : CTWrapper<ClientWorld?> {
      * @param z the z coordinate
      * @return the skylight level at the location
      */
+    @JvmStatic
     fun getSkyLightLevel(x: Int, y: Int, z: Int): Int = getSkyLightLevel(BlockPos(x, y, z))
 
     /**
@@ -104,6 +111,7 @@ object World : CTWrapper<ClientWorld?> {
      * @param pos The block position
      * @return the skylight level at the location
      */
+    @JvmStatic
     fun getSkyLightLevel(pos: BlockPos): Int {
         return toMC()?.getLightLevel(LightType.SKY, pos.toMC()) ?: 0
     }
@@ -116,6 +124,7 @@ object World : CTWrapper<ClientWorld?> {
      * @param z the z coordinate
      * @return the block light level at the location
      */
+    @JvmStatic
     fun getBlockLightLevel(x: Int, y: Int, z: Int): Int = getBlockLightLevel(BlockPos(x, y, z))
 
     /**
@@ -124,6 +133,7 @@ object World : CTWrapper<ClientWorld?> {
      * @param pos The block position
      * @return the block light level at the location
      */
+    @JvmStatic
     fun getBlockLightLevel(pos: BlockPos): Int {
         return toMC()?.getLightLevel(LightType.BLOCK, pos.toMC()) ?: 0
     }
@@ -194,13 +204,12 @@ object World : CTWrapper<ClientWorld?> {
     /**
      * World border object to get border parameters
      */
-    object border {
+    class BorderWrapper {
         /**
          * Gets the border center x location.
          *
          * @return the border center x location
          */
-        @JvmStatic
         fun getCenterX(): Double = toMC()!!.worldBorder.centerX
 
         /**
@@ -208,7 +217,6 @@ object World : CTWrapper<ClientWorld?> {
          *
          * @return the border center z location
          */
-        @JvmStatic
         fun getCenterZ(): Double = toMC()!!.worldBorder.centerZ
 
         /**
@@ -216,7 +224,6 @@ object World : CTWrapper<ClientWorld?> {
          *
          * @return the border size
          */
-        @JvmStatic
         fun getSize(): Double = toMC()!!.worldBorder.size
 
         /**
@@ -224,7 +231,6 @@ object World : CTWrapper<ClientWorld?> {
          *
          * @return the border target size
          */
-        @JvmStatic
         fun getTargetSize(): Double = toMC()!!.worldBorder.sizeLerpTarget
 
         /**
@@ -232,7 +238,6 @@ object World : CTWrapper<ClientWorld?> {
          *
          * @return the border time until target
          */
-        @JvmStatic
         fun getTimeUntilTarget(): Long = toMC()!!.worldBorder.sizeLerpTime
     }
 

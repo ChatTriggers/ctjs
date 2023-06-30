@@ -32,14 +32,14 @@ import java.awt.datatransfer.StringSelection
 import kotlin.math.roundToInt
 
 object Client {
-    @JvmStatic
+    @JvmField
     val currentGui = CurrentGuiWrapper()
 
-    @JvmStatic
+    @JvmField
     val camera = CameraWrapper()
 
-    @JvmStatic
-    val settings = Settings()
+    @JvmField
+    val settings = Settings
 
     /**
      * Gets Minecraft's Minecraft object
@@ -238,6 +238,7 @@ object Client {
      * @return the [KeyBinding] from a Minecraft KeyBinding, or null if one doesn't exist
      * @see [org.lwjgl.input.Keyboard](http://legacy.lwjgl.org/javadoc/org/lwjgl/input/Keyboard.html)
      */
+    @JvmStatic
     fun getKeyBindFromKey(keyCode: Int): KeyBind? {
         return KeyBind.getKeyBinds().find { it.getKeyCode() == keyCode }
             ?: getMinecraft().options.allKeys
@@ -254,6 +255,7 @@ object Client {
      * @return the [KeyBinding] from a Minecraft KeyBinding, or a new one if one doesn't exist
      * @see [org.lwjgl.input.Keyboard](http://legacy.lwjgl.org/javadoc/org/lwjgl/input/Keyboard.html)
      */
+    @JvmStatic
     fun getKeyBindFromKey(keyCode: Int, description: String, category: String): KeyBind {
         return getKeyBindFromKey(keyCode) ?: KeyBind(description, keyCode, category)
     }
@@ -267,6 +269,7 @@ object Client {
      * @return the [KeyBinding] from a Minecraft KeyBinding, or a new one if one doesn't exist
      * @see [org.lwjgl.input.Keyboard](http://legacy.lwjgl.org/javadoc/org/lwjgl/input/Keyboard.html)
      */
+    @JvmStatic
     fun getKeyBindFromKey(keyCode: Int, description: String): KeyBind {
         return getKeyBindFromKey(keyCode, description, "ChatTriggers")
     }
@@ -278,6 +281,7 @@ object Client {
      * @param description the description of the keybind
      * @return the [KeyBinding], or null if one doesn't exist
      */
+    @JvmStatic
     fun getKeyBindFromDescription(description: String): KeyBind? {
         return KeyBind.getKeyBinds()
             .find { it.getDescription() == description }

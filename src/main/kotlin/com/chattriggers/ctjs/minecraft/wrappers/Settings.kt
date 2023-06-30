@@ -11,7 +11,7 @@ import net.minecraft.client.option.ChatVisibility as MCChatVisibility
 import net.minecraft.client.option.CloudRenderMode as MCCloudRenderMode
 import net.minecraft.client.option.ParticlesMode as MCParticlesMode
 
-class Settings : CTWrapper<GameOptions> {
+object Settings : CTWrapper<GameOptions> {
     override val mcValue get() = UMinecraft.getSettings()
 
     @Deprecated("Use toMC", ReplaceWith("toMC()"))
@@ -25,12 +25,19 @@ class Settings : CTWrapper<GameOptions> {
 
     fun getDifficulty() = World.getDifficulty()
 
+    @JvmField
     val skin = SkinWrapper()
+
+    @JvmField
     val sound = SoundWrapper()
+
+    @JvmField
     val chat = ChatWrapper()
+
+    @JvmField
     val video = VideoWrapper()
 
-    inner class SkinWrapper {
+    class SkinWrapper {
         fun isCapeEnabled() = toMC().isPlayerModelPartEnabled(PlayerModelPart.CAPE)
 
         fun setCapeEnabled(toggled: Boolean) {
@@ -74,7 +81,7 @@ class Settings : CTWrapper<GameOptions> {
         }
     }
 
-    inner class SoundWrapper {
+    class SoundWrapper {
         fun getMasterVolume() = toMC().getSoundVolumeOption(SoundCategory.MASTER).value
 
         fun setMasterVolume(level: Double) {
@@ -130,7 +137,7 @@ class Settings : CTWrapper<GameOptions> {
         }
     }
 
-    inner class VideoWrapper {
+    class VideoWrapper {
         fun getGraphicsMode() = GraphicsMode.fromMC(toMC().graphicsMode.value)
 
         fun setGraphicsMode(mode: GraphicsMode) {
@@ -210,7 +217,7 @@ class Settings : CTWrapper<GameOptions> {
         }
     }
 
-    inner class ChatWrapper {
+    class ChatWrapper {
         fun getVisibility() = ChatVisibility.fromMC(toMC().chatVisibility.value)
 
         fun setVisibility(visibility: ChatVisibility) {

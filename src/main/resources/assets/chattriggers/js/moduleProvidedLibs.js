@@ -47,17 +47,17 @@
     // Extra libs
     loadClass("java.util.ArrayList");
     loadClass("java.util.HashMap");
-    loadInstance("gg.essential.universal.UKeyboard", "Keyboard");
+    loadClass("gg.essential.universal.UKeyboard", "Keyboard");
     loadClass("net.minecraft.util.Hand");
 
     // Libraries
-    loadInstance("com.chattriggers.ctjs.minecraft.libs.ChatLib");
-    loadInstance("com.chattriggers.ctjs.minecraft.libs.FileLib");
-    loadInstance("com.chattriggers.ctjs.minecraft.libs.MathLib");
+    loadClass("com.chattriggers.ctjs.minecraft.libs.ChatLib");
+    loadClass("com.chattriggers.ctjs.minecraft.libs.FileLib");
+    loadClass("com.chattriggers.ctjs.minecraft.libs.MathLib");
 
     loadClass("com.chattriggers.ctjs.minecraft.libs.renderer.Image");
     loadClass("com.chattriggers.ctjs.minecraft.libs.renderer.Rectangle");
-    loadInstance("com.chattriggers.ctjs.minecraft.libs.renderer.Renderer");
+    loadClass("com.chattriggers.ctjs.minecraft.libs.renderer.Renderer");
     loadClass("com.chattriggers.ctjs.minecraft.libs.renderer.Shape");
     loadClass("com.chattriggers.ctjs.minecraft.libs.renderer.Text");
 
@@ -74,14 +74,14 @@
     loadClass("gg.essential.universal.wrappers.message.UTextComponent", "TextComponent");
 
     // Wrappers
-    loadInstance("com.chattriggers.ctjs.minecraft.wrappers.BossBars");
-    loadInstance("com.chattriggers.ctjs.minecraft.wrappers.Client");
-    loadInstance("com.chattriggers.ctjs.minecraft.wrappers.CPS");
-    loadInstance("com.chattriggers.ctjs.minecraft.wrappers.Player");
-    loadInstance("com.chattriggers.ctjs.minecraft.wrappers.Scoreboard");
-    loadInstance("com.chattriggers.ctjs.minecraft.wrappers.Server");
-    loadInstance("com.chattriggers.ctjs.minecraft.wrappers.TabList");
-    loadInstance("com.chattriggers.ctjs.minecraft.wrappers.World");
+    loadClass("com.chattriggers.ctjs.minecraft.wrappers.BossBars");
+    loadClass("com.chattriggers.ctjs.minecraft.wrappers.Client");
+    loadClass("com.chattriggers.ctjs.minecraft.wrappers.CPS");
+    loadClass("com.chattriggers.ctjs.minecraft.wrappers.Player");
+    loadClass("com.chattriggers.ctjs.minecraft.wrappers.Scoreboard");
+    loadClass("com.chattriggers.ctjs.minecraft.wrappers.Server");
+    loadClass("com.chattriggers.ctjs.minecraft.wrappers.TabList");
+    loadClass("com.chattriggers.ctjs.minecraft.wrappers.World");
 
     loadClass("com.chattriggers.ctjs.minecraft.wrappers.entity.BlockEntity");
     loadClass("com.chattriggers.ctjs.minecraft.wrappers.entity.Entity");
@@ -114,13 +114,13 @@
     loadClass("com.chattriggers.ctjs.minecraft.wrappers.inventory.action.DropAction");
     loadClass("com.chattriggers.ctjs.minecraft.wrappers.inventory.action.KeyAction");
 
-    loadInstance("com.chattriggers.ctjs.minecraft.wrappers.inventory.nbt.NBT");
+    loadClass("com.chattriggers.ctjs.minecraft.wrappers.inventory.nbt.NBT");
     loadClass("com.chattriggers.ctjs.minecraft.wrappers.inventory.nbt.NBTBase");
     loadClass("com.chattriggers.ctjs.minecraft.wrappers.inventory.nbt.NBTTagCompound");
     loadClass("com.chattriggers.ctjs.minecraft.wrappers.inventory.nbt.NBTTagList");
 
     // Triggers
-    loadInstance("com.chattriggers.ctjs.engine.Register", "TriggerRegister");
+    loadClass("com.chattriggers.ctjs.engine.Register", "TriggerRegister");
 
     loadClass("com.chattriggers.ctjs.triggers.ChatTrigger", "OnChatTrigger");
     loadClass("com.chattriggers.ctjs.triggers.CommandTrigger", "OnCommandTrigger");

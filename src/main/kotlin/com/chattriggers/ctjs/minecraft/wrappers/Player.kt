@@ -25,6 +25,7 @@ import java.util.*
 object Player : CTWrapper<ClientPlayerEntity?> {
     override val mcValue get() = UMinecraft.getMinecraft().player
 
+    @JvmField
     val armor = ArmorWrapper()
 
     /**
