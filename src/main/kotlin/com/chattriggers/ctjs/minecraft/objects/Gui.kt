@@ -12,6 +12,7 @@ import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents
 import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.gui.widget.ButtonWidget
 import net.minecraft.client.util.math.MatrixStack
+import org.lwjgl.glfw.GLFW
 
 class Gui @JvmOverloads constructor(title: UTextComponent = UTextComponent("")) : Screen(title) {
     private var onDraw: RegularTrigger? = null
@@ -279,7 +280,10 @@ class Gui @JvmOverloads constructor(title: UTextComponent = UTextComponent("")) 
      */
     override fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
         return super.keyPressed(keyCode, scanCode, modifiers).also {
-            onKeyTyped?.trigger(arrayOf(keyCode.toChar(), scanCode))
+            var char = keyCode.toChar()
+            if ((modifiers and GLFW.GLFW_MOD_SHIFT) == 0)
+                char = char.lowercaseChar()
+            onKeyTyped?.trigger(arrayOf(char, keyCode))
         }
     }
 
