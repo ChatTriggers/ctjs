@@ -103,6 +103,7 @@ class RemoteConsoleHost(private val loader: JSLoader?) : Console {
 
     override fun println(obj: Any, logType: LogType, end: String, customColor: Color?) {
         trySendMessage(PrintMessage(obj.toString(), logType, end, customColor?.rgb))
+        print(obj.toString() + end)
     }
 
     override fun printStackTrace(error: Throwable) {
