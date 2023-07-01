@@ -1,5 +1,6 @@
 package com.chattriggers.ctjs.launch
 
+import com.chattriggers.ctjs.CTJS
 import com.chattriggers.ctjs.engine.MixinDetails
 import com.chattriggers.ctjs.engine.js.JSLoader
 import com.chattriggers.ctjs.engine.module.ModuleManager
@@ -9,6 +10,7 @@ import com.chattriggers.ctjs.launch.generation.Utils
 import kotlinx.serialization.json.*
 import org.spongepowered.asm.mixin.Mixins
 import java.io.ByteArrayInputStream
+import java.io.File
 import java.net.URL
 import java.net.URLConnection
 import java.net.URLStreamHandler
@@ -36,6 +38,8 @@ internal object DynamicMixinManager {
 
     fun applyMixins() {
         val dynamicMixins = mutableListOf<String>()
+
+        if (CTJS.isDevelopment) deleteOldMixinClasses()
 
         for ((mixin, details) in mixins) {
             val ctx = GenerationContext(mixin)
@@ -72,6 +76,11 @@ internal object DynamicMixinManager {
         addUrlMethod.invoke(classLoader, ByteBasedStreamHandler.url)
 
         Mixins.addConfiguration(GENERATED_MIXIN)
+    }
+
+    private fun deleteOldMixinClasses() {
+        val dir = File(CTJS.configLocation, "ChatTriggers/mixin-classes")
+        dir.listFiles()?.forEach { it.delete() }
     }
 
     private object ByteBasedStreamHandler : URLStreamHandler() {
