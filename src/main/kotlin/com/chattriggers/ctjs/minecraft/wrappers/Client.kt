@@ -28,6 +28,7 @@ import net.minecraft.client.realms.gui.screen.RealmsMainScreen
 import net.minecraft.network.packet.Packet
 import net.minecraft.util.Util
 import java.awt.Toolkit
+import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.StringSelection
 import kotlin.math.roundToInt
 
@@ -227,10 +228,25 @@ object Client {
      * @param text The text to copy
      */
     @JvmStatic
-    fun copy(text: String) {
+    @JvmOverloads
+    fun copy(text: String = "") {
         val selection = StringSelection(text)
         Toolkit.getDefaultToolkit().systemClipboard.setContents(selection, selection)
     }
+
+    /**
+     * Get the string currently on the clipboard, or null if there is no copied text
+     *
+     * @return String or null
+     */
+    @JvmStatic
+    fun paste(): String? {
+        val transferable = Toolkit.getDefaultToolkit().systemClipboard.getContents(null) ?: return null
+        if (transferable.isDataFlavorSupported(DataFlavor.stringFlavor))
+            return (transferable.getTransferData(DataFlavor.stringFlavor) as String).ifEmpty { null }
+        return null
+    }
+
     /**
      * Get the [KeyBinding] from an already existing Minecraft KeyBinding, otherwise, returns null.
      *
