@@ -8,8 +8,12 @@ import org.mozilla.javascript.NativeObject
 import kotlin.reflect.KClass
 
 fun String.toVersion(): Version {
-    val split = this.split(".").map(String::toInt)
-    return Version(split.getOrNull(0) ?: 0, split.getOrNull(1) ?: 0, split.getOrNull(2) ?: 0, null, null, null)
+    val (semvar, extra) = if ('-' in this) {
+        split('-')
+    } else listOf(this, null)
+
+    val split = semvar!!.split(".").map(String::toInt)
+    return Version(split.getOrElse(0) { 0 }, split.getOrElse(1) { 0 }, split.getOrElse(2) { 0 }, extra, null, null)
 }
 
 fun String.toIdentifier(): Identifier {
