@@ -22,7 +22,7 @@ class Module(val name: String, var metadata: ModuleMetadata, val folder: File) {
         gui.y = y
 
         Renderer.drawRect(
-            0xaa000000.toInt(),
+            0xaa000000,
             x, y, width, 13f
         )
         Renderer.drawStringWithShadow(

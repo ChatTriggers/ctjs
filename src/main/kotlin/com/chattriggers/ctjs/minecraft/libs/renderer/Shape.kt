@@ -7,7 +7,7 @@ import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
 
-class Shape(private var color: Int) {
+class Shape(private var color: Long) {
     private val vertexes = mutableListOf<Vec2f>()
     private val reversedVertexes = vertexes.asReversed()
     private var drawMode = Renderer.DrawMode.QUADS
@@ -22,9 +22,9 @@ class Shape(private var color: Int) {
         return clone
     }
 
-    fun getColor(): Int = color
+    fun getColor(): Long = color
 
-    fun setColor(color: Int) = apply { this.color = Renderer.fixAlpha(color) }
+    fun setColor(color: Long) = apply { this.color = Renderer.fixAlpha(color) }
 
     fun getDrawMode(): Renderer.DrawMode = drawMode
 

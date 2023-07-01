@@ -13,8 +13,8 @@ class DisplayLine {
 
     private var textWidth = 0f
 
-    private var textColor: Int? = null
-    private var backgroundColor: Int? = null
+    private var textColor: Long? = null
+    private var backgroundColor: Long? = null
     private var background: Display.Background? = null
     private var align: Display.Align? = null
 
@@ -38,8 +38,8 @@ class DisplayLine {
     constructor(text: String, config: NativeObject) {
         setText(text)
 
-        textColor = config.getOption("textColor", null)?.toInt()
-        backgroundColor = config.getOption("backgroundColor", null)?.toInt()
+        textColor = config.getOption("textColor", null)?.toLong()
+        backgroundColor = config.getOption("backgroundColor", null)?.toLong()
 
         setAlign(config.getOption("align", null))
         setBackground(config.getOption("background", null))
@@ -67,9 +67,9 @@ class DisplayLine {
         textWidth = Renderer.getStringWidth(text) * this.text.getScale()
     }
 
-    fun getTextColor(): Int? = textColor
+    fun getTextColor(): Long? = textColor
 
-    fun setTextColor(color: Int?) = apply {
+    fun setTextColor(color: Long?) = apply {
         textColor = color
     }
 
@@ -102,9 +102,9 @@ class DisplayLine {
         }
     }
 
-    fun getBackgroundColor(): Int? = backgroundColor
+    fun getBackgroundColor(): Long? = backgroundColor
 
-    fun setBackgroundColor(backgroundColor: Int?) = apply {
+    fun setBackgroundColor(backgroundColor: Long?) = apply {
         this.backgroundColor = backgroundColor
     }
 
@@ -149,8 +149,8 @@ class DisplayLine {
         y: Float,
         totalWidth: Float,
         displayBackground: Display.Background,
-        displayBackgroundColor: Int,
-        displayTextColor: Int,
+        displayBackgroundColor: Long,
+        displayTextColor: Long,
         align: Display.Align,
     ) {
         val background = this.background ?: displayBackground

@@ -33,7 +33,7 @@ object Renderer {
     private val NEWLINE_REGEX = """\n|\r\n?""".toRegex()
 
     @JvmField
-    var colorized: Int? = null
+    var colorized: Long? = null
     private var retainTransforms = false
     private var drawMode: DrawMode? = null
     private var firstVertex = true
@@ -105,7 +105,7 @@ object Renderer {
     val WHITE = getColor(255, 255, 255, 255)
 
     @JvmStatic
-    fun getColor(color: Int): Int {
+    fun getColor(color: Int): Long {
         return when (color) {
             0 -> BLACK
             1 -> DARK_BLUE
@@ -143,16 +143,16 @@ object Renderer {
 
     @JvmStatic
     @JvmOverloads
-    fun getColor(red: Int, green: Int, blue: Int, alpha: Int = 255): Int {
-        return (alpha.coerceIn(0, 255) shl 24) or
+    fun getColor(red: Int, green: Int, blue: Int, alpha: Int = 255): Long {
+        return ((alpha.coerceIn(0, 255) shl 24) or
             (red.coerceIn(0, 255) shl 16) or
             (green.coerceIn(0, 255) shl 8) or
-            blue.coerceIn(0, 255)
+            blue.coerceIn(0, 255)).toLong()
     }
 
     @JvmStatic
     @JvmOverloads
-    fun getRainbow(step: Float, speed: Float = 1f): Int {
+    fun getRainbow(step: Float, speed: Float = 1f): Long {
         val red = ((sin(step / speed) + 0.75) * 170).toInt()
         val green = ((sin(step / speed + 2 * PI / 3) + 0.75) * 170).toInt()
         val blue = ((sin(step / speed + 4 * PI / 3) + 0.75) * 170).toInt()
@@ -306,8 +306,8 @@ object Renderer {
     }
 
     @JvmStatic
-    fun color(color: Int) = apply {
-        val (r, g, b, a) = Color(color)
+    fun color(color: Long) = apply {
+        val (r, g, b, a) = Color(color.toInt())
         color(r, g, b, a)
     }
 
@@ -357,7 +357,7 @@ object Renderer {
     fun getDrawMode() = drawMode
 
     @JvmStatic
-    fun fixAlpha(color: Int): Int {
+    fun fixAlpha(color: Long): Long {
         val alpha = color ushr 24 and 255
         return if (alpha < 10)
             (color and 0xFF_FF_FF) or 0xA_FF_FF_FF
@@ -381,7 +381,7 @@ object Renderer {
     }
 
     @JvmStatic
-    fun drawRect(color: Int, x: Float, y: Float, width: Float, height: Float) = apply {
+    fun drawRect(color: Long, x: Float, y: Float, width: Float, height: Float) = apply {
         val pos = mutableListOf(x, y, x + width, y + height)
         if (pos[0] > pos[2])
             Collections.swap(pos, 0, 2)
@@ -405,7 +405,7 @@ object Renderer {
 
     @JvmStatic
     fun drawLine(
-        color: Int,
+        color: Long,
         x1: Float,
         y1: Float,
         x2: Float,
@@ -433,7 +433,7 @@ object Renderer {
 
     @JvmStatic
     fun drawCircle(
-        color: Int,
+        color: Long,
         x: Float,
         y: Float,
         radius: Float,
@@ -470,15 +470,15 @@ object Renderer {
 
     @JvmOverloads
     @JvmStatic
-    fun drawString(text: String, x: Float, y: Float, color: Int = colorized ?: WHITE, shadow: Boolean = false) {
+    fun drawString(text: String, x: Float, y: Float, color: Long = colorized ?: WHITE, shadow: Boolean = false) {
         val fr = getFontRenderer()
         var newY = y
 
         splitText(text).lines.forEach {
             if (shadow) {
-                fr.drawWithShadow(matrixStack.toMC(), it, x, newY, color)
+                fr.drawWithShadow(matrixStack.toMC(), it, x, newY, color.toInt())
             } else {
-                fr.draw(matrixStack.toMC(), it, x, newY, color)
+                fr.draw(matrixStack.toMC(), it, x, newY, color.toInt())
             }
 
             newY += fr.fontHeight + 1
@@ -489,7 +489,7 @@ object Renderer {
 
     @JvmOverloads
     @JvmStatic
-    fun drawStringWithShadow(text: String, x: Float, y: Float, color: Int = colorized ?: WHITE) = drawString(text, x, y, color, shadow = true)
+    fun drawStringWithShadow(text: String, x: Float, y: Float, color: Long = colorized ?: WHITE) = drawString(text, x, y, color, shadow = true)
 
     /**
      * Renders floating lines of text in the 3D world at a specific position.
@@ -510,7 +510,7 @@ object Renderer {
         x: Float,
         y: Float,
         z: Float,
-        color: Int = colorized ?: WHITE,
+        color: Long = colorized ?: WHITE,
         renderBlackBox: Boolean = true,
         scale: Float = 1f,
         increase: Boolean = false,
@@ -575,7 +575,7 @@ object Renderer {
                 line,
                 xShift - centerShift,
                 yShift + yOffset,
-                color,
+                color.toInt(),
                 false,
                 matrix,
                 vertexConsumers,
@@ -602,7 +602,7 @@ object Renderer {
             obj.get<Number>("x")?.toFloat() ?: error("Expected \"x\" property in object passed to Renderer.drawString3D"),
             obj.get<Number>("y")?.toFloat() ?: error("Expected \"y\" property in object passed to Renderer.drawString3D"),
             obj.get<Number>("z")?.toFloat() ?: error("Expected \"z\" property in object passed to Renderer.drawString3D"),
-            obj.get<Number>("color")?.toInt() ?: colorized ?: WHITE,
+            obj.get<Number>("color")?.toLong() ?: colorized ?: WHITE,
             obj.get<Boolean>("renderBlackBox") ?: true,
             obj.get<Number>("scale")?.toFloat() ?: 1f,
             obj.get<Boolean>("increase") ?: false,
@@ -776,9 +776,9 @@ object Renderer {
         this.matrixStack.pop()
     }
 
-    internal fun doColor(color: Int) {
+    internal fun doColor(color: Long) {
         if (colorized == null) {
-            val (r, g, b, a) = Color(color)
+            val (r, g, b, a) = Color(color.toInt())
             colorize(r, g, b, a)
         }
     }
