@@ -13,7 +13,7 @@ import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.gui.widget.ButtonWidget
 import net.minecraft.client.util.math.MatrixStack
 
-class Gui(title: UTextComponent) : Screen(title) {
+class Gui @JvmOverloads constructor(title: UTextComponent = UTextComponent("")) : Screen(title) {
     private var onDraw: RegularTrigger? = null
     private var onClick: RegularTrigger? = null
     private var onScroll: RegularTrigger? = null
