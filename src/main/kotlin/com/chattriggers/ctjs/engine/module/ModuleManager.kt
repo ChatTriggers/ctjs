@@ -114,7 +114,10 @@ object ModuleManager {
 
         if (metadataFile.exists()) {
             try {
-                metadata = Json.decodeFromString(metadataFile.readText())
+                // A lot of older modules have "author" instead of "creator", and it's easy enough to
+                // support that here
+                val text = metadataFile.readText().replace("\"author\"", "\"creator\"")
+                metadata = Json.decodeFromString(text)
             } catch (e: Exception) {
                 "Module $directory has invalid metadata.json".printToConsole(logType = LogType.ERROR)
             }
