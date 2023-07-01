@@ -196,7 +196,7 @@
         return easeOut(this, to, speed, jump);
     };
 
-    global.easeColor = (start, finish, speed, jump) => Renderer.color(
+    global.easeColor = (start, finish, speed, jump) => Renderer.getColor(
         easeOut((start >> 16) & 0xFF, (finish >> 16) & 0xFF, speed, jump),
         easeOut((start >> 8) & 0xFF, (finish >> 8) & 0xFF, speed, jump),
         easeOut(start & 0xFF, finish & 0xFF, speed, jump),
@@ -207,7 +207,7 @@
         return easeColor(this, to, speed, jump);
     };
 
-    const LogType = com.chattriggers.ctjs.utils.console.LogType;
+    const LogType = com.chattriggers.ctjs.console.LogType;
 
     global.print = function (toPrint, color = null) {
         println(toPrint, color, "");
