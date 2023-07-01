@@ -481,7 +481,7 @@ object Renderer {
                 fr.draw(matrixStack.toMC(), it, x, newY, color.toInt())
             }
 
-            newY += fr.fontHeight + 1
+            newY += fr.fontHeight
         }
 
         resetTransformsIfNecessary()
