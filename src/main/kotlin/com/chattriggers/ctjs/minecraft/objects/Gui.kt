@@ -31,12 +31,6 @@ class Gui @JvmOverloads constructor(title: UTextComponent = UTextComponent("")) 
     private var nextButtonId = 0
     private var doesPauseGame = false
 
-    init {
-        ScreenMouseEvents.afterMouseScroll(this).register { _, x, y, _, dy ->
-            onScroll?.trigger(arrayOf(x, y, dy))
-        }
-    }
-
     fun open() {
         Client.currentGui.set(this)
     }
@@ -219,6 +213,11 @@ class Gui @JvmOverloads constructor(title: UTextComponent = UTextComponent("")) 
 
     override fun init() {
         super.init()
+
+        ScreenMouseEvents.afterMouseScroll(this).register { _, x, y, _, dy ->
+            onScroll?.trigger(arrayOf(x, y, dy))
+        }
+
         buttons.values.forEach(::addDrawable)
         onOpened?.trigger(arrayOf(this))
     }
