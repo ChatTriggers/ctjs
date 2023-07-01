@@ -778,11 +778,10 @@ object Renderer {
 
     internal fun doColor(color: Long) {
         if (colorized == null) {
-            val (r, g, b, a) = Color(color.toInt())
+            val (r, g, b, a) = Color(color.toInt(), true)
             colorize(r, g, b, a)
         }
     }
-
 
     /**
      * Finalizes vertices and draws the Renderer.
