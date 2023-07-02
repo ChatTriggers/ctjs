@@ -148,8 +148,11 @@ Here is a list of targeted changes for various different APIs:
   - The `attenuation` field is now the distance. Added an `attenuationType` field which takes a `Sound.AttenuationType`
   - `setCategory` now takes a `Sound.Category`
 - `KeyBind.register...()` methods now return the `KeyBind` instead of the trigger. Use the respective `unregister...()` methods if necessary.
-- `DisplayLine`
-  - The `register...` methods now return the `DisplayLine` instance for method chaining. Use the `unregister...` methods to unregister the respective trigger.
+- `Display`
+  - Removed `DisplayLine`, lines are now instances of `Text`
+  - The user must now call the `draw()` method manually. This allows it to be rendered in any arbitrary trigger
+- `Text`
+  - Added background color and alignment to replace the functionality in `DisplayLine`
 - `Image`
   - Remove deprecated constructors. Instead, use the static helper methods: `Image.fromFile(File)`, `Image.fromFile(string)`, `Image.fromAsset(string)`, and `Image.fromUrl(String[, String])`
 - `Renderer`/`Tessellator`

@@ -1,7 +1,6 @@
 package com.chattriggers.ctjs.minecraft.libs.renderer
 
 import com.chattriggers.ctjs.minecraft.libs.ChatLib
-import com.chattriggers.ctjs.minecraft.objects.display.Display
 import com.chattriggers.ctjs.utils.getOption
 import net.minecraft.text.Style
 import org.mozilla.javascript.NativeObject
@@ -14,9 +13,11 @@ class Text {
     private val lines = mutableListOf<String>()
 
     private var color = 0xffffffff
+    private var backgroundColor = 0xff000000
     private var formatted = true
     private var shadow = false
-    private var align = Display.Align.LEFT
+    private var align = Align.LEFT
+    private var background = false
 
     private var width = 0f
     private var maxWidth = 0
@@ -35,7 +36,9 @@ class Text {
         setColor(config.getOption("color", 0xffffffff).toLong())
         setFormatted(config.getOption("formatted", true).toBoolean())
         setShadow(config.getOption("shadow", false).toBoolean())
-        setAlign(config.getOption("align", Display.Align.LEFT))
+        setAlign(config.getOption("align", Align.LEFT))
+        setBackground(config.getOption("background", false).toBoolean())
+        setBackgroundColor(config.getOption("backgroundColor", 0x00000000).toLong())
         setX(config.getOption("x", 0f).toFloat())
         setY(config.getOption("y", 0f).toFloat())
         setMaxLines((config.getOption("maxLines", Int.MAX_VALUE)).toDouble().toInt())
@@ -65,14 +68,32 @@ class Text {
 
     fun setShadow(shadow: Boolean) = apply { this.shadow = shadow }
 
-    fun getAlign(): Display.Align = align
+    fun getAlign(): Align = align
 
     fun setAlign(align: Any) = apply {
         this.align = when (align) {
-            is String -> Display.Align.valueOf(align.uppercase())
-            is Display.Align -> align
-            else -> Display.Align.LEFT
+            is String -> Align.valueOf(align.uppercase())
+            is Align -> align
+            else -> Align.LEFT
         }
+    }
+
+    fun getBackground(): Boolean = background
+
+    /**
+     * Set the background
+     *
+     * true: Background is enabled
+     * false: Background is disabled
+     */
+    fun setBackground(background: Boolean) = apply {
+        this.background = background
+    }
+
+    fun getBackgroundColor(): Long = backgroundColor
+
+    fun setBackgroundColor(backgroundColor: Long) = apply {
+        this.backgroundColor = backgroundColor
     }
 
     fun getX(): Float = x
@@ -126,6 +147,10 @@ class Text {
 
     @JvmOverloads
     fun draw(x: Float? = null, y: Float? = null) = apply {
+        draw(x, y, null, null)
+    }
+
+    internal fun draw(x: Float? = null, y: Float? = null, backgroundX: Float? = null, backgroundWidth: Float? = null) = apply {
         Renderer.enableBlend()
         Renderer.scale(scale, scale, scale)
 
@@ -136,9 +161,18 @@ class Text {
 
         var yHolder = y ?: this.y
 
+        val xHolder = when (align) {
+            Align.CENTER -> (x ?: this.x) - width / 2
+            Align.RIGHT -> (x ?: this.x) - width
+            else -> x ?: this.x
+        }
+
+        if (background)
+            Renderer.drawRect(backgroundColor, backgroundX ?: xHolder, yHolder, backgroundWidth ?: width, getHeight())
+
         for (i in 0 until maxLines) {
             if (i >= lines.size) break
-            Renderer.drawString(lines[i], x ?: this.x, yHolder, color, shadow)
+            Renderer.drawString(lines[i], xHolder, yHolder, color, shadow)
             yHolder += scale * 10
         }
         Renderer.disableBlend()
@@ -163,20 +197,15 @@ class Text {
         }
     }
 
-    private fun getXAlign(string: String, x: Float): Float {
-        val newX = x / scale
-        return when (align) {
-            Display.Align.CENTER -> newX - Renderer.getStringWidth(string) / 2
-            Display.Align.RIGHT -> newX - Renderer.getStringWidth(string)
-            else -> newX
-        }
-    }
-
     override fun toString() =
         "Text{" +
             "string=$string, x=$x, y=$y, " +
             "lines=$lines, color=$color, scale=$scale, " +
-            "formatted=$formatted, shadow=$shadow, align=$align, " +
+            "formatted=$formatted, shadow=$shadow, " + //align=$align, " +
             "width=$width, maxWidth=$maxWidth, maxLines=$maxLines" +
             "}"
+
+    enum class Align {
+        LEFT, CENTER, RIGHT
+    }
 }
