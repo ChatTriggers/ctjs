@@ -334,7 +334,9 @@ public final class com/chattriggers/ctjs/minecraft/libs/renderer/Text {
 	public final fun draw (Ljava/lang/Float;Ljava/lang/Float;)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Text;
 	public static synthetic fun draw$default (Lcom/chattriggers/ctjs/minecraft/libs/renderer/Text;Ljava/lang/Float;Ljava/lang/Float;ILjava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Text;
 	public final fun exceedsMaxLines ()Z
-	public final fun getAlign ()Lcom/chattriggers/ctjs/minecraft/objects/display/Display$Align;
+	public final fun getAlign ()Lcom/chattriggers/ctjs/minecraft/libs/renderer/Text$Align;
+	public final fun getBackground ()Z
+	public final fun getBackgroundColor ()J
 	public final fun getColor ()J
 	public final fun getFormatted ()Z
 	public final fun getHeight ()F
@@ -348,6 +350,8 @@ public final class com/chattriggers/ctjs/minecraft/libs/renderer/Text {
 	public final fun getX ()F
 	public final fun getY ()F
 	public final fun setAlign (Ljava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Text;
+	public final fun setBackground (Z)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Text;
+	public final fun setBackgroundColor (J)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Text;
 	public final fun setColor (J)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Text;
 	public final fun setFormatted (Z)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Text;
 	public final fun setMaxLines (I)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Text;
@@ -358,6 +362,14 @@ public final class com/chattriggers/ctjs/minecraft/libs/renderer/Text {
 	public final fun setX (F)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Text;
 	public final fun setY (F)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Text;
 	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/chattriggers/ctjs/minecraft/libs/renderer/Text$Align : java/lang/Enum {
+	public static final field CENTER Lcom/chattriggers/ctjs/minecraft/libs/renderer/Text$Align;
+	public static final field LEFT Lcom/chattriggers/ctjs/minecraft/libs/renderer/Text$Align;
+	public static final field RIGHT Lcom/chattriggers/ctjs/minecraft/libs/renderer/Text$Align;
+	public static fun valueOf (Ljava/lang/String;)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Text$Align;
+	public static fun values ()[Lcom/chattriggers/ctjs/minecraft/libs/renderer/Text$Align;
 }
 
 public final class com/chattriggers/ctjs/minecraft/objects/Book {
@@ -373,6 +385,54 @@ public final class com/chattriggers/ctjs/minecraft/objects/Book {
 	public final fun isOpen ()Z
 	public final fun setPage (ILgg/essential/universal/wrappers/message/UTextComponent;)Lcom/chattriggers/ctjs/minecraft/objects/Book;
 	public final fun setPage (ILjava/lang/String;)Lcom/chattriggers/ctjs/minecraft/objects/Book;
+}
+
+public final class com/chattriggers/ctjs/minecraft/objects/Display {
+	public fun <init> ()V
+	public fun <init> (Lorg/mozilla/javascript/NativeObject;)V
+	public final fun addLine (Ljava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/objects/Display;
+	public final fun addLines ([Ljava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/objects/Display;
+	public final fun clearLines ()Lcom/chattriggers/ctjs/minecraft/objects/Display;
+	public final fun draw ()V
+	public final fun getAlign ()Lcom/chattriggers/ctjs/minecraft/libs/renderer/Text$Align;
+	public final fun getBackground ()Lcom/chattriggers/ctjs/minecraft/objects/Display$Background;
+	public final fun getBackgroundColor ()J
+	public final fun getHeight ()F
+	public final fun getLine (I)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Text;
+	public final fun getLines ()Ljava/util/List;
+	public final fun getMinWidth ()F
+	public final fun getOrder ()Lcom/chattriggers/ctjs/minecraft/objects/Display$Order;
+	public final fun getTextColor ()J
+	public final fun getWidth ()F
+	public final fun getX ()F
+	public final fun getY ()F
+	public final fun removeLine (I)Lcom/chattriggers/ctjs/minecraft/objects/Display;
+	public final fun setAlign (Ljava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/objects/Display;
+	public final fun setBackground (Ljava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/objects/Display;
+	public final fun setBackgroundColor (J)Lcom/chattriggers/ctjs/minecraft/objects/Display;
+	public final fun setLine (ILjava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/objects/Display;
+	public final fun setLines (Ljava/util/List;)Lcom/chattriggers/ctjs/minecraft/objects/Display;
+	public final fun setMinWidth (F)Lcom/chattriggers/ctjs/minecraft/objects/Display;
+	public final fun setOrder (Ljava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/objects/Display;
+	public final fun setTextColor (J)Lcom/chattriggers/ctjs/minecraft/objects/Display;
+	public final fun setX (F)Lcom/chattriggers/ctjs/minecraft/objects/Display;
+	public final fun setY (F)Lcom/chattriggers/ctjs/minecraft/objects/Display;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/chattriggers/ctjs/minecraft/objects/Display$Background : java/lang/Enum {
+	public static final field FULL Lcom/chattriggers/ctjs/minecraft/objects/Display$Background;
+	public static final field NONE Lcom/chattriggers/ctjs/minecraft/objects/Display$Background;
+	public static final field PER_LINE Lcom/chattriggers/ctjs/minecraft/objects/Display$Background;
+	public static fun valueOf (Ljava/lang/String;)Lcom/chattriggers/ctjs/minecraft/objects/Display$Background;
+	public static fun values ()[Lcom/chattriggers/ctjs/minecraft/objects/Display$Background;
+}
+
+public final class com/chattriggers/ctjs/minecraft/objects/Display$Order : java/lang/Enum {
+	public static final field NORMAL Lcom/chattriggers/ctjs/minecraft/objects/Display$Order;
+	public static final field REVERSED Lcom/chattriggers/ctjs/minecraft/objects/Display$Order;
+	public static fun valueOf (Ljava/lang/String;)Lcom/chattriggers/ctjs/minecraft/objects/Display$Order;
+	public static fun values ()[Lcom/chattriggers/ctjs/minecraft/objects/Display$Order;
 }
 
 public final class com/chattriggers/ctjs/minecraft/objects/Gui : net/minecraft/client/gui/screen/Screen {
@@ -547,110 +607,6 @@ public final class com/chattriggers/ctjs/minecraft/objects/Sound$Category$Compan
 }
 
 public final class com/chattriggers/ctjs/minecraft/objects/Sound$Companion {
-}
-
-public final class com/chattriggers/ctjs/minecraft/objects/display/Display {
-	public static final field Companion Lcom/chattriggers/ctjs/minecraft/objects/display/Display$Companion;
-	public fun <init> ()V
-	public fun <init> (Lorg/mozilla/javascript/NativeObject;)V
-	public final fun addLine (ILjava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/objects/display/Display;
-	public final fun addLine (Ljava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/objects/display/Display;
-	public static synthetic fun addLine$default (Lcom/chattriggers/ctjs/minecraft/objects/display/Display;ILjava/lang/Object;ILjava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/objects/display/Display;
-	public final fun addLines ([Ljava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/objects/display/Display;
-	public final fun clearLines ()Lcom/chattriggers/ctjs/minecraft/objects/display/Display;
-	public final fun getAlign ()Lcom/chattriggers/ctjs/minecraft/objects/display/Display$Align;
-	public final fun getBackground ()Lcom/chattriggers/ctjs/minecraft/objects/display/Display$Background;
-	public final fun getBackgroundColor ()J
-	public final fun getHeight ()F
-	public final fun getLine (I)Lcom/chattriggers/ctjs/minecraft/objects/display/DisplayLine;
-	public final fun getLines ()Ljava/util/List;
-	public final fun getMinWidth ()F
-	public final fun getOrder ()Lcom/chattriggers/ctjs/minecraft/objects/display/Display$Order;
-	public final fun getRegisterType ()Lcom/chattriggers/ctjs/minecraft/objects/display/Display$RegisterType;
-	public final fun getRenderX ()F
-	public final fun getRenderY ()F
-	public final fun getShouldRender ()Z
-	public final fun getTextColor ()J
-	public final fun getWidth ()F
-	public final fun hide ()Lcom/chattriggers/ctjs/minecraft/objects/display/Display;
-	public final fun removeLine (I)Lcom/chattriggers/ctjs/minecraft/objects/display/Display;
-	public final fun render ()V
-	public final fun setAlign (Ljava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/objects/display/Display;
-	public final fun setBackground (Ljava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/objects/display/Display;
-	public final fun setBackgroundColor (J)Lcom/chattriggers/ctjs/minecraft/objects/display/Display;
-	public final fun setLine (ILjava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/objects/display/Display;
-	public final fun setLines (Ljava/util/List;)Lcom/chattriggers/ctjs/minecraft/objects/display/Display;
-	public final fun setMinWidth (F)Lcom/chattriggers/ctjs/minecraft/objects/display/Display;
-	public final fun setOrder (Ljava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/objects/display/Display;
-	public final fun setRegisterType (Ljava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/objects/display/Display;
-	public final fun setRenderLoc (FF)Lcom/chattriggers/ctjs/minecraft/objects/display/Display;
-	public final fun setRenderX (F)Lcom/chattriggers/ctjs/minecraft/objects/display/Display;
-	public final fun setRenderY (F)Lcom/chattriggers/ctjs/minecraft/objects/display/Display;
-	public final fun setShouldRender (Z)Lcom/chattriggers/ctjs/minecraft/objects/display/Display;
-	public final fun setTextColor (J)Lcom/chattriggers/ctjs/minecraft/objects/display/Display;
-	public final fun show ()Lcom/chattriggers/ctjs/minecraft/objects/display/Display;
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class com/chattriggers/ctjs/minecraft/objects/display/Display$Align : java/lang/Enum {
-	public static final field CENTER Lcom/chattriggers/ctjs/minecraft/objects/display/Display$Align;
-	public static final field LEFT Lcom/chattriggers/ctjs/minecraft/objects/display/Display$Align;
-	public static final field RIGHT Lcom/chattriggers/ctjs/minecraft/objects/display/Display$Align;
-	public static fun valueOf (Ljava/lang/String;)Lcom/chattriggers/ctjs/minecraft/objects/display/Display$Align;
-	public static fun values ()[Lcom/chattriggers/ctjs/minecraft/objects/display/Display$Align;
-}
-
-public final class com/chattriggers/ctjs/minecraft/objects/display/Display$Background : java/lang/Enum {
-	public static final field FULL Lcom/chattriggers/ctjs/minecraft/objects/display/Display$Background;
-	public static final field NONE Lcom/chattriggers/ctjs/minecraft/objects/display/Display$Background;
-	public static final field PER_LINE Lcom/chattriggers/ctjs/minecraft/objects/display/Display$Background;
-	public static fun valueOf (Ljava/lang/String;)Lcom/chattriggers/ctjs/minecraft/objects/display/Display$Background;
-	public static fun values ()[Lcom/chattriggers/ctjs/minecraft/objects/display/Display$Background;
-}
-
-public final class com/chattriggers/ctjs/minecraft/objects/display/Display$Companion : com/chattriggers/ctjs/utils/Initializer {
-}
-
-public final class com/chattriggers/ctjs/minecraft/objects/display/Display$Order : java/lang/Enum {
-	public static final field DOWN Lcom/chattriggers/ctjs/minecraft/objects/display/Display$Order;
-	public static final field UP Lcom/chattriggers/ctjs/minecraft/objects/display/Display$Order;
-	public static fun valueOf (Ljava/lang/String;)Lcom/chattriggers/ctjs/minecraft/objects/display/Display$Order;
-	public static fun values ()[Lcom/chattriggers/ctjs/minecraft/objects/display/Display$Order;
-}
-
-public final class com/chattriggers/ctjs/minecraft/objects/display/Display$RegisterType : java/lang/Enum {
-	public static final field POST_GUI_RENDER Lcom/chattriggers/ctjs/minecraft/objects/display/Display$RegisterType;
-	public static final field RENDER_OVERLAY Lcom/chattriggers/ctjs/minecraft/objects/display/Display$RegisterType;
-	public static fun valueOf (Ljava/lang/String;)Lcom/chattriggers/ctjs/minecraft/objects/display/Display$RegisterType;
-	public static fun values ()[Lcom/chattriggers/ctjs/minecraft/objects/display/Display$RegisterType;
-}
-
-public final class com/chattriggers/ctjs/minecraft/objects/display/DisplayLine {
-	public fun <init> (Ljava/lang/String;)V
-	public fun <init> (Ljava/lang/String;Lorg/mozilla/javascript/NativeObject;)V
-	public final fun draw (FFFLcom/chattriggers/ctjs/minecraft/objects/display/Display$Background;JJLcom/chattriggers/ctjs/minecraft/objects/display/Display$Align;)V
-	public final fun getAlign ()Lcom/chattriggers/ctjs/minecraft/objects/display/Display$Align;
-	public final fun getBackground ()Lcom/chattriggers/ctjs/minecraft/objects/display/Display$Background;
-	public final fun getBackgroundColor ()Ljava/lang/Long;
-	public final fun getText ()Lcom/chattriggers/ctjs/minecraft/libs/renderer/Text;
-	public final fun getTextColor ()Ljava/lang/Long;
-	public final fun getTextWidth ()F
-	public final fun registerClicked (Ljava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/objects/display/DisplayLine;
-	public final fun registerDragged (Ljava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/objects/display/DisplayLine;
-	public final fun registerHovered (Ljava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/objects/display/DisplayLine;
-	public final fun registerMouseLeave (Ljava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/objects/display/DisplayLine;
-	public final fun setAlign (Ljava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/objects/display/DisplayLine;
-	public final fun setBackground (Ljava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/objects/display/DisplayLine;
-	public final fun setBackgroundColor (Ljava/lang/Long;)Lcom/chattriggers/ctjs/minecraft/objects/display/DisplayLine;
-	public final fun setScale (F)Lcom/chattriggers/ctjs/minecraft/objects/display/DisplayLine;
-	public final fun setShadow (Z)Lcom/chattriggers/ctjs/minecraft/objects/display/DisplayLine;
-	public final fun setText (Ljava/lang/String;)Lcom/chattriggers/ctjs/minecraft/objects/display/DisplayLine;
-	public final fun setTextColor (Ljava/lang/Long;)Lcom/chattriggers/ctjs/minecraft/objects/display/DisplayLine;
-	public fun toString ()Ljava/lang/String;
-	public final fun unregisterClicked ()Lcom/chattriggers/ctjs/minecraft/objects/display/DisplayLine;
-	public final fun unregisterDragged ()Lcom/chattriggers/ctjs/minecraft/objects/display/DisplayLine;
-	public final fun unregisterHovered ()Lcom/chattriggers/ctjs/minecraft/objects/display/DisplayLine;
-	public final fun unregisterMouseLeave ()Lcom/chattriggers/ctjs/minecraft/objects/display/DisplayLine;
 }
 
 public final class com/chattriggers/ctjs/minecraft/wrappers/BossBars : com/chattriggers/ctjs/minecraft/wrappers/CTWrapper {

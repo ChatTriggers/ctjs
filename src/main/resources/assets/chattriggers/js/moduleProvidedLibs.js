@@ -66,8 +66,7 @@
     loadClass("com.chattriggers.ctjs.minecraft.objects.KeyBind");
     loadClass("com.chattriggers.ctjs.minecraft.objects.Sound");
 
-    loadClass("com.chattriggers.ctjs.minecraft.objects.display.Display");
-    loadClass("com.chattriggers.ctjs.minecraft.objects.display.DisplayLine");
+    loadClass("com.chattriggers.ctjs.minecraft.objects.Display");
     loadClass("com.chattriggers.ctjs.minecraft.objects.Gui");
 
     loadClass("com.chattriggers.ctjs.minecraft.objects.Message");
