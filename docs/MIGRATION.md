@@ -82,7 +82,7 @@ Here is a list of targeted changes for various different APIs:
   - `dropItem` takes different parameters:
     - It now takes the `Item`, a boolean to indicate whether the user is dropping just 1 (`false`) or the entire stack (`true`), and the event which can still be cancelled.
     - It previously took a `PlayerMP` (which was always the player since this is a client mod) and the item's position/motion, both of which can be obtained by methods on `Item`
-  - `renderEntity` now longer takes the entity's position as an argument. Instead, call `Entity.getPos()`
+  - `renderEntity` no longer takes the entity's position as an argument. Instead, call `Entity.getPos()`
   - `spawnParticle` no longer passes in the particle type (which no longer exists in the MC codebase). Instead, the class can be access from the particle wrapper's underlying MC type
 - The `/ct` command
   - Removed `/ct copy`. Replace this with `Client.copy(text: String)`
