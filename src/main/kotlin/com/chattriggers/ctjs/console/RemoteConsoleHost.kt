@@ -4,7 +4,6 @@ import com.chattriggers.ctjs.Reference
 import com.chattriggers.ctjs.engine.js.JSLoader
 import com.chattriggers.ctjs.minecraft.wrappers.Client
 import com.chattriggers.ctjs.utils.Config
-import kotlinx.coroutines.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.awt.Color
@@ -13,6 +12,7 @@ import java.io.File
 import java.io.InputStreamReader
 import java.io.PrintWriter
 import java.net.ServerSocket
+import java.net.URLClassLoader
 import kotlin.concurrent.thread
 
 /**
@@ -56,7 +56,7 @@ class RemoteConsoleHost(private val loader: JSLoader?) : Console {
             .command(
                 "java",
                 "-cp",
-                System.getProperty("java.class.path", "."),
+                (Thread.currentThread().contextClassLoader.parent as URLClassLoader).urLs.joinToString(":"),
                 RemoteConsoleClient::class.qualifiedName,
                 port.toString(),
             )
