@@ -4,6 +4,7 @@ import com.chattriggers.ctjs.Reference
 import com.chattriggers.ctjs.engine.js.JSLoader
 import com.chattriggers.ctjs.minecraft.wrappers.Client
 import com.chattriggers.ctjs.utils.Config
+import gg.essential.universal.UDesktop
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.awt.Color
@@ -51,12 +52,18 @@ class RemoteConsoleHost(private val loader: JSLoader?) : Console {
         // Spawn the Client process. This remote process can be easily debugged in IntelliJ by
         // adding the Remote JVM Debug command line arguments after the class path argument, and
         // then simply placing a breakpoint anywhere in the RemoteConsoleClient class.
+
+        val urlObjects = (Thread.currentThread().contextClassLoader.parent as URLClassLoader).urLs
+        val urls = if (UDesktop.isWindows) {
+            urlObjects.joinToString(File.pathSeparator) { it.toString().replace("file:/", "") }
+        } else urlObjects.joinToString(File.pathSeparator)
+
         process = ProcessBuilder()
             .directory(File("."))
             .command(
                 "java",
                 "-cp",
-                (Thread.currentThread().contextClassLoader.parent as URLClassLoader).urLs.joinToString(":"),
+                urls,
                 RemoteConsoleClient::class.qualifiedName,
                 port.toString(),
             )
