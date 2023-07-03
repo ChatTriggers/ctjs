@@ -14,6 +14,8 @@ import java.io.InputStreamReader
 import java.io.PrintWriter
 import java.net.ServerSocket
 import java.net.URLClassLoader
+import java.net.URLDecoder
+import java.nio.charset.Charset
 import kotlin.concurrent.thread
 
 /**
@@ -54,9 +56,10 @@ class RemoteConsoleHost(private val loader: JSLoader?) : Console {
         // then simply placing a breakpoint anywhere in the RemoteConsoleClient class.
 
         val urlObjects = (Thread.currentThread().contextClassLoader.parent as URLClassLoader).urLs
-        val urls = if (UDesktop.isWindows) {
-            urlObjects.joinToString(File.pathSeparator) { it.toString().replace("file:/", "") }
-        } else urlObjects.joinToString(File.pathSeparator)
+        val urls = urlObjects.joinToString(File.pathSeparator) {
+            val str = if (UDesktop.isWindows) it.toString().replace("file:/", "") else it.toString()
+            URLDecoder.decode(str, Charset.defaultCharset())
+        }
 
         process = ProcessBuilder()
             .directory(File("."))
