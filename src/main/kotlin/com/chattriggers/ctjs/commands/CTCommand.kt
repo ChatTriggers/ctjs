@@ -16,6 +16,7 @@ import com.chattriggers.ctjs.utils.toVersion
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.arguments.IntegerArgumentType
 import com.mojang.brigadier.arguments.StringArgumentType
+import gg.essential.universal.UDesktop
 import gg.essential.universal.wrappers.message.UTextComponent
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
@@ -139,7 +140,12 @@ internal object CTCommand {
 
     private fun openFileLocation() {
         try {
-            Desktop.getDesktop().open(File("./config/ChatTriggers"))
+            val path = listOf(File(".").absolutePath, "config", "ChatTriggers", "modules").joinToString(File.separator)
+            if (UDesktop.isWindows) {
+                ProcessBuilder("explorer.exe", "/select,$path")
+            } else {
+                ProcessBuilder("xdg-open", path)
+            }.start()
         } catch (exception: IOException) {
             exception.printTraceToConsole()
             ChatLib.chat("&cCould not open file location")
