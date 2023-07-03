@@ -91,6 +91,7 @@ internal object CTCommand {
                             }
                     )
             )
+            .onExecute { ChatLib.chat(getUsage()) }
 
         dispatcher.register(command)
     }
