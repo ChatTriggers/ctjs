@@ -1932,6 +1932,9 @@ public final class com/chattriggers/ctjs/triggers/ChatTrigger : com/chattriggers
 	public final fun setCriteria (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/ChatTrigger;
 	public final fun setEnd ()Lcom/chattriggers/ctjs/triggers/ChatTrigger;
 	public final fun setExact ()Lcom/chattriggers/ctjs/triggers/ChatTrigger;
+	public final fun setFormatted ()V
+	public final fun setFormatted (Z)V
+	public static synthetic fun setFormatted$default (Lcom/chattriggers/ctjs/triggers/ChatTrigger;ZILjava/lang/Object;)V
 	public final fun setParameter (Ljava/lang/String;)Lcom/chattriggers/ctjs/triggers/ChatTrigger;
 	public final fun setParameters ([Ljava/lang/String;)Lcom/chattriggers/ctjs/triggers/ChatTrigger;
 	public final fun setStart ()Lcom/chattriggers/ctjs/triggers/ChatTrigger;
