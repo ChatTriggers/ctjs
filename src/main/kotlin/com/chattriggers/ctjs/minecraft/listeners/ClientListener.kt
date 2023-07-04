@@ -32,6 +32,7 @@ import net.fabricmc.fabric.api.event.player.UseBlockCallback
 import net.fabricmc.fabric.api.event.player.UseEntityCallback
 import net.fabricmc.fabric.api.event.player.UseItemCallback
 import net.minecraft.client.util.math.MatrixStack
+import net.minecraft.text.Text
 import net.minecraft.util.ActionResult
 import net.minecraft.util.Hand
 import net.minecraft.util.TypedActionResult
@@ -53,33 +54,11 @@ object ClientListener : Initializer {
         Context.exit()
 
         ClientReceiveMessageEvents.ALLOW_CHAT.register { message, _, _, _, _ ->
-            val textComponent = UTextComponent(message)
-            chatHistory += textComponent
-            if (chatHistory.size > 1000)
-                chatHistory.removeAt(0)
-
-            val event = ChatTrigger.Event(textComponent)
-            TriggerType.CHAT.triggerAll(event)
-
-            // print to console
-            if (Config.printChatToConsole)
-                "[CHAT] ${ChatLib.replaceFormatting(UTextComponent(message).formattedText)}".printToConsole()
-
-            !event.isCancelled()
+            handleChatMessage(message, actionBar = false)
         }
 
         ClientReceiveMessageEvents.ALLOW_GAME.register { message, overlay ->
-            if (!overlay)
-                return@register true
-
-            val textComponent = UTextComponent(message)
-            actionBarHistory += textComponent
-            if (actionBarHistory.size > 1000)
-                actionBarHistory.removeAt(0)
-
-            val event = ChatTrigger.Event(textComponent)
-            TriggerType.ACTION_BAR.triggerAll(event)
-            !event.isCancelled()
+            handleChatMessage(message, actionBar = overlay)
         }
 
         ClientTickEvents.START_CLIENT_TICK.register {
@@ -268,6 +247,32 @@ object ClientListener : Initializer {
 
     fun addTask(delay: Int, callback: () -> Unit) {
         tasks.add(Task(delay, callback))
+    }
+
+    private fun handleChatMessage(message: Text, actionBar: Boolean): Boolean {
+        val textComponent = UTextComponent(message)
+        val event = ChatTrigger.Event(textComponent)
+
+        return if (actionBar) {
+            actionBarHistory += textComponent
+            if (actionBarHistory.size > 1000)
+                actionBarHistory.removeAt(0)
+
+            TriggerType.ACTION_BAR.triggerAll(event)
+            !event.isCancelled()
+        } else {
+            chatHistory += textComponent
+            if (chatHistory.size > 1000)
+                chatHistory.removeAt(0)
+
+            TriggerType.CHAT.triggerAll(event)
+
+            // print to console
+            if (Config.printChatToConsole)
+                "[CHAT] ${ChatLib.replaceFormatting(textComponent.formattedText)}".printToConsole()
+
+            !event.isCancelled()
+        }
     }
 
     private fun renderTrigger(stack: MatrixStack, partialTicks: Float, block: () -> Unit) {
