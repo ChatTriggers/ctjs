@@ -33,6 +33,8 @@ import java.awt.datatransfer.StringSelection
 import kotlin.math.roundToInt
 
 object Client {
+    internal var referenceSystemTime: Long = 0
+
     @JvmField
     val currentGui = CurrentGuiWrapper()
 
@@ -160,7 +162,7 @@ object Client {
     fun getMemoryUsage(): Int = ((getTotalMemory() - getFreeMemory()) * 100 / getMaxMemory().toFloat()).roundToInt()
 
     @JvmStatic
-    fun getSystemTime(): Long = Util.getMeasuringTimeMs()
+    fun getSystemTime(): Long = (System.nanoTime() - referenceSystemTime) / 1_000_000
 
     @JvmStatic
     fun getMouseX() = UMouse.Scaled.x

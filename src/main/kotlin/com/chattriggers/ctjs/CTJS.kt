@@ -6,6 +6,7 @@ import com.chattriggers.ctjs.console.*
 import com.chattriggers.ctjs.engine.module.ModuleManager
 import com.chattriggers.ctjs.minecraft.libs.renderer.Image
 import com.chattriggers.ctjs.minecraft.objects.Sound
+import com.chattriggers.ctjs.minecraft.wrappers.Client
 import com.chattriggers.ctjs.minecraft.wrappers.Player
 import com.chattriggers.ctjs.triggers.TriggerType
 import com.chattriggers.ctjs.utils.Config
@@ -25,6 +26,8 @@ import kotlin.concurrent.thread
 
 internal class CTJS : ClientModInitializer {
     override fun onInitializeClient() {
+        Client.referenceSystemTime = System.nanoTime()
+
         Initializer.initializers.forEach(Initializer::init)
 
         ClientCommandRegistrationCallback.EVENT.register { dispatcher, _ ->
