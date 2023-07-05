@@ -87,7 +87,7 @@ object Config : Vigilant(File(CTJS.configLocation, "ChatTriggers.toml"), sorting
         min = 6,
         max = 32,
     )
-    var consoleFontSize = 9
+    var consoleFontSize = 12
 
     @Property(
         PropertyType.SWITCH,
