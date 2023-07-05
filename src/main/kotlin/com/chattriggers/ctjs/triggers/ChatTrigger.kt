@@ -7,6 +7,7 @@ import org.mozilla.javascript.regexp.NativeRegExp
 class ChatTrigger(method: Any, type: ITriggerType) : Trigger(method, type) {
     private lateinit var chatCriteria: Any
     private var formatted: Boolean = false
+    private var formattedForced = false
     private var caseInsensitive: Boolean = false
     private lateinit var criteriaPattern: Regex
     private val parameters = mutableListOf<Parameter?>()
@@ -35,7 +36,8 @@ class ChatTrigger(method: Any, type: ITriggerType) : Trigger(method, type) {
 
         when (chatCriteria) {
             is String -> {
-                formatted = Regex("[&\u00a7]") in chatCriteria
+                if (!formattedForced)
+                    formatted = Regex("[&\u00a7]") in chatCriteria
 
                 val replacedCriteria = Regex.escape(chatCriteria.replace("\n", "->newLine<-"))
                     .replace(Regex("\\\$\\{[^*]+?}"), "\\\\E(.+)\\\\Q")
@@ -58,7 +60,8 @@ class ChatTrigger(method: Any, type: ITriggerType) : Trigger(method, type) {
                     if ("" == it) ".+" else it
                 }
 
-                formatted = Regex("[&\u00a7]") in source
+                if (!formattedForced)
+                    formatted = Regex("[&\u00a7]") in source
             }
             else -> throw IllegalArgumentException("Expected String or Regexp Object")
         }
@@ -135,6 +138,17 @@ class ChatTrigger(method: Any, type: ITriggerType) : Trigger(method, type) {
      */
     fun setEnd() = apply {
         setParameter("end")
+    }
+
+    /**
+     * Forces this trigger to be formatted or unformatted. If no argument is
+     * provided, it will be set to formatted. This method overrides the
+     * behavior of inferring the formatted status from the criteria.
+     */
+    @JvmOverloads
+    fun setFormatted(formatted: Boolean = true) {
+        this.formatted = formatted
+        this.formattedForced = true
     }
 
     /**
