@@ -2,6 +2,7 @@ package com.chattriggers.ctjs
 
 import com.chattriggers.ctjs.commands.Command
 import com.chattriggers.ctjs.console.ConsoleManager
+import com.chattriggers.ctjs.engine.Register
 import com.chattriggers.ctjs.engine.module.ModuleManager
 import com.chattriggers.ctjs.minecraft.libs.ChatLib
 import com.chattriggers.ctjs.minecraft.libs.renderer.Image
@@ -30,6 +31,7 @@ object Reference {
         ModuleManager.teardown()
         KeyBind.clearKeyBinds()
         ConsoleManager.clearConsoles()
+        Register.clearCustomTriggers()
 
         Command.activeCommands.toList().forEach(Command::unregister)
 

@@ -10,6 +10,8 @@ object Register {
     }
     private val customTriggers = mutableSetOf<CustomTriggerType>()
 
+    internal fun clearCustomTriggers() = customTriggers.clear()
+
     /**
      * Helper method register a trigger.
      *
