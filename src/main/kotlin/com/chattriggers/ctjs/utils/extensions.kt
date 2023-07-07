@@ -7,6 +7,8 @@ import com.fasterxml.jackson.core.Version
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.MathHelper
 import org.mozilla.javascript.NativeObject
+import java.net.URLEncoder
+import java.nio.charset.Charset
 import kotlin.reflect.KClass
 
 fun String.toVersion(): Version {
@@ -21,6 +23,8 @@ fun String.toVersion(): Version {
 fun String.toIdentifier(): Identifier {
     return Identifier(if (':' in this) this else "minecraft:$this")
 }
+
+fun String.urlEncode() = URLEncoder.encode(this, Charset.defaultCharset())
 
 // A helper function that makes the intent explicit and reduces parens
 inline fun <reified T> Any.asMixin() = this as T

@@ -19,6 +19,14 @@ import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemStack
 import net.minecraft.registry.Registries
 
+//#if MC>=12000
+import net.minecraft.client.render.DiffuseLighting
+import net.minecraft.client.render.OverlayTexture
+import net.minecraft.client.render.model.json.ModelTransformationMode
+import net.minecraft.util.crash.CrashException
+import net.minecraft.util.crash.CrashReport
+//#endif
+
 class Item(override val mcValue: ItemStack) : CTWrapper<ItemStack> {
     val type: ItemType = ItemType(mcValue.item)
 
@@ -86,7 +94,49 @@ class Item(override val mcValue: ItemStack) : CTWrapper<ItemStack> {
         Renderer.translate(x / scale, y / scale, z)
         Renderer.colorize(1f, 1f, 1f, 1f)
 
-        itemRenderer.renderInGui(Renderer.matrixStack.toMC(), mcValue, 0, 0)
+        // The item draw method moved to DrawContext in 1.20, which we don't have access
+        // to here, so its drawItem method has been copy-pasted here instead
+        //#if MC>=12000
+        if (mcValue.isEmpty)
+            return
+        val bakedModel = itemRenderer.getModel(mcValue, World.toMC(), null, 0)
+        Renderer.pushMatrix()
+        Renderer.translate(x + 8, y + 8, (150f + if (bakedModel.hasDepth()) z else 0f))
+        try {
+            Renderer.scale(1.0f, -1.0f, 1.0f)
+            Renderer.scale(16.0f, 16.0f, 16.0f)
+            if (!bakedModel.isSideLit)
+                DiffuseLighting.disableGuiDepthLighting()
+            val vertexConsumers = Client.getMinecraft().bufferBuilders.entityVertexConsumers
+            itemRenderer.renderItem(
+                mcValue,
+                ModelTransformationMode.GUI,
+                false,
+                Renderer.matrixStack.toMC(),
+                vertexConsumers,
+                0xF000F0,
+                OverlayTexture.DEFAULT_UV,
+                bakedModel,
+            )
+            Renderer.disableDepth()
+            vertexConsumers.draw()
+            Renderer.enableDepth()
+            if (!bakedModel.isSideLit) {
+                DiffuseLighting.enableGuiDepthLighting()
+            }
+        } catch (e: Throwable) {
+            val crashReport = CrashReport.create(e, "Rendering item")
+            val crashReportSection = crashReport.addElement("Item being rendered")
+            crashReportSection.add("Item Type") { mcValue.item.toString() }
+            crashReportSection.add("Item Damage") { mcValue.damage.toString() }
+            crashReportSection.add("Item NBT") { mcValue.nbt.toString() }
+            crashReportSection.add("Item Foil") { mcValue.hasGlint().toString() }
+            throw CrashException(crashReport)
+        }
+        Renderer.popMatrix()
+        //#else
+        //$$ itemRenderer.renderInGui(Renderer.matrixStack.toMC(), mcValue, 0, 0)
+        //#endif
 
         Renderer.resetTransformsIfNecessary()
     }

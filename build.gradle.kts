@@ -14,10 +14,16 @@ buildscript {
 plugins {
     kotlin("jvm") version "1.8.21"
     kotlin("plugin.serialization") version "1.8.21"
-    id("fabric-loom") version "1.2-SNAPSHOT"
-    id("io.github.juuxel.loom-quiltflower") version "1.8.0"
+    id("gg.essential.multi-version")
+
+    // Apply defaults individually since "gg.essential.defaults" includes
+    // mixin-extras which requires Essential
+    id("gg.essential.defaults.java")
+    id("gg.essential.defaults.loom")
+    id("gg.essential.defaults.repo")
+
+    id("io.github.juuxel.loom-quiltflower") version "1.10.0"
     id("org.jetbrains.dokka") version "1.8.20"
-    id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.13.2"
 }
 
 version = property("mod_version")!!
@@ -25,15 +31,11 @@ group = property("mod_group")!!
 val yarnMappings = property("yarn_mappings")!!
 
 repositories {
-    maven("https://repo.essential.gg/repository/maven-public")
     maven("https://jitpack.io")
     maven("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1")
 }
 
 dependencies {
-    minecraft("com.mojang:minecraft:${property("minecraft_version")}")
-    mappings("net.fabricmc:yarn:$yarnMappings:v2")
-
     include(modImplementation("net.fabricmc:fabric-loader:${property("loader_version")}")!!)
     include(modImplementation("net.fabricmc.fabric-api:fabric-api:${property("fabric_version")}")!!)
 
@@ -50,9 +52,9 @@ dependencies {
     // need to exclude this version
     configurations.modApi { exclude("gg.essential", "universalcraft-1.18.1-fabric") }
 
-    include(modImplementation("gg.essential:vigilance-1.18.1-fabric:284")!!)
-    include(modImplementation("gg.essential:universalcraft-1.19.4-fabric:262")!!)
-    include(modImplementation("gg.essential:elementa-1.18.1-fabric:587")!!)
+    include(modImplementation("gg.essential:vigilance-1.18.1-fabric:286")!!)
+    include(modImplementation("gg.essential:universalcraft-$platform:277")!!)
+    include(modImplementation("gg.essential:elementa-1.18.1-fabric:592")!!)
 
     modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:1.1.2")
 
@@ -60,22 +62,11 @@ dependencies {
 }
 
 loom {
-    accessWidenerPath.set(file("src/main/resources/chattriggers.accesswidener"))
+    accessWidenerPath.set(rootProject.file("src/main/resources/chattriggers.accesswidener"))
 }
 
 base {
     archivesName.set(property("archives_base_name") as String)
-}
-
-apiValidation {
-    ignoredPackages.add("com.chattriggers.ctjs.commands")
-    ignoredPackages.add("com.chattriggers.ctjs.console")
-    ignoredPackages.add("com.chattriggers.ctjs.engine")
-    ignoredPackages.add("com.chattriggers.ctjs.launch")
-    ignoredPackages.add("com.chattriggers.ctjs.minecraft.listeners")
-    ignoredPackages.add("com.chattriggers.ctjs.mixins")
-
-    nonPublicMarkers.add("com.chattriggers.ctjs.utils.InternalApi")
 }
 
 java {

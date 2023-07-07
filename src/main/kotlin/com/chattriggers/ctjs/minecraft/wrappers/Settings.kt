@@ -1,15 +1,10 @@
 package com.chattriggers.ctjs.minecraft.wrappers
 
-import com.chattriggers.ctjs.utils.MCDifficulty
-import com.chattriggers.ctjs.utils.MCGraphicsMode
+import com.chattriggers.ctjs.utils.*
 import gg.essential.universal.UMinecraft
 import net.minecraft.client.option.GameOptions
-import net.minecraft.client.option.GraphicsMode
 import net.minecraft.client.render.entity.PlayerModelPart
 import net.minecraft.sound.SoundCategory
-import net.minecraft.client.option.ChatVisibility as MCChatVisibility
-import net.minecraft.client.option.CloudRenderMode as MCCloudRenderMode
-import net.minecraft.client.option.ParticlesMode as MCParticlesMode
 
 object Settings : CTWrapper<GameOptions> {
     override val mcValue get() = UMinecraft.getSettings()

@@ -17,6 +17,7 @@ import com.chattriggers.ctjs.utils.Initializer
 import com.chattriggers.ctjs.console.printToConsole
 import com.chattriggers.ctjs.engine.module.ModuleManager
 import com.chattriggers.ctjs.minecraft.wrappers.inventory.Item
+import com.chattriggers.ctjs.utils.toMatrixStack
 import gg.essential.universal.UMatrixStack
 import gg.essential.universal.UMinecraft
 import gg.essential.universal.wrappers.message.UTextComponent
@@ -95,14 +96,14 @@ object ClientListener : Initializer {
         ScreenEvents.BEFORE_INIT.register { _, screen, _, _ ->
             // TODO: Why does Renderer.drawString not work in here?
             ScreenEvents.beforeRender(screen).register { _, stack, mouseX, mouseY, partialTicks ->
-                renderTrigger(stack, partialTicks) {
+                renderTrigger(stack.toMatrixStack(), partialTicks) {
                     TriggerType.GUI_RENDER.triggerAll(mouseX, mouseY, screen)
                 }
             }
 
             // TODO: Why does Renderer.drawString not work in here?
             ScreenEvents.afterRender(screen).register { _, stack, mouseX, mouseY, partialTicks ->
-                renderTrigger(stack, partialTicks) {
+                renderTrigger(stack.toMatrixStack(), partialTicks) {
                     TriggerType.POST_GUI_RENDER.triggerAll(mouseX, mouseY, screen, partialTicks)
                 }
             }

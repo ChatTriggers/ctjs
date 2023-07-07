@@ -2,6 +2,8 @@ package com.chattriggers.ctjs.minecraft.wrappers
 
 import com.chattriggers.ctjs.minecraft.libs.ChatLib
 import com.chattriggers.ctjs.mixins.BossBarHudAccessor
+import com.chattriggers.ctjs.utils.MCBossBarColor
+import com.chattriggers.ctjs.utils.MCBossBarStyle
 import com.chattriggers.ctjs.utils.asMixin
 import com.chattriggers.ctjs.utils.getOption
 import gg.essential.universal.wrappers.message.UTextComponent
@@ -9,7 +11,6 @@ import net.minecraft.client.gui.hud.BossBarHud
 import net.minecraft.client.gui.hud.ClientBossBar
 import org.mozilla.javascript.NativeObject
 import java.util.UUID
-import net.minecraft.entity.boss.BossBar as MCBossBar
 
 object BossBars : CTWrapper<BossBarHud> {
     override val mcValue: BossBarHud
@@ -163,7 +164,7 @@ object BossBars : CTWrapper<BossBarHud> {
         /**
          * Sets the [Color] of this BossBar
          *
-         * @param color the color to set. Can be [Color], [MCBossBar.Color], or a string
+         * @param color the color to set. Can be [Color], [MCBossBarColor], or a string
          */
         fun setColor(color: Any) = apply {
             mcValue.color = Color.from(color).toMC()
@@ -177,7 +178,7 @@ object BossBars : CTWrapper<BossBarHud> {
         /**
          * Sets the style of this BossBar
          *
-         * @param style the style to set. Can be [Style], [MCBossBar.Style], a string,
+         * @param style the style to set. Can be [Style], [MCBossBarStyle], a string,
          * or a number of how many notches to put
          */
         fun setStyle(style: Any) = apply {
@@ -234,44 +235,44 @@ object BossBars : CTWrapper<BossBarHud> {
         }
     }
 
-    enum class Color(override val mcValue: MCBossBar.Color) : CTWrapper<MCBossBar.Color> {
-        PINK(MCBossBar.Color.PINK),
-        BLUE(MCBossBar.Color.BLUE),
-        RED(MCBossBar.Color.RED),
-        GREEN(MCBossBar.Color.GREEN),
-        YELLOW(MCBossBar.Color.YELLOW),
-        PURPLE(MCBossBar.Color.PURPLE),
-        WHITE(MCBossBar.Color.WHITE);
+    enum class Color(override val mcValue: MCBossBarColor) : CTWrapper<MCBossBarColor> {
+        PINK(MCBossBarColor.PINK),
+        BLUE(MCBossBarColor.BLUE),
+        RED(MCBossBarColor.RED),
+        GREEN(MCBossBarColor.GREEN),
+        YELLOW(MCBossBarColor.YELLOW),
+        PURPLE(MCBossBarColor.PURPLE),
+        WHITE(MCBossBarColor.WHITE);
 
         companion object {
             @JvmStatic
-            fun fromMC(mcValue: MCBossBar.Color) = values().first { it.mcValue == mcValue }
+            fun fromMC(mcValue: MCBossBarColor) = values().first { it.mcValue == mcValue }
 
             @JvmStatic
             fun from(value: Any) = when (value) {
                 is String -> valueOf(value)
-                is MCBossBar.Color -> fromMC(value)
+                is MCBossBarColor -> fromMC(value)
                 is Color -> value
                 else -> throw IllegalArgumentException("Cannot create BossBars.Color from $value")
             }
         }
     }
 
-    enum class Style(override val mcValue: MCBossBar.Style, val sections: Int) : CTWrapper<MCBossBar.Style> {
-        ONE(MCBossBar.Style.PROGRESS, 1),
-        SIX(MCBossBar.Style.NOTCHED_6, 6),
-        TEN(MCBossBar.Style.NOTCHED_10, 10),
-        TWELVE(MCBossBar.Style.NOTCHED_12, 12),
-        TWENTY(MCBossBar.Style.NOTCHED_20, 20);
+    enum class Style(override val mcValue: MCBossBarStyle, val sections: Int) : CTWrapper<MCBossBarStyle> {
+        ONE(MCBossBarStyle.PROGRESS, 1),
+        SIX(MCBossBarStyle.NOTCHED_6, 6),
+        TEN(MCBossBarStyle.NOTCHED_10, 10),
+        TWELVE(MCBossBarStyle.NOTCHED_12, 12),
+        TWENTY(MCBossBarStyle.NOTCHED_20, 20);
 
         companion object {
             @JvmStatic
-            fun fromMC(mcValue: MCBossBar.Style) = values().first { it.mcValue == mcValue }
+            fun fromMC(mcValue: MCBossBarStyle) = values().first { it.mcValue == mcValue }
 
             @JvmStatic
             fun from(value: Any) = when (value) {
                 is String -> valueOf(value)
-                is MCBossBar.Style -> fromMC(value)
+                is MCBossBarStyle -> fromMC(value)
                 is Style -> value
                 is Int -> values().first { it.sections == value }
                 else -> throw IllegalArgumentException("Cannot create BossBars.Style from $value")

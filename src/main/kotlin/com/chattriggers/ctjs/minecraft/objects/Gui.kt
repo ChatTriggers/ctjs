@@ -6,15 +6,20 @@ import com.chattriggers.ctjs.mixins.ClickableWidgetAccessor
 import com.chattriggers.ctjs.triggers.RegularTrigger
 import com.chattriggers.ctjs.triggers.TriggerType
 import com.chattriggers.ctjs.utils.asMixin
+import gg.essential.universal.UKeyboard
 import gg.essential.universal.UMatrixStack
+import gg.essential.universal.UScreen
 import gg.essential.universal.wrappers.message.UTextComponent
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents
-import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.gui.widget.ButtonWidget
-import net.minecraft.client.util.math.MatrixStack
-import org.lwjgl.glfw.GLFW
 
-class Gui @JvmOverloads constructor(title: UTextComponent = UTextComponent("")) : Screen(title) {
+//#if MC>=12000
+import net.minecraft.client.gui.DrawContext
+//#endif
+
+class Gui @JvmOverloads constructor(
+    title: UTextComponent = UTextComponent("")
+) : UScreen(unlocalizedName = title.formattedText) {
     private var onDraw: RegularTrigger? = null
     private var onClick: RegularTrigger? = null
     private var onScroll: RegularTrigger? = null
@@ -212,8 +217,8 @@ class Gui @JvmOverloads constructor(title: UTextComponent = UTextComponent("")) 
         onClosed = null
     }
 
-    override fun init() {
-        super.init()
+    override fun initScreen(width: Int, height: Int) {
+        super.initScreen(width, height)
 
         ScreenMouseEvents.afterMouseScroll(this).register { _, x, y, _, dy ->
             onScroll?.trigger(arrayOf(x, y, dy))
@@ -226,51 +231,57 @@ class Gui @JvmOverloads constructor(title: UTextComponent = UTextComponent("")) 
     /**
      * Internal method to run trigger. Not meant for public use
      */
-    override fun removed() {
-        super.removed()
+    override fun onScreenClose() {
+        super.onScreenClose()
         onClosed?.trigger(arrayOf(this))
     }
 
     /**
      * Internal method to run trigger. Not meant for public use
      */
-    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
-        return super.mouseClicked(mouseX, mouseY, button).also {
-            onClick?.trigger(arrayOf(mouseX, mouseY, button))
-        }
+    override fun onMouseClicked(mouseX: Double, mouseY: Double, mouseButton: Int) {
+        super.onMouseClicked(mouseX, mouseY, mouseButton)
+        onClick?.trigger(arrayOf(mouseX, mouseY, mouseButton))
+    }
+
+    /**
+     * Internal method to run trigger. Not meant for public use
+     *
+     * Note: [state] is actually the mouse button, no clue why it's named that
+     */
+    override fun onMouseReleased(mouseX: Double, mouseY: Double, state: Int) {
+        super.onMouseReleased(mouseX, mouseY, state)
+        onMouseReleased?.trigger(arrayOf(mouseX, mouseY, state))
     }
 
     /**
      * Internal method to run trigger. Not meant for public use
      */
-    override fun mouseReleased(mouseX: Double, mouseY: Double, button: Int): Boolean {
-        return super.mouseReleased(mouseX, mouseY, button).also {
-            onMouseReleased?.trigger(arrayOf(mouseX, mouseY, button))
-        }
+    override fun onMouseDragged(x: Double, y: Double, clickedButton: Int, timeSinceLastClick: Long) {
+        super.onMouseDragged(x, y, clickedButton, timeSinceLastClick)
+        onMouseDragged?.trigger(arrayOf(mouseX, mouseY, clickedButton))
     }
 
     /**
      * Internal method to run trigger. Not meant for public use
      */
-    override fun mouseDragged(mouseX: Double, mouseY: Double, button: Int, deltaX: Double, deltaY: Double): Boolean {
-        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY).also {
-            onMouseDragged?.trigger(arrayOf(mouseX, mouseY, button))
-        }
-    }
+    override fun onDrawScreen(matrixStack: UMatrixStack, mouseX: Int, mouseY: Int, partialTicks: Float) {
+        super.onDrawScreen(matrixStack, mouseX, mouseY, partialTicks)
 
-    /**
-     * Internal method to run trigger. Not meant for public use
-     */
-    override fun render(matrices: MatrixStack, mouseX: Int, mouseY: Int, delta: Float) {
-        super.render(matrices, mouseX, mouseY, delta)
+        //#if MC>=12000
+        @Suppress("UNCHECKED_CAST")
+        val drawContexts = drawContextsField.get(this) as List<DrawContext>
+        Renderer.matrixStack = UMatrixStack(drawContexts.last().matrices)
+        //#else
+        //$$ Renderer.matrixStack = matrixStack
+        //#endif
 
-        Renderer.matrixStack = UMatrixStack(matrices)
-        Renderer.partialTicks = delta
+        Renderer.partialTicks = partialTicks
         Renderer.pushMatrix()
 
         this.mouseX = mouseX
         this.mouseY = mouseY
-        onDraw?.trigger(arrayOf(mouseX, mouseY, delta))
+        onDraw?.trigger(arrayOf(mouseX, mouseY, partialTicks))
 
         Renderer.popMatrix()
     }
@@ -278,10 +289,12 @@ class Gui @JvmOverloads constructor(title: UTextComponent = UTextComponent("")) 
     /**
      * Internal method to run trigger. Not meant for public use
      */
-    override fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
-        return super.keyPressed(keyCode, scanCode, modifiers).also {
+    override fun onKeyPressed(keyCode: Int, typedChar: Char, modifiers: UKeyboard.Modifiers?) {
+        super.onKeyPressed(keyCode, typedChar, modifiers)
+
+        if (keyCode != 0) {
             var char = keyCode.toChar()
-            if ((modifiers and GLFW.GLFW_MOD_SHIFT) == 0)
+            if (modifiers?.isShift != true)
                 char = char.lowercaseChar()
             onKeyTyped?.trigger(arrayOf(char, keyCode))
         }
@@ -439,5 +452,13 @@ class Gui @JvmOverloads constructor(title: UTextComponent = UTextComponent("")) 
             this.x = x
             this.y = y
         }
+    }
+
+    companion object {
+        //#if MC>=12000
+        private val drawContextsField = UScreen::class.java.getDeclaredField("drawContexts").also {
+            it.isAccessible = true
+        }
+        //#endif
     }
 }

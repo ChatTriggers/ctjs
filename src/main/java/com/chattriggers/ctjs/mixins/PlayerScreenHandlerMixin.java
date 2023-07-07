@@ -5,6 +5,7 @@ import com.chattriggers.ctjs.minecraft.wrappers.inventory.Item;
 import com.chattriggers.ctjs.triggers.TriggerType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.PlayerScreenHandler;
 import org.spongepowered.asm.mixin.Final;
@@ -18,13 +19,24 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class PlayerScreenHandlerMixin {
     @Shadow
     @Final
-    private CraftingInventory craftingInput;
+    private RecipeInputInventory craftingInput;
 
-    @Inject(method = "onClosed", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/player/PlayerEntity;world:Lnet/minecraft/world/World;"))
+    @Inject(
+        method = "onClosed",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/inventory/CraftingResultInventory;clear()V",
+            shift = At.Shift.AFTER
+        )
+    )
     private void injectOnClosed(PlayerEntity player, CallbackInfo ci) {
         // dropping items for player's crafting slots. needs a whole injection point due to there
         // being an extra if to make sure it only calls dropInventory server-side
-        if (player.world.isClient) {
+        //#if MC>=12000
+        if (player.getWorld().isClient) {
+        //#else
+        //$$ if (player.world.isClient) {
+        //#endif
             for (int i = 0; i < craftingInput.size(); i++) {
                 ItemStack stack = craftingInput.getStack(i);
                 if (!stack.isEmpty()) {

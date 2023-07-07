@@ -5,18 +5,16 @@ import com.chattriggers.ctjs.minecraft.wrappers.CTWrapper
 import com.chattriggers.ctjs.minecraft.wrappers.World
 import com.chattriggers.ctjs.minecraft.wrappers.world.Chunk
 import com.chattriggers.ctjs.minecraft.wrappers.world.block.BlockPos
+import com.chattriggers.ctjs.utils.MCDimensionType
 import com.chattriggers.ctjs.utils.MCEntity
 import com.chattriggers.ctjs.utils.MCLivingEntity
 import gg.essential.universal.wrappers.message.UTextComponent
-import net.minecraft.entity.MovementType
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.registry.RegistryKey
 import net.minecraft.util.math.MathHelper
-import net.minecraft.util.math.Vec3d
 import net.minecraft.world.dimension.DimensionTypes
 import java.util.*
 import kotlin.math.sqrt
-import net.minecraft.world.dimension.DimensionType as MCDimensionType
 
 open class Entity(override val mcValue: MCEntity) : CTWrapper<MCEntity> {
     fun getX() = mcValue.pos.x

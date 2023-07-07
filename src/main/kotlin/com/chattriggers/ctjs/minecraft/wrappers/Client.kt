@@ -103,7 +103,10 @@ object Client {
                 MultiplayerScreen(TitleScreen()),
                 getMinecraft(),
                 ServerAddress(ip, port),
-                ServerInfo("Server", ip, false)
+                ServerInfo("Server", ip, false),
+                //#if MC>=12000
+                false,
+                //#endif
             )
         }
     }

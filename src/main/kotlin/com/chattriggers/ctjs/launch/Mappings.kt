@@ -1,6 +1,7 @@
 package com.chattriggers.ctjs.launch
 
 import com.chattriggers.ctjs.CTJS
+import com.chattriggers.ctjs.utils.urlEncode
 import net.fabricmc.loader.api.FabricLoader
 import net.fabricmc.mapping.tree.Descriptored
 import net.fabricmc.mapping.tree.Mapped
@@ -26,10 +27,9 @@ internal object Mappings {
     fun initialize() {
         val container = FabricLoader.getInstance().getModContainer("chattriggers")
         val mappingVersion = container.get().metadata.getCustomValue("ctjs:yarn-mappings").asString
+        val jarName = "yarn-$mappingVersion-v2.jar".urlEncode()
 
-        val mappingUrlSuffix =
-            URLEncoder.encode("$mappingVersion/yarn-$mappingVersion-v2.jar", Charset.defaultCharset())
-        val jarBytes = URL(YARN_MAPPINGS_URL_PREFIX + mappingUrlSuffix).readBytes()
+        val jarBytes = URL("$YARN_MAPPINGS_URL_PREFIX${mappingVersion.urlEncode()}/$jarName").readBytes()
         val tempFile = Files.createTempFile("ctjs", "mapping").toFile()
         tempFile.writeBytes(jarBytes)
 

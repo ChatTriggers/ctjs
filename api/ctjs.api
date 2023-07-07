@@ -435,7 +435,8 @@ public final class com/chattriggers/ctjs/minecraft/objects/Display$Order : java/
 	public static fun values ()[Lcom/chattriggers/ctjs/minecraft/objects/Display$Order;
 }
 
-public final class com/chattriggers/ctjs/minecraft/objects/Gui : net/minecraft/client/gui/screen/Screen {
+public final class com/chattriggers/ctjs/minecraft/objects/Gui : gg/essential/universal/UScreen {
+	public static final field Companion Lcom/chattriggers/ctjs/minecraft/objects/Gui$Companion;
 	public fun <init> ()V
 	public fun <init> (Lgg/essential/universal/wrappers/message/UTextComponent;)V
 	public synthetic fun <init> (Lgg/essential/universal/wrappers/message/UTextComponent;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -454,11 +455,14 @@ public final class com/chattriggers/ctjs/minecraft/objects/Gui : net/minecraft/c
 	public final fun getButtonWidth (I)I
 	public final fun getButtonX (I)I
 	public final fun getButtonY (I)I
+	public fun initScreen (II)V
 	public final fun isOpen ()Z
-	public fun keyPressed (III)Z
-	public fun mouseClicked (DDI)Z
-	public fun mouseDragged (DDIDD)Z
-	public fun mouseReleased (DDI)Z
+	public fun onDrawScreen (Lgg/essential/universal/UMatrixStack;IIF)V
+	public fun onKeyPressed (ICLgg/essential/universal/UKeyboard$Modifiers;)V
+	public fun onMouseClicked (DDI)V
+	public fun onMouseDragged (DDIJ)V
+	public fun onMouseReleased (DDI)V
+	public fun onScreenClose ()V
 	public final fun open ()V
 	public final fun registerActionPerformed (Ljava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/objects/Gui;
 	public final fun registerClicked (Ljava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/objects/Gui;
@@ -470,8 +474,6 @@ public final class com/chattriggers/ctjs/minecraft/objects/Gui : net/minecraft/c
 	public final fun registerOpened (Ljava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/objects/Gui;
 	public final fun registerScrolled (Ljava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/objects/Gui;
 	public final fun removeButton (I)Lcom/chattriggers/ctjs/minecraft/objects/Gui;
-	public fun removed ()V
-	public fun render (Lnet/minecraft/client/util/math/MatrixStack;IIF)V
 	public final fun setButtonEnabled (IZ)Lcom/chattriggers/ctjs/minecraft/objects/Gui;
 	public final fun setButtonHeight (II)Lcom/chattriggers/ctjs/minecraft/objects/Gui;
 	public final fun setButtonLoc (III)Lcom/chattriggers/ctjs/minecraft/objects/Gui;
@@ -490,6 +492,9 @@ public final class com/chattriggers/ctjs/minecraft/objects/Gui : net/minecraft/c
 	public final fun unregisterMouseReleased ()Lcom/chattriggers/ctjs/minecraft/objects/Gui;
 	public final fun unregisterOpened ()Lcom/chattriggers/ctjs/minecraft/objects/Gui;
 	public final fun unregisterScrolled ()Lcom/chattriggers/ctjs/minecraft/objects/Gui;
+}
+
+public final class com/chattriggers/ctjs/minecraft/objects/Gui$Companion {
 }
 
 public final class com/chattriggers/ctjs/minecraft/objects/KeyBind {
@@ -2132,6 +2137,12 @@ public final class com/chattriggers/ctjs/utils/Config : gg/essential/vigilance/V
 
 public final class com/chattriggers/ctjs/utils/Config$ConsoleSettings$Companion {
 	public final fun make ()Lcom/chattriggers/ctjs/utils/Config$ConsoleSettings;
+}
+
+public final class com/chattriggers/ctjs/utils/MultiversionKt {
+	@1.20.1-fabric
+	public static final fun toMatrixStack (Lnet/minecraft/client/gui/DrawContext;)Lnet/minecraft/client/util/math/MatrixStack;
+	public static final fun toMatrixStack (Lnet/minecraft/client/util/math/MatrixStack;)Lnet/minecraft/client/util/math/MatrixStack;
 }
 
 public final class com/chattriggers/ctjs/utils/vec/Vec2f {

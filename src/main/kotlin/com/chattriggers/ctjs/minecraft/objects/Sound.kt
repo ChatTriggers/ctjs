@@ -9,12 +9,12 @@ import com.chattriggers.ctjs.mixins.AbstractSoundInstanceAccessor
 import com.chattriggers.ctjs.mixins.sound.SoundAccessor
 import com.chattriggers.ctjs.mixins.sound.SoundManagerAccessor
 import com.chattriggers.ctjs.mixins.sound.SoundSystemAccessor
+import com.chattriggers.ctjs.utils.MCAttenuationType
 import com.chattriggers.ctjs.utils.MCSound
 import com.chattriggers.ctjs.utils.asMixin
 import gg.essential.universal.UMinecraft
 import net.minecraft.client.sound.MovingSoundInstance
 import net.minecraft.client.sound.Sound.RegistrationType
-import net.minecraft.client.sound.SoundInstance.AttenuationType as MCAttenuationType
 import net.minecraft.client.sound.WeightedSoundSet
 import net.minecraft.resource.*
 import net.minecraft.resource.metadata.ResourceMetadata

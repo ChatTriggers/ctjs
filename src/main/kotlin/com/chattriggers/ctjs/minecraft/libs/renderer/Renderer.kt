@@ -21,6 +21,7 @@ import net.minecraft.client.font.TextRenderer
 import net.minecraft.client.network.AbstractClientPlayerEntity
 import net.minecraft.client.render.DiffuseLighting
 import net.minecraft.client.render.Tessellator
+import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.client.render.entity.EntityRendererFactory
 import org.joml.Matrix4f
 import org.joml.Quaternionf
@@ -474,15 +475,24 @@ object Renderer {
         val fr = getFontRenderer()
         var newY = y
 
+        val immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().buffer)
         splitText(text).lines.forEach {
-            if (shadow) {
-                fr.drawWithShadow(matrixStack.toMC(), it, x, newY, color.toInt())
-            } else {
-                fr.draw(matrixStack.toMC(), it, x, newY, color.toInt())
-            }
+            fr.draw(
+                it,
+                x,
+                y,
+                color.toInt(),
+                shadow,
+                matrixStack.toMC().peek().positionMatrix,
+                immediate,
+                TextRenderer.TextLayerType.NORMAL,
+                0,
+                0xf000f0,
+            )
 
             newY += fr.fontHeight
         }
+        immediate.draw()
 
         resetTransformsIfNecessary()
     }
