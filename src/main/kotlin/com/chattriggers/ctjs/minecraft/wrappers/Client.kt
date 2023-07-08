@@ -26,10 +26,8 @@ import net.minecraft.client.network.ServerInfo
 import net.minecraft.client.option.KeyBinding
 import net.minecraft.client.realms.gui.screen.RealmsMainScreen
 import net.minecraft.network.packet.Packet
-import net.minecraft.util.Util
-import java.awt.Toolkit
-import java.awt.datatransfer.DataFlavor
-import java.awt.datatransfer.StringSelection
+import org.lwjgl.glfw.GLFW
+import org.lwjgl.system.MemoryUtil
 import kotlin.math.roundToInt
 
 object Client {
@@ -235,8 +233,13 @@ object Client {
     @JvmStatic
     @JvmOverloads
     fun copy(text: String = "") {
-        val selection = StringSelection(text)
-        Toolkit.getDefaultToolkit().systemClipboard.setContents(selection, selection)
+        GLFW.glfwGetClipboardString(getMinecraft().window.handle)
+        val buffer = MemoryUtil.memUTF8(text)
+        try {
+            GLFW.nglfwSetClipboardString(getMinecraft().window.handle, MemoryUtil.memAddress(buffer))
+        } finally {
+            MemoryUtil.memFree(buffer)
+        }
     }
 
     /**
@@ -246,10 +249,7 @@ object Client {
      */
     @JvmStatic
     fun paste(): String? {
-        val transferable = Toolkit.getDefaultToolkit().systemClipboard.getContents(null) ?: return null
-        if (transferable.isDataFlavorSupported(DataFlavor.stringFlavor))
-            return (transferable.getTransferData(DataFlavor.stringFlavor) as String).ifEmpty { null }
-        return null
+        return GLFW.glfwGetClipboardString(getMinecraft().window.handle)
     }
 
     /**
