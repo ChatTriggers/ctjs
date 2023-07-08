@@ -15,10 +15,7 @@ pluginManagement {
     }
 }
 
-listOf(
-    "1.19.4-fabric",
-    "1.20.1-fabric",
-).forEach { version ->
+providers.gradleProperty("supportedMcVersions").get().split(",").forEach { version ->
     include(":$version")
     project(":$version").apply {
         projectDir = file("versions/$version")

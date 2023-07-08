@@ -26,7 +26,10 @@ plugins {
     id("org.jetbrains.dokka") version "1.8.20"
 }
 
-version = property("mod_version")!!
+val modVersion = property("mod_version")!!.toString()
+val mcVersion = platform.toString()
+
+version = "${modVersion}_$mcVersion"
 group = property("mod_group")!!
 val yarnMappings = property("yarn_mappings")!!
 
@@ -100,6 +103,15 @@ tasks {
     jar {
         from("LICENSE") {
             rename { "${name}_${base.archivesName.get()}" }
+        }
+
+        doLast {
+            allprojects {
+                copy {
+                    from("build/libs")
+                    into(rootProject.file("build"))
+                }
+            }
         }
     }
 }
