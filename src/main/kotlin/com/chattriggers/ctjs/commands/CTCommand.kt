@@ -90,6 +90,7 @@ internal object CTCommand {
                                 dump(DumpType.fromString(StringArgumentType.getString(it, "type")))
                             }
                     )
+                    .onExecute { dump(DumpType.CHAT) }
             )
             .onExecute { ChatLib.chat(getUsage()) }
 
