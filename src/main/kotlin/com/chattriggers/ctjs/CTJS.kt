@@ -1,7 +1,5 @@
 package com.chattriggers.ctjs
 
-import com.chattriggers.ctjs.commands.CTCommand
-import com.chattriggers.ctjs.commands.Command
 import com.chattriggers.ctjs.console.*
 import com.chattriggers.ctjs.engine.module.ModuleManager
 import com.chattriggers.ctjs.minecraft.libs.renderer.Image
@@ -14,7 +12,6 @@ import com.chattriggers.ctjs.utils.Initializer
 import com.google.gson.Gson
 import com.mojang.brigadier.CommandDispatcher
 import net.fabricmc.api.ClientModInitializer
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import net.fabricmc.loader.api.FabricLoader
 import java.io.File
@@ -29,14 +26,6 @@ internal class CTJS : ClientModInitializer {
         Client.referenceSystemTime = System.nanoTime()
 
         Initializer.initializers.forEach(Initializer::init)
-
-        ClientCommandRegistrationCallback.EVENT.register { dispatcher, _ ->
-            CTCommand.register(dispatcher)
-            commandDispatcher = dispatcher
-
-            Command.pendingCommands.forEach(Command::register)
-            Command.pendingCommands.clear()
-        }
 
         thread {
             ModuleManager.entryPass()
@@ -69,7 +58,6 @@ internal class CTJS : ClientModInitializer {
         const val WEBSITE_ROOT = "https://www.chattriggers.com"
         internal val images = mutableListOf<Image>()
         internal val sounds = mutableListOf<Sound>()
-        internal var commandDispatcher: CommandDispatcher<FabricClientCommandSource>? = null
         internal val isDevelopment = FabricLoader.getInstance().isDevelopmentEnvironment
 
         val configLocation = File("./config")

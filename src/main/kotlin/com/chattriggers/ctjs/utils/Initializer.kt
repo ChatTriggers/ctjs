@@ -1,5 +1,6 @@
 package com.chattriggers.ctjs.utils
 
+import com.chattriggers.ctjs.commands.Command
 import com.chattriggers.ctjs.engine.module.ModuleUpdater
 import com.chattriggers.ctjs.minecraft.listeners.ClientListener
 import com.chattriggers.ctjs.minecraft.listeners.MouseListener
@@ -15,6 +16,7 @@ internal interface Initializer {
     companion object {
         internal val initializers = listOf(
             ClientListener,
+            Command,
             ConsoleManager,
             CPS,
             Image.Companion,

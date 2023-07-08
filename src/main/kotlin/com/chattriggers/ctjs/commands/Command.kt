@@ -5,11 +5,17 @@ import com.chattriggers.ctjs.triggers.CommandTrigger
 import com.chattriggers.ctjs.console.LogType
 import com.chattriggers.ctjs.console.printToConsole
 import com.chattriggers.ctjs.engine.js.JSLoader
+import com.chattriggers.ctjs.utils.Initializer
+import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.builder.ArgumentBuilder
+import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
+import net.minecraft.command.CommandSource
 
 internal class Command(
     val trigger: CommandTrigger,
@@ -22,13 +28,31 @@ internal class Command(
     private val registeredAliases = mutableSetOf<String>()
 
     fun register() {
-        val dispatcher = CTJS.commandDispatcher
         if (dispatcher == null) {
             pendingCommands.add(this)
             return
         }
 
-        val command = literal(name)
+        if (hasConflict(name)) {
+            existingCommandWarning(name).printToConsole(JSLoader.console, LogType.WARN)
+            return
+        }
+
+        dispatcher!!.register(makeCommand(name))
+        activeCommands.add(this)
+
+        for (alias in aliases) {
+            if (hasConflict(alias)) {
+                existingCommandWarning(alias).printToConsole(JSLoader.console, LogType.WARN)
+            } else {
+                dispatcher!!.register(makeCommand(alias))
+                registeredAliases.add(alias)
+            }
+        }
+    }
+
+    private fun makeCommand(name: String): LiteralArgumentBuilder<FabricClientCommandSource> {
+        return literal(name)
             .then(argument("args", StringArgumentType.greedyString())
                 .suggests { ctx, builder ->
                     val suggestions = if (dynamicSuggestions != null) {
@@ -53,23 +77,6 @@ internal class Command(
                     trigger.trigger(StringArgumentType.getString(it, "args").split(" ").toTypedArray())
                 })
             .onExecute { trigger.trigger(emptyArray()) }
-
-        if (hasConflict(name)) {
-            existingCommandWarning(name).printToConsole(JSLoader.console, LogType.WARN)
-            return
-        }
-
-        val registeredCommand = dispatcher.register(command)
-        activeCommands.add(this)
-
-        for (name in aliases) {
-            if (hasConflict(name)) {
-                existingCommandWarning(name).printToConsole(JSLoader.console, LogType.WARN)
-            } else {
-                dispatcher.register(literal(name).redirect(registeredCommand))
-                registeredAliases.add(name)
-            }
-        }
     }
 
     fun unregister() {
@@ -78,7 +85,7 @@ internal class Command(
             return
         }
 
-        CTJS.commandDispatcher!!.root.children.removeIf {
+        dispatcher!!.root.children.removeIf {
             it.name == name || it.name in registeredAliases
         }
 
@@ -86,11 +93,23 @@ internal class Command(
         registeredAliases.clear()
     }
 
-    private fun hasConflict(name: String) = !overrideExisting && CTJS.commandDispatcher!!.root.getChild(name) != null
+    private fun hasConflict(name: String) = !overrideExisting && dispatcher!!.root.getChild(name) != null
 
-    companion object {
+    companion object : Initializer {
+        private var dispatcher: CommandDispatcher<FabricClientCommandSource>? = null
         internal val activeCommands = mutableSetOf<Command>()
         internal val pendingCommands = mutableSetOf<Command>()
+
+        override fun init() {
+            ClientCommandRegistrationCallback.EVENT.register { dispatcher, _ ->
+                CTCommand.register(dispatcher)
+                this.dispatcher = dispatcher
+
+                activeCommands.forEach(Command::register)
+                pendingCommands.forEach(Command::register)
+                pendingCommands.clear()
+            }
+        }
 
         private fun existingCommandWarning(name: String) =
             """
@@ -99,9 +118,9 @@ internal class Command(
                 overrideExisting flag in setName() (the second argument) to true.
             """.trimIndent().replace("\n", "")
 
-        fun <S, T : ArgumentBuilder<S, T>> ArgumentBuilder<S, T>.onExecute(block: (CommandContext<S>) -> Unit) = this.executes {
-                block(it)
-                1
-            }
+        fun <S, T : ArgumentBuilder<S, T>> ArgumentBuilder<S, T>.onExecute(block: (CommandContext<S>) -> Unit): T = this.executes {
+            block(it)
+            1
+        }
     }
 }
