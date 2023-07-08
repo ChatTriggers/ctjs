@@ -104,7 +104,9 @@ tasks {
         from("LICENSE") {
             rename { "${name}_${base.archivesName.get()}" }
         }
+    }
 
+    build {
         doLast {
             allprojects {
                 copy {
