@@ -10,6 +10,7 @@ import com.chattriggers.ctjs.utils.Initializer
 import com.chattriggers.ctjs.utils.InternalApi
 import com.chattriggers.ctjs.utils.asMixin
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
+import net.fabricmc.fabric.impl.client.keybinding.KeyBindingRegistryImpl
 import net.minecraft.client.option.KeyBinding
 import net.minecraft.client.resource.language.I18n
 import org.apache.commons.lang3.ArrayUtils
@@ -24,7 +25,6 @@ class KeyBind {
     private var down: Boolean = false
 
     init {
-        @Suppress("LeakingThis")
         keyBinds.add(this)
     }
 
@@ -211,6 +211,10 @@ class KeyBind {
                 Client.getMinecraft().options.allKeys,
                 keyBinding
             ))
+
+            val categoryMap = KeyBindingAccessor.getCategoryMap()
+            val maxInt = categoryMap.values.max() ?: 0
+            categoryMap[keyBinding.category] = maxInt + 1
         }
 
         private fun removeRawKeyBinding(keyBinding: KeyBinding) {
