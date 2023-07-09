@@ -348,7 +348,7 @@ object Client {
          * Closes the currently open gui
          */
         fun close() {
-            Player.toMC()?.closeScreen()
+            scheduleTask { Player.toMC()?.closeScreen() }
         }
     }
 
