@@ -158,22 +158,22 @@ internal object CTCommand {
         clearOldDump()
 
         val messages = type.messageList()
-        var toDump = lines
-        if (toDump > messages.size) toDump = messages.size
+        val toDump = lines.coerceAtMost(messages.size)
         Message("&6&m${ChatLib.getChatBreak()}").apply { chatLineId = idFixed }.chat()
-        var msg: String
+
         for (i in 0 until toDump) {
-            msg = messages[messages.size - toDump + i].unformattedText
+            val msg = ChatLib.replaceFormatting(messages[messages.size - toDump + i].formattedText)
             Message(
                 UTextComponent(msg)
-                    .setClick(ClickEvent.Action.RUN_COMMAND, "/ct copy $msg")
-                    .setHover(HoverEvent.Action.SHOW_TEXT, ChatLib.addColor("&eClick here to copy this message."))
+                    .setClick(ClickEvent.Action.COPY_TO_CLIPBOARD, msg)
+                    .setHover(HoverEvent.Action.SHOW_TEXT, UTextComponent("&eClick here to copy this message."))
                     .apply { formatted = false }
             ).apply {
                 isFormatted = false
                 chatLineId = idFixed + i + 1
-            }
+            }.chat()
         }
+
         Message("&6&m${ChatLib.getChatBreak()}").apply { chatLineId = idFixed + lines + 1 }.chat()
 
         idFixedOffset = idFixed + lines + 1
