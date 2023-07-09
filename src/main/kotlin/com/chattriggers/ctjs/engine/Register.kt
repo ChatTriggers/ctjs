@@ -388,6 +388,7 @@ object Register {
      * Registers a new trigger that runs when a new gui is first opened.
      *
      * Passes through one argument:
+     * - The [net.minecraft.client.gui.screen.Screen] that was opened
      * - The gui opened event, which can be cancelled
      *
      * Available modifications:

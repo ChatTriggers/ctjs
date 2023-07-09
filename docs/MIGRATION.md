@@ -74,6 +74,7 @@ Here is a list of targeted changes for various different APIs:
   - `playerInteract` now passes the interacted-with object as the second argument instead of the object's position (which can be retrieved via a method on the object wrapper, which is either an `Entity`, `Block`, or `Item`). The list of events has also changed.
   - `guiMouseClick` now takes a boolean after the mouse button which indicates if the mouse button was pressed (`true`) or released (`false`)
   - `guiMouseDrag` now takes two mouse deltas as its first two arguments. The rest of the arguments are unchanged.
+  - `guiOpened` now takes the opened `Screen` as its first argument.
   - `renderTileEntity` has been renamed to `renderBlockEntity`, and no longer passes in the position as an argument (access it by calling `BlockEntity.getBlockPos()`)
   - `ClassFilterTrigger`: Removed `setPacketClass` and `setPacketClasses`. Use `setFilteredClass` and `setFilteredClasses` instead
   - The full message for `chat` triggers is no longer accessed with `EventLib` (which no longer exists). Instead, use `event.message`, which will return a `UTextComponent`. This has the `getFormattedText()` and `getUnformattedText()` methods, which replace the second parameter of the old `EventLib` method
