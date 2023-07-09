@@ -19,6 +19,7 @@ import net.minecraft.util.Hand
 import net.minecraft.util.hit.BlockHitResult
 import net.minecraft.util.hit.EntityHitResult
 import net.minecraft.util.hit.HitResult
+import net.minecraft.util.math.Vec2f
 import org.mozilla.javascript.NativeObject
 import java.util.*
 
@@ -54,6 +55,9 @@ object Player : CTWrapper<ClientPlayerEntity?> {
 
     @JvmStatic
     fun getPos(): BlockPos = BlockPos(getX(), getY(), getZ())
+
+    @JvmStatic
+    fun getRotation(): Vec2f? = toMC()?.rotationClient
 
     @JvmStatic
     fun getLastX(): Double = toMC()?.lastRenderX ?: 0.0

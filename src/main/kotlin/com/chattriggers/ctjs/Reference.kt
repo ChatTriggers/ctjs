@@ -1,6 +1,7 @@
 package com.chattriggers.ctjs
 
-import com.chattriggers.ctjs.commands.Command
+import com.chattriggers.ctjs.commands.DynamicCommand
+import com.chattriggers.ctjs.commands.StaticCommand
 import com.chattriggers.ctjs.console.ConsoleManager
 import com.chattriggers.ctjs.engine.Register
 import com.chattriggers.ctjs.engine.module.ModuleManager
@@ -8,7 +9,6 @@ import com.chattriggers.ctjs.minecraft.libs.ChatLib
 import com.chattriggers.ctjs.minecraft.libs.renderer.Image
 import com.chattriggers.ctjs.minecraft.objects.KeyBind
 import com.chattriggers.ctjs.minecraft.objects.Sound
-import com.chattriggers.ctjs.minecraft.objects.Display
 import com.chattriggers.ctjs.minecraft.wrappers.Client
 import com.chattriggers.ctjs.minecraft.wrappers.World
 import com.chattriggers.ctjs.triggers.TriggerType
@@ -32,8 +32,8 @@ object Reference {
         KeyBind.clearKeyBinds()
         ConsoleManager.clearConsoles()
         Register.clearCustomTriggers()
-
-        Command.activeCommands.toList().forEach(Command::unregister)
+        StaticCommand.unregisterAll()
+        DynamicCommand.unregisterAll()
 
         Client.scheduleTask {
             CTJS.images.forEach(Image::destroy)

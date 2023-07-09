@@ -1,5 +1,6 @@
 package com.chattriggers.ctjs.utils.vec
 
+import net.minecraft.util.math.Vec3d
 import java.util.Objects
 import kotlin.math.acos
 import kotlin.math.sqrt
@@ -32,6 +33,8 @@ open class Vec3i @JvmOverloads constructor(
     fun normalized() = magnitude().let {
         Vec3f(x / it, y / it, z / it)
     }
+
+    fun toVec3d() = Vec3d(x.toDouble(), y.toDouble(), z.toDouble())
 
     open operator fun unaryMinus() = Vec3i(-x, -y, -z)
 

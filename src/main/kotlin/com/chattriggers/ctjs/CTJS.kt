@@ -10,9 +10,7 @@ import com.chattriggers.ctjs.triggers.TriggerType
 import com.chattriggers.ctjs.utils.Config
 import com.chattriggers.ctjs.utils.Initializer
 import com.google.gson.Gson
-import com.mojang.brigadier.CommandDispatcher
 import net.fabricmc.api.ClientModInitializer
-import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import net.fabricmc.loader.api.FabricLoader
 import java.io.File
 import java.net.URL

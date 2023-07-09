@@ -1,7 +1,7 @@
 package com.chattriggers.ctjs.commands
 
 import com.chattriggers.ctjs.Reference
-import com.chattriggers.ctjs.commands.Command.Companion.onExecute
+import com.chattriggers.ctjs.commands.StaticCommand.Companion.onExecute
 import com.chattriggers.ctjs.engine.module.ModuleManager
 import com.chattriggers.ctjs.minecraft.libs.ChatLib
 import com.chattriggers.ctjs.minecraft.listeners.ClientListener
@@ -12,6 +12,7 @@ import com.chattriggers.ctjs.console.ConsoleManager
 import com.chattriggers.ctjs.console.printTraceToConsole
 import com.chattriggers.ctjs.engine.js.JSLoader
 import com.chattriggers.ctjs.engine.module.ModulesGui
+import com.chattriggers.ctjs.utils.Initializer
 import com.chattriggers.ctjs.utils.toVersion
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.arguments.IntegerArgumentType
@@ -20,17 +21,23 @@ import gg.essential.universal.UDesktop
 import gg.essential.universal.wrappers.message.UTextComponent
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import net.minecraft.text.ClickEvent
 import net.minecraft.text.HoverEvent
-import java.awt.Desktop
 import java.io.File
 import java.io.IOException
 import kotlin.concurrent.thread
 
-internal object CTCommand {
+internal object CTCommand : Initializer {
     private const val idFixed = 90123 // ID for dumped chat
     private var idFixedOffset = -1 // ID offset (increments)
+
+    override fun init() {
+        ClientCommandRegistrationCallback.EVENT.register { dispatcher, _ ->
+            register(dispatcher)
+        }
+    }
 
     fun register(dispatcher: CommandDispatcher<FabricClientCommandSource>) {
         val command = literal("ct")

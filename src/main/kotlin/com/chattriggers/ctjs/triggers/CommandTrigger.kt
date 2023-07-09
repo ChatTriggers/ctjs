@@ -1,13 +1,13 @@
 package com.chattriggers.ctjs.triggers
 
-import com.chattriggers.ctjs.commands.Command
+import com.chattriggers.ctjs.commands.StaticCommand
 
 class CommandTrigger(method: Any) : Trigger(method, TriggerType.COMMAND) {
     private lateinit var commandName: String
     private var overrideExisting: Boolean = false
     private val staticCompletions = mutableListOf<String>()
     private val aliases = mutableSetOf<String>()
-    private var command: Command? = null
+    private var command: StaticCommand? = null
     private var dynamicCompletions: ((List<String>) -> List<String>)? = null
 
     override fun trigger(args: Array<out Any?>) {
@@ -91,8 +91,8 @@ class CommandTrigger(method: Any) : Trigger(method, TriggerType.COMMAND) {
     fun setName(commandName: String, overrideExisting: Boolean = false) = setCommandName(commandName, overrideExisting)
 
     private fun reInstance() {
-        command?.unregister()
-        command = Command(this, commandName, aliases, overrideExisting, staticCompletions, dynamicCompletions)
-        command!!.register()
+        command?.let(StaticCommand::unregister)
+        command = StaticCommand(this, setOf(commandName) + aliases, overrideExisting, staticCompletions, dynamicCompletions)
+        StaticCommand.register(command!!)
     }
 }

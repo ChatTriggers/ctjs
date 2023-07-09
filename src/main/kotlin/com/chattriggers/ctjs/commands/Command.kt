@@ -1,126 +1,100 @@
 package com.chattriggers.ctjs.commands
 
-import com.chattriggers.ctjs.CTJS
-import com.chattriggers.ctjs.triggers.CommandTrigger
 import com.chattriggers.ctjs.console.LogType
 import com.chattriggers.ctjs.console.printToConsole
 import com.chattriggers.ctjs.engine.js.JSLoader
 import com.chattriggers.ctjs.utils.Initializer
+import com.chattriggers.ctjs.utils.InternalApi
 import com.mojang.brigadier.CommandDispatcher
-import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
+import com.mojang.brigadier.tree.CommandNode
+import com.mojang.brigadier.tree.LiteralCommandNode
+import com.mojang.brigadier.tree.RootCommandNode
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
-import net.minecraft.command.CommandSource
 
-internal class Command(
-    val trigger: CommandTrigger,
-    val name: String,
-    private val aliases: Set<String>,
-    private val overrideExisting: Boolean,
-    private val staticSuggestions: List<String>,
-    private val dynamicSuggestions: ((List<String>) -> List<String>)?,
-) {
-    private val registeredAliases = mutableSetOf<String>()
+@InternalApi
+interface Command {
+    val overrideExisting: Boolean
 
-    fun register() {
+    // Do not call this method! Instead, call the register() method in this command's CommandCollection
+    fun registerImpl(): Registration
+
+    data class Registration(
+        val names: Set<String>,
+        val builder: (String) -> LiteralArgumentBuilder<FabricClientCommandSource>,
+    )
+}
+
+@InternalApi
+abstract class CommandCollection : Initializer {
+    private var dispatcher: CommandDispatcher<FabricClientCommandSource>? = null
+    private val activeCommands = mutableMapOf<Command, Set<String>>()
+    private val pendingCommands = mutableSetOf<Command>()
+
+    override fun init() {
+        ClientCommandRegistrationCallback.EVENT.register { dispatcher, _ ->
+            this.dispatcher = dispatcher
+            activeCommands.keys.forEach(::register)
+            pendingCommands.forEach(::register)
+            pendingCommands.clear()
+        }
+    }
+
+    fun register(command: Command) {
         if (dispatcher == null) {
-            pendingCommands.add(this)
+            pendingCommands.add(command)
             return
         }
 
-        if (hasConflict(name)) {
-            existingCommandWarning(name).printToConsole(JSLoader.console, LogType.WARN)
-            return
-        }
-
-        dispatcher!!.register(makeCommand(name))
-        activeCommands.add(this)
-
-        for (alias in aliases) {
-            if (hasConflict(alias)) {
-                existingCommandWarning(alias).printToConsole(JSLoader.console, LogType.WARN)
+        val registeredNames = mutableSetOf<String>()
+        val (names, builder) = command.registerImpl()
+        for (name in names) {
+            if (command.hasConflict(name)) {
+                existingCommandWarning(name).printToConsole(JSLoader.console, LogType.WARN)
             } else {
-                dispatcher!!.register(makeCommand(alias))
-                registeredAliases.add(alias)
+                val node = dispatcher!!.register(builder(name))
+
+                registeredNames.add(name)
             }
         }
+
+        activeCommands[command] = registeredNames
     }
 
-    private fun makeCommand(name: String): LiteralArgumentBuilder<FabricClientCommandSource> {
-        return literal(name)
-            .then(argument("args", StringArgumentType.greedyString())
-                .suggests { ctx, builder ->
-                    val suggestions = if (dynamicSuggestions != null) {
-                        val args = try {
-                            StringArgumentType.getString(ctx, "args").split(" ")
-                        } catch (e: IllegalArgumentException) {
-                            emptyList()
-                        }
-
-                        // Kotlin compiler bug: Without this null assert, it complains that the receiver is
-                        // nullable, but with it, it says it's unnecessary.
-                        @Suppress("UNNECESSARY_NOT_NULL_ASSERTION")
-                        dynamicSuggestions!!(args)
-                    } else staticSuggestions
-
-                    for (suggestion in suggestions)
-                        builder.suggest(suggestion)
-
-                    builder.buildFuture()
-                }
-                .onExecute {
-                    trigger.trigger(StringArgumentType.getString(it, "args").split(" ").toTypedArray())
-                })
-            .onExecute { trigger.trigger(emptyArray()) }
-    }
-
-    fun unregister() {
-        if (this in pendingCommands) {
-            pendingCommands.remove(this)
+    fun unregister(command: Command) {
+        if (command in pendingCommands) {
+            pendingCommands.remove(command)
             return
         }
 
+        val names = activeCommands[command]!!
         dispatcher!!.root.children.removeIf {
-            it.name == name || it.name in registeredAliases
+            it.name in names
         }
 
-        activeCommands.remove(this)
-        registeredAliases.clear()
+        activeCommands.remove(command)
     }
 
-    private fun hasConflict(name: String) = !overrideExisting && dispatcher!!.root.getChild(name) != null
+    fun unregisterAll() {
+        pendingCommands.clear()
+        activeCommands.keys.forEach(::unregister)
+        activeCommands.clear()
+    }
 
-    companion object : Initializer {
-        private var dispatcher: CommandDispatcher<FabricClientCommandSource>? = null
-        internal val activeCommands = mutableSetOf<Command>()
-        internal val pendingCommands = mutableSetOf<Command>()
+    fun <S, T : ArgumentBuilder<S, T>> ArgumentBuilder<S, T>.onExecute(block: (CommandContext<S>) -> Unit): T = this.executes {
+        block(it)
+        1
+    }
 
-        override fun init() {
-            ClientCommandRegistrationCallback.EVENT.register { dispatcher, _ ->
-                CTCommand.register(dispatcher)
-                this.dispatcher = dispatcher
+    private fun Command.hasConflict(name: String) = !overrideExisting && dispatcher!!.root.getChild(name) != null
 
-                activeCommands.forEach(Command::register)
-                pendingCommands.forEach(Command::register)
-                pendingCommands.clear()
-            }
-        }
-
-        private fun existingCommandWarning(name: String) =
-            """
+    private fun existingCommandWarning(name: String) =
+        """
                 Command with name $name already exists! This will not override the 
                 other command with the same name. To override the other command, set the 
                 overrideExisting flag in setName() (the second argument) to true.
             """.trimIndent().replace("\n", "")
-
-        fun <S, T : ArgumentBuilder<S, T>> ArgumentBuilder<S, T>.onExecute(block: (CommandContext<S>) -> Unit): T = this.executes {
-            block(it)
-            1
-        }
-    }
 }

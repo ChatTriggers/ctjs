@@ -11,7 +11,6 @@ import com.chattriggers.ctjs.triggers.Trigger
 import com.chattriggers.ctjs.triggers.ITriggerType
 import org.apache.commons.io.FileUtils
 import org.mozilla.javascript.*
-import org.mozilla.javascript.Function
 import org.mozilla.javascript.commonjs.module.ModuleScriptProvider
 import org.mozilla.javascript.commonjs.module.Require
 import org.mozilla.javascript.commonjs.module.provider.StrongCachingModuleScriptProvider
@@ -173,16 +172,19 @@ object JSLoader {
         }
     }
 
-    fun trigger(trigger: Trigger, method: Any, args: Array<out Any?>) {
-        wrapInContext {
-            try {
-                require(method is Function) { "Need to pass actual function to the register function, not the name!" }
+    fun invoke(method: Callable, args: Array<out Any?>): Any? {
+        return wrapInContext {
+            method.call(Context.getCurrentContext(), scope, scope, args)
+        }
+    }
 
-                method.call(Context.getCurrentContext(), scope, scope, args)
-            } catch (e: Throwable) {
-                e.printTraceToConsole(console)
-                removeTrigger(trigger)
-            }
+    fun trigger(trigger: Trigger, method: Any, args: Array<out Any?>) {
+        try {
+            require(method is Callable) { "Need to pass actual function to the register function, not the name!" }
+            invoke(method, args)
+        } catch (e: Throwable) {
+            e.printTraceToConsole(console)
+            removeTrigger(trigger)
         }
     }
 
