@@ -1,6 +1,7 @@
 package com.chattriggers.ctjs.minecraft.wrappers
 
 import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer
+import com.chattriggers.ctjs.minecraft.objects.TextComponent
 import com.chattriggers.ctjs.minecraft.wrappers.entity.Entity
 import com.chattriggers.ctjs.minecraft.wrappers.entity.PlayerMP
 import com.chattriggers.ctjs.minecraft.wrappers.entity.Team
@@ -12,7 +13,6 @@ import com.chattriggers.ctjs.minecraft.wrappers.world.block.BlockFace
 import com.chattriggers.ctjs.minecraft.wrappers.world.block.BlockPos
 import gg.essential.universal.UMath
 import gg.essential.universal.UMinecraft
-import gg.essential.universal.wrappers.message.UTextComponent
 import net.minecraft.client.gui.screen.ingame.HandledScreen
 import net.minecraft.client.network.ClientPlayerEntity
 import net.minecraft.util.Hand
@@ -301,7 +301,7 @@ object Player : CTWrapper<ClientPlayerEntity?> {
      * @return the display name
      */
     @JvmStatic
-    fun getDisplayName(): UTextComponent = asPlayerMP()?.getDisplayName() ?: UTextComponent("")
+    fun getDisplayName(): TextComponent = asPlayerMP()?.getDisplayName() ?: TextComponent("")
 
     /**
      * Sets the name for this player shown in tab list
@@ -309,7 +309,7 @@ object Player : CTWrapper<ClientPlayerEntity?> {
      * @param textComponent the new name to display
      */
     @JvmStatic
-    fun setTabDisplayName(textComponent: UTextComponent) {
+    fun setTabDisplayName(textComponent: TextComponent) {
         asPlayerMP()?.setTabDisplayName(textComponent)
     }
 
@@ -320,7 +320,7 @@ object Player : CTWrapper<ClientPlayerEntity?> {
      * @param textComponent the new name to display
      */
     @JvmStatic
-    fun setNametagName(textComponent: UTextComponent) {
+    fun setNametagName(textComponent: TextComponent) {
         asPlayerMP()?.setNametagName(textComponent)
     }
 

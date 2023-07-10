@@ -1,10 +1,10 @@
 package com.chattriggers.ctjs.minecraft.wrappers.inventory
 
+import com.chattriggers.ctjs.minecraft.objects.TextComponent
 import com.chattriggers.ctjs.minecraft.wrappers.inventory.action.ClickAction
 import com.chattriggers.ctjs.minecraft.wrappers.inventory.action.DragAction
 import com.chattriggers.ctjs.minecraft.wrappers.inventory.action.DropAction
 import com.chattriggers.ctjs.utils.MCInventory
-import gg.essential.universal.wrappers.message.UTextComponent
 import net.minecraft.client.gui.screen.ingame.HandledScreen
 import net.minecraft.util.Nameable
 
@@ -160,8 +160,8 @@ class Inventory {
      *
      * @return the name of the inventory
      */
-    fun getName(): UTextComponent {
-        return if (inventory is Nameable) UTextComponent(inventory.name) else UTextComponent("container")
+    fun getName(): TextComponent {
+        return if (inventory is Nameable) TextComponent(inventory.name) else TextComponent("container")
     }
 
     fun getClassName(): String = inventory?.javaClass?.simpleName ?: screen!!.javaClass.simpleName

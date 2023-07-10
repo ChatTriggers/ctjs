@@ -9,7 +9,6 @@ import com.chattriggers.ctjs.utils.asMixin
 import gg.essential.universal.UKeyboard
 import gg.essential.universal.UMatrixStack
 import gg.essential.universal.UScreen
-import gg.essential.universal.wrappers.message.UTextComponent
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents
 import net.minecraft.client.gui.widget.ButtonWidget
 
@@ -18,7 +17,7 @@ import net.minecraft.client.gui.DrawContext
 //#endif
 
 class Gui @JvmOverloads constructor(
-    title: UTextComponent = UTextComponent("")
+    title: TextComponent = TextComponent("")
 ) : UScreen(unlocalizedName = title.formattedText) {
     private var onDraw: RegularTrigger? = null
     private var onClick: RegularTrigger? = null
@@ -332,7 +331,7 @@ class Gui @JvmOverloads constructor(
      * @return the button ID for use in actionPerformed
      */
     @JvmOverloads
-    fun addButton(x: Int, y: Int, width: Int = 200, height: Int = 20, buttonText: UTextComponent): Int {
+    fun addButton(x: Int, y: Int, width: Int = 200, height: Int = 20, buttonText: TextComponent): Int {
         val id = nextButtonId++
         val button = ButtonWidget.builder(buttonText) {
             onActionPerformed?.trigger(arrayOf(id))
@@ -343,7 +342,7 @@ class Gui @JvmOverloads constructor(
     }
 
     fun addButton(x: Int, y: Int, width: Int = 200, height: Int = 20, buttonText: String) =
-        addButton(x, y, width, height, UTextComponent(buttonText))
+        addButton(x, y, width, height, TextComponent(buttonText))
 
     /**
      * Removes a button from the gui with the given id

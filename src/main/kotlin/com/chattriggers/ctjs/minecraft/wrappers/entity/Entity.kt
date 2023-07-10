@@ -1,6 +1,7 @@
 package com.chattriggers.ctjs.minecraft.wrappers.entity
 
 import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer
+import com.chattriggers.ctjs.minecraft.objects.TextComponent
 import com.chattriggers.ctjs.minecraft.wrappers.CTWrapper
 import com.chattriggers.ctjs.minecraft.wrappers.World
 import com.chattriggers.ctjs.minecraft.wrappers.world.Chunk
@@ -8,7 +9,6 @@ import com.chattriggers.ctjs.minecraft.wrappers.world.block.BlockPos
 import com.chattriggers.ctjs.utils.MCDimensionType
 import com.chattriggers.ctjs.utils.MCEntity
 import com.chattriggers.ctjs.utils.MCLivingEntity
-import gg.essential.universal.wrappers.message.UTextComponent
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.registry.RegistryKey
 import net.minecraft.util.math.MathHelper
@@ -137,9 +137,9 @@ open class Entity(override val mcValue: MCEntity) : CTWrapper<MCEntity> {
      * Gets the name of the entity, could be "Villager",
      * or, if the entity has a custom name, it returns that.
      *
-     * @return the (custom) name of the entity as a [UTextComponent]
+     * @return the (custom) name of the entity as a [TextComponent]
      */
-    fun getNameComponent(): UTextComponent = UTextComponent(mcValue.name)
+    fun getNameComponent(): TextComponent = TextComponent(mcValue.name)
 
     /**
      * Gets the Java class name of the entity, for example "EntityVillager"

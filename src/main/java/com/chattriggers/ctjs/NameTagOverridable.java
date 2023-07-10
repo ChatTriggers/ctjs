@@ -1,8 +1,8 @@
 package com.chattriggers.ctjs;
 
-import gg.essential.universal.wrappers.message.UTextComponent;
+import com.chattriggers.ctjs.minecraft.objects.TextComponent;
 import org.jetbrains.annotations.Nullable;
 
 public interface NameTagOverridable {
-    void setOverriddenNametagName(@Nullable UTextComponent component);
+    void setOverriddenNametagName(@Nullable TextComponent component);
 }

@@ -1,12 +1,12 @@
 package com.chattriggers.ctjs.minecraft.wrappers.world.block
 
+import com.chattriggers.ctjs.minecraft.objects.TextComponent
 import com.chattriggers.ctjs.minecraft.wrappers.CTWrapper
 import com.chattriggers.ctjs.minecraft.wrappers.inventory.Item
 import com.chattriggers.ctjs.minecraft.wrappers.inventory.ItemType
 import com.chattriggers.ctjs.utils.MCBlock
 import com.chattriggers.ctjs.utils.MCItem
 import com.chattriggers.ctjs.utils.toIdentifier
-import gg.essential.universal.wrappers.message.UTextComponent
 import net.minecraft.registry.Registries
 
 /**
@@ -57,7 +57,7 @@ class BlockType(override val mcValue: MCBlock) : CTWrapper<MCBlock> {
      *
      * @return the block's localized name
      */
-    fun getName() = UTextComponent(mcValue.name).formattedText
+    fun getName() = TextComponent(mcValue.name).formattedText
 
     fun getLightValue(): Int = getDefaultState().luminance
 

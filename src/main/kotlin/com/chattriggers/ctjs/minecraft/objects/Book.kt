@@ -3,7 +3,6 @@ package com.chattriggers.ctjs.minecraft.objects
 import com.chattriggers.ctjs.minecraft.wrappers.Client
 import com.chattriggers.ctjs.mixins.BookScreenAccessor
 import com.chattriggers.ctjs.utils.asMixin
-import gg.essential.universal.wrappers.message.UTextComponent
 import net.minecraft.client.gui.screen.ingame.BookScreen
 import net.minecraft.text.StringVisitable
 
@@ -17,7 +16,7 @@ class Book {
      * @param contents the entire message for what the page should be
      * @return the current book to allow method chaining
      */
-    fun addPage(contents: UTextComponent) = apply {
+    fun addPage(contents: TextComponent) = apply {
         customContents.pages.add(contents)
     }
 
@@ -28,7 +27,7 @@ class Book {
      * @return the current book to allow method chaining
      */
     fun addPage(message: String) = apply {
-        addPage(UTextComponent(message))
+        addPage(TextComponent(message))
     }
 
     /**
@@ -38,7 +37,7 @@ class Book {
      * @param message the message to set the page to
      * @return the current book to allow method chaining
      */
-    fun insertPage(pageIndex: Int, message: UTextComponent) = apply {
+    fun insertPage(pageIndex: Int, message: TextComponent) = apply {
         require(pageIndex in customContents.pages.indices) {
             println("Invalid index $pageIndex for Book with ${customContents.pageCount} pages")
         }
@@ -47,7 +46,7 @@ class Book {
         screen?.asMixin<BookScreenAccessor>()?.invokeUpdatePageButtons()
     }
 
-    fun insertPage(pageIndex: Int, message: String) = insertPage(pageIndex, UTextComponent(message))
+    fun insertPage(pageIndex: Int, message: String) = insertPage(pageIndex, TextComponent(message))
 
     /**
      * Sets a page of the book to the specified message.
@@ -56,7 +55,7 @@ class Book {
      * @param message the message to set the page to
      * @return the current book to allow method chaining
      */
-    fun setPage(pageIndex: Int, message: UTextComponent) = apply {
+    fun setPage(pageIndex: Int, message: TextComponent) = apply {
         require(pageIndex in customContents.pages.indices) {
             println("Invalid index $pageIndex for Book with ${customContents.pageCount} pages")
         }
@@ -65,7 +64,7 @@ class Book {
         screen?.asMixin<BookScreenAccessor>()?.invokeUpdatePageButtons()
     }
 
-    fun setPage(pageIndex: Int, message: String) = setPage(pageIndex, UTextComponent(message))
+    fun setPage(pageIndex: Int, message: String) = setPage(pageIndex, TextComponent(message))
 
     @JvmOverloads
     fun display(pageIndex: Int = 0) {
@@ -85,7 +84,7 @@ class Book {
     }
 
     private class CustomBookContents : BookScreen.Contents {
-        val pages = mutableListOf<UTextComponent>()
+        val pages = mutableListOf<TextComponent>()
 
         override fun getPageCount() = pages.size
 

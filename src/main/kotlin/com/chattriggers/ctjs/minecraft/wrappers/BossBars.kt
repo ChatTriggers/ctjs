@@ -1,12 +1,12 @@
 package com.chattriggers.ctjs.minecraft.wrappers
 
 import com.chattriggers.ctjs.minecraft.libs.ChatLib
+import com.chattriggers.ctjs.minecraft.objects.TextComponent
 import com.chattriggers.ctjs.mixins.BossBarHudAccessor
 import com.chattriggers.ctjs.utils.MCBossBarColor
 import com.chattriggers.ctjs.utils.MCBossBarStyle
 import com.chattriggers.ctjs.utils.asMixin
 import com.chattriggers.ctjs.utils.getOption
-import gg.essential.universal.wrappers.message.UTextComponent
 import net.minecraft.client.gui.hud.BossBarHud
 import net.minecraft.client.gui.hud.ClientBossBar
 import org.mozilla.javascript.NativeObject
@@ -68,7 +68,7 @@ object BossBars : CTWrapper<BossBarHud> {
 
         val bossBar = ClientBossBar(
             uuid,
-            UTextComponent(name),
+            TextComponent(name),
             percent,
             color.toMC(),
             style.toMC(),
@@ -98,7 +98,7 @@ object BossBars : CTWrapper<BossBarHud> {
     @JvmStatic
     fun removeBossBarsByName(name: String) {
         toMC().asMixin<BossBarHudAccessor>().bossBars.values.removeIf {
-            UTextComponent(it.name).formattedText == ChatLib.addColor(name)
+            TextComponent(it.name).formattedText == ChatLib.addColor(name)
         }
     }
 
@@ -128,7 +128,7 @@ object BossBars : CTWrapper<BossBarHud> {
          * @return the name
          */
         fun getName(): String {
-            return UTextComponent(mcValue.name).formattedText
+            return TextComponent(mcValue.name).formattedText
         }
 
         /**
@@ -137,7 +137,7 @@ object BossBars : CTWrapper<BossBarHud> {
          * @param name the name to set
          */
         fun setName(name: String) = apply {
-            mcValue.name = UTextComponent(name)
+            mcValue.name = TextComponent(name)
         }
 
         /**

@@ -12,12 +12,12 @@ import com.chattriggers.ctjs.console.ConsoleManager
 import com.chattriggers.ctjs.console.printTraceToConsole
 import com.chattriggers.ctjs.engine.js.JSLoader
 import com.chattriggers.ctjs.engine.module.ModulesGui
+import com.chattriggers.ctjs.minecraft.objects.TextComponent
 import com.chattriggers.ctjs.utils.toVersion
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.arguments.IntegerArgumentType
 import com.mojang.brigadier.arguments.StringArgumentType
 import gg.essential.universal.UDesktop
-import gg.essential.universal.wrappers.message.UTextComponent
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
@@ -159,22 +159,21 @@ internal object CTCommand {
 
         val messages = type.messageList()
         val toDump = lines.coerceAtMost(messages.size)
-        Message("&6&m${ChatLib.getChatBreak()}").apply { chatLineId = idFixed }.chat()
+        Message("&6&m${ChatLib.getChatBreak()}").setChatLineId(idFixed).chat()
 
         for (i in 0 until toDump) {
             val msg = ChatLib.replaceFormatting(messages[messages.size - toDump + i].formattedText)
             Message(
-                UTextComponent(msg)
+                TextComponent(msg)
                     .setClick(ClickEvent.Action.COPY_TO_CLIPBOARD, msg)
-                    .setHover(HoverEvent.Action.SHOW_TEXT, UTextComponent("&eClick here to copy this message."))
-                    .apply { formatted = false }
-            ).apply {
-                isFormatted = false
-                chatLineId = idFixed + i + 1
-            }.chat()
+                    .setHover(HoverEvent.Action.SHOW_TEXT, TextComponent("&eClick here to copy this message."))
+                    .setFormatted(true)
+            ).setFormatted(false)
+                .setChatLineId(idFixed + i + 1)
+                .chat()
         }
 
-        Message("&6&m${ChatLib.getChatBreak()}").apply { chatLineId = idFixed + lines + 1 }.chat()
+        Message("&6&m${ChatLib.getChatBreak()}").setChatLineId(idFixed + lines + 1).chat()
 
         idFixedOffset = idFixed + lines + 1
     }
@@ -186,7 +185,7 @@ internal object CTCommand {
         idFixedOffset = -1
     }
 
-    enum class DumpType(val messageList: () -> List<UTextComponent>) {
+    enum class DumpType(val messageList: () -> List<TextComponent>) {
         CHAT(ClientListener::chatHistory),
         ACTION_BAR(ClientListener::actionBarHistory);
 

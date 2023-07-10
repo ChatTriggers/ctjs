@@ -2,10 +2,10 @@ package com.chattriggers.ctjs.minecraft.wrappers.entity
 
 import com.chattriggers.ctjs.NameTagOverridable
 import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer
+import com.chattriggers.ctjs.minecraft.objects.TextComponent
 import com.chattriggers.ctjs.minecraft.wrappers.Client
 import com.chattriggers.ctjs.utils.MCTeam
 import com.chattriggers.ctjs.utils.asMixin
-import gg.essential.universal.wrappers.message.UTextComponent
 import net.minecraft.client.network.PlayerListEntry
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.text.Text
@@ -29,7 +29,7 @@ class PlayerMP(override val mcValue: PlayerEntity) : LivingEntity(mcValue) {
      */
     fun getDisplayName() = getPlayerName(getPlayerInfo())
 
-    fun setTabDisplayName(textComponent: UTextComponent) {
+    fun setTabDisplayName(textComponent: TextComponent) {
         getPlayerInfo()?.displayName = textComponent
     }
 
@@ -39,7 +39,7 @@ class PlayerMP(override val mcValue: PlayerEntity) : LivingEntity(mcValue) {
      *
      * @param textComponent the new name to display
      */
-    fun setNametagName(textComponent: UTextComponent) {
+    fun setNametagName(textComponent: TextComponent) {
         mcValue.asMixin<NameTagOverridable>().setOverriddenNametagName(textComponent)
     }
 
@@ -54,9 +54,9 @@ class PlayerMP(override val mcValue: PlayerEntity) : LivingEntity(mcValue) {
         Renderer.drawPlayer(obj)
     }
 
-    private fun getPlayerName(playerListEntry: PlayerListEntry?): UTextComponent {
-        return playerListEntry?.displayName?.let(::UTextComponent)
-            ?: UTextComponent(MCTeam.decorateName(
+    private fun getPlayerName(playerListEntry: PlayerListEntry?): TextComponent {
+        return playerListEntry?.displayName?.let(::TextComponent)
+            ?: TextComponent(MCTeam.decorateName(
                 playerListEntry?.scoreboardTeam,
                 Text.of(playerListEntry?.profile?.name)
             ))

@@ -8,7 +8,7 @@ import com.chattriggers.ctjs.minecraft.wrappers.Player
 import com.chattriggers.ctjs.mixins.ChatHudAccessor
 import com.chattriggers.ctjs.utils.asMixin
 import com.chattriggers.ctjs.console.printToConsole
-import gg.essential.universal.wrappers.message.UTextComponent
+import com.chattriggers.ctjs.minecraft.objects.TextComponent
 import net.fabricmc.fabric.impl.command.client.ClientCommandInternals
 import net.minecraft.client.gui.hud.ChatHudLine
 import net.minecraft.client.gui.hud.MessageIndicator
@@ -24,7 +24,7 @@ object ChatLib {
 
     /**
      * Prints text in the chat.
-     * The text can be a String, a [Message] or a [UTextComponent]
+     * The text can be a String, a [Message] or a [TextComponent]
      *
      * @param text the text to be printed
      */
@@ -33,14 +33,14 @@ object ChatLib {
         when (text) {
             is String -> Message(text).chat()
             is Message -> text.chat()
-            is UTextComponent -> text.chat()
+            is TextComponent -> text.chat()
             else -> Message(text.toString()).chat()
         }
     }
 
     /**
      * Shows text in the action bar.
-     * The text can be a String, a [Message] or a [UTextComponent]
+     * The text can be a String, a [Message] or a [TextComponent]
      *
      * @param text the text to show
      */
@@ -49,24 +49,24 @@ object ChatLib {
         when (text) {
             is String -> Message(text).actionBar()
             is Message -> text.actionBar()
-            is UTextComponent -> text.actionBar()
+            is TextComponent -> text.actionBar()
             else -> Message(text.toString()).actionBar()
         }
     }
 
     /**
      * Simulates a chat message to be caught by other triggers for testing.
-     * The text can be a String, a [Message] or a [UTextComponent]
+     * The text can be a String, a [Message] or a [TextComponent]
      *
      * @param text The message to simulate
      */
     @JvmStatic
     fun simulateChat(text: Any?) {
         when (text) {
-            is String -> Message(text).apply { isRecursive = true }.chat()
-            is Message -> text.apply { isRecursive = true }.chat()
-            is UTextComponent -> Message(text).apply { isRecursive = true }.chat()
-            else -> Message(text.toString()).apply { isRecursive = true }.chat()
+            is String -> Message(text).setRecursive(true).chat()
+            is Message -> text.setRecursive(true).chat()
+            is TextComponent -> Message(text).setRecursive(true).chat()
+            else -> Message(text.toString()).setRecursive(true).chat()
         }
     }
 
@@ -212,7 +212,7 @@ object ChatLib {
         val pattern = Pattern.compile(regexp["source"] as String, flags)
 
         editLines(replacements) {
-            val matcher = pattern.matcher(UTextComponent(it.content).unformattedText)
+            val matcher = pattern.matcher(TextComponent(it.content).unformattedText)
             if (global) matcher.find() else matcher.matches()
         }
     }
@@ -226,7 +226,7 @@ object ChatLib {
     @JvmStatic
     fun editChat(toReplace: String, vararg replacements: Any) {
         editLines(replacements) {
-            removeFormatting(UTextComponent(it.content).unformattedText) == toReplace
+            removeFormatting(TextComponent(it.content).unformattedText) == toReplace
         }
     }
 
@@ -239,7 +239,7 @@ object ChatLib {
     @JvmStatic
     fun editChat(toReplace: Message, vararg replacements: Any) {
         editLines(replacements) {
-            toReplace.chatMessage.formattedText == UTextComponent(it.content).formattedText
+            toReplace.chatMessage.formattedText == TextComponent(it.content).formattedText
         }
     }
 
@@ -270,12 +270,12 @@ object ChatLib {
                 chatLineIds.remove(next)
                 for (replacement in replacements) {
                     val message = if (replacement !is Message) {
-                        UTextComponent.from(replacement)?.let(::Message) ?: continue
+                        TextComponent.from(replacement)?.let(::Message) ?: continue
                     } else replacement
 
                     val line = ChatHudLine(next.creationTick, message.chatMessage, null, indicator)
-                    if (message.chatLineId != -1)
-                        chatLineIds[line] = message.chatLineId
+                    if (message.getChatLineId() != -1)
+                        chatLineIds[line] = message.getChatLineId()
 
                     it.add(line)
                 }
@@ -301,7 +301,7 @@ object ChatLib {
         val pattern = Pattern.compile(regexp["source"] as String, flags)
 
         removeLines {
-            val matcher = pattern.matcher(UTextComponent(it.content).unformattedText)
+            val matcher = pattern.matcher(TextComponent(it.content).unformattedText)
             if (global) matcher.find() else matcher.matches()
         }
     }
@@ -314,7 +314,7 @@ object ChatLib {
     @JvmStatic
     fun deleteChat(toDelete: String) {
         removeLines {
-            removeFormatting(UTextComponent(it.content).unformattedText) == toDelete
+            removeFormatting(TextComponent(it.content).unformattedText) == toDelete
         }
     }
 
@@ -326,7 +326,7 @@ object ChatLib {
     @JvmStatic
     fun deleteChat(toDelete: Message) {
         removeLines {
-            toDelete.chatMessage.formattedText == UTextComponent(it.content).formattedText
+            toDelete.chatMessage.formattedText == TextComponent(it.content).formattedText
         }
     }
 
@@ -396,7 +396,7 @@ object ChatLib {
     }
 
     internal fun sendMessageWithId(message: Message) {
-        require(message.chatLineId != -1)
+        require(message.getChatLineId() != -1)
 
         val chatGui = Client.getChatGUI() ?: return
         val chatMessage = message.chatMessage
@@ -407,7 +407,7 @@ object ChatLib {
             "Expected new chat message to be at index 0"
         }
 
-        chatLineIds[newChatLine] = message.chatLineId
+        chatLineIds[newChatLine] = message.getChatLineId()
     }
 
     internal fun onChatHudClearChat() {

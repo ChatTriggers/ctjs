@@ -1,6 +1,6 @@
 package com.chattriggers.ctjs.minecraft.wrappers.world
 
-import gg.essential.universal.wrappers.message.UTextComponent
+import com.chattriggers.ctjs.minecraft.objects.TextComponent
 import net.minecraft.entity.effect.StatusEffect
 import net.minecraft.entity.effect.StatusEffectInstance
 
@@ -24,7 +24,7 @@ class PotionEffect(val effect: StatusEffectInstance) {
      * is displayed in the player's inventory.
      * Ex: "Poison"
      */
-    val localizedName get() = UTextComponent(effect.effectType.name).unformattedText
+    val localizedName get() = TextComponent(effect.effectType.name).unformattedText
 
     val amplifier get() = effect.amplifier
 

@@ -1,11 +1,11 @@
 package com.chattriggers.ctjs.minecraft.wrappers
 
+import com.chattriggers.ctjs.minecraft.objects.TextComponent
 import com.chattriggers.ctjs.mixins.PlayerListHudAccessor
 import com.chattriggers.ctjs.utils.MCTeam
 import com.chattriggers.ctjs.utils.asMixin
 import com.google.common.collect.ComparisonChain
 import com.google.common.collect.Ordering
-import gg.essential.universal.wrappers.message.UTextComponent
 import net.minecraft.client.gui.hud.PlayerListHud
 import net.minecraft.client.network.PlayerListEntry
 import net.minecraft.text.Text
@@ -30,7 +30,7 @@ object TabList : CTWrapper<PlayerListHud?> {
 
         return scores.map {
             val team = scoreboard.getTeam(it.playerName)
-            UTextComponent(MCTeam.decorateName(team, UTextComponent(it.playerName))).formattedText
+            TextComponent(MCTeam.decorateName(team, TextComponent(it.playerName))).formattedText
         }
     }
 
@@ -40,7 +40,7 @@ object TabList : CTWrapper<PlayerListHud?> {
 
         return playerComparator
             .sortedCopy(Player.toMC()!!.networkHandler.playerList)
-            .map { UTextComponent(toMC()!!.getPlayerName(it)).formattedText }
+            .map { TextComponent(toMC()!!.getPlayerName(it)).formattedText }
     }
 
     /**
@@ -60,7 +60,7 @@ object TabList : CTWrapper<PlayerListHud?> {
     }
 
     @JvmStatic
-    fun getHeaderComponent() = toMC()?.asMixin<PlayerListHudAccessor>()?.header?.let(::UTextComponent)
+    fun getHeaderComponent() = toMC()?.asMixin<PlayerListHudAccessor>()?.header?.let(::TextComponent)
 
     @JvmStatic
     fun getHeader() = getHeaderComponent()?.formattedText
@@ -74,8 +74,8 @@ object TabList : CTWrapper<PlayerListHud?> {
     @JvmStatic
     fun setHeader(header: Any?) {
         when (header) {
-            is String -> toMC()?.setHeader(UTextComponent(header))
-            is UTextComponent -> toMC()?.setHeader(header)
+            is String -> toMC()?.setHeader(TextComponent(header))
+            is TextComponent -> toMC()?.setHeader(header)
             is Text -> toMC()?.setHeader(header)
             null -> toMC()?.setHeader(null)
         }
@@ -85,7 +85,7 @@ object TabList : CTWrapper<PlayerListHud?> {
     fun clearHeader() = setHeader(null)
 
     @JvmStatic
-    fun getFooterComponent() = toMC()?.asMixin<PlayerListHudAccessor>()?.footer?.let(::UTextComponent)
+    fun getFooterComponent() = toMC()?.asMixin<PlayerListHudAccessor>()?.footer?.let(::TextComponent)
 
     @JvmStatic
     fun getFooter() = getFooterComponent()?.formattedText
@@ -99,8 +99,8 @@ object TabList : CTWrapper<PlayerListHud?> {
     @JvmStatic
     fun setFooter(footer: Any?) {
         when (footer) {
-            is String -> toMC()?.setFooter(UTextComponent(footer))
-            is UTextComponent -> toMC()?.setFooter(footer)
+            is String -> toMC()?.setFooter(TextComponent(footer))
+            is TextComponent -> toMC()?.setFooter(footer)
             is Text -> toMC()?.setFooter(footer)
             null -> toMC()?.setFooter(null)
         }

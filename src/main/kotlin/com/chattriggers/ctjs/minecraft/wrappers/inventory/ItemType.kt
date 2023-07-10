@@ -1,10 +1,10 @@
 package com.chattriggers.ctjs.minecraft.wrappers.inventory
 
+import com.chattriggers.ctjs.minecraft.objects.TextComponent
 import com.chattriggers.ctjs.minecraft.wrappers.CTWrapper
 import com.chattriggers.ctjs.minecraft.wrappers.world.block.BlockType
 import com.chattriggers.ctjs.utils.MCItem
 import com.chattriggers.ctjs.utils.toIdentifier
-import gg.essential.universal.wrappers.message.UTextComponent
 import net.minecraft.registry.Registries
 
 class ItemType(override val mcValue: MCItem) : CTWrapper<MCItem> {
@@ -16,7 +16,7 @@ class ItemType(override val mcValue: MCItem) : CTWrapper<MCItem> {
 
     fun getName(): String = getNameComponent().formattedText
 
-    fun getNameComponent(): UTextComponent = UTextComponent(mcValue.name)
+    fun getNameComponent(): TextComponent = TextComponent(mcValue.name)
 
     fun getID(): Int = MCItem.getRawId(mcValue)
 

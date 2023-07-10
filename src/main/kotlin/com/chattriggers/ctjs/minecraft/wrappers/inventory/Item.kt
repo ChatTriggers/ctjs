@@ -2,6 +2,7 @@ package com.chattriggers.ctjs.minecraft.wrappers.inventory
 
 import com.chattriggers.ctjs.TooltipOverridable
 import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer
+import com.chattriggers.ctjs.minecraft.objects.TextComponent
 import com.chattriggers.ctjs.minecraft.wrappers.CTWrapper
 import com.chattriggers.ctjs.minecraft.wrappers.Client
 import com.chattriggers.ctjs.minecraft.wrappers.World
@@ -11,7 +12,6 @@ import com.chattriggers.ctjs.minecraft.wrappers.world.block.Block
 import com.chattriggers.ctjs.minecraft.wrappers.world.block.BlockPos
 import com.chattriggers.ctjs.utils.MCNbtCompound
 import com.chattriggers.ctjs.utils.asMixin
-import gg.essential.universal.wrappers.message.UTextComponent
 import net.minecraft.block.pattern.CachedBlockPosition
 import net.minecraft.client.item.TooltipContext
 import net.minecraft.enchantment.EnchantmentHelper
@@ -58,14 +58,14 @@ class Item(override val mcValue: ItemStack) : CTWrapper<ItemStack> {
 
     fun isDamageable() = mcValue.isDamageable
 
-    fun getName(): String = UTextComponent(mcValue.name).formattedText
+    fun getName(): String = TextComponent(mcValue.name).formattedText
 
     @JvmOverloads
-    fun getLore(advanced: Boolean = false): List<UTextComponent>? = (getHolder()?.toMC() as? PlayerEntity)?.let {
-        mcValue.getTooltip(it, if (advanced) TooltipContext.ADVANCED else TooltipContext.BASIC).map(::UTextComponent)
+    fun getLore(advanced: Boolean = false): List<TextComponent>? = (getHolder()?.toMC() as? PlayerEntity)?.let {
+        mcValue.getTooltip(it, if (advanced) TooltipContext.ADVANCED else TooltipContext.BASIC).map(::TextComponent)
     }
 
-    fun setLore(lore: List<UTextComponent>) {
+    fun setLore(lore: List<TextComponent>) {
         mcValue.asMixin<TooltipOverridable>().apply {
             setTooltip(lore)
             setShouldOverrideTooltip(true)

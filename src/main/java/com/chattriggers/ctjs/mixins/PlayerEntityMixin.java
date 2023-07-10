@@ -1,7 +1,7 @@
 package com.chattriggers.ctjs.mixins;
 
 import com.chattriggers.ctjs.NameTagOverridable;
-import gg.essential.universal.wrappers.message.UTextComponent;
+import com.chattriggers.ctjs.minecraft.objects.TextComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.MutableText;
 import org.jetbrains.annotations.Nullable;
@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 @Mixin(PlayerEntity.class)
 public class PlayerEntityMixin implements NameTagOverridable {
     @Unique
-    private UTextComponent overriddenNametagName;
+    private TextComponent overriddenNametagName;
 
     @ModifyVariable(method = "getDisplayName", at = @At(value = "STORE", ordinal = 0))
     private MutableText injectGetName(MutableText original) {
@@ -24,7 +24,7 @@ public class PlayerEntityMixin implements NameTagOverridable {
 
     @Unique
     @Override
-    public void setOverriddenNametagName(@Nullable UTextComponent component) {
+    public void setOverriddenNametagName(@Nullable TextComponent component) {
         overriddenNametagName = component;
     }
 }

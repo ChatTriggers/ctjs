@@ -1,8 +1,8 @@
 package com.chattriggers.ctjs.minecraft.wrappers.entity
 
+import com.chattriggers.ctjs.minecraft.objects.TextComponent
 import com.chattriggers.ctjs.minecraft.wrappers.CTWrapper
 import com.chattriggers.ctjs.utils.MCTeam
-import gg.essential.universal.wrappers.message.UTextComponent
 import net.minecraft.scoreboard.AbstractTeam
 
 class Team(override val mcValue: MCTeam) : CTWrapper<MCTeam> {
@@ -14,14 +14,14 @@ class Team(override val mcValue: MCTeam) : CTWrapper<MCTeam> {
     /**
      * Gets the display name of the team
      */
-    fun getName() = UTextComponent(mcValue.displayName).formattedText
+    fun getName() = TextComponent(mcValue.displayName).formattedText
 
     /**
      * Sets the display name of the team
      * @param name the new display name
      * @return the team for method chaining
      */
-    fun setName(name: UTextComponent) = apply {
+    fun setName(name: TextComponent) = apply {
         mcValue.displayName = name
     }
 
@@ -30,7 +30,7 @@ class Team(override val mcValue: MCTeam) : CTWrapper<MCTeam> {
      * @param name the new display name
      * @return the team for method chaining
      */
-    fun setName(name: String) = setName(UTextComponent(name))
+    fun setName(name: String) = setName(TextComponent(name))
 
     /**
      * Gets the list of names on the team
@@ -40,14 +40,14 @@ class Team(override val mcValue: MCTeam) : CTWrapper<MCTeam> {
     /**
      * Gets the team prefix
      */
-    fun getPrefix() = UTextComponent(mcValue.prefix).formattedText
+    fun getPrefix() = TextComponent(mcValue.prefix).formattedText
 
     /**
      * Sets the team prefix
      * @param prefix the prefix to set
      * @return the team for method chaining
      */
-    fun setPrefix(prefix: UTextComponent) = apply {
+    fun setPrefix(prefix: TextComponent) = apply {
         mcValue.prefix = prefix
     }
 
@@ -56,19 +56,19 @@ class Team(override val mcValue: MCTeam) : CTWrapper<MCTeam> {
      * @param prefix the prefix to set
      * @return the team for method chaining
      */
-    fun setPrefix(prefix: String) = setPrefix(UTextComponent(prefix))
+    fun setPrefix(prefix: String) = setPrefix(TextComponent(prefix))
 
     /**
      * Gets the team suffix
      */
-    fun getSuffix() = UTextComponent(mcValue.suffix).formattedText
+    fun getSuffix() = TextComponent(mcValue.suffix).formattedText
 
     /**
      * Sets the team suffix
      * @param suffix the suffix to set
      * @return the team for method chaining
      */
-    fun setSuffix(suffix: UTextComponent) = apply {
+    fun setSuffix(suffix: TextComponent) = apply {
         mcValue.suffix = suffix
     }
 
@@ -77,7 +77,7 @@ class Team(override val mcValue: MCTeam) : CTWrapper<MCTeam> {
      * @param suffix the suffix to set
      * @return the team for method chaining
      */
-    fun setSuffix(suffix: String) = setSuffix(UTextComponent(suffix))
+    fun setSuffix(suffix: String) = setSuffix(TextComponent(suffix))
 
     /**
      * Gets the team's friendly fire setting

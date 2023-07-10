@@ -1,15 +1,15 @@
 package com.chattriggers.ctjs.minecraft.wrappers
 
+import com.chattriggers.ctjs.minecraft.objects.TextComponent
 import com.chattriggers.ctjs.utils.MCScoreboard
 import com.chattriggers.ctjs.utils.MCTeam
-import gg.essential.universal.wrappers.message.UTextComponent
 import net.minecraft.scoreboard.ScoreboardObjective
 import net.minecraft.scoreboard.ScoreboardPlayerScore
 
 object Scoreboard : CTWrapper<MCScoreboard?> {
     private var needsUpdate = true
     private var scoreboardNames = mutableListOf<Score>()
-    private var scoreboardTitle = UTextComponent("")
+    private var scoreboardTitle = TextComponent("")
     private var shouldRender = true
 
     override val mcValue get() = World.toMC()?.scoreboard
@@ -44,12 +44,12 @@ object Scoreboard : CTWrapper<MCScoreboard?> {
      * @return the scoreboard title
      */
     @JvmStatic
-    fun setTitle(title: UTextComponent) {
+    fun setTitle(title: TextComponent) {
         getSidebar()?.displayName = title
     }
 
     @JvmStatic
-    fun setTitle(title: String) = setTitle(UTextComponent(title))
+    fun setTitle(title: String) = setTitle(TextComponent(title))
 
     /**
      * Get all currently visible strings on the scoreboard. (excluding title)
@@ -126,11 +126,11 @@ object Scoreboard : CTWrapper<MCScoreboard?> {
 
     private fun updateNames() {
         scoreboardNames.clear()
-        scoreboardTitle = UTextComponent("")
+        scoreboardTitle = TextComponent("")
 
         val scoreboard = toMC() ?: return
         val sidebarObjective = getSidebar() ?: return
-        scoreboardTitle = UTextComponent(sidebarObjective.displayName)
+        scoreboardTitle = TextComponent(sidebarObjective.displayName)
 
         scoreboardNames = scoreboard.getAllPlayerScores(sidebarObjective).map(::Score).toMutableList()
     }
@@ -154,9 +154,9 @@ object Scoreboard : CTWrapper<MCScoreboard?> {
          *
          * @return the display name
          */
-        fun getName() = UTextComponent(MCTeam.decorateName(
+        fun getName() = TextComponent(MCTeam.decorateName(
             Scoreboard.toMC()!!.getTeam(mcValue.playerName),
-            UTextComponent(mcValue.playerName),
+            TextComponent(mcValue.playerName),
         )).formattedText
 
         override fun toString(): String = getName()

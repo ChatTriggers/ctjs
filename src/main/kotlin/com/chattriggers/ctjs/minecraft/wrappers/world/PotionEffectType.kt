@@ -1,6 +1,6 @@
 package com.chattriggers.ctjs.minecraft.wrappers.world
 
-import gg.essential.universal.wrappers.message.UTextComponent
+import com.chattriggers.ctjs.minecraft.objects.TextComponent
 import net.minecraft.entity.effect.StatusEffect
 import java.awt.Color
 
@@ -21,9 +21,9 @@ class PotionEffectType(val type: StatusEffect) {
     val translationKey get() = type.translationKey
 
     /**
-     * The user-friendly name of this type as a [UTextComponent]
+     * The user-friendly name of this type as a [TextComponent]
      */
-    val name get() = UTextComponent(type.name)
+    val name get() = TextComponent(type.name)
 
     /**
      * The [net.minecraft.entity.effect.StatusEffectCategory] of this type

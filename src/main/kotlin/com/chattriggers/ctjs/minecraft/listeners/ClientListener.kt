@@ -16,11 +16,11 @@ import com.chattriggers.ctjs.utils.Config
 import com.chattriggers.ctjs.utils.Initializer
 import com.chattriggers.ctjs.console.printToConsole
 import com.chattriggers.ctjs.engine.module.ModuleManager
+import com.chattriggers.ctjs.minecraft.objects.TextComponent
 import com.chattriggers.ctjs.minecraft.wrappers.inventory.Item
 import com.chattriggers.ctjs.utils.toMatrixStack
 import gg.essential.universal.UMatrixStack
 import gg.essential.universal.UMinecraft
-import gg.essential.universal.wrappers.message.UTextComponent
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
 import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents
@@ -43,8 +43,8 @@ import java.util.concurrent.CopyOnWriteArrayList
 
 object ClientListener : Initializer {
     private var ticksPassed: Int = 0
-    val chatHistory = mutableListOf<UTextComponent>()
-    val actionBarHistory = mutableListOf<UTextComponent>()
+    val chatHistory = mutableListOf<TextComponent>()
+    val actionBarHistory = mutableListOf<TextComponent>()
     private val tasks = CopyOnWriteArrayList<Task>()
     private lateinit var packetContext: Context
 
@@ -251,7 +251,7 @@ object ClientListener : Initializer {
     }
 
     private fun handleChatMessage(message: Text, actionBar: Boolean): Boolean {
-        val textComponent = UTextComponent(message)
+        val textComponent = TextComponent(message)
         val event = ChatTrigger.Event(textComponent)
 
         return if (actionBar) {

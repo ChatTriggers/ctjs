@@ -1,6 +1,6 @@
 package com.chattriggers.ctjs.minecraft.wrappers
 
-import gg.essential.universal.wrappers.message.UTextComponent
+import com.chattriggers.ctjs.minecraft.objects.TextComponent
 import net.minecraft.client.network.ServerInfo
 
 object Server : CTWrapper<ServerInfo?> {
@@ -48,7 +48,7 @@ object Server : CTWrapper<ServerInfo?> {
         if (isSingleplayer())
             return "SinglePlayer"
 
-        return toMC()?.label?.let(::UTextComponent)?.formattedText ?: ""
+        return toMC()?.label?.let(::TextComponent)?.formattedText ?: ""
     }
 
     // TODO(breaking): Return -1 if not in a world

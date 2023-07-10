@@ -1,7 +1,7 @@
 package com.chattriggers.ctjs.triggers
 
 import com.chattriggers.ctjs.minecraft.listeners.CancellableEvent
-import gg.essential.universal.wrappers.message.UTextComponent
+import com.chattriggers.ctjs.minecraft.objects.TextComponent
 import org.mozilla.javascript.regexp.NativeRegExp
 
 class ChatTrigger(method: Any, type: ITriggerType) : Trigger(method, type) {
@@ -194,7 +194,7 @@ class ChatTrigger(method: Any, type: ITriggerType) : Trigger(method, type) {
     }
 
     // helper method to get the proper chat message based on the presence of color codes
-    private fun getChatMessage(chatMessage: UTextComponent) =
+    private fun getChatMessage(chatMessage: TextComponent) =
         if (formatted)
             chatMessage.formattedText.replace("\u00a7", "&")
         else chatMessage.unformattedText
@@ -259,5 +259,5 @@ class ChatTrigger(method: Any, type: ITriggerType) : Trigger(method, type) {
         }
     }
 
-    class Event(@JvmField val message: UTextComponent) : CancellableEvent()
+    class Event(@JvmField val message: TextComponent) : CancellableEvent()
 }

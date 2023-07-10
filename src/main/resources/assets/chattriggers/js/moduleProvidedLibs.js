@@ -70,7 +70,7 @@
     loadClass("com.chattriggers.ctjs.minecraft.objects.Gui");
 
     loadClass("com.chattriggers.ctjs.minecraft.objects.Message");
-    loadClass("gg.essential.universal.wrappers.message.UTextComponent", "TextComponent");
+    loadClass("com.chattriggers.ctjs.minecraft.objects.TextComponent");
 
     // Wrappers
     loadClass("com.chattriggers.ctjs.minecraft.wrappers.BossBars");

@@ -2,6 +2,7 @@ package com.chattriggers.ctjs.minecraft.wrappers
 
 import com.chattriggers.ctjs.minecraft.listeners.ClientListener
 import com.chattriggers.ctjs.minecraft.objects.KeyBind
+import com.chattriggers.ctjs.minecraft.objects.TextComponent
 import com.chattriggers.ctjs.minecraft.wrappers.inventory.Slot
 import com.chattriggers.ctjs.mixins.ChatScreenAccessor
 import com.chattriggers.ctjs.mixins.HandledScreenAccessor
@@ -10,7 +11,6 @@ import com.chattriggers.ctjs.utils.asMixin
 import gg.essential.universal.UKeyboard
 import gg.essential.universal.UMinecraft
 import gg.essential.universal.UMouse
-import gg.essential.universal.wrappers.message.UTextComponent
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gui.hud.ChatHud
 import net.minecraft.client.gui.hud.PlayerListHud
@@ -219,9 +219,9 @@ object Client {
         getMinecraft().inGameHud.apply {
             setTitleTicks(fadeIn, time, fadeOut)
             if (title != null)
-                setTitle(UTextComponent(title))
+                setTitle(TextComponent(title))
             if (subtitle != null)
-                setSubtitle(UTextComponent(subtitle))
+                setSubtitle(TextComponent(subtitle))
         }
     }
 
