@@ -233,24 +233,14 @@ object Client {
     @JvmStatic
     @JvmOverloads
     fun copy(text: String = "") {
-        GLFW.glfwGetClipboardString(getMinecraft().window.handle)
-        val buffer = MemoryUtil.memUTF8(text)
-        try {
-            GLFW.nglfwSetClipboardString(getMinecraft().window.handle, MemoryUtil.memAddress(buffer))
-        } finally {
-            MemoryUtil.memFree(buffer)
-        }
+        getMinecraft().keyboard.clipboard = text
     }
 
     /**
-     * Get the string currently on the clipboard, or null if there is no copied text
-     *
-     * @return String or null
+     * Get the string currently on the clipboard
      */
     @JvmStatic
-    fun paste(): String? {
-        return GLFW.glfwGetClipboardString(getMinecraft().window.handle)
-    }
+    fun paste(): String = getMinecraft().keyboard.clipboard
 
     /**
      * Get the [KeyBinding] from an already existing Minecraft KeyBinding, otherwise, returns null.
