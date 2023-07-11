@@ -184,3 +184,4 @@ Here is a list of targeted changes for various different APIs:
 ### Misc Changes
 
 - The assets directory has changed from `config/ChatTriggers/images` to `config/ChatTriggers/assets`
+- `/ct files` now opens the modules folder instead of its parent folder
