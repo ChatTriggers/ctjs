@@ -77,7 +77,7 @@ Here is a list of targeted changes for various different APIs:
   - `guiOpened` now takes the opened `Screen` as its first argument.
   - `renderTileEntity` has been renamed to `renderBlockEntity`, and no longer passes in the position as an argument (access it by calling `BlockEntity.getBlockPos()`)
   - `ClassFilterTrigger`: Removed `setPacketClass` and `setPacketClasses`. Use `setFilteredClass` and `setFilteredClasses` instead
-  - The full message for `chat` triggers is no longer accessed with `EventLib` (which no longer exists). Instead, use `event.message`, which will return a `UTextComponent`. This has the `getFormattedText()` and `getUnformattedText()` methods, which replace the second parameter of the old `EventLib` method
+  - The full message for `chat` triggers is no longer accessed with `EventLib` (which no longer exists). Instead, use `event.message`, which will return a `TextComponent`. This has the `getFormattedText()` and `getUnformattedText()` methods, which replace the second parameter of the old `EventLib` method
   - `serverConnect` and `serverDisconnect` no longer pass an event as the third parameter
   - `scrolled` now passes in the actual scroll amount, not just -1 or 1 to indicate a direction
   - `dropItem` takes different parameters:
@@ -120,7 +120,7 @@ Here is a list of targeted changes for various different APIs:
   - Enum values are now UPPER_CASE
 - `BlockType`: Removed `getDefaultMetadata()` and `getHarvestLevel()`
 - Remove `Scoreboard.getScoreboardTitle()` in favor of the less verbose `Scoreboard.getTitle()`
-- `Book` now uses `UTextComponent` instead of `UMessage`
+- `Book` now uses `TextComponent` instead of `Message`
 - `Settings`
   - Renamed all methods in the `skin` object to indicate they return whether the part is enabled, not the actual part themselves (i.e. `getCape()` -> `isCapeEnabled()`)
   - Renamed `video.getGraphics()` to `video.getGraphicsMode()`
@@ -132,7 +132,7 @@ Here is a list of targeted changes for various different APIs:
     - `chat.getVisibility()` now returns `Settings.ChatVisibility` instead of `string`
 - `ChatLib`
   - `clearChat()` no longer takes any chat line IDs, and instead will always clear the chat. To selectively-delete message using their ID, use `deleteChat(id: number)`
-  - Removed `getChatMessage()`. Instead, you can access the entire message as a `UTextComponent` via `event.message`
+  - Removed `getChatMessage()`. Instead, you can access the entire message as a `TextComponent` via `event.message`
 - `Player`
   - Removed `getRawYaw()` as it provided no extra value
   - `getUUID()` now returns the `UUID` object instead of a `string`
@@ -175,8 +175,8 @@ Here is a list of targeted changes for various different APIs:
   - `addButton` now returns the ID instead of returning the `Gui` instance. This ID is used in various button APIs, primarily to indicate which button is clicked. This is a change in the MC API that we propogated to our API.
   - Removed a bunch of random draw method that didn't really belong in the class. They delegated to existing methods on `Screen`, so if you really want to, you can still call them, albeit with slightly different names and parameters.
 - `TabList`
-  - Renamed `getHeaderMessage()` to `getHeaderComponent()`, and it now returns a `UTextComponent` instead of a `Message`
-  - Renamed `getFooterMessage()` to `getFooterComponent()`, and it now returns a `UTextComponent` instead of a `Message`
+  - Renamed `getHeaderMessage()` to `getHeaderComponent()`, and it now returns a `TextComponent` instead of a `Message`
+  - Renamed `getFooterMessage()` to `getFooterComponent()`, and it now returns a `TextComponent` instead of a `Message`
 - `Team.getNameTagVisibility()` and `Team.getDeathMessageVisibility()` now return a `Team.Visibility` instead of a string
 - Provided JS API: 
   - Split `print` into `print` and `println`. `print` will no longer emit a trailing newline

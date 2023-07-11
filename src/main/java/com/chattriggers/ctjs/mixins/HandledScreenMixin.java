@@ -1,8 +1,8 @@
 package com.chattriggers.ctjs.mixins;
 
+import com.chattriggers.ctjs.minecraft.objects.TextComponent;
 import com.chattriggers.ctjs.minecraft.wrappers.inventory.Item;
 import com.chattriggers.ctjs.triggers.TriggerType;
-import gg.essential.universal.wrappers.message.UTextComponent;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.item.ItemStack;
@@ -64,7 +64,7 @@ public class HandledScreenMixin extends Screen {
             //$$ getTooltipFromItem(stack)
             //#endif
                 .stream()
-                .map(text -> new UTextComponent(text).getFormattedText())
+                .map(text -> new TextComponent(text).getFormattedText())
                 .toList(),
             new Item(stack),
             ci

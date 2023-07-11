@@ -1,7 +1,6 @@
 package com.chattriggers.ctjs.minecraft.objects
 
 import gg.essential.universal.UChat
-import gg.essential.universal.wrappers.message.UMessage
 import net.minecraft.text.*
 import net.minecraft.util.Formatting
 import java.util.*
@@ -218,14 +217,14 @@ class TextComponent : Text {
      * Shows the component in chat as a new [Message]
      */
     fun chat() = apply {
-        UMessage(this).chat()
+        Message(this).chat()
     }
 
     /**
      * Shows the component on the actionbar as a new [Message]
      */
     fun actionBar() = apply {
-        UMessage(this).actionBar()
+        Message(this).actionBar()
     }
 
     private fun reInstance() {
@@ -249,10 +248,6 @@ class TextComponent : Text {
 
         @Suppress("UNCHECKED_CAST")
         val event = HoverEvent(hoverAction as HoverEvent.Action<Any>, hoverValue!!)
-        setHoverEventHelper(event)
-    }
-
-    private fun setHoverEventHelper(event: HoverEvent) {
         component.style = component.style.withHoverEvent(event)
     }
 
