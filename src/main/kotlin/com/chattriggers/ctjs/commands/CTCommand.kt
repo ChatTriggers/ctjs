@@ -26,6 +26,7 @@ import net.minecraft.text.HoverEvent
 import java.awt.Desktop
 import java.io.File
 import java.io.IOException
+import java.net.URI
 import kotlin.concurrent.thread
 
 internal object CTCommand {
@@ -142,12 +143,7 @@ internal object CTCommand {
 
     private fun openFileLocation() {
         try {
-            val path = listOf(File(".").absolutePath, "config", "ChatTriggers", "modules").joinToString(File.separator)
-            if (UDesktop.isWindows) {
-                ProcessBuilder("explorer.exe", "/select,$path")
-            } else {
-                ProcessBuilder("xdg-open", path)
-            }.start()
+            UDesktop.browse(ModuleManager.modulesFolder.toURI())
         } catch (exception: IOException) {
             exception.printTraceToConsole()
             ChatLib.chat("&cCould not open file location")
@@ -190,7 +186,7 @@ internal object CTCommand {
         ACTION_BAR(ClientListener::actionBarHistory);
 
         companion object {
-            fun fromString(str: String) = DumpType.values().first { it.name.lowercase() == str }
+            fun fromString(str: String) = DumpType.values().first { it.name.equals(str, ignoreCase = true) }
         }
     }
 }
