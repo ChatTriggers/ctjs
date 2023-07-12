@@ -28,7 +28,6 @@ object ChatLib {
      *
      * @param text the text to be printed
      */
-    @JvmStatic
     fun chat(text: Any?) {
         when (text) {
             is String -> Message(text).chat()
@@ -44,7 +43,6 @@ object ChatLib {
      *
      * @param text the text to show
      */
-    @JvmStatic
     fun actionBar(text: Any?) {
         when (text) {
             is String -> Message(text).actionBar()
@@ -60,7 +58,6 @@ object ChatLib {
      *
      * @param text The message to simulate
      */
-    @JvmStatic
     fun simulateChat(text: Any?) {
         when (text) {
             is String -> Message(text).setRecursive(true).chat()
@@ -77,7 +74,6 @@ object ChatLib {
      * @param message The string to add color codes to
      * @return the formatted message
      */
-    @JvmStatic
     fun addColor(message: String?): String {
         return message.toString().replace("(?<!\\\\)&(?![^0-9a-fk-or]|$)".toRegex(), "\u00a7")
     }
@@ -88,7 +84,6 @@ object ChatLib {
      *
      * @param text the message to be sent
      */
-    @JvmStatic
     fun say(text: String) = Client.getMinecraft().networkHandler?.sendChatMessage(text)
 
     /**
@@ -98,7 +93,6 @@ object ChatLib {
      * @param clientSide should the command be run as a client side command
      */
     @JvmOverloads
-    @JvmStatic
     fun command(text: String, clientSide: Boolean = false) {
         if (clientSide) ClientCommandInternals.executeCommand(text)
         else Client.getMinecraft().networkHandler?.sendChatCommand(text)
@@ -107,7 +101,6 @@ object ChatLib {
     /**
      * Clear all chat messages
      */
-    @JvmStatic
     fun clearChat() {
         Client.getChatGUI()?.clear(false)
         chatLineIds.clear()
@@ -122,7 +115,6 @@ object ChatLib {
      * @return the message that would split chat
      */
     @JvmOverloads
-    @JvmStatic
     fun getChatBreak(separator: String = "-"): String {
         val len = Renderer.getStringWidth(separator)
         val times = getChatWidth() / len
@@ -134,7 +126,6 @@ object ChatLib {
      *
      * @return the width of chat
      */
-    @JvmStatic
     fun getChatWidth(): Int {
         return Client.getChatGUI()?.width ?: 0
     }
@@ -145,7 +136,6 @@ object ChatLib {
      * @param text the string to un-format
      * @return the unformatted string
      */
-    @JvmStatic
     fun removeFormatting(text: String): String {
         return text.replace("[\u00a7&][0-9a-fk-or]".toRegex(), "")
     }
@@ -156,7 +146,6 @@ object ChatLib {
      * @param text the formatted string
      * @return the unformatted string
      */
-    @JvmStatic
     fun replaceFormatting(text: String): String {
         return text.replace("\u00a7(?![^0-9a-fk-or]|$)".toRegex(), "&")
     }
@@ -167,7 +156,6 @@ object ChatLib {
      * @param text the text to be centered
      * @return the centered message
      */
-    @JvmStatic
     fun getCenteredText(text: String): String {
         val textWidth = Renderer.getStringWidth(addColor(text))
         val chatWidth = getChatWidth()
@@ -190,7 +178,6 @@ object ChatLib {
      *
      * @param text the text to copy
      */
-    @JvmStatic
     fun copyToClipboard(text: String) {
         Toolkit.getDefaultToolkit().systemClipboard.setContents(StringSelection(text), null)
     }
@@ -202,7 +189,6 @@ object ChatLib {
      * @param regexp the regex object to match to the message
      * @param replacements the new message(s) to be put in replace of the old one
      */
-    @JvmStatic
     fun editChat(regexp: NativeRegExp, vararg replacements: Any) {
         val global = regexp["global"] as Boolean
         val ignoreCase = regexp["ignoreCase"] as Boolean
@@ -223,7 +209,6 @@ object ChatLib {
      * @param toReplace the unformatted text of the message to be replaced
      * @param replacements the new message(s) to be put in place of the old one
      */
-    @JvmStatic
     fun editChat(toReplace: String, vararg replacements: Any) {
         editLines(replacements) {
             removeFormatting(TextComponent(it.content).unformattedText) == toReplace
@@ -236,7 +221,6 @@ object ChatLib {
      * @param toReplace the message to be replaced
      * @param replacements the new message(s) to be put in place of the old one
      */
-    @JvmStatic
     fun editChat(toReplace: Message, vararg replacements: Any) {
         editLines(replacements) {
             toReplace.chatMessage.formattedText == TextComponent(it.content).formattedText
@@ -249,7 +233,6 @@ object ChatLib {
      * @param chatLineId the chat line id of the message to be replaced
      * @param replacements the new message(s) to be put in place of the old one
      */
-    @JvmStatic
     fun editChat(chatLineId: Int, vararg replacements: Any) {
         editLines(replacements) {
             chatLineIds[it] == chatLineId
@@ -291,7 +274,6 @@ object ChatLib {
      *
      * @param regexp the regex object to match to the message
      */
-    @JvmStatic
     fun deleteChat(regexp: NativeRegExp) {
         val global = regexp["global"] as Boolean
         val ignoreCase = regexp["ignoreCase"] as Boolean
@@ -311,7 +293,6 @@ object ChatLib {
      *
      * @param toDelete the unformatted text of the message to be deleted
      */
-    @JvmStatic
     fun deleteChat(toDelete: String) {
         removeLines {
             removeFormatting(TextComponent(it.content).unformattedText) == toDelete
@@ -323,7 +304,6 @@ object ChatLib {
      *
      * @param toDelete the message to be deleted
      */
-    @JvmStatic
     fun deleteChat(toDelete: Message) {
         removeLines {
             toDelete.chatMessage.formattedText == TextComponent(it.content).formattedText
@@ -335,7 +315,6 @@ object ChatLib {
      *
      * @param chatLineId the chat line id of the message to be deleted
      */
-    @JvmStatic
     fun deleteChat(chatLineId: Int) {
         removeLines { chatLineIds[it] == chatLineId }
     }
@@ -362,7 +341,6 @@ object ChatLib {
      *
      * @return A list of the last 1000 chat lines
      */
-    @JvmStatic
     fun getChatLines(): List<String> {
         val hist = ClientListener.chatHistory.toMutableList()
         return hist.asReversed().map { it.formattedText }
@@ -376,7 +354,6 @@ object ChatLib {
      * @param message the message to add to chat history
      */
     @JvmOverloads
-    @JvmStatic
     fun addToSentMessageHistory(index: Int = -1, message: String) {
         if (index == -1) {
             Client.getMinecraft().inGameHud.chatHud.addToMessageHistory(message)

@@ -8,7 +8,6 @@ import com.chattriggers.ctjs.minecraft.libs.ChatLib
 import com.chattriggers.ctjs.minecraft.libs.renderer.Image
 import com.chattriggers.ctjs.minecraft.objects.KeyBind
 import com.chattriggers.ctjs.minecraft.objects.Sound
-import com.chattriggers.ctjs.minecraft.objects.Display
 import com.chattriggers.ctjs.minecraft.wrappers.Client
 import com.chattriggers.ctjs.minecraft.wrappers.World
 import com.chattriggers.ctjs.triggers.TriggerType
@@ -21,7 +20,6 @@ object Reference {
     var isLoaded = true
         private set
 
-    @JvmStatic
     fun unloadCT(asCommand: Boolean = true) {
         TriggerType.WORLD_UNLOAD.triggerAll()
         TriggerType.GAME_UNLOAD.triggerAll()
@@ -47,7 +45,6 @@ object Reference {
             ChatLib.chat("&7Unloaded ChatTriggers")
     }
 
-    @JvmStatic
     fun loadCT(asCommand: Boolean = true) {
         Client.getMinecraft().options.write()
         unloadCT(asCommand = false)

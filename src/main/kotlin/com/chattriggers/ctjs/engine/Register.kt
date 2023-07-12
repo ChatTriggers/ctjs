@@ -23,7 +23,6 @@ object Register {
      * @param method The name of the method or the actual method to callback when the event is fired
      * @return The trigger for additional modification
      */
-    @JvmStatic
     fun register(triggerType: Any, method: Any): Trigger {
         require(triggerType is String) {
             "register() expects a String as its first argument"
@@ -40,7 +39,6 @@ object Register {
         throw NoSuchMethodException("No trigger type named '$triggerType'")
     }
 
-    @JvmStatic
     fun createCustomTrigger(name: String): Any {
         val customType = CustomTriggerType(name.lowercase())
         require(customType !in customTriggers) { "Cannot register duplicate custom trigger \"$name\"" }
@@ -67,7 +65,6 @@ object Register {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    @JvmStatic
     fun registerChat(method: Any): ChatTrigger {
         return ChatTrigger(method, TriggerType.CHAT)
     }
@@ -88,7 +85,6 @@ object Register {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    @JvmStatic
     fun registerActionBar(method: Any): ChatTrigger {
         return ChatTrigger(method, TriggerType.ACTION_BAR)
     }
@@ -102,7 +98,6 @@ object Register {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    @JvmStatic
     fun registerWorldLoad(method: Any): RegularTrigger {
         return RegularTrigger(method, TriggerType.WORLD_LOAD)
     }
@@ -116,7 +111,6 @@ object Register {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    @JvmStatic
     fun registerWorldUnload(method: Any): RegularTrigger {
         return RegularTrigger(method, TriggerType.WORLD_UNLOAD)
     }
@@ -136,7 +130,6 @@ object Register {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    @JvmStatic
     fun registerClicked(method: Any): RegularTrigger {
         return RegularTrigger(method, TriggerType.CLICKED)
     }
@@ -155,7 +148,6 @@ object Register {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    @JvmStatic
     fun registerScrolled(method: Any): RegularTrigger {
         return RegularTrigger(method, TriggerType.SCROLLED)
     }
@@ -176,7 +168,6 @@ object Register {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    @JvmStatic
     fun registerDragged(method: Any): RegularTrigger {
         return RegularTrigger(method, TriggerType.DRAGGED)
     }
@@ -199,7 +190,6 @@ object Register {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    @JvmStatic
     fun registerSoundPlay(method: Any): SoundPlayTrigger {
         return SoundPlayTrigger(method)
     }
@@ -216,7 +206,6 @@ object Register {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    @JvmStatic
     fun registerTick(method: Any): RegularTrigger {
         return RegularTrigger(method, TriggerType.TICK)
     }
@@ -237,13 +226,11 @@ object Register {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    @JvmStatic
     fun registerStep(method: Any): StepTrigger {
         return StepTrigger(method)
     }
 
     @Deprecated("Use renderPreWorld", ReplaceWith("registerPreRenderWorld"))
-    @JvmStatic
     fun registerRenderWorld(method: Any) = registerPreRenderWorld(method)
 
     /**
@@ -258,7 +245,6 @@ object Register {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    @JvmStatic
     fun registerPreRenderWorld(method: Any): RegularTrigger {
         return RegularTrigger(method, TriggerType.PRE_RENDER_WORLD)
     }
@@ -275,7 +261,6 @@ object Register {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    @JvmStatic
     fun registerPostRenderWorld(method: Any): RegularTrigger {
         return RegularTrigger(method, TriggerType.POST_RENDER_WORLD)
     }
@@ -292,7 +277,6 @@ object Register {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    @JvmStatic
     fun registerRenderOverlay(method: Any): EventTrigger {
         return EventTrigger(method, TriggerType.RENDER_OVERLAY)
     }
@@ -310,7 +294,6 @@ object Register {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    @JvmStatic
     fun registerRenderPlayerList(method: Any): EventTrigger {
         return EventTrigger(method, TriggerType.RENDER_PLAYER_LIST)
     }
@@ -328,7 +311,6 @@ object Register {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    @JvmStatic
     fun registerDrawBlockHighlight(method: Any): EventTrigger {
         return EventTrigger(method, TriggerType.BLOCK_HIGHLIGHT)
     }
@@ -345,7 +327,6 @@ object Register {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    @JvmStatic
     fun registerGameLoad(method: Any): RegularTrigger {
         return RegularTrigger(method, TriggerType.GAME_LOAD)
     }
@@ -361,7 +342,6 @@ object Register {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    @JvmStatic
     fun registerGameUnload(method: Any): RegularTrigger {
         return RegularTrigger(method, TriggerType.GAME_UNLOAD)
     }
@@ -379,7 +359,6 @@ object Register {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    @JvmStatic
     fun registerCommand(method: Any): CommandTrigger {
         return CommandTrigger(method)
     }
@@ -397,7 +376,6 @@ object Register {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    @JvmStatic
     fun registerGuiOpened(method: Any): EventTrigger {
         return EventTrigger(method, TriggerType.GUI_OPENED)
     }
@@ -414,7 +392,6 @@ object Register {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    @JvmStatic
     fun registerGuiClosed(method: Any): RegularTrigger {
         return RegularTrigger(method, TriggerType.GUI_CLOSED)
     }
@@ -433,7 +410,6 @@ object Register {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    @JvmStatic
     fun registerDropItem(method: Any): EventTrigger {
         return EventTrigger(method, TriggerType.DROP_ITEM)
     }
@@ -451,7 +427,6 @@ object Register {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    @JvmStatic
     fun registerMessageSent(method: Any): EventTrigger {
         return EventTrigger(method, TriggerType.MESSAGE_SENT)
     }
@@ -472,7 +447,6 @@ object Register {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    @JvmStatic
     fun registerItemTooltip(method: Any): EventTrigger {
         return EventTrigger(method, TriggerType.ITEM_TOOLTIP)
     }
@@ -494,7 +468,6 @@ object Register {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    @JvmStatic
     fun registerPlayerInteract(method: Any): EventTrigger {
         return EventTrigger(method, TriggerType.PLAYER_INTERACT)
     }
@@ -509,7 +482,6 @@ object Register {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    @JvmStatic
     fun registerEntityDamage(method: Any): RegularTrigger {
         return RegularTrigger(method, TriggerType.ENTITY_DAMAGE)
     }
@@ -523,7 +495,6 @@ object Register {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    @JvmStatic
     fun registerEntityDeath(method: Any): RegularTrigger {
         return RegularTrigger(method, TriggerType.ENTITY_DEATH)
     }
@@ -542,7 +513,6 @@ object Register {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    @JvmStatic
     fun registerGuiRender(method: Any): RegularTrigger {
         return RegularTrigger(method, TriggerType.GUI_RENDER)
     }
@@ -562,7 +532,6 @@ object Register {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    @JvmStatic
     fun registerGuiKey(method: Any): EventTrigger {
         return EventTrigger(method, TriggerType.GUI_KEY)
     }
@@ -585,7 +554,6 @@ object Register {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    @JvmStatic
     fun registerGuiMouseClick(method: Any): EventTrigger {
         return EventTrigger(method, TriggerType.GUI_MOUSE_CLICK)
     }
@@ -609,7 +577,6 @@ object Register {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    @JvmStatic
     fun registerGuiMouseDrag(method: Any): EventTrigger {
         return EventTrigger(method, TriggerType.GUI_MOUSE_DRAG)
     }
@@ -629,7 +596,6 @@ object Register {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    @JvmStatic
     fun registerPacketSent(method: Any): PacketTrigger {
         return PacketTrigger(method, TriggerType.PACKET_SENT)
     }
@@ -649,7 +615,6 @@ object Register {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    @JvmStatic
     fun registerPacketReceived(method: Any): PacketTrigger {
         return PacketTrigger(method, TriggerType.PACKET_RECEIVED)
     }
@@ -666,7 +631,6 @@ object Register {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    @JvmStatic
     fun registerServerConnect(method: Any): EventTrigger {
         return EventTrigger(method, TriggerType.SERVER_CONNECT)
     }
@@ -683,7 +647,6 @@ object Register {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    @JvmStatic
     fun registerServerDisconnect(method: Any): RegularTrigger {
         return RegularTrigger(method, TriggerType.SERVER_DISCONNECT)
     }
@@ -704,7 +667,6 @@ object Register {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    @JvmStatic
     fun registerRenderEntity(method: Any): RenderEntityTrigger {
         return RenderEntityTrigger(method)
     }
@@ -725,7 +687,6 @@ object Register {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    @JvmStatic
     fun registerRenderBlockEntity(method: Any): RenderBlockEntityTrigger {
         return RenderBlockEntityTrigger(method)
     }
@@ -744,7 +705,6 @@ object Register {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    @JvmStatic
     fun registerPostGuiRender(method: Any): RegularTrigger {
         return RegularTrigger(method, TriggerType.POST_GUI_RENDER)
     }
@@ -762,7 +722,6 @@ object Register {
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
      */
-    @JvmStatic
     fun registerSpawnParticle(method: Any): EventTrigger {
         return EventTrigger(method, TriggerType.SPAWN_PARTICLE)
     }

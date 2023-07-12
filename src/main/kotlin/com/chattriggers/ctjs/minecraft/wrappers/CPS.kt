@@ -29,22 +29,16 @@ object CPS : Initializer {
         }
     }
 
-    @JvmStatic
     fun getLeftClicksMax(): Int = leftClicks.maxClicks
 
-    @JvmStatic
     fun getRightClicksMax(): Int = rightClicks.maxClicks
 
-    @JvmStatic
     fun getLeftClicks(): Int = leftClicks.clicks.size
 
-    @JvmStatic
     fun getRightClicks(): Int = rightClicks.clicks.size
 
-    @JvmStatic
     fun getLeftClicksAverage(): Int = leftClicks.average()
 
-    @JvmStatic
     fun getRightClicksAverage(): Int = rightClicks.average()
 
     private class ClicksTracker {

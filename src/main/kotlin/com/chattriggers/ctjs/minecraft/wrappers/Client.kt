@@ -47,7 +47,6 @@ object Client {
      *
      * @return The Minecraft object
      */
-    @JvmStatic
     fun getMinecraft(): MinecraftClient = UMinecraft.getMinecraft()
 
     /**
@@ -55,7 +54,6 @@ object Client {
      *
      * @return The NetHandlerPlayClient object
      */
-    @JvmStatic
     fun getConnection(): ClientPlayNetworkHandler? = getMinecraft().networkHandler
 
     /**
@@ -65,7 +63,6 @@ object Client {
      * @param callback The task to run on the main thread
      */
     @JvmOverloads
-    @JvmStatic
     fun scheduleTask(delay: Int = 0, callback: () -> Unit) {
         ClientListener.addTask(delay, callback)
     }
@@ -74,7 +71,6 @@ object Client {
      * Quits the client back to the main menu.
      * This acts just like clicking the "Disconnect" or "Save and quit to title" button.
      */
-    @JvmStatic
     fun disconnect() {
         scheduleTask {
             World.toMC()?.disconnect()
@@ -94,7 +90,6 @@ object Client {
      * Connects to the server with the given ip.
      * @param ip The ip to connect to
      */
-    @JvmStatic
     fun connect(ip: String, port: Int = 25565) {
         scheduleTask {
             ConnectScreen.connect(
@@ -114,16 +109,12 @@ object Client {
      *
      * @return The GuiNewChat object for the chat gui
      */
-    @JvmStatic
     fun getChatGUI(): ChatHud? = getMinecraft().inGameHud?.chatHud
 
-    @JvmStatic
     fun isInChat(): Boolean = getMinecraft().currentScreen is ChatScreen
 
-    @JvmStatic
     fun getTabGui(): PlayerListHud? = getMinecraft().inGameHud?.playerListHud
 
-    @JvmStatic
     fun isInTab(): Boolean = getMinecraft().options.playerListKey.isPressed
 
     /**
@@ -132,46 +123,32 @@ object Client {
      *
      * @return true if the game is active, false otherwise
      */
-    @JvmStatic
     fun isTabbedIn(): Boolean = getMinecraft().isWindowFocused
 
-    @JvmStatic
     fun isControlDown(): Boolean = UKeyboard.isCtrlKeyDown()
 
-    @JvmStatic
     fun isShiftDown(): Boolean = UKeyboard.isShiftKeyDown()
 
-    @JvmStatic
     fun isAltDown(): Boolean = UKeyboard.isAltKeyDown()
 
-    @JvmStatic
     fun getFPS(): Int = getMinecraft().currentFps
 
-    @JvmStatic
     fun getVersion(): String = getMinecraft().gameVersion
 
-    @JvmStatic
     fun getMaxMemory(): Long = Runtime.getRuntime().maxMemory()
 
-    @JvmStatic
     fun getTotalMemory(): Long = Runtime.getRuntime().totalMemory()
 
-    @JvmStatic
     fun getFreeMemory(): Long = Runtime.getRuntime().freeMemory()
 
-    @JvmStatic
     fun getMemoryUsage(): Int = ((getTotalMemory() - getFreeMemory()) * 100 / getMaxMemory().toFloat()).roundToInt()
 
-    @JvmStatic
     fun getSystemTime(): Long = (System.nanoTime() - referenceSystemTime) / 1_000_000
 
-    @JvmStatic
     fun getMouseX() = UMouse.Scaled.x
 
-    @JvmStatic
     fun getMouseY() = UMouse.Scaled.y
 
-    @JvmStatic
     fun isInGui(): Boolean = currentGui.get() != null
 
     /**
@@ -179,7 +156,6 @@ object Client {
      *
      * @return A blank string if the gui isn't open, otherwise, the message
      */
-    @JvmStatic
     fun getCurrentChatMessage(): String {
         return if (isInChat()) {
             val chatGui = getMinecraft().currentScreen as ChatScreen
@@ -192,7 +168,6 @@ object Client {
      *
      * @param message the message to put in the chat text box.
      */
-    @JvmStatic
     fun setCurrentChatMessage(message: String) {
         if (isInChat()) {
             val chatGui = getMinecraft().currentScreen as ChatScreen
@@ -200,7 +175,6 @@ object Client {
         } else getMinecraft().setScreen(ChatScreen(message))
     }
 
-    @JvmStatic
     fun sendPacket(packet: Packet<*>) {
         getConnection()?.connection?.send(packet)
     }
@@ -214,7 +188,6 @@ object Client {
      * @param time time to stay on screen
      * @param fadeOut time to fade out
      */
-    @JvmStatic
     fun showTitle(title: String?, subtitle: String?, fadeIn: Int, time: Int, fadeOut: Int) {
         getMinecraft().inGameHud.apply {
             setTitleTicks(fadeIn, time, fadeOut)
@@ -230,7 +203,6 @@ object Client {
      *
      * @param text The text to copy
      */
-    @JvmStatic
     @JvmOverloads
     fun copy(text: String = "") {
         getMinecraft().keyboard.clipboard = text
@@ -239,7 +211,6 @@ object Client {
     /**
      * Get the string currently on the clipboard
      */
-    @JvmStatic
     fun paste(): String = getMinecraft().keyboard.clipboard
 
     /**
@@ -249,7 +220,6 @@ object Client {
      * @return the [KeyBinding] from a Minecraft KeyBinding, or null if one doesn't exist
      * @see [org.lwjgl.input.Keyboard](http://legacy.lwjgl.org/javadoc/org/lwjgl/input/Keyboard.html)
      */
-    @JvmStatic
     fun getKeyBindFromKey(keyCode: Int): KeyBind? {
         return KeyBind.getKeyBinds().find { it.getKeyCode() == keyCode }
             ?: getMinecraft().options.allKeys
@@ -266,7 +236,6 @@ object Client {
      * @return the [KeyBinding] from a Minecraft KeyBinding, or a new one if one doesn't exist
      * @see [org.lwjgl.input.Keyboard](http://legacy.lwjgl.org/javadoc/org/lwjgl/input/Keyboard.html)
      */
-    @JvmStatic
     fun getKeyBindFromKey(keyCode: Int, description: String, category: String): KeyBind {
         return getKeyBindFromKey(keyCode) ?: KeyBind(description, keyCode, category)
     }
@@ -280,7 +249,6 @@ object Client {
      * @return the [KeyBinding] from a Minecraft KeyBinding, or a new one if one doesn't exist
      * @see [org.lwjgl.input.Keyboard](http://legacy.lwjgl.org/javadoc/org/lwjgl/input/Keyboard.html)
      */
-    @JvmStatic
     fun getKeyBindFromKey(keyCode: Int, description: String): KeyBind {
         return getKeyBindFromKey(keyCode, description, "ChatTriggers")
     }
@@ -292,7 +260,6 @@ object Client {
      * @param description the description of the keybind
      * @return the [KeyBinding], or null if one doesn't exist
      */
-    @JvmStatic
     fun getKeyBindFromDescription(description: String): KeyBind? {
         return KeyBind.getKeyBinds()
             .find { it.getDescription() == description }
