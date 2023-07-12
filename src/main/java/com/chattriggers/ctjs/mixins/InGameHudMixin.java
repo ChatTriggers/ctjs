@@ -23,7 +23,7 @@ public class InGameHudMixin {
     //#else
     //$$ private void injectRenderScoreboard(MatrixStack matrices, ScoreboardObjective objective, CallbackInfo ci) {
     //#endif
-        if (!Scoreboard.getShouldRender())
+        if (!Scoreboard.INSTANCE.getShouldRender())
             ci.cancel();
     }
 

@@ -20,7 +20,6 @@ object FileLib {
      * @param recursive whether to create folders to the file location if they don't exist
      */
     @JvmOverloads
-    @JvmStatic
     fun write(importName: String, fileName: String, toWrite: String, recursive: Boolean = false) {
         write(absoluteLocation(importName, fileName), toWrite, recursive)
     }
@@ -34,7 +33,6 @@ object FileLib {
      * @param recursive whether to create folders to the file location if they don't exist
      */
     @JvmOverloads
-    @JvmStatic
     fun write(fileLocation: String, toWrite: String, recursive: Boolean = false) {
         File(fileLocation).apply {
             if (recursive && !exists()) {
@@ -50,7 +48,6 @@ object FileLib {
      * @param fileName name of the file
      * @param toAppend string to append in file
      */
-    @JvmStatic
     fun append(importName: String, fileName: String, toAppend: String) {
         append(absoluteLocation(importName, fileName), toAppend)
     }
@@ -62,7 +59,6 @@ object FileLib {
      * @param fileLocation the location and file name
      * @param toAppend string to append in file
      */
-    @JvmStatic
     fun append(fileLocation: String, toAppend: String) {
         File(fileLocation).appendText(toAppend)
     }
@@ -75,7 +71,6 @@ object FileLib {
      * @param fileName name of the file
      * @return the string in the file
      */
-    @JvmStatic
     fun read(importName: String, fileName: String): String? {
         return read(File(absoluteLocation(importName, fileName)))
     }
@@ -88,7 +83,6 @@ object FileLib {
      * @param fileLocation the location and file name
      * @return the string in the file
      */
-    @JvmStatic
     fun read(fileLocation: String): String? {
         return read(File(fileLocation))
     }
@@ -99,7 +93,6 @@ object FileLib {
      * @param file the java.io.File to read
      * @return the string in the file
      */
-    @JvmStatic
     fun read(file: File): String? {
         return try {
             file.readText()
@@ -115,7 +108,6 @@ object FileLib {
      * @param fileName name of the file
      * @return if the file exists
      */
-    @JvmStatic
     fun exists(importName: String, fileName: String): Boolean {
         return exists(absoluteLocation(importName, fileName))
     }
@@ -126,7 +118,6 @@ object FileLib {
      * @param fileLocation the path of the file
      * @return if the file exists
      */
-    @JvmStatic
     fun exists(fileLocation: String): Boolean {
         return File(fileLocation).exists()
     }
@@ -138,7 +129,6 @@ object FileLib {
      * @param fileName name of the file
      * @return if the location is a directory
      */
-    @JvmStatic
     fun isDirectory(importName: String, fileName: String): Boolean {
         return isDirectory(absoluteLocation(importName, fileName))
     }
@@ -149,7 +139,6 @@ object FileLib {
      * @param fileLocation the path of the file
      * @return if the location is a directory
      */
-    @JvmStatic
     fun isDirectory(fileLocation: String): Boolean {
         return File(fileLocation).isDirectory
     }
@@ -162,7 +151,6 @@ object FileLib {
      * @return the string stored in the url content
      */
     @Throws(UnknownHostException::class)
-    @JvmStatic
     @JvmOverloads
     fun getUrlContent(theUrl: String, userAgent: String? = "Mozilla/5.0"): String {
         val conn = CTJS.makeWebRequest(theUrl, userAgent)
@@ -179,7 +167,6 @@ object FileLib {
      * @param fileName name of the file
      * @return if the file was deleted
      */
-    @JvmStatic
     fun delete(importName: String, fileName: String): Boolean {
         return delete(absoluteLocation(importName, fileName))
     }
@@ -190,7 +177,6 @@ object FileLib {
      * @param fileLocation the path of the file
      * @return if the file was deleted
      */
-    @JvmStatic
     fun delete(fileLocation: String): Boolean {
         return File(fileLocation).delete()
     }
@@ -201,7 +187,6 @@ object FileLib {
      * @param dir the directory to delete
      * @return if the directory was deleted
      */
-    @JvmStatic
     fun deleteDirectory(dir: String): Boolean {
         return deleteDirectory(File(dir))
     }
@@ -212,7 +197,6 @@ object FileLib {
      * @param dir the directory to delete
      * @return if the directory was deleted
      */
-    @JvmStatic
     fun deleteDirectory(dir: File): Boolean {
         return dir.deleteRecursively()
     }
@@ -224,7 +208,6 @@ object FileLib {
      * @param destDirectory the destination directory
      * @throws IOException IOException
      */
-    @JvmStatic
     @Throws(IOException::class)
     fun unzip(zipFilePath: String, destDirectory: String) {
         val destDir = File(destDirectory)
@@ -276,7 +259,6 @@ object FileLib {
      * @param toEncode string to encode
      * @return base64 encoded string
      */
-    @JvmStatic
     fun encodeBase64(toEncode: String): String {
         return Base64.getEncoder().encodeToString(toEncode.toByteArray())
     }
@@ -287,7 +269,6 @@ object FileLib {
      * @param toDecode base64 encoded string to decode
      * @return decoded string
      */
-    @JvmStatic
     fun decodeBase64(toDecode: String): String {
         return String(Base64.getDecoder().decode(toDecode))
     }

@@ -41,7 +41,6 @@ object ModuleManager {
     }
     private val pendingOldModules = mutableListOf<Module>()
 
-    @JvmStatic
     fun setup() {
         modulesFolder.mkdirs()
 
