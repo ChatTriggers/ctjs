@@ -9,6 +9,7 @@ import com.chattriggers.ctjs.mixins.AbstractSoundInstanceAccessor
 import com.chattriggers.ctjs.mixins.sound.SoundAccessor
 import com.chattriggers.ctjs.mixins.sound.SoundManagerAccessor
 import com.chattriggers.ctjs.mixins.sound.SoundSystemAccessor
+import com.chattriggers.ctjs.utils.InternalApi
 import com.chattriggers.ctjs.utils.MCAttenuationType
 import com.chattriggers.ctjs.utils.MCSound
 import com.chattriggers.ctjs.utils.asMixin
@@ -366,6 +367,7 @@ class Sound(private val config: NativeObject) {
         }
     }
 
+    @InternalApi
     companion object {
         private val soundSystem by lazy {
             Client.getMinecraft().soundManager.asMixin<SoundManagerAccessor>().soundSystem

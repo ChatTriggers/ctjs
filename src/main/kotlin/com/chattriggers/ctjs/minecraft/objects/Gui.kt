@@ -5,6 +5,7 @@ import com.chattriggers.ctjs.minecraft.wrappers.Client
 import com.chattriggers.ctjs.mixins.ClickableWidgetAccessor
 import com.chattriggers.ctjs.triggers.RegularTrigger
 import com.chattriggers.ctjs.triggers.TriggerType
+import com.chattriggers.ctjs.utils.InternalApi
 import com.chattriggers.ctjs.utils.asMixin
 import gg.essential.universal.UKeyboard
 import gg.essential.universal.UMatrixStack
@@ -453,6 +454,7 @@ class Gui @JvmOverloads constructor(
         }
     }
 
+    @InternalApi
     companion object {
         //#if MC>=12000
         private val drawContextsField = UScreen::class.java.getDeclaredField("drawContexts").also {

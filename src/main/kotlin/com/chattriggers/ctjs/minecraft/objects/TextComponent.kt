@@ -319,7 +319,7 @@ class TextComponent : Text {
     override fun getSiblings(): MutableList<Text> = component.siblings
 
     override fun <T : Any?> visit(styledVisitor: StringVisitable.StyledVisitor<T>?, style: Style?): Optional<T> =
-         component.visit(styledVisitor, style)
+        component.visit(styledVisitor, style)
 
     override fun <T : Any?> visit(visitor: StringVisitable.Visitor<T>?): Optional<T> = component.visit(visitor)
 

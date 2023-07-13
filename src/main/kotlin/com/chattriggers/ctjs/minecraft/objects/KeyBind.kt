@@ -156,6 +156,7 @@ class KeyBind {
         "category=${getCategory()}" +
         "}"
 
+    @InternalApi
     companion object : Initializer {
         private val customKeyBindings = mutableSetOf<KeyBinding>()
         private val uniqueCategories = mutableMapOf<String, Int>()
@@ -163,7 +164,6 @@ class KeyBind {
 
         internal fun getKeyBinds() = keyBinds
 
-        @InternalApi
         override fun init() {
             ClientTickEvents.START_CLIENT_TICK.register {
                 if (!World.isLoaded())

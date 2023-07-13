@@ -3,7 +3,7 @@ package com.chattriggers.ctjs.utils
 import gg.essential.vigilance.data.Category
 import gg.essential.vigilance.data.SortingBehavior
 
-object CategorySorting : SortingBehavior() {
+internal object CategorySorting : SortingBehavior() {
     override fun getCategoryComparator(): Comparator<in Category> {
         return Comparator { o1, o2 ->
             val categories = listOf("General", "Console")
