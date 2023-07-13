@@ -1,7 +1,3 @@
-public abstract interface class com/chattriggers/ctjs/NameTagOverridable {
-	public abstract fun setOverriddenNametagName (Lcom/chattriggers/ctjs/minecraft/objects/TextComponent;)V
-}
-
 public final class com/chattriggers/ctjs/Reference {
 	public static final field INSTANCE Lcom/chattriggers/ctjs/Reference;
 	public static final field MODULES_FOLDER Ljava/lang/String;
@@ -11,11 +7,6 @@ public final class com/chattriggers/ctjs/Reference {
 	public static synthetic fun loadCT$default (Lcom/chattriggers/ctjs/Reference;ZILjava/lang/Object;)V
 	public final fun unloadCT (Z)V
 	public static synthetic fun unloadCT$default (Lcom/chattriggers/ctjs/Reference;ZILjava/lang/Object;)V
-}
-
-public abstract interface class com/chattriggers/ctjs/TooltipOverridable {
-	public abstract fun setShouldOverrideTooltip (Z)V
-	public abstract fun setTooltip (Ljava/util/List;)V
 }
 
 public final class com/chattriggers/ctjs/minecraft/libs/ChatLib {
@@ -494,9 +485,6 @@ public final class com/chattriggers/ctjs/minecraft/objects/Gui : gg/essential/un
 	public final fun unregisterScrolled ()Lcom/chattriggers/ctjs/minecraft/objects/Gui;
 }
 
-public final class com/chattriggers/ctjs/minecraft/objects/Gui$Companion {
-}
-
 public final class com/chattriggers/ctjs/minecraft/objects/KeyBind {
 	public static final field Companion Lcom/chattriggers/ctjs/minecraft/objects/KeyBind$Companion;
 	public fun <init> (Ljava/lang/String;I)V
@@ -516,9 +504,6 @@ public final class com/chattriggers/ctjs/minecraft/objects/KeyBind {
 	public final fun unregisterKeyDown ()Lcom/chattriggers/ctjs/minecraft/objects/KeyBind;
 	public final fun unregisterKeyPress ()Lcom/chattriggers/ctjs/minecraft/objects/KeyBind;
 	public final fun unregisterKeyRelease ()Lcom/chattriggers/ctjs/minecraft/objects/KeyBind;
-}
-
-public final class com/chattriggers/ctjs/minecraft/objects/KeyBind$Companion : com/chattriggers/ctjs/utils/Initializer {
 }
 
 public final class com/chattriggers/ctjs/minecraft/objects/Message {
@@ -609,9 +594,6 @@ public final class com/chattriggers/ctjs/minecraft/objects/Sound$Category : java
 public final class com/chattriggers/ctjs/minecraft/objects/Sound$Category$Companion {
 	public final fun from (Ljava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/objects/Sound$Category;
 	public final fun fromMC (Lnet/minecraft/sound/SoundCategory;)Lcom/chattriggers/ctjs/minecraft/objects/Sound$Category;
-}
-
-public final class com/chattriggers/ctjs/minecraft/objects/Sound$Companion {
 }
 
 public final class com/chattriggers/ctjs/minecraft/objects/TextComponent : net/minecraft/text/Text {
@@ -2141,11 +2123,6 @@ public final class com/chattriggers/ctjs/triggers/TriggerType : java/lang/Enum, 
 	public static fun values ()[Lcom/chattriggers/ctjs/triggers/TriggerType;
 }
 
-public final class com/chattriggers/ctjs/utils/CategorySorting : gg/essential/vigilance/data/SortingBehavior {
-	public static final field INSTANCE Lcom/chattriggers/ctjs/utils/CategorySorting;
-	public fun getCategoryComparator ()Ljava/util/Comparator;
-}
-
 public final class com/chattriggers/ctjs/utils/Config : gg/essential/vigilance/Vigilant {
 	public static final field INSTANCE Lcom/chattriggers/ctjs/utils/Config;
 	public final fun getAutoUpdateModules ()Z
@@ -2178,16 +2155,6 @@ public final class com/chattriggers/ctjs/utils/Config : gg/essential/vigilance/V
 	public final fun setOpenConsoleOnError (Z)V
 	public final fun setPrintChatToConsole (Z)V
 	public final fun setShowUpdatesInChat (Z)V
-}
-
-public final class com/chattriggers/ctjs/utils/Config$ConsoleSettings$Companion {
-	public final fun make ()Lcom/chattriggers/ctjs/utils/Config$ConsoleSettings;
-}
-
-public final class com/chattriggers/ctjs/utils/MultiversionKt {
-	@1.20.1-fabric
-	public static final fun toMatrixStack (Lnet/minecraft/client/gui/DrawContext;)Lnet/minecraft/client/util/math/MatrixStack;
-	public static final fun toMatrixStack (Lnet/minecraft/client/util/math/MatrixStack;)Lnet/minecraft/client/util/math/MatrixStack;
 }
 
 public final class com/chattriggers/ctjs/utils/vec/Vec2f {

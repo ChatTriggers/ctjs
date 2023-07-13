@@ -185,6 +185,7 @@ object Config : Vigilant(File(CTJS.configLocation, "ChatTriggers.toml"), sorting
         var consoleErrorColor: Color,
         var consoleWarningColor: Color,
     ) {
+        @InternalApi
         companion object {
             fun make() = ConsoleSettings(
                 clearConsoleOnLoad,
