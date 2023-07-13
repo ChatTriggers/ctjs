@@ -1,9 +1,8 @@
 package com.chattriggers.ctjs.minecraft.libs
 
 import com.chattriggers.ctjs.CTJS
-import com.chattriggers.ctjs.utils.Config
+import com.chattriggers.ctjs.Reference
 import java.io.*
-import java.net.URL
 import java.net.UnknownHostException
 import java.nio.charset.Charset
 import java.util.*
@@ -250,7 +249,7 @@ object FileLib {
     }
 
     private fun absoluteLocation(importName: String, fileLocation: String): String {
-        return Config.modulesFolder + File.separator + importName + File.separator + fileLocation
+        return Reference.MODULES_FOLDER + File.separator + importName + File.separator + fileLocation
     }
 
     /**

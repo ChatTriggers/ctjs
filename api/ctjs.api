@@ -3,8 +3,8 @@ public abstract interface class com/chattriggers/ctjs/NameTagOverridable {
 }
 
 public final class com/chattriggers/ctjs/Reference {
-	public static final field DEFAULT_MODULES_FOLDER Ljava/lang/String;
 	public static final field INSTANCE Lcom/chattriggers/ctjs/Reference;
+	public static final field MODULES_FOLDER Ljava/lang/String;
 	public static final field MOD_VERSION Ljava/lang/String;
 	public final fun isLoaded ()Z
 	public final fun loadCT (Z)V
@@ -2160,7 +2160,6 @@ public final class com/chattriggers/ctjs/utils/Config : gg/essential/vigilance/V
 	public final fun getCustomTheme ()Z
 	public final fun getModuleChangelog ()Z
 	public final fun getModuleImportHelp ()Z
-	public final fun getModulesFolder ()Ljava/lang/String;
 	public final fun getOpenConsoleOnError ()Z
 	public final fun getPrintChatToConsole ()Z
 	public final fun getShowUpdatesInChat ()Z
@@ -2176,7 +2175,6 @@ public final class com/chattriggers/ctjs/utils/Config : gg/essential/vigilance/V
 	public final fun setCustomTheme (Z)V
 	public final fun setModuleChangelog (Z)V
 	public final fun setModuleImportHelp (Z)V
-	public final fun setModulesFolder (Ljava/lang/String;)V
 	public final fun setOpenConsoleOnError (Z)V
 	public final fun setPrintChatToConsole (Z)V
 	public final fun setShowUpdatesInChat (Z)V

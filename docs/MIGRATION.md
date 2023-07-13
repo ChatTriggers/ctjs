@@ -92,6 +92,7 @@ Here is a list of targeted changes for various different APIs:
     - `file` (an alias of `files`)
     - `settings` and `setting` (an alias of `config`)
     - `sim` (an alias of `simulate`)
+  - `/ct files` now opens the modules folder instead of its parent folder
 - `Entity`
   - Removed `getRider()`. Entities can have multiple riders, so this method doesn't make sense. Replace all usages with the `getRiders()` method
   - Removed `isAirborne()`, which no longer exists in the MC API
@@ -178,10 +179,10 @@ Here is a list of targeted changes for various different APIs:
   - Renamed `getHeaderMessage()` to `getHeaderComponent()`, and it now returns a `TextComponent` instead of a `Message`
   - Renamed `getFooterMessage()` to `getFooterComponent()`, and it now returns a `TextComponent` instead of a `Message`
 - `Team.getNameTagVisibility()` and `Team.getDeathMessageVisibility()` now return a `Team.Visibility` instead of a string
+- Removed `Config.modulesFolder`. Use `ChatTriggers.MODULES_FOLDER` or the string `"./config/ChatTriggers/modules"`
 - Provided JS API: 
   - Split `print` into `print` and `println`. `print` will no longer emit a trailing newline
 
 ### Misc Changes
 
 - The assets directory has changed from `config/ChatTriggers/images` to `config/ChatTriggers/assets`
-- `/ct files` now opens the modules folder instead of its parent folder

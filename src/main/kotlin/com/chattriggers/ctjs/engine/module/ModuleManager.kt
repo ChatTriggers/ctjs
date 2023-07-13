@@ -17,28 +17,7 @@ import java.net.URLClassLoader
 
 object ModuleManager {
     val cachedModules = mutableListOf<Module>()
-    val modulesFolder = run {
-        // We can't use vigilance here as calling loadData starts another thread, which
-        // LaunchWrapper doesn't like during early startup phases. Additionally, Vigilance
-        // has some references to Minecraft classes, so it's probably not a good idea to use it
-        // at all from a coremod. This code isn't ideal, but it's the best we can do while
-        // keeping compatibility with the modules folder option.
-
-        val configFile = File(CTJS.configLocation, "ChatTriggers.toml")
-
-        if (configFile.exists()) {
-            try {
-                FileConfig.of(configFile).use {
-                    it.load()
-                    return@run File(it.get<String>("general.modules_folders"))
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-
-        File(Reference.DEFAULT_MODULES_FOLDER)
-    }
+    val modulesFolder = File(Reference.MODULES_FOLDER)
     private val pendingOldModules = mutableListOf<Module>()
 
     fun setup() {
