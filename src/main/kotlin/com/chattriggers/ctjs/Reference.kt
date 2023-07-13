@@ -15,7 +15,7 @@ import kotlin.concurrent.thread
 
 object Reference {
     const val MOD_VERSION = "3.0.0-beta"
-    const val DEFAULT_MODULES_FOLDER = "./config/ChatTriggers/modules"
+    const val MODULES_FOLDER = "./config/ChatTriggers/modules"
 
     var isLoaded = true
         private set

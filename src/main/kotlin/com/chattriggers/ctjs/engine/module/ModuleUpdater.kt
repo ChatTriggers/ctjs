@@ -139,7 +139,7 @@ object ModuleUpdater : Initializer {
                 val realName = moduleFolder.fileName.toString().trimEnd(File.separatorChar)
                 File(modulesFolder, realName).apply { mkdir() }
                 Files.walk(moduleFolder).forEach { path ->
-                    val resolvedPath = Paths.get(modulesFolder.toString(), path.toString())
+                    val resolvedPath = Paths.get(Reference.MODULES_FOLDER, path.toString())
                     if (Files.isDirectory(resolvedPath)) {
                         return@forEach
                     }

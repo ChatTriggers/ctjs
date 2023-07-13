@@ -11,14 +11,6 @@ import kotlin.reflect.KProperty
 
 object Config : Vigilant(File(CTJS.configLocation, "ChatTriggers.toml"), sortingBehavior = CategorySorting) {
     @Property(
-        PropertyType.TEXT,
-        name = "Modules Folders",
-        category = "General",
-        description = "Folder where CT modules are stored",
-    )
-    var modulesFolder: String = CTJS.DEFAULT_MODULES_FOLDER
-
-    @Property(
         PropertyType.SWITCH,
         name = "Show module help on import",
         category = "General",
