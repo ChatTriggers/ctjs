@@ -232,7 +232,8 @@ open class Entity(override val mcValue: MCEntity) : CTWrapper<MCEntity> {
     fun getChunk(): Chunk = Chunk(getWorld().getWorldChunk(mcValue.blockPos))
 
     override fun toString(): String {
-        return "Entity{name=${getName()}, pos=(${getX()}, ${getY()}, ${getZ()})}"
+        val coordStrings = listOf(getX(), getY(), getZ()).map { "%.3f".format(it) }
+        return "${this::class.simpleName}(name=${getName()}, pos=[${coordStrings.joinToString()}])"
     }
 
     enum class DimensionType(override val mcValue: RegistryKey<MCDimensionType>) : CTWrapper<RegistryKey<MCDimensionType>> {

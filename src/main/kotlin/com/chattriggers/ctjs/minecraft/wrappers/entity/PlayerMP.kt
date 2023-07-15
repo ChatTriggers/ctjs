@@ -63,8 +63,4 @@ class PlayerMP(override val mcValue: PlayerEntity) : LivingEntity(mcValue) {
     }
 
     private fun getPlayerInfo() = Client.getConnection()?.getPlayerListEntry(mcValue.uuid)
-
-    override fun toString(): String {
-        return "PlayerMP{name=${getName()}, ping=${getPing()}, livingEntity=${super.toString()}}"
-    }
 }

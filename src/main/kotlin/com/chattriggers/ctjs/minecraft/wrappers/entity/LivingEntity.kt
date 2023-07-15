@@ -43,6 +43,4 @@ open class LivingEntity(override val mcValue: MCLivingEntity) : Entity(mcValue) 
     fun isPotionActive(type: PotionEffectType) = mcValue.hasStatusEffect(type.type)
 
     fun isPotionActive(effect: PotionEffect) = isPotionActive(effect.type)
-
-    override fun toString() = "LivingEntity{name=${getName()}, entity=${super.toString()}}"
 }
