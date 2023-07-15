@@ -1,6 +1,7 @@
 package com.chattriggers.ctjs.utils
 
 import com.chattriggers.ctjs.commands.CTCommand
+import com.chattriggers.ctjs.commands.DynamicCommands
 import com.chattriggers.ctjs.commands.StaticCommand
 import com.chattriggers.ctjs.console.ConsoleManager
 import com.chattriggers.ctjs.engine.module.ModuleUpdater
@@ -20,8 +21,9 @@ internal interface Initializer {
             ConsoleManager,
             CPS,
             CTCommand,
-            Image.Companion,
-            KeyBind.Companion,
+            DynamicCommands,
+            Image,
+            KeyBind,
             ModuleUpdater,
             MouseListener,
             StaticCommand,

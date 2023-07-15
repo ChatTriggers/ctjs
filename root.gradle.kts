@@ -13,7 +13,6 @@ preprocess {
 }
 
 apiValidation {
-    ignoredPackages.add("com.chattriggers.ctjs.commands")
     ignoredPackages.add("com.chattriggers.ctjs.console")
     ignoredPackages.add("com.chattriggers.ctjs.engine")
     ignoredPackages.add("com.chattriggers.ctjs.launch")
