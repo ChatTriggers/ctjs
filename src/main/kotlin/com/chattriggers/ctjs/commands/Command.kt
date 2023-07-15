@@ -102,7 +102,6 @@ internal class Command(
 
         override fun init() {
             ClientCommandRegistrationCallback.EVENT.register { dispatcher, _ ->
-                CTCommand.register(dispatcher)
                 this.dispatcher = dispatcher
 
                 activeCommands.forEach(Command::register)
