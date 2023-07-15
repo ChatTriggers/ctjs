@@ -40,6 +40,8 @@
         "PlayerScreenHandlerMixin",
         "RenderTickCounterMixin",
         "ScreenHandlerMixin",
+        "commands.ClientPlayNetworkHandlerMixin",
+        "commands.CommandNodeAccessor",
         "sound.SoundAccessor",
         "sound.SoundManagerAccessor",
         "sound.SoundSystemAccessor",

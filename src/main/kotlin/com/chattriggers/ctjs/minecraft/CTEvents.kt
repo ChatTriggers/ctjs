@@ -5,6 +5,8 @@ import com.chattriggers.ctjs.minecraft.CTEvents.VoidCallback
 import com.chattriggers.ctjs.utils.MCBlockEntity
 import com.chattriggers.ctjs.utils.MCBlockPos
 import com.chattriggers.ctjs.utils.MCEntity
+import com.mojang.brigadier.CommandDispatcher
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import net.fabricmc.fabric.api.event.EventFactory
 import net.minecraft.client.gui.Drawable
 import net.minecraft.client.gui.screen.Screen
@@ -59,6 +61,10 @@ internal object CTEvents {
 
     fun interface BreakBlockCallback {
         fun breakBlock(pos: MCBlockPos)
+    }
+
+    fun interface NetworkCommandDispatcherRegisterCallback {
+        fun register(dispatcher: CommandDispatcher<FabricClientCommandSource>)
     }
 
     @JvmField
@@ -138,6 +144,13 @@ internal object CTEvents {
     val BREAK_BLOCK = make<BreakBlockCallback> { listeners ->
         BreakBlockCallback { pos ->
             listeners.forEach { it.breakBlock(pos) }
+        }
+    }
+
+    @JvmField
+    val NETWORK_COMMAND_DISPATCHER_REGISTER = make<NetworkCommandDispatcherRegisterCallback> { listeners ->
+        NetworkCommandDispatcherRegisterCallback { dispatcher ->
+            listeners.forEach { it.register(dispatcher) }
         }
     }
 
