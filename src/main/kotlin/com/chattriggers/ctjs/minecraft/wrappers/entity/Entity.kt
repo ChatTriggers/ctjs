@@ -25,6 +25,8 @@ open class Entity(override val mcValue: MCEntity) : CTWrapper<MCEntity> {
 
     fun getPos() = BlockPos(getX(), getY(), getZ())
 
+    fun getRotation() = mcValue.rotationClient
+
     fun getLastX() = mcValue.lastRenderX
 
     fun getLastY() = mcValue.lastRenderY

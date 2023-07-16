@@ -312,6 +312,8 @@ class TextComponent : Text {
 
     fun appendSibling(text: Text): MutableText = component.append(text)
 
+    fun append(text: Text) = appendSibling(text)
+
     override fun getString(): String = component.string
 
     override fun getStyle(): Style = component.style
