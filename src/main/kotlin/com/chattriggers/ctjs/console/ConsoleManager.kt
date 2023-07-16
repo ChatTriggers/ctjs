@@ -46,9 +46,7 @@ object ConsoleManager : Initializer {
 
     fun clearConsoles() {
         if (Config.clearConsoleOnLoad) {
-            Client.scheduleTask {
-                consoles.forEach(Console::clear)
-            }
+            consoles.forEach(Console::clear)
         }
     }
 
