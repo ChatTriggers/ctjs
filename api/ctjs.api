@@ -9,6 +9,230 @@ public final class com/chattriggers/ctjs/Reference {
 	public static synthetic fun unloadCT$default (Lcom/chattriggers/ctjs/Reference;ZILjava/lang/Object;)V
 }
 
+public final class com/chattriggers/ctjs/commands/Command$DefaultImpls {
+	public static fun unregisterImpl (Lcom/chattriggers/ctjs/commands/Command;Lcom/mojang/brigadier/CommandDispatcher;)V
+}
+
+public final class com/chattriggers/ctjs/commands/DynamicCommand$CommandImpl : com/chattriggers/ctjs/commands/Command {
+	public fun <init> (Lcom/chattriggers/ctjs/commands/DynamicCommand$Node$Root;)V
+	public fun getName ()Ljava/lang/String;
+	public fun getOverrideExisting ()Z
+	public fun registerImpl (Lcom/mojang/brigadier/CommandDispatcher;)V
+	public fun unregisterImpl (Lcom/mojang/brigadier/CommandDispatcher;)V
+}
+
+public abstract class com/chattriggers/ctjs/commands/DynamicCommand$Node {
+	public synthetic fun <init> (Lcom/chattriggers/ctjs/commands/DynamicCommand$Node;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getBuilder ()Lcom/mojang/brigadier/builder/ArgumentBuilder;
+	public final fun getChildren ()Ljava/util/List;
+	public final fun getHasRedirect ()Z
+	public final fun getMethod ()Lorg/mozilla/javascript/Function;
+	public final fun getParent ()Lcom/chattriggers/ctjs/commands/DynamicCommand$Node;
+	public final fun initialize (Lcom/mojang/brigadier/CommandDispatcher;)V
+	public final fun setBuilder (Lcom/mojang/brigadier/builder/ArgumentBuilder;)V
+	public final fun setHasRedirect (Z)V
+	public final fun setMethod (Lorg/mozilla/javascript/Function;)V
+}
+
+public final class com/chattriggers/ctjs/commands/DynamicCommand$Node$Argument : com/chattriggers/ctjs/commands/DynamicCommand$Node {
+	public fun <init> (Lcom/chattriggers/ctjs/commands/DynamicCommand$Node;Ljava/lang/String;Lcom/mojang/brigadier/arguments/ArgumentType;)V
+	public final fun getName ()Ljava/lang/String;
+	public final fun getType ()Lcom/mojang/brigadier/arguments/ArgumentType;
+}
+
+public class com/chattriggers/ctjs/commands/DynamicCommand$Node$Literal : com/chattriggers/ctjs/commands/DynamicCommand$Node {
+	public fun <init> (Lcom/chattriggers/ctjs/commands/DynamicCommand$Node;Ljava/lang/String;)V
+	public final fun getName ()Ljava/lang/String;
+}
+
+public final class com/chattriggers/ctjs/commands/DynamicCommand$Node$Redirect : com/chattriggers/ctjs/commands/DynamicCommand$Node {
+	public fun <init> (Lcom/chattriggers/ctjs/commands/DynamicCommand$Node;Lcom/chattriggers/ctjs/commands/DynamicCommand$Node$Root;)V
+	public final fun getTarget ()Lcom/chattriggers/ctjs/commands/DynamicCommand$Node$Root;
+}
+
+public final class com/chattriggers/ctjs/commands/DynamicCommand$Node$Root : com/chattriggers/ctjs/commands/DynamicCommand$Node$Literal {
+	public fun <init> (Ljava/lang/String;)V
+	public final fun getCommandNode ()Lcom/mojang/brigadier/tree/LiteralCommandNode;
+	public final fun register ()V
+	public final fun setCommandNode (Lcom/mojang/brigadier/tree/LiteralCommandNode;)V
+}
+
+public final class com/chattriggers/ctjs/commands/DynamicCommands : com/chattriggers/ctjs/commands/CommandCollection {
+	public static final field INSTANCE Lcom/chattriggers/ctjs/commands/DynamicCommands;
+	public static final fun angle ()Lcom/mojang/brigadier/arguments/ArgumentType;
+	public static final fun argument (Ljava/lang/String;Lcom/mojang/brigadier/arguments/ArgumentType;Lorg/mozilla/javascript/Function;)V
+	public static final fun blockPos ()Lcom/mojang/brigadier/arguments/ArgumentType;
+	public static final fun blockPredicate ()Lcom/mojang/brigadier/arguments/ArgumentType;
+	public static final fun blockState ()Lcom/mojang/brigadier/arguments/ArgumentType;
+	public static final fun bool ()Lcom/mojang/brigadier/arguments/BoolArgumentType;
+	public static final fun buildCommand (Ljava/lang/String;)Lcom/chattriggers/ctjs/commands/DynamicCommand$Node$Root;
+	public static final fun buildCommand (Ljava/lang/String;Lorg/mozilla/javascript/Function;)Lcom/chattriggers/ctjs/commands/DynamicCommand$Node$Root;
+	public static synthetic fun buildCommand$default (Ljava/lang/String;Lorg/mozilla/javascript/Function;ILjava/lang/Object;)Lcom/chattriggers/ctjs/commands/DynamicCommand$Node$Root;
+	public static final fun choices ([Ljava/lang/String;)Lcom/mojang/brigadier/arguments/ArgumentType;
+	public static final fun color ()Lnet/minecraft/command/argument/ColorArgumentType;
+	public static final fun columnPos ()Lcom/mojang/brigadier/arguments/ArgumentType;
+	public static final fun custom (Lorg/mozilla/javascript/NativeObject;)Lcom/mojang/brigadier/arguments/ArgumentType;
+	public static final fun dimension ()Lcom/mojang/brigadier/arguments/ArgumentType;
+	public static final fun double ()Lcom/mojang/brigadier/arguments/DoubleArgumentType;
+	public static final fun double (D)Lcom/mojang/brigadier/arguments/DoubleArgumentType;
+	public static final fun double (DD)Lcom/mojang/brigadier/arguments/DoubleArgumentType;
+	public static synthetic fun double$default (DDILjava/lang/Object;)Lcom/mojang/brigadier/arguments/DoubleArgumentType;
+	public static final fun entities ()Lcom/mojang/brigadier/arguments/ArgumentType;
+	public static final fun entity ()Lcom/mojang/brigadier/arguments/ArgumentType;
+	public static final fun error (Lcom/mojang/brigadier/ImmutableStringReader;Lcom/chattriggers/ctjs/minecraft/objects/TextComponent;)Ljava/lang/Void;
+	public static final fun error (Lcom/mojang/brigadier/ImmutableStringReader;Ljava/lang/String;)Ljava/lang/Void;
+	public static final fun exec (Lorg/mozilla/javascript/Function;)V
+	public static final fun float ()Lcom/mojang/brigadier/arguments/FloatArgumentType;
+	public static final fun float (F)Lcom/mojang/brigadier/arguments/FloatArgumentType;
+	public static final fun float (FF)Lcom/mojang/brigadier/arguments/FloatArgumentType;
+	public static synthetic fun float$default (FFILjava/lang/Object;)Lcom/mojang/brigadier/arguments/FloatArgumentType;
+	public static final fun floatRange ()Lnet/minecraft/command/argument/NumberRangeArgumentType$FloatRangeArgumentType;
+	public static final fun gameMode ()Lnet/minecraft/command/argument/GameModeArgumentType;
+	public static final fun gameProfile ()Lcom/mojang/brigadier/arguments/ArgumentType;
+	public static final fun greedyString ()Lcom/mojang/brigadier/arguments/StringArgumentType;
+	public static final fun intRange ()Lnet/minecraft/command/argument/NumberRangeArgumentType$IntRangeArgumentType;
+	public static final fun integer ()Lcom/mojang/brigadier/arguments/IntegerArgumentType;
+	public static final fun integer (I)Lcom/mojang/brigadier/arguments/IntegerArgumentType;
+	public static final fun integer (II)Lcom/mojang/brigadier/arguments/IntegerArgumentType;
+	public static synthetic fun integer$default (IIILjava/lang/Object;)Lcom/mojang/brigadier/arguments/IntegerArgumentType;
+	public static final fun itemPredicate ()Lcom/mojang/brigadier/arguments/ArgumentType;
+	public static final fun itemSlot ()Lnet/minecraft/command/argument/ItemSlotArgumentType;
+	public static final fun itemStack ()Lcom/mojang/brigadier/arguments/ArgumentType;
+	public static final fun literal (Ljava/lang/String;Lorg/mozilla/javascript/Function;)V
+	public static final fun long ()Lcom/mojang/brigadier/arguments/LongArgumentType;
+	public static final fun long (J)Lcom/mojang/brigadier/arguments/LongArgumentType;
+	public static final fun long (JJ)Lcom/mojang/brigadier/arguments/LongArgumentType;
+	public static synthetic fun long$default (JJILjava/lang/Object;)Lcom/mojang/brigadier/arguments/LongArgumentType;
+	public static final fun message ()Lcom/mojang/brigadier/arguments/ArgumentType;
+	public static final fun nbtCompoundTag ()Lcom/mojang/brigadier/arguments/ArgumentType;
+	public static final fun nbtPath ()Lcom/mojang/brigadier/arguments/ArgumentType;
+	public static final fun nbtTag ()Lcom/mojang/brigadier/arguments/ArgumentType;
+	public static final fun player ()Lcom/mojang/brigadier/arguments/ArgumentType;
+	public static final fun players ()Lcom/mojang/brigadier/arguments/ArgumentType;
+	public static final fun redirect (Lcom/chattriggers/ctjs/commands/DynamicCommand$Node$Root;)V
+	public static final fun registerCommand (Ljava/lang/String;)Lcom/chattriggers/ctjs/commands/DynamicCommand$Node$Root;
+	public static final fun registerCommand (Ljava/lang/String;Lorg/mozilla/javascript/Function;)Lcom/chattriggers/ctjs/commands/DynamicCommand$Node$Root;
+	public static synthetic fun registerCommand$default (Ljava/lang/String;Lorg/mozilla/javascript/Function;ILjava/lang/Object;)Lcom/chattriggers/ctjs/commands/DynamicCommand$Node$Root;
+	public static final fun resource ()Lnet/minecraft/command/argument/IdentifierArgumentType;
+	public static final fun rotation ()Lcom/mojang/brigadier/arguments/ArgumentType;
+	public static final fun string ()Lcom/mojang/brigadier/arguments/StringArgumentType;
+	public static final fun swizzle ()Lcom/mojang/brigadier/arguments/ArgumentType;
+	public static final fun time ()Lnet/minecraft/command/argument/TimeArgumentType;
+	public static final fun time (I)Lnet/minecraft/command/argument/TimeArgumentType;
+	public static synthetic fun time$default (IILjava/lang/Object;)Lnet/minecraft/command/argument/TimeArgumentType;
+	public static final fun uuid ()Lnet/minecraft/command/argument/UuidArgumentType;
+	public static final fun vec2 ()Lcom/mojang/brigadier/arguments/ArgumentType;
+	public static final fun vec2 (Z)Lcom/mojang/brigadier/arguments/ArgumentType;
+	public static synthetic fun vec2$default (ZILjava/lang/Object;)Lcom/mojang/brigadier/arguments/ArgumentType;
+	public static final fun vec3 ()Lcom/mojang/brigadier/arguments/ArgumentType;
+	public static final fun vec3 (Z)Lcom/mojang/brigadier/arguments/ArgumentType;
+	public static synthetic fun vec3$default (ZILjava/lang/Object;)Lcom/mojang/brigadier/arguments/ArgumentType;
+	public static final fun word ()Lcom/mojang/brigadier/arguments/StringArgumentType;
+}
+
+public final class com/chattriggers/ctjs/commands/DynamicCommands$AngleArgumentWrapper {
+	public fun <init> (Lnet/minecraft/command/argument/AngleArgumentType$Angle;)V
+	public final fun component1 ()Lnet/minecraft/command/argument/AngleArgumentType$Angle;
+	public final fun copy (Lnet/minecraft/command/argument/AngleArgumentType$Angle;)Lcom/chattriggers/ctjs/commands/DynamicCommands$AngleArgumentWrapper;
+	public static synthetic fun copy$default (Lcom/chattriggers/ctjs/commands/DynamicCommands$AngleArgumentWrapper;Lnet/minecraft/command/argument/AngleArgumentType$Angle;ILjava/lang/Object;)Lcom/chattriggers/ctjs/commands/DynamicCommands$AngleArgumentWrapper;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAngle ()F
+	public final fun getAngle ()Lnet/minecraft/command/argument/AngleArgumentType$Angle;
+	public final fun getAngle (Lcom/chattriggers/ctjs/minecraft/wrappers/entity/Entity;)F
+	public static synthetic fun getAngle$default (Lcom/chattriggers/ctjs/commands/DynamicCommands$AngleArgumentWrapper;Lcom/chattriggers/ctjs/minecraft/wrappers/entity/Entity;ILjava/lang/Object;)F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/chattriggers/ctjs/commands/DynamicCommands$BlockPredicateWrapper {
+	public fun <init> (Lnet/minecraft/command/argument/BlockPredicateArgumentType$BlockPredicate;)V
+	public final fun component1 ()Lnet/minecraft/command/argument/BlockPredicateArgumentType$BlockPredicate;
+	public final fun copy (Lnet/minecraft/command/argument/BlockPredicateArgumentType$BlockPredicate;)Lcom/chattriggers/ctjs/commands/DynamicCommands$BlockPredicateWrapper;
+	public static synthetic fun copy$default (Lcom/chattriggers/ctjs/commands/DynamicCommands$BlockPredicateWrapper;Lnet/minecraft/command/argument/BlockPredicateArgumentType$BlockPredicate;ILjava/lang/Object;)Lcom/chattriggers/ctjs/commands/DynamicCommands$BlockPredicateWrapper;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getImpl ()Lnet/minecraft/command/argument/BlockPredicateArgumentType$BlockPredicate;
+	public fun hashCode ()I
+	public final fun test (Lcom/chattriggers/ctjs/minecraft/wrappers/world/block/BlockPos;)Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/chattriggers/ctjs/commands/DynamicCommands$BlockStateArgumentWrapper {
+	public fun <init> (Lnet/minecraft/command/argument/BlockStateArgument;)V
+	public final fun component1 ()Lnet/minecraft/command/argument/BlockStateArgument;
+	public final fun copy (Lnet/minecraft/command/argument/BlockStateArgument;)Lcom/chattriggers/ctjs/commands/DynamicCommands$BlockStateArgumentWrapper;
+	public static synthetic fun copy$default (Lcom/chattriggers/ctjs/commands/DynamicCommands$BlockStateArgumentWrapper;Lnet/minecraft/command/argument/BlockStateArgument;ILjava/lang/Object;)Lcom/chattriggers/ctjs/commands/DynamicCommands$BlockStateArgumentWrapper;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getImpl ()Lnet/minecraft/command/argument/BlockStateArgument;
+	public fun hashCode ()I
+	public final fun test (Lcom/chattriggers/ctjs/minecraft/wrappers/world/block/BlockPos;)Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/chattriggers/ctjs/commands/DynamicCommands$EntitySelectorWrapper {
+	public fun <init> (Lnet/minecraft/command/EntitySelector;)V
+	public final fun getEntities ()Ljava/util/List;
+	public final fun getEntity ()Lcom/chattriggers/ctjs/minecraft/wrappers/entity/Entity;
+	public final fun getPlayers ()Ljava/util/List;
+}
+
+public final class com/chattriggers/ctjs/commands/DynamicCommands$ItemStackArgumentWrapper : java/util/function/Predicate {
+	public fun <init> (Lnet/minecraft/command/argument/ItemStackArgument;)V
+	public final fun copy (Lnet/minecraft/command/argument/ItemStackArgument;)Lcom/chattriggers/ctjs/commands/DynamicCommands$ItemStackArgumentWrapper;
+	public static synthetic fun copy$default (Lcom/chattriggers/ctjs/commands/DynamicCommands$ItemStackArgumentWrapper;Lnet/minecraft/command/argument/ItemStackArgument;ILjava/lang/Object;)Lcom/chattriggers/ctjs/commands/DynamicCommands$ItemStackArgumentWrapper;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getItemType ()Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/ItemType;
+	public fun hashCode ()I
+	public fun test (Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/Item;)Z
+	public final fun test (Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/ItemType;)Z
+	public synthetic fun test (Ljava/lang/Object;)Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/chattriggers/ctjs/commands/DynamicCommands$MessageFormatArgumentWrapper {
+	public fun <init> (Lnet/minecraft/command/argument/MessageArgumentType$MessageFormat;)V
+	public final fun copy (Lnet/minecraft/command/argument/MessageArgumentType$MessageFormat;)Lcom/chattriggers/ctjs/commands/DynamicCommands$MessageFormatArgumentWrapper;
+	public static synthetic fun copy$default (Lcom/chattriggers/ctjs/commands/DynamicCommands$MessageFormatArgumentWrapper;Lnet/minecraft/command/argument/MessageArgumentType$MessageFormat;ILjava/lang/Object;)Lcom/chattriggers/ctjs/commands/DynamicCommands$MessageFormatArgumentWrapper;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun format ()Lcom/chattriggers/ctjs/minecraft/objects/TextComponent;
+	public final fun getText ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/chattriggers/ctjs/commands/DynamicCommands$NbtPathWrapper {
+	public fun <init> (Lnet/minecraft/command/argument/NbtPathArgumentType$NbtPath;)V
+	public final fun copy (Lnet/minecraft/command/argument/NbtPathArgumentType$NbtPath;)Lcom/chattriggers/ctjs/commands/DynamicCommands$NbtPathWrapper;
+	public static synthetic fun copy$default (Lcom/chattriggers/ctjs/commands/DynamicCommands$NbtPathWrapper;Lnet/minecraft/command/argument/NbtPathArgumentType$NbtPath;ILjava/lang/Object;)Lcom/chattriggers/ctjs/commands/DynamicCommands$NbtPathWrapper;
+	public final fun count (Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/nbt/NBTBase;)I
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun get (Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/nbt/NBTBase;)Ljava/util/List;
+	public final fun getOrInit (Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/nbt/NBTBase;Lkotlin/jvm/functions/Function0;)Ljava/util/List;
+	public fun hashCode ()I
+	public final fun insert (ILcom/chattriggers/ctjs/minecraft/wrappers/inventory/nbt/NBTTagCompound;Ljava/util/List;)I
+	public final fun put (Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/nbt/NBTBase;Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/nbt/NBTBase;)I
+	public final fun remove (Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/nbt/NBTBase;)I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/chattriggers/ctjs/commands/DynamicCommands$PosArgumentWrapper : net/minecraft/command/argument/PosArgument {
+	public fun <init> (Lnet/minecraft/command/argument/PosArgument;)V
+	public final fun component1 ()Lnet/minecraft/command/argument/PosArgument;
+	public final fun copy (Lnet/minecraft/command/argument/PosArgument;)Lcom/chattriggers/ctjs/commands/DynamicCommands$PosArgumentWrapper;
+	public static synthetic fun copy$default (Lcom/chattriggers/ctjs/commands/DynamicCommands$PosArgumentWrapper;Lnet/minecraft/command/argument/PosArgument;ILjava/lang/Object;)Lcom/chattriggers/ctjs/commands/DynamicCommands$PosArgumentWrapper;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getImpl ()Lnet/minecraft/command/argument/PosArgument;
+	public fun hashCode ()I
+	public fun isXRelative ()Z
+	public fun isYRelative ()Z
+	public fun isZRelative ()Z
+	public final fun toAbsoluteBlockPos ()Lcom/chattriggers/ctjs/minecraft/wrappers/world/block/BlockPos;
+	public final fun toAbsolutePos ()Lnet/minecraft/util/math/Vec3d;
+	public fun toAbsolutePos (Lnet/minecraft/server/command/ServerCommandSource;)Lnet/minecraft/util/math/Vec3d;
+	public final fun toAbsoluteRotation ()Lnet/minecraft/util/math/Vec2f;
+	public fun toAbsoluteRotation (Lnet/minecraft/server/command/ServerCommandSource;)Lnet/minecraft/util/math/Vec2f;
+	public fun toString ()Ljava/lang/String;
+}
+
 public final class com/chattriggers/ctjs/minecraft/libs/ChatLib {
 	public static final field INSTANCE Lcom/chattriggers/ctjs/minecraft/libs/ChatLib;
 	public final fun actionBar (Ljava/lang/Object;)V
@@ -602,6 +826,7 @@ public final class com/chattriggers/ctjs/minecraft/objects/TextComponent : net/m
 	public fun <init> (Lnet/minecraft/text/MutableText;)V
 	public fun <init> (Lnet/minecraft/text/Text;)V
 	public final fun actionBar ()Lcom/chattriggers/ctjs/minecraft/objects/TextComponent;
+	public final fun append (Lnet/minecraft/text/Text;)Lnet/minecraft/text/MutableText;
 	public final fun appendSibling (Lnet/minecraft/text/Text;)Lnet/minecraft/text/MutableText;
 	public fun asOrderedText ()Lnet/minecraft/text/OrderedText;
 	public fun asTruncatedString (I)Ljava/lang/String;
@@ -843,6 +1068,7 @@ public final class com/chattriggers/ctjs/minecraft/wrappers/Player : com/chattri
 	public final fun getRenderX ()D
 	public final fun getRenderY ()D
 	public final fun getRenderZ ()D
+	public final fun getRotation ()Lnet/minecraft/util/math/Vec2f;
 	public final fun getSaturation ()F
 	public final fun getTeam ()Lcom/chattriggers/ctjs/minecraft/wrappers/entity/Team;
 	public final fun getUUID ()Ljava/util/UUID;
@@ -1258,6 +1484,7 @@ public class com/chattriggers/ctjs/minecraft/wrappers/entity/Entity : com/chattr
 	public final fun getRenderZ ()D
 	public final fun getRiders ()Ljava/util/List;
 	public final fun getRiding ()Lcom/chattriggers/ctjs/minecraft/wrappers/entity/Entity;
+	public final fun getRotation ()Lnet/minecraft/util/math/Vec2f;
 	public final fun getStepHeight ()F
 	public final fun getTicksExisted ()I
 	public final fun getUUID ()Ljava/util/UUID;
@@ -1320,7 +1547,6 @@ public class com/chattriggers/ctjs/minecraft/wrappers/entity/LivingEntity : com/
 	public final fun isPotionActive (I)Z
 	public final fun isPotionActive (Lcom/chattriggers/ctjs/minecraft/wrappers/world/PotionEffect;)Z
 	public final fun isPotionActive (Lcom/chattriggers/ctjs/minecraft/wrappers/world/PotionEffectType;)Z
-	public fun toString ()Ljava/lang/String;
 }
 
 public final class com/chattriggers/ctjs/minecraft/wrappers/entity/Particle : com/chattriggers/ctjs/minecraft/wrappers/CTWrapper {
@@ -1387,7 +1613,6 @@ public final class com/chattriggers/ctjs/minecraft/wrappers/entity/PlayerMP : co
 	public final fun isSpectator ()Z
 	public final fun setNametagName (Lcom/chattriggers/ctjs/minecraft/objects/TextComponent;)V
 	public final fun setTabDisplayName (Lcom/chattriggers/ctjs/minecraft/objects/TextComponent;)V
-	public fun toString ()Ljava/lang/String;
 }
 
 public final class com/chattriggers/ctjs/minecraft/wrappers/entity/Team : com/chattriggers/ctjs/minecraft/wrappers/CTWrapper {
@@ -1922,6 +2147,7 @@ public final class com/chattriggers/ctjs/minecraft/wrappers/world/block/BlockPos
 	public static synthetic fun south$default (Lcom/chattriggers/ctjs/minecraft/wrappers/world/block/BlockPos;IILjava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/wrappers/world/block/BlockPos;
 	public synthetic fun toMC ()Ljava/lang/Object;
 	public fun toMC ()Lnet/minecraft/util/math/BlockPos;
+	public final fun toVec3d ()Lnet/minecraft/util/math/Vec3d;
 	public fun translated (III)Lcom/chattriggers/ctjs/minecraft/wrappers/world/block/BlockPos;
 	public synthetic fun translated (III)Lcom/chattriggers/ctjs/utils/vec/Vec3i;
 	public fun unaryMinus ()Lcom/chattriggers/ctjs/minecraft/wrappers/world/block/BlockPos;
