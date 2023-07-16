@@ -43,6 +43,7 @@
         "commands.ClientCommandSourceMixin",
         "commands.ClientPlayNetworkHandlerMixin",
         "commands.CommandContextAccessor",
+        "commands.CommandDispatcherMixin",
         "commands.CommandNodeAccessor",
         "commands.EntitySelectorAccessor",
         "sound.SoundAccessor",
