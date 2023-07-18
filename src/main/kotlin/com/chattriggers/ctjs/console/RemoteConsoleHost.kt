@@ -73,8 +73,8 @@ class RemoteConsoleHost(private val loader: JSLoader?) : Console {
             .start()
 
         ServerSocket(port).accept().use { socket ->
-            socketOut = PrintWriter(socket.outputStream, true)
-            val socketIn = BufferedReader(InputStreamReader(socket.inputStream))
+            socketOut = PrintWriter(socket.outputStream, true, Charsets.UTF_8)
+            val socketIn = BufferedReader(InputStreamReader(socket.inputStream, Charsets.UTF_8))
             connected = true
 
             val initMessage = InitMessage(

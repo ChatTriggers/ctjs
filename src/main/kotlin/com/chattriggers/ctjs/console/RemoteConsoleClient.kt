@@ -26,8 +26,8 @@ class RemoteConsoleClient(private val port: Int) {
         var socket: Socket? = null
         try {
             socket = Socket("127.0.0.1", port)
-            val socketOut = PrintWriter(socket.outputStream, true)
-            val socketIn = BufferedReader(InputStreamReader(socket.inputStream))
+            val socketOut = PrintWriter(socket.outputStream, true, Charsets.UTF_8)
+            val socketIn = BufferedReader(InputStreamReader(socket.inputStream, Charsets.UTF_8))
 
             while (true) {
                 if (socket.isClosed) {
