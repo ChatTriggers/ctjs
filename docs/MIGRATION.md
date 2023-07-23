@@ -93,6 +93,7 @@ Here is a list of targeted changes for various different APIs:
     - `settings` and `setting` (an alias of `config`)
     - `sim` (an alias of `simulate`)
   - `/ct files` now opens the modules folder instead of its parent folder
+  - `/ct console` now opens the JS console. Use `/ct console general` to open the general console
 - `Entity`
   - Removed `getRider()`. Entities can have multiple riders, so this method doesn't make sense. Replace all usages with the `getRiders()` method
   - Removed `isAirborne()`, which no longer exists in the MC API

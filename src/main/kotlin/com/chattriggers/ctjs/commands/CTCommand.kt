@@ -61,16 +61,9 @@ internal object CTCommand : Initializer {
             .then(literal("modules").onExecute { Client.currentGui.set(ModulesGui) })
             .then(
                 literal("console")
-                    .then(argument("type", StringArgumentType.word())
-                        .onExecute {
-                            val type = StringArgumentType.getString(it, "type")
-                            if (type == "js") {
-                                JSLoader.console.show()
-                            } else {
-                                ChatLib.chat("&cUnknown language \"$type\"")
-                            }
-                        })
-                    .onExecute { ConsoleManager.generalConsole.show() }
+                    .then(literal("js").onExecute { JSLoader.console.show() })
+                    .then(literal("general").onExecute { ConsoleManager.generalConsole.show() })
+                    .onExecute { JSLoader.console.show() }
             )
             .then(literal("config").onExecute { Client.currentGui.set(Config.gui()!!) })
             .then(
