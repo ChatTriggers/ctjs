@@ -44,7 +44,7 @@ dependencies {
     include(modImplementation("net.fabricmc.fabric-api:fabric-api:${property("fabric_version")}")!!)
 
     include(modImplementation("net.fabricmc:fabric-language-kotlin:1.9.4+kotlin.1.8.21")!!)
-    include(modImplementation("com.github.ChatTriggers:rhino:64e93fb497")!!)
+    include(modImplementation("com.github.ChatTriggers:rhino:ff2a3931f4")!!)
     include(modImplementation("com.fasterxml.jackson.core:jackson-core:2.13.2")!!)
     include(modImplementation("com.fifesoft:rsyntaxtextarea:3.2.0")!!)
     include(modImplementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")!!)
