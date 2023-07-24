@@ -88,6 +88,7 @@ object Client {
      * Connects to the server with the given ip.
      * @param ip The ip to connect to
      */
+    @JvmOverloads
     fun connect(ip: String, port: Int = 25565) {
         scheduleTask {
             ConnectScreen.connect(
@@ -234,21 +235,9 @@ object Client {
      * @return the [KeyBinding] from a Minecraft KeyBinding, or a new one if one doesn't exist
      * @see [org.lwjgl.input.Keyboard](http://legacy.lwjgl.org/javadoc/org/lwjgl/input/Keyboard.html)
      */
-    fun getKeyBindFromKey(keyCode: Int, description: String, category: String): KeyBind {
+    @JvmOverloads
+    fun getKeyBindFromKey(keyCode: Int, description: String, category: String = "ChatTriggers"): KeyBind {
         return getKeyBindFromKey(keyCode) ?: KeyBind(description, keyCode, category)
-    }
-
-    /**
-     * Get the [KeyBinding] from an already existing Minecraft KeyBinding, else, return a new one.
-     * This will create the [KeyBinding] with the default category "ChatTriggers".
-     *
-     * @param keyCode the keycode to search for, see Keyboard below. Ex. Keyboard.KEY_A
-     * @param description the description of the keybind
-     * @return the [KeyBinding] from a Minecraft KeyBinding, or a new one if one doesn't exist
-     * @see [org.lwjgl.input.Keyboard](http://legacy.lwjgl.org/javadoc/org/lwjgl/input/Keyboard.html)
-     */
-    fun getKeyBindFromKey(keyCode: Int, description: String): KeyBind {
-        return getKeyBindFromKey(keyCode, description, "ChatTriggers")
     }
 
     /**
