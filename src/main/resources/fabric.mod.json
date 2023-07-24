@@ -16,14 +16,20 @@
     "environment": "client",
     "entrypoints": {
         "preLaunch": ["com.chattriggers.ctjs.launch.CTJSPreLaunch"],
-        "client": ["com.chattriggers.ctjs.CTJS"]
+        "client": ["com.chattriggers.ctjs.CTJS"],
+        "modmenu": ["com.chattriggers.ctjs.compat.ModMenuEntry"]
     },
     "mixins": ["chattriggers.mixins.json"],
     "depends": {
         "fabric-language-kotlin": ">=1.9.4+kotlin.1.8.21"
     },
     "custom": {
-        "ctjs:yarn-mappings": "$yarn_mappings"
+        "ctjs:yarn-mappings": "$yarn_mappings",
+        "modmenu": {
+            "links": {
+                "modmenu.discord": "https://discord.gg/chattriggers"
+            }
+        }
     },
     "accessWidener": "chattriggers.accesswidener"
 }

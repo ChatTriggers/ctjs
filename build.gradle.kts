@@ -36,6 +36,7 @@ val yarnMappings = property("yarn_mappings")!!
 repositories {
     maven("https://jitpack.io")
     maven("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1")
+    maven("https://maven.terraformersmc.com/releases")
 }
 
 dependencies {
@@ -58,6 +59,13 @@ dependencies {
     include(modImplementation("gg.essential:vigilance-1.18.1-fabric:286")!!)
     include(modImplementation("gg.essential:universalcraft-$platform:277")!!)
     include(modImplementation("gg.essential:elementa-1.18.1-fabric:592")!!)
+
+    val modMenuVersion = when (mcVersion) {
+        "1.20.1-fabric" -> "7.2.1"
+        "1.19.4-fabric" -> "6.3.1"
+        else -> throw Exception("Minecraft version $modVersion is not supported")
+    }
+    modApi("com.terraformersmc:modmenu:$modMenuVersion")
 
     modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:1.1.2")
 
