@@ -977,6 +977,7 @@ public final class com/chattriggers/ctjs/minecraft/wrappers/Client {
 	public static final field camera Lcom/chattriggers/ctjs/minecraft/wrappers/Client$CameraWrapper;
 	public static final field currentGui Lcom/chattriggers/ctjs/minecraft/wrappers/Client$CurrentGuiWrapper;
 	public static final field settings Lcom/chattriggers/ctjs/minecraft/wrappers/Settings;
+	public final fun connect (Ljava/lang/String;)V
 	public final fun connect (Ljava/lang/String;I)V
 	public static synthetic fun connect$default (Lcom/chattriggers/ctjs/minecraft/wrappers/Client;Ljava/lang/String;IILjava/lang/Object;)V
 	public final fun copy ()V
@@ -992,6 +993,7 @@ public final class com/chattriggers/ctjs/minecraft/wrappers/Client {
 	public final fun getKeyBindFromKey (I)Lcom/chattriggers/ctjs/minecraft/objects/KeyBind;
 	public final fun getKeyBindFromKey (ILjava/lang/String;)Lcom/chattriggers/ctjs/minecraft/objects/KeyBind;
 	public final fun getKeyBindFromKey (ILjava/lang/String;Ljava/lang/String;)Lcom/chattriggers/ctjs/minecraft/objects/KeyBind;
+	public static synthetic fun getKeyBindFromKey$default (Lcom/chattriggers/ctjs/minecraft/wrappers/Client;ILjava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/objects/KeyBind;
 	public final fun getMaxMemory ()J
 	public final fun getMemoryUsage ()I
 	public final fun getMinecraft ()Lnet/minecraft/client/MinecraftClient;
