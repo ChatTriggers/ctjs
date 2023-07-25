@@ -40,3 +40,4 @@ replay_*.log
 *.jfr
 
 versions/*/api/
+dokka-plugin/api

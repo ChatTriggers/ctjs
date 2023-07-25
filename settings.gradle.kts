@@ -9,11 +9,13 @@ pluginManagement {
     }
 
     plugins {
-        val egtVersion = "0.2.2"
+        val egtVersion = "0.2.2+pull-15-SNAPSHOT"
         id("gg.essential.multi-version.root") version egtVersion
         id("gg.essential.multi-version.api-validation") version egtVersion
     }
 }
+
+include("dokka-plugin")
 
 providers.gradleProperty("supportedMcVersions").get().split(",").forEach { version ->
     include(":$version")

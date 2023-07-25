@@ -3,6 +3,7 @@ package com.chattriggers.ctjs.triggers
 import com.chattriggers.ctjs.engine.js.JSLoader
 import com.chattriggers.ctjs.utils.InternalApi
 
+@InternalApi
 sealed interface ITriggerType {
     val name: String
 
@@ -12,7 +13,7 @@ sealed interface ITriggerType {
     }
 }
 
-enum class TriggerType : ITriggerType {
+internal enum class TriggerType : ITriggerType {
     // client
     CHAT,
     ACTION_BAR,
@@ -62,4 +63,4 @@ enum class TriggerType : ITriggerType {
     OTHER
 }
 
-data class CustomTriggerType(override val name: String) : ITriggerType
+internal data class CustomTriggerType(override val name: String) : ITriggerType

@@ -13,12 +13,15 @@ preprocess {
 }
 
 apiValidation {
-    ignoredPackages.add("com.chattriggers.ctjs.console")
-    ignoredPackages.add("com.chattriggers.ctjs.engine.js")
-    ignoredPackages.add("com.chattriggers.ctjs.engine.module")
-    ignoredPackages.add("com.chattriggers.ctjs.launch")
-    ignoredPackages.add("com.chattriggers.ctjs.minecraft.listeners")
-    ignoredPackages.add("com.chattriggers.ctjs.mixins")
+    val packages = listOf(
+        "console",
+        "engine.js",
+        "engine.module",
+        "launch",
+        "mixins",
+    )
+    packages.forEach { ignoredPackages.add("com.chattriggers.ctjs.$it") }
 
+    ignoredProjects.add("dokka-plugin")
     nonPublicMarkers.add("com.chattriggers.ctjs.utils.InternalApi")
 }

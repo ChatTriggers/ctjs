@@ -7,10 +7,8 @@ import com.chattriggers.ctjs.mixins.KeyBindingAccessor
 import com.chattriggers.ctjs.triggers.RegularTrigger
 import com.chattriggers.ctjs.triggers.TriggerType
 import com.chattriggers.ctjs.utils.Initializer
-import com.chattriggers.ctjs.utils.InternalApi
 import com.chattriggers.ctjs.utils.asMixin
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
-import net.fabricmc.fabric.impl.client.keybinding.KeyBindingRegistryImpl
 import net.minecraft.client.option.KeyBinding
 import net.minecraft.client.resource.language.I18n
 import org.apache.commons.lang3.ArrayUtils
@@ -156,8 +154,7 @@ class KeyBind {
         "category=${getCategory()}" +
         "}"
 
-    @InternalApi
-    companion object : Initializer {
+    internal companion object : Initializer {
         private val customKeyBindings = mutableSetOf<KeyBinding>()
         private val uniqueCategories = mutableMapOf<String, Int>()
         private val keyBinds = CopyOnWriteArrayList<KeyBind>()

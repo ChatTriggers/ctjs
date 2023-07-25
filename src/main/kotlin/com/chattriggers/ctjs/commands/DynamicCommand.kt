@@ -18,14 +18,17 @@ import org.mozilla.javascript.ScriptableObject
 
 @InternalApi
 object DynamicCommand {
+    @InternalApi
     sealed class Node(val parent: Node?) {
         var method: Function? = null
         var hasRedirect = false
         val children = mutableListOf<Node>()
         var builder: ArgumentBuilder<FabricClientCommandSource, *>? = null
 
+        @InternalApi
         open class Literal(parent: Node?, val name: String) : Node(parent)
 
+        @InternalApi
         class Root(name: String) : Literal(null, name) {
             var commandNode: LiteralCommandNode<FabricClientCommandSource>? = null
 
@@ -34,9 +37,9 @@ object DynamicCommand {
             }
         }
 
-        class Argument(parent: Node?, val name: String, val type: ArgumentType<*>) : Node(parent)
+        internal class Argument(parent: Node?, val name: String, val type: ArgumentType<*>) : Node(parent)
 
-        class Redirect(parent: Node?, val target: Root) : Node(parent)
+        internal class Redirect(parent: Node?, val target: Root) : Node(parent)
 
         fun initialize(dispatcher: CommandDispatcher<FabricClientCommandSource>) {
             if (this is Redirect) {
@@ -84,7 +87,7 @@ object DynamicCommand {
         }
     }
 
-    class CommandImpl(private val node: Node.Root) : Command {
+    private class CommandImpl(private val node: Node.Root) : Command {
         override val overrideExisting = true
         override val name = node.name
 

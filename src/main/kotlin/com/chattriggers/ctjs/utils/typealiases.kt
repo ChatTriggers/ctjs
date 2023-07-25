@@ -1,3 +1,5 @@
+@file:InternalApi
+
 package com.chattriggers.ctjs.utils
 
 typealias MCSound = net.minecraft.client.sound.Sound

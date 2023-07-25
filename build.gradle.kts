@@ -132,6 +132,10 @@ tasks.dokkaHtml {
     val currentDocsDir = docVersionsDir.resolve(currentVersion)
     outputs.upToDateWhen { docVersionsDir.exists() }
 
+    dependencies {
+        dokkaPlugin(project(":dokka-plugin"))
+    }
+
     outputDirectory.set(file(currentDocsDir))
 
     pluginConfiguration<VersioningPlugin, VersioningConfiguration> {
@@ -147,7 +151,19 @@ tasks.dokkaHtml {
         configureEach {
             jdkVersion.set(17)
 
-            for (pkg in setOf("engine.langs", "engine.loader", "engine.module", "utils", "listeners", "loader", "launch", "commands", "minecraft.wrappers.objects.threading")) {
+            for (pkg in setOf(
+                "console",
+                "engine.js",
+                "engine.module",
+                "launch",
+                "launch.generation",
+                "utils",
+
+                "mixins",
+                "mixins.commands",
+                "mixins.sound",
+                "mixins.stdio",
+            )) {
                 perPackageOption {
                     matchingRegex.set("${"com.chattriggers.ctjs.$pkg".replace(".", "\\.")}(\$|\\.).*")
                     suppress.set(true)

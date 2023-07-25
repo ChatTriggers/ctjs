@@ -42,7 +42,7 @@ import org.lwjgl.glfw.GLFW
 import org.mozilla.javascript.Context
 import java.util.concurrent.CopyOnWriteArrayList
 
-object ClientListener : Initializer {
+internal object ClientListener : Initializer {
     private var ticksPassed: Int = 0
     val chatHistory = mutableListOf<TextComponent>()
     val actionBarHistory = mutableListOf<TextComponent>()

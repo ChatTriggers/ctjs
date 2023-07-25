@@ -13,50 +13,6 @@ public final class com/chattriggers/ctjs/commands/Command$DefaultImpls {
 	public static fun unregisterImpl (Lcom/chattriggers/ctjs/commands/Command;Lcom/mojang/brigadier/CommandDispatcher;)V
 }
 
-public final class com/chattriggers/ctjs/commands/DynamicCommand$CommandImpl : com/chattriggers/ctjs/commands/Command {
-	public fun <init> (Lcom/chattriggers/ctjs/commands/DynamicCommand$Node$Root;)V
-	public fun getName ()Ljava/lang/String;
-	public fun getOverrideExisting ()Z
-	public fun registerImpl (Lcom/mojang/brigadier/CommandDispatcher;)V
-	public fun unregisterImpl (Lcom/mojang/brigadier/CommandDispatcher;)V
-}
-
-public abstract class com/chattriggers/ctjs/commands/DynamicCommand$Node {
-	public synthetic fun <init> (Lcom/chattriggers/ctjs/commands/DynamicCommand$Node;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun getBuilder ()Lcom/mojang/brigadier/builder/ArgumentBuilder;
-	public final fun getChildren ()Ljava/util/List;
-	public final fun getHasRedirect ()Z
-	public final fun getMethod ()Lorg/mozilla/javascript/Function;
-	public final fun getParent ()Lcom/chattriggers/ctjs/commands/DynamicCommand$Node;
-	public final fun initialize (Lcom/mojang/brigadier/CommandDispatcher;)V
-	public final fun setBuilder (Lcom/mojang/brigadier/builder/ArgumentBuilder;)V
-	public final fun setHasRedirect (Z)V
-	public final fun setMethod (Lorg/mozilla/javascript/Function;)V
-}
-
-public final class com/chattriggers/ctjs/commands/DynamicCommand$Node$Argument : com/chattriggers/ctjs/commands/DynamicCommand$Node {
-	public fun <init> (Lcom/chattriggers/ctjs/commands/DynamicCommand$Node;Ljava/lang/String;Lcom/mojang/brigadier/arguments/ArgumentType;)V
-	public final fun getName ()Ljava/lang/String;
-	public final fun getType ()Lcom/mojang/brigadier/arguments/ArgumentType;
-}
-
-public class com/chattriggers/ctjs/commands/DynamicCommand$Node$Literal : com/chattriggers/ctjs/commands/DynamicCommand$Node {
-	public fun <init> (Lcom/chattriggers/ctjs/commands/DynamicCommand$Node;Ljava/lang/String;)V
-	public final fun getName ()Ljava/lang/String;
-}
-
-public final class com/chattriggers/ctjs/commands/DynamicCommand$Node$Redirect : com/chattriggers/ctjs/commands/DynamicCommand$Node {
-	public fun <init> (Lcom/chattriggers/ctjs/commands/DynamicCommand$Node;Lcom/chattriggers/ctjs/commands/DynamicCommand$Node$Root;)V
-	public final fun getTarget ()Lcom/chattriggers/ctjs/commands/DynamicCommand$Node$Root;
-}
-
-public final class com/chattriggers/ctjs/commands/DynamicCommand$Node$Root : com/chattriggers/ctjs/commands/DynamicCommand$Node$Literal {
-	public fun <init> (Ljava/lang/String;)V
-	public final fun getCommandNode ()Lcom/mojang/brigadier/tree/LiteralCommandNode;
-	public final fun register ()V
-	public final fun setCommandNode (Lcom/mojang/brigadier/tree/LiteralCommandNode;)V
-}
-
 public final class com/chattriggers/ctjs/commands/DynamicCommands : com/chattriggers/ctjs/commands/CommandCollection {
 	public static final field INSTANCE Lcom/chattriggers/ctjs/commands/DynamicCommands;
 	public static final fun angle ()Lcom/mojang/brigadier/arguments/ArgumentType;
@@ -632,6 +588,20 @@ public final class com/chattriggers/ctjs/minecraft/libs/renderer/Text$Align : ja
 	public static fun values ()[Lcom/chattriggers/ctjs/minecraft/libs/renderer/Text$Align;
 }
 
+public class com/chattriggers/ctjs/minecraft/listeners/CancellableEvent {
+	public fun <init> ()V
+	public final fun isCancelable ()Z
+	public final fun isCanceled ()Z
+	public final fun isCancellable ()Z
+	public final fun isCancelled ()Z
+	public final fun setCanceled ()V
+	public final fun setCanceled (Z)V
+	public static synthetic fun setCanceled$default (Lcom/chattriggers/ctjs/minecraft/listeners/CancellableEvent;ZILjava/lang/Object;)V
+	public final fun setCancelled ()V
+	public final fun setCancelled (Z)V
+	public static synthetic fun setCancelled$default (Lcom/chattriggers/ctjs/minecraft/listeners/CancellableEvent;ZILjava/lang/Object;)V
+}
+
 public final class com/chattriggers/ctjs/minecraft/objects/Book {
 	public fun <init> ()V
 	public final fun addPage (Lcom/chattriggers/ctjs/minecraft/objects/TextComponent;)Lcom/chattriggers/ctjs/minecraft/objects/Book;
@@ -696,7 +666,6 @@ public final class com/chattriggers/ctjs/minecraft/objects/Display$Order : java/
 }
 
 public final class com/chattriggers/ctjs/minecraft/objects/Gui : gg/essential/universal/UScreen {
-	public static final field Companion Lcom/chattriggers/ctjs/minecraft/objects/Gui$Companion;
 	public fun <init> ()V
 	public fun <init> (Lcom/chattriggers/ctjs/minecraft/objects/TextComponent;)V
 	public synthetic fun <init> (Lcom/chattriggers/ctjs/minecraft/objects/TextComponent;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -755,7 +724,6 @@ public final class com/chattriggers/ctjs/minecraft/objects/Gui : gg/essential/un
 }
 
 public final class com/chattriggers/ctjs/minecraft/objects/KeyBind {
-	public static final field Companion Lcom/chattriggers/ctjs/minecraft/objects/KeyBind$Companion;
 	public fun <init> (Ljava/lang/String;I)V
 	public fun <init> (Ljava/lang/String;ILjava/lang/String;)V
 	public synthetic fun <init> (Ljava/lang/String;ILjava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -798,7 +766,6 @@ public final class com/chattriggers/ctjs/minecraft/objects/Message {
 }
 
 public final class com/chattriggers/ctjs/minecraft/objects/Sound {
-	public static final field Companion Lcom/chattriggers/ctjs/minecraft/objects/Sound$Companion;
 	public fun <init> (Lorg/mozilla/javascript/NativeObject;)V
 	public final fun destroy ()V
 	public final fun getAttenuation ()I
@@ -2305,24 +2272,9 @@ public final class com/chattriggers/ctjs/triggers/CommandTrigger : com/chattrigg
 	public final fun setTabCompletions ([Ljava/lang/String;)Lcom/chattriggers/ctjs/triggers/CommandTrigger;
 }
 
-public final class com/chattriggers/ctjs/triggers/CustomTriggerType : com/chattriggers/ctjs/triggers/ITriggerType {
-	public fun <init> (Ljava/lang/String;)V
-	public final fun component1 ()Ljava/lang/String;
-	public final fun copy (Ljava/lang/String;)Lcom/chattriggers/ctjs/triggers/CustomTriggerType;
-	public static synthetic fun copy$default (Lcom/chattriggers/ctjs/triggers/CustomTriggerType;Ljava/lang/String;ILjava/lang/Object;)Lcom/chattriggers/ctjs/triggers/CustomTriggerType;
-	public fun equals (Ljava/lang/Object;)Z
-	public fun getName ()Ljava/lang/String;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
 public final class com/chattriggers/ctjs/triggers/EventTrigger : com/chattriggers/ctjs/triggers/Trigger {
 	public fun <init> (Ljava/lang/Object;Lcom/chattriggers/ctjs/triggers/ITriggerType;)V
 	public final fun triggerIfCanceled (Z)Lcom/chattriggers/ctjs/triggers/EventTrigger;
-}
-
-public abstract interface class com/chattriggers/ctjs/triggers/ITriggerType {
-	public abstract fun getName ()Ljava/lang/String;
 }
 
 public final class com/chattriggers/ctjs/triggers/ITriggerType$DefaultImpls {
@@ -2331,10 +2283,6 @@ public final class com/chattriggers/ctjs/triggers/ITriggerType$DefaultImpls {
 public final class com/chattriggers/ctjs/triggers/PacketTrigger : com/chattriggers/ctjs/triggers/ClassFilterTrigger {
 	public fun <init> (Ljava/lang/Object;Lcom/chattriggers/ctjs/triggers/ITriggerType;)V
 	public synthetic fun unwrap (Ljava/lang/Object;)Ljava/lang/Object;
-}
-
-public final class com/chattriggers/ctjs/triggers/RegularTrigger : com/chattriggers/ctjs/triggers/Trigger {
-	public fun <init> (Ljava/lang/Object;Lcom/chattriggers/ctjs/triggers/ITriggerType;)V
 }
 
 public final class com/chattriggers/ctjs/triggers/RenderBlockEntityTrigger : com/chattriggers/ctjs/triggers/ClassFilterTrigger {
@@ -2382,52 +2330,6 @@ public final class com/chattriggers/ctjs/triggers/Trigger$Priority : java/lang/E
 	public static fun values ()[Lcom/chattriggers/ctjs/triggers/Trigger$Priority;
 }
 
-public final class com/chattriggers/ctjs/triggers/TriggerType : java/lang/Enum, com/chattriggers/ctjs/triggers/ITriggerType {
-	public static final field ACTION_BAR Lcom/chattriggers/ctjs/triggers/TriggerType;
-	public static final field BLOCK_HIGHLIGHT Lcom/chattriggers/ctjs/triggers/TriggerType;
-	public static final field CHAT Lcom/chattriggers/ctjs/triggers/TriggerType;
-	public static final field CLICKED Lcom/chattriggers/ctjs/triggers/TriggerType;
-	public static final field COMMAND Lcom/chattriggers/ctjs/triggers/TriggerType;
-	public static final field DRAGGED Lcom/chattriggers/ctjs/triggers/TriggerType;
-	public static final field DROP_ITEM Lcom/chattriggers/ctjs/triggers/TriggerType;
-	public static final field ENTITY_DAMAGE Lcom/chattriggers/ctjs/triggers/TriggerType;
-	public static final field ENTITY_DEATH Lcom/chattriggers/ctjs/triggers/TriggerType;
-	public static final field GAME_LOAD Lcom/chattriggers/ctjs/triggers/TriggerType;
-	public static final field GAME_UNLOAD Lcom/chattriggers/ctjs/triggers/TriggerType;
-	public static final field GUI_CLOSED Lcom/chattriggers/ctjs/triggers/TriggerType;
-	public static final field GUI_KEY Lcom/chattriggers/ctjs/triggers/TriggerType;
-	public static final field GUI_MOUSE_CLICK Lcom/chattriggers/ctjs/triggers/TriggerType;
-	public static final field GUI_MOUSE_DRAG Lcom/chattriggers/ctjs/triggers/TriggerType;
-	public static final field GUI_OPENED Lcom/chattriggers/ctjs/triggers/TriggerType;
-	public static final field GUI_RENDER Lcom/chattriggers/ctjs/triggers/TriggerType;
-	public static final field ITEM_TOOLTIP Lcom/chattriggers/ctjs/triggers/TriggerType;
-	public static final field MESSAGE_SENT Lcom/chattriggers/ctjs/triggers/TriggerType;
-	public static final field MIXIN Lcom/chattriggers/ctjs/triggers/TriggerType;
-	public static final field OTHER Lcom/chattriggers/ctjs/triggers/TriggerType;
-	public static final field PACKET_RECEIVED Lcom/chattriggers/ctjs/triggers/TriggerType;
-	public static final field PACKET_SENT Lcom/chattriggers/ctjs/triggers/TriggerType;
-	public static final field PLAYER_INTERACT Lcom/chattriggers/ctjs/triggers/TriggerType;
-	public static final field POST_GUI_RENDER Lcom/chattriggers/ctjs/triggers/TriggerType;
-	public static final field POST_RENDER_WORLD Lcom/chattriggers/ctjs/triggers/TriggerType;
-	public static final field PRE_RENDER_WORLD Lcom/chattriggers/ctjs/triggers/TriggerType;
-	public static final field RENDER_BLOCK_ENTITY Lcom/chattriggers/ctjs/triggers/TriggerType;
-	public static final field RENDER_ENTITY Lcom/chattriggers/ctjs/triggers/TriggerType;
-	public static final field RENDER_OVERLAY Lcom/chattriggers/ctjs/triggers/TriggerType;
-	public static final field RENDER_PLAYER_LIST Lcom/chattriggers/ctjs/triggers/TriggerType;
-	public static final field SCROLLED Lcom/chattriggers/ctjs/triggers/TriggerType;
-	public static final field SERVER_CONNECT Lcom/chattriggers/ctjs/triggers/TriggerType;
-	public static final field SERVER_DISCONNECT Lcom/chattriggers/ctjs/triggers/TriggerType;
-	public static final field SOUND_PLAY Lcom/chattriggers/ctjs/triggers/TriggerType;
-	public static final field SPAWN_PARTICLE Lcom/chattriggers/ctjs/triggers/TriggerType;
-	public static final field STEP Lcom/chattriggers/ctjs/triggers/TriggerType;
-	public static final field TICK Lcom/chattriggers/ctjs/triggers/TriggerType;
-	public static final field WORLD_LOAD Lcom/chattriggers/ctjs/triggers/TriggerType;
-	public static final field WORLD_UNLOAD Lcom/chattriggers/ctjs/triggers/TriggerType;
-	public synthetic fun getName ()Ljava/lang/String;
-	public static fun valueOf (Ljava/lang/String;)Lcom/chattriggers/ctjs/triggers/TriggerType;
-	public static fun values ()[Lcom/chattriggers/ctjs/triggers/TriggerType;
-}
-
 public final class com/chattriggers/ctjs/utils/Config : gg/essential/vigilance/Vigilant {
 	public static final field INSTANCE Lcom/chattriggers/ctjs/utils/Config;
 	public final fun getAutoUpdateModules ()Z
@@ -2460,13 +2362,6 @@ public final class com/chattriggers/ctjs/utils/Config : gg/essential/vigilance/V
 	public final fun setOpenConsoleOnError (Z)V
 	public final fun setPrintChatToConsole (Z)V
 	public final fun setShowUpdatesInChat (Z)V
-}
-
-public final class com/chattriggers/ctjs/utils/Mappings {
-	public static final field INSTANCE Lcom/chattriggers/ctjs/utils/Mappings;
-	public static final fun mapClassName (Ljava/lang/String;)Ljava/lang/String;
-	public static final fun unmapClass (Ljava/lang/Class;)Ljava/lang/String;
-	public static final fun unmapClassName (Ljava/lang/String;)Ljava/lang/String;
 }
 
 public final class com/chattriggers/ctjs/utils/vec/Vec2f {

@@ -15,7 +15,7 @@ import java.util.zip.ZipFile
 /**
  * Allows runtime inspection of mappings
  */
-object Mappings {
+internal object Mappings {
     private const val YARN_MAPPINGS_URL_PREFIX = "https://maven.fabricmc.net/net/fabricmc/yarn/"
 
     // If this is changed, also change the Java.type function in mixinProvidedLibs.js
