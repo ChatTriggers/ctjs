@@ -51,7 +51,7 @@ internal abstract class InjectorGenerator(protected val ctx: GenerationContext, 
 
         val methodNode = method(
             modifiers,
-            "ctjs_${type}_${targetMethod.name.original}",
+            "ctjs_${type}_${targetMethod.name.original}_${counter++}",
             returnType.toMappedType(),
             *parameterTypes.map { it.toMappedType() }.toTypedArray(),
         ) {
@@ -200,8 +200,10 @@ internal abstract class InjectorGenerator(protected val ctx: GenerationContext, 
     )
 
     companion object {
+        private var counter = 0
+
         fun assembleIndyName(methodName: String, injectionType: String) =
-            "invokeDynamic_${methodName}_$injectionType"
+            "invokeDynamic_${methodName}_${injectionType}_${counter++}"
 
         fun disassembleIndyName(name: String): Pair<String, String> = name.drop("invokeDynamic_".length).let {
             val (methodName, injectionType) = it.split('_')
