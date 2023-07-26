@@ -90,8 +90,8 @@ sealed interface Descriptor {
     data class Field(val owner: Object?, val name: String, val type: Descriptor?) : Descriptor {
         override val isType get() = false
         private val mappedName by lazy {
-            Mappings.getMappedClass(owner!!.originalDescriptor())?.fields?.get(name)?.name?.value
-                ?: error("Unknown field $name in class $owner")
+            // Default to 'name' in case this field isn't mapped. If not, the Mixin will just fail to apply
+            Mappings.getMappedClass(owner!!.originalDescriptor())?.fields?.get(name)?.name?.value ?: name
         }
 
         init {
@@ -133,7 +133,10 @@ sealed interface Descriptor {
     ) : Descriptor {
         override val isType get() = false
         private val mappedName by lazy {
-            Utils.findMethod(Mappings.getMappedClass(owner!!.originalDescriptor())!!, this).first.name.value
+            // Default to 'name' in case this field isn't mapped. If not, the Mixin will just fail to apply
+            Mappings.getMappedClass(owner!!.originalDescriptor())
+                ?.let { Utils.findMethod(it, this) }?.first?.name?.value
+                ?: name
         }
 
         init {
