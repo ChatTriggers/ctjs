@@ -161,7 +161,11 @@ class Inventory {
      * @return the name of the inventory
      */
     fun getName(): TextComponent {
-        return if (inventory is Nameable) TextComponent(inventory.name) else TextComponent("container")
+        return when {
+            inventory is Nameable -> TextComponent(inventory.name)
+            inventory != null -> TextComponent("inventory")
+            else -> TextComponent(screen!!.title)
+        }
     }
 
     fun getClassName(): String = inventory?.javaClass?.simpleName ?: screen!!.javaClass.simpleName
