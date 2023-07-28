@@ -76,7 +76,7 @@ class Inventory {
      * @param id the ID of the item to match
      * @return whether the inventory contains an item with ID
      */
-    fun contains(id: Int) = getItems().any { it?.type?.getID() == id }
+    fun contains(id: Int) = getItems().any { it?.type?.getId() == id }
 
     /**
      * Gets the index of any item in the inventory, and returns the slot number.
@@ -94,7 +94,7 @@ class Inventory {
      * @param id the item ID to check for
      * @return the index of the given item with ID
      */
-    fun indexOf(id: Int) = getItems().indexOfFirst { it?.type?.getID() == id }
+    fun indexOf(id: Int) = getItems().indexOfFirst { it?.type?.getId() == id }
 
     /**
      * Returns true if this Inventory wraps a [HandledScreen] object

@@ -29,15 +29,13 @@ public class ItemStackMixin implements TooltipOverridable {
             cir.setReturnValue(Objects.requireNonNull(overriddenTooltip));
     }
 
-    @Unique
     @Override
-    public void setTooltip(List<Text> tooltip) {
+    public void ctjs_setTooltip(List<Text> tooltip) {
         overriddenTooltip = tooltip;
     }
 
-    @Unique
     @Override
-    public void setShouldOverrideTooltip(boolean shouldOverrideTooltip) {
+    public void ctjs_setShouldOverrideTooltip(boolean shouldOverrideTooltip) {
         this.shouldOverrideTooltip = shouldOverrideTooltip;
     }
 }

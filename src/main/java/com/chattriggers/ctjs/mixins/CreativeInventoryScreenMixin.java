@@ -32,7 +32,7 @@ public abstract class CreativeInventoryScreenMixin extends AbstractInventoryScre
         // dropping by clicking outside creative tab
         CancellableEvent event = new CancellableEvent();
         if (original) {
-            TriggerType.DROP_ITEM.triggerAll(new Item(handler.getCursorStack()), button == 0, event);
+            TriggerType.DROP_ITEM.triggerAll(Item.fromMC(handler.getCursorStack()), button == 0, event);
         }
 
         return original && !event.isCanceled();
@@ -53,7 +53,7 @@ public abstract class CreativeInventoryScreenMixin extends AbstractInventoryScre
         // dropping by clicking outside creative inventory
         CancellableEvent event = new CancellableEvent();
         if (!original) {
-            TriggerType.DROP_ITEM.triggerAll(new Item(handler.getCursorStack()), button == 0, event);
+            TriggerType.DROP_ITEM.triggerAll(Item.fromMC(handler.getCursorStack()), button == 0, event);
         }
 
         // !(original || eventCanceled) => !original && !canceled
@@ -63,6 +63,6 @@ public abstract class CreativeInventoryScreenMixin extends AbstractInventoryScre
     @Inject(method = "onMouseClick", at = @At(value = "INVOKE", target = "Lnet/minecraft/screen/slot/Slot;takeStack(I)Lnet/minecraft/item/ItemStack;"), cancellable = true)
     private void injectOnMouseClick2(@NotNull Slot slot, int slotId, int button, SlotActionType actionType, CallbackInfo ci) {
         // dropping item from slot in creative inventory
-        TriggerType.DROP_ITEM.triggerAll(new Item(slot.getStack()), button == 0, ci);
+        TriggerType.DROP_ITEM.triggerAll(Item.fromMC(slot.getStack()), button == 0, ci);
     }
 }

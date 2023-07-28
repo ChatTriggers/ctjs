@@ -22,9 +22,8 @@ public class PlayerEntityMixin implements NameTagOverridable {
         return original;
     }
 
-    @Unique
     @Override
-    public void setOverriddenNametagName(@Nullable TextComponent component) {
+    public void ctjs_setOverriddenNametagName(@Nullable TextComponent component) {
         overriddenNametagName = component;
     }
 }

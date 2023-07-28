@@ -12,7 +12,7 @@ class Slot(override val mcValue: MCSlot) : CTWrapper<MCSlot> {
 
     val inventory get() = Inventory(mcValue.inventory)
 
-    val item get() = mcValue.stack?.let(::Item)
+    val item get(): Item? = Item.fromMC(mcValue.stack)
 
     val isEnabled get() = mcValue.isEnabled
 

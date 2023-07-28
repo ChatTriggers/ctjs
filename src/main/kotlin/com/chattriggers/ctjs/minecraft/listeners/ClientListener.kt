@@ -238,7 +238,7 @@ object ClientListener : Initializer {
 
             TriggerType.PLAYER_INTERACT.triggerAll(
                 PlayerInteraction.UseItem(hand),
-                if (stack.isEmpty) null else Item(stack),
+                Item.fromMC(stack),
                 event,
             )
 

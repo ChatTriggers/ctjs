@@ -1684,6 +1684,8 @@ public final class com/chattriggers/ctjs/minecraft/wrappers/inventory/Inventory 
 }
 
 public final class com/chattriggers/ctjs/minecraft/wrappers/inventory/Item : com/chattriggers/ctjs/minecraft/wrappers/CTWrapper {
+	public static final field Companion Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/Item$Companion;
+	public fun <init> (Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/ItemType;)V
 	public fun <init> (Lnet/minecraft/item/ItemStack;)V
 	public final fun canHarvest (Lcom/chattriggers/ctjs/minecraft/wrappers/world/block/Block;)Z
 	public final fun canHarvest (Lcom/chattriggers/ctjs/minecraft/wrappers/world/block/BlockPos;)Z
@@ -1695,6 +1697,7 @@ public final class com/chattriggers/ctjs/minecraft/wrappers/inventory/Item : com
 	public final fun draw (FFF)V
 	public final fun draw (FFFF)V
 	public static synthetic fun draw$default (Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/Item;FFFFILjava/lang/Object;)V
+	public static final fun fromMC (Lnet/minecraft/item/ItemStack;)Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/Item;
 	public final fun getDamage ()I
 	public final fun getDurability ()I
 	public final fun getEnchantments ()Ljava/util/Map;
@@ -1713,18 +1716,28 @@ public final class com/chattriggers/ctjs/minecraft/wrappers/inventory/Item : com
 	public final fun isEnchantable ()Z
 	public final fun isEnchanted ()Z
 	public final fun resetLore ()V
+	public final fun resetName ()V
 	public final fun setLore (Ljava/util/List;)V
+	public final fun setName (Lcom/chattriggers/ctjs/minecraft/objects/TextComponent;)Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/Item;
+	public final fun setStackSize (I)Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/Item;
 	public synthetic fun toMC ()Ljava/lang/Object;
 	public fun toMC ()Lnet/minecraft/item/ItemStack;
 	public fun toString ()Ljava/lang/String;
 }
 
+public final class com/chattriggers/ctjs/minecraft/wrappers/inventory/Item$Companion {
+	public final fun fromMC (Lnet/minecraft/item/ItemStack;)Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/Item;
+}
+
 public final class com/chattriggers/ctjs/minecraft/wrappers/inventory/ItemType : com/chattriggers/ctjs/minecraft/wrappers/CTWrapper {
+	public static final field Companion Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/ItemType$Companion;
 	public fun <init> (I)V
 	public fun <init> (Lcom/chattriggers/ctjs/minecraft/wrappers/world/block/BlockType;)V
 	public fun <init> (Ljava/lang/String;)V
 	public fun <init> (Lnet/minecraft/item/Item;)V
-	public final fun getID ()I
+	public final fun asItem ()Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/Item;
+	public static final fun fromMC (Lnet/minecraft/item/Item;)Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/ItemType;
+	public final fun getId ()I
 	public synthetic fun getMcValue ()Ljava/lang/Object;
 	public fun getMcValue ()Lnet/minecraft/item/Item;
 	public final fun getName ()Ljava/lang/String;
@@ -1733,6 +1746,10 @@ public final class com/chattriggers/ctjs/minecraft/wrappers/inventory/ItemType :
 	public final fun getTranslationKey ()Ljava/lang/String;
 	public synthetic fun toMC ()Ljava/lang/Object;
 	public fun toMC ()Lnet/minecraft/item/Item;
+}
+
+public final class com/chattriggers/ctjs/minecraft/wrappers/inventory/ItemType$Companion {
+	public final fun fromMC (Lnet/minecraft/item/Item;)Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/ItemType;
 }
 
 public final class com/chattriggers/ctjs/minecraft/wrappers/inventory/Slot : com/chattriggers/ctjs/minecraft/wrappers/CTWrapper {

@@ -231,7 +231,7 @@ object Player : CTWrapper<ClientPlayerEntity?> {
      */
     @JvmOverloads
     fun getHeldItem(hand: Hand = Hand.MAIN_HAND): Item? {
-        return toMC()?.getStackInHand(hand)?.let(::Item)
+        return toMC()?.getStackInHand(hand)?.let(Item::fromMC)
     }
 
     /**

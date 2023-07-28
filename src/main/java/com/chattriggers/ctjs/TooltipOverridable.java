@@ -7,6 +7,6 @@ import java.util.List;
 
 @InternalApi
 public interface TooltipOverridable {
-    void setTooltip(List<Text> tooltip);
-    void setShouldOverrideTooltip(boolean shouldOverrideTooltip);
+    void ctjs_setTooltip(List<Text> tooltip);
+    void ctjs_setShouldOverrideTooltip(boolean shouldOverrideTooltip);
 }

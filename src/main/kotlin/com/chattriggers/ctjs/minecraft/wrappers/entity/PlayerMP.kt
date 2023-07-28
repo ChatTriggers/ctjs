@@ -40,7 +40,7 @@ class PlayerMP(override val mcValue: PlayerEntity) : LivingEntity(mcValue) {
      * @param textComponent the new name to display
      */
     fun setNametagName(textComponent: TextComponent) {
-        mcValue.asMixin<NameTagOverridable>().setOverriddenNametagName(textComponent)
+        mcValue.asMixin<NameTagOverridable>().ctjs_setOverriddenNametagName(textComponent)
     }
 
     /**

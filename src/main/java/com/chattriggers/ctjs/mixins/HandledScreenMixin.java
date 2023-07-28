@@ -66,7 +66,7 @@ public class HandledScreenMixin extends Screen {
                 .stream()
                 .map(text -> new TextComponent(text).getFormattedText())
                 .toList(),
-            new Item(stack),
+            Item.fromMC(stack),
             ci
         );
     }
@@ -77,7 +77,7 @@ public class HandledScreenMixin extends Screen {
                 (slotId != -999 && actionType == SlotActionType.THROW) || // dropping item from slot
                         (slotId == -999 && actionType == SlotActionType.PICKUP) // dropping by clicking outside inventory
         ) {
-            TriggerType.DROP_ITEM.triggerAll(new Item(handler.getCursorStack()), button == 0, ci);
+            TriggerType.DROP_ITEM.triggerAll(Item.fromMC(handler.getCursorStack()), button == 0, ci);
         }
     }
 }
