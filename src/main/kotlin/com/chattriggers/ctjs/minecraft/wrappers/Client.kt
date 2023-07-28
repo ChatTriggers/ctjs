@@ -26,8 +26,6 @@ import net.minecraft.client.network.ServerInfo
 import net.minecraft.client.option.KeyBinding
 import net.minecraft.client.realms.gui.screen.RealmsMainScreen
 import net.minecraft.network.packet.Packet
-import org.lwjgl.glfw.GLFW
-import org.lwjgl.system.MemoryUtil
 import kotlin.math.roundToInt
 
 object Client {
@@ -109,7 +107,7 @@ object Client {
      *
      * @return The GuiNewChat object for the chat gui
      */
-    fun getChatGUI(): ChatHud? = getMinecraft().inGameHud?.chatHud
+    fun getChatGui(): ChatHud? = getMinecraft().inGameHud?.chatHud
 
     fun isInChat(): Boolean = getMinecraft().currentScreen is ChatScreen
 
