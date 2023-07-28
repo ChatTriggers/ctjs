@@ -181,6 +181,8 @@ Here is a list of targeted changes for various different APIs:
   - Renamed `getHeaderMessage()` to `getHeaderComponent()`, and it now returns a `TextComponent` instead of a `Message`
   - Renamed `getFooterMessage()` to `getFooterComponent()`, and it now returns a `TextComponent` instead of a `Message`
 - `Team.getNameTagVisibility()` and `Team.getDeathMessageVisibility()` now return a `Team.Visibility` instead of a string
+- `Client`
+  - `getChatGUI` was renamed to `getChatGui` to match the naming of `getTabGui`
 - Removed `Config.modulesFolder`. Use `ChatTriggers.MODULES_FOLDER` or the string `"./config/ChatTriggers/modules"`
 - Provided JS API: 
   - Split `print` into `print` and `println`. `print` will no longer emit a trailing newline

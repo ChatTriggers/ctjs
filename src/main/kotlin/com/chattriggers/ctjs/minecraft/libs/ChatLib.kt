@@ -20,7 +20,7 @@ import kotlin.math.roundToInt
 
 object ChatLib {
     private val chatLineIds = mutableMapOf<ChatHudLine, Int>()
-    private val chatHudAccessor get() = Client.getChatGUI()?.asMixin<ChatHudAccessor>()
+    private val chatHudAccessor get() = Client.getChatGui()?.asMixin<ChatHudAccessor>()
 
     /**
      * Prints text in the chat.
@@ -102,7 +102,7 @@ object ChatLib {
      * Clear all chat messages
      */
     fun clearChat() {
-        Client.getChatGUI()?.clear(false)
+        Client.getChatGui()?.clear(false)
         chatLineIds.clear()
     }
 
@@ -127,7 +127,7 @@ object ChatLib {
      * @return the width of chat
      */
     fun getChatWidth(): Int {
-        return Client.getChatGUI()?.width ?: 0
+        return Client.getChatGui()?.width ?: 0
     }
 
     /**
@@ -375,7 +375,7 @@ object ChatLib {
     internal fun sendMessageWithId(message: Message) {
         require(message.getChatLineId() != -1)
 
-        val chatGui = Client.getChatGUI() ?: return
+        val chatGui = Client.getChatGui() ?: return
         val chatMessage = message.chatMessage
         chatGui.addMessage(chatMessage)
         val newChatLine: ChatHudLine = chatHudAccessor!!.messages[0]
