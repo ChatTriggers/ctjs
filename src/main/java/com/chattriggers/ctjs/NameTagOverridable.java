@@ -6,5 +6,5 @@ import org.jetbrains.annotations.Nullable;
 
 @InternalApi
 public interface NameTagOverridable {
-    void setOverriddenNametagName(@Nullable TextComponent component);
+    void ctjs_setOverriddenNametagName(@Nullable TextComponent component);
 }

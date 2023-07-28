@@ -40,7 +40,7 @@ public class PlayerScreenHandlerMixin {
             for (int i = 0; i < craftingInput.size(); i++) {
                 ItemStack stack = craftingInput.getStack(i);
                 if (!stack.isEmpty()) {
-                    TriggerType.DROP_ITEM.triggerAll(new Item(stack), true, new CancellableEvent());
+                    TriggerType.DROP_ITEM.triggerAll(Item.fromMC(stack), true, new CancellableEvent());
                 }
             }
         }

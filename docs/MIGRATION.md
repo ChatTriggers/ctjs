@@ -109,6 +109,7 @@ Here is a list of targeted changes for various different APIs:
   - This API has also been completely reworked, similarly to `PotionEffect` and `Block`. It has been split into an `Item` class which represents a single stack of items in an inventory, and an `ItemType` class which represents the type of the `Item`.
   - Renamed `isDamagable()` to `isDamageable()`, fixing the typo
   - Removed `getRawNBT()`, prefer using `getNBT()` which gives access to a wide range of powerful NBT-related APIs
+  - You can no longer wrap empty ItemStacks. Creating an Item with an empty stack will throw an error. Use `Item.fromMC` instead.
 - `NBTTagList.removeTag()` now wraps the removed element in CT's NBT wrappers
 - `NBTTagCompound.getTag()` and `NBTTagCompound.getTagList()` now returns a wrapped version instead of the raw MC version
 - `Chunk`

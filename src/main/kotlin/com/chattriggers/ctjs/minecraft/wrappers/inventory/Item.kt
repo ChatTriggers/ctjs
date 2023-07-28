@@ -30,9 +30,21 @@ import net.minecraft.util.crash.CrashReport
 class Item(override val mcValue: ItemStack) : CTWrapper<ItemStack> {
     val type: ItemType = ItemType(mcValue.item)
 
+    init {
+        require(!mcValue.isEmpty) {
+            "Can not wrap empty ItemStack as an Item"
+        }
+    }
+
+    constructor(type: ItemType) : this(type.toMC().defaultStack)
+
     fun getHolder(): Entity? = mcValue.holder?.let(Entity::fromMC)
 
     fun getStackSize(): Int = mcValue.count
+
+    fun setStackSize(size: Int) = apply {
+        mcValue.count = size
+    }
 
     fun getEnchantments() = EnchantmentHelper.get(mcValue).mapKeys {
         EnchantmentHelper.getEnchantmentId(it.key)!!.toTranslationKey()?.replace("enchantment.", "")
@@ -60,6 +72,14 @@ class Item(override val mcValue: ItemStack) : CTWrapper<ItemStack> {
 
     fun getName(): String = TextComponent(mcValue.name).formattedText
 
+    fun setName(name: TextComponent?) = apply {
+        mcValue.setCustomName(name)
+    }
+
+    fun resetName() {
+        setName(null)
+    }
+
     @JvmOverloads
     fun getLore(advanced: Boolean = false): List<TextComponent>? = (getHolder()?.toMC() as? PlayerEntity)?.let {
         mcValue.getTooltip(it, if (advanced) TooltipContext.ADVANCED else TooltipContext.BASIC).map(::TextComponent)
@@ -67,13 +87,13 @@ class Item(override val mcValue: ItemStack) : CTWrapper<ItemStack> {
 
     fun setLore(lore: List<TextComponent>) {
         mcValue.asMixin<TooltipOverridable>().apply {
-            setTooltip(lore)
-            setShouldOverrideTooltip(true)
+            ctjs_setTooltip(lore)
+            ctjs_setShouldOverrideTooltip(true)
         }
     }
 
     fun resetLore() {
-        mcValue.asMixin<TooltipOverridable>().setShouldOverrideTooltip(false)
+        mcValue.asMixin<TooltipOverridable>().ctjs_setShouldOverrideTooltip(false)
     }
 
     fun getNBT() = mcValue.nbt?.let(::NBTTagCompound) ?: NBTTagCompound(MCNbtCompound())
@@ -142,4 +162,15 @@ class Item(override val mcValue: ItemStack) : CTWrapper<ItemStack> {
     }
 
     override fun toString(): String = "Item{name=${getName()}, type=${type.getRegistryName()}, size=${getStackSize()}}"
+
+    companion object {
+        @JvmStatic
+        fun fromMC(mcValue: ItemStack): Item? {
+            return if (mcValue.isEmpty) {
+                null
+            } else {
+                Item(mcValue)
+            }
+        }
+    }
 }

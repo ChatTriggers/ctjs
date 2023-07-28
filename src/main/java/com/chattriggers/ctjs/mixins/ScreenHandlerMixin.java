@@ -21,7 +21,7 @@ public class ScreenHandlerMixin {
             for (int i = 0; i < inventory.size(); i++) {
                 ItemStack stack = inventory.getStack(i);
                 if (!stack.isEmpty()) {
-                    TriggerType.DROP_ITEM.triggerAll(new Item(stack), true, new CancellableEvent());
+                    TriggerType.DROP_ITEM.triggerAll(Item.fromMC(stack), true, new CancellableEvent());
                 }
             }
         }
