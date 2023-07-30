@@ -126,12 +126,14 @@ class RemoteConsoleHost(private val loader: JSLoader?) : Console {
     override fun show() = trySendMessage(OpenMessage)
 
     override fun close() {
-        trySendMessage(CloseMessage)
+        trySendMessage(TerminateMessage)
         process.destroy()
     }
 
     override fun onConsoleSettingsChanged(settings: Config.ConsoleSettings) =
         trySendMessage(ConfigUpdateMessage.constructFromConfig(settings))
+
+    fun ping() = trySendMessage(PingMessage)
 
     private fun trySendMessage(message: H2CMessage) {
         if (connected) {

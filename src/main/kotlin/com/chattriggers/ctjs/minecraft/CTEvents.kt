@@ -68,6 +68,11 @@ internal object CTEvents {
     }
 
     @JvmField
+    val RENDER_GAME = make<Runnable> { listeners ->
+        Runnable { listeners.forEach(Runnable::run) }
+    }
+
+    @JvmField
     val RENDER_OVERLAY = make<RenderOverlayCallback> { listeners ->
         RenderOverlayCallback { stack, partialTicks ->
             listeners.forEach { it.render(stack, partialTicks) }

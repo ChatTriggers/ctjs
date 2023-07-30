@@ -1,5 +1,6 @@
 package com.chattriggers.ctjs.mixins;
 
+import com.chattriggers.ctjs.minecraft.CTEvents;
 import com.chattriggers.ctjs.triggers.TriggerType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
@@ -30,5 +31,10 @@ public class MinecraftClientMixin {
     @Inject(method = "run", at = @At("HEAD"))
     private void injectRun(CallbackInfo ci) {
         TriggerType.GAME_LOAD.triggerAll();
+    }
+
+    @Inject(method = "render", at = @At("HEAD"))
+    private void injectRender(boolean tick, CallbackInfo ci) {
+        CTEvents.RENDER_GAME.invoker().run();
     }
 }

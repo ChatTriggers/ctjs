@@ -1,6 +1,7 @@
 package com.chattriggers.ctjs.console
 
 import com.chattriggers.ctjs.engine.js.JSLoader
+import com.chattriggers.ctjs.minecraft.CTEvents
 import com.chattriggers.ctjs.minecraft.wrappers.Client
 import com.chattriggers.ctjs.utils.Config
 import com.chattriggers.ctjs.utils.Initializer
@@ -16,6 +17,7 @@ object ConsoleManager : Initializer {
 
     private val consoles = listOf(generalConsole, jsConsole)
     private val keyBinds = mutableMapOf<Console, KeyBinding>()
+    private var timeSinceLastPing = 0L
 
     override fun init() {
         keyBinds[generalConsole] = KeyBindingHelper.registerKeyBinding(KeyBinding(
@@ -32,10 +34,15 @@ object ConsoleManager : Initializer {
             "chattriggers.key.category.console",
         ))
 
-        ClientTickEvents.END_CLIENT_TICK.register {
+        CTEvents.RENDER_GAME.register {
             for ((console, binding) in keyBinds) {
                 if (binding.wasPressed())
                     console.show()
+            }
+
+            if (Client.getSystemTime() - timeSinceLastPing > CONSOLE_PING_TIME) {
+                consoles.forEach(RemoteConsoleHost::ping)
+                timeSinceLastPing = Client.getSystemTime()
             }
         }
     }

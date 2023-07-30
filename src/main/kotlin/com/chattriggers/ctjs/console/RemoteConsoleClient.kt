@@ -6,6 +6,7 @@ import java.awt.Color
 import java.io.*
 import java.net.Socket
 import java.util.concurrent.CompletableFuture
+import kotlin.system.exitProcess
 
 /**
  * Runs in a separate process and is responsible for rendering the CT consoles.
@@ -19,6 +20,11 @@ class RemoteConsoleClient(private val port: Int) {
     private var frame: ConsoleFrame? = null
     private val pendingEvalFutures = mutableMapOf<Int, CompletableFuture<String>>()
     private var nextEvalId = 0
+    private var lastPingTime = System.currentTimeMillis()
+
+    // If the users computer it slow, it may take more than 10 seconds for us to
+    // receive the first ping
+    private var hasBeenPinged = false
 
     fun start() {
         debug("Starting...\n")
@@ -33,6 +39,16 @@ class RemoteConsoleClient(private val port: Int) {
                 if (socket.isClosed) {
                     debug("Socket closed\n")
                     break
+                }
+
+                if (!socketIn.ready()) {
+                    debug("Not ready, hasBeenPinged = $hasBeenPinged, diff = ${System.currentTimeMillis() - lastPingTime}\n")
+                    if (hasBeenPinged && System.currentTimeMillis() - lastPingTime > TIMEOUT) {
+                        debug("Exiting\n");
+                        exitProcess(0)
+                    }
+                    Thread.sleep(50)
+                    continue
                 }
 
                 val messageText = socketIn.readLine() ?: break
@@ -64,11 +80,14 @@ class RemoteConsoleClient(private val port: Int) {
                     OpenMessage -> {
                         frame?.showConsole() ?: error("Received OpenMessage before InitMessage")
                     }
-                    CloseMessage -> {
-                        frame?.close() ?: error("Received CloseMessage before InitMessage")
-                    }
+                    TerminateMessage -> exitProcess(0)
                     ClearConsoleMessage -> {
                         frame?.clearConsole() ?: error("Received ClearConsoleMessage before InitMessage")
+                    }
+                    PingMessage -> {
+                        debug("Received ping at ${System.currentTimeMillis()}\n")
+                        lastPingTime = System.currentTimeMillis()
+                        hasBeenPinged = true
                     }
                     is PrintMessage -> {
                         frame?.println(message.text, message.logType, message.end, message.color?.let(::Color))
@@ -105,6 +124,7 @@ class RemoteConsoleClient(private val port: Int) {
 
     companion object {
         private const val ENABLE_DEBUG = false
+        private const val TIMEOUT = CONSOLE_PING_TIME * 2 + 1000
 
         @JvmStatic
         fun main(args: Array<String>) {
