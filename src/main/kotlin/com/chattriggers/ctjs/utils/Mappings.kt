@@ -1,7 +1,6 @@
-package com.chattriggers.ctjs.launch
+package com.chattriggers.ctjs.utils
 
 import com.chattriggers.ctjs.CTJS
-import com.chattriggers.ctjs.utils.urlEncode
 import net.fabricmc.loader.api.FabricLoader
 import net.fabricmc.mapping.tree.Descriptored
 import net.fabricmc.mapping.tree.Mapped

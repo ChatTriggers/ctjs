@@ -1,8 +1,8 @@
 package com.chattriggers.ctjs.launch.generation
 
 import com.chattriggers.ctjs.launch.Descriptor
-import com.chattriggers.ctjs.launch.Mappings
 import com.chattriggers.ctjs.launch.Mixin
+import com.chattriggers.ctjs.utils.Mappings
 import org.spongepowered.asm.mixin.transformer.ClassInfo
 
 internal data class GenerationContext(val mixin: Mixin) {

@@ -1,6 +1,7 @@
 package com.chattriggers.ctjs.launch.generation
 
 import com.chattriggers.ctjs.launch.*
+import com.chattriggers.ctjs.utils.Mappings
 import com.chattriggers.ctjs.utils.descriptor
 import com.chattriggers.ctjs.utils.descriptorString
 import net.fabricmc.accesswidener.AccessWidenerReader

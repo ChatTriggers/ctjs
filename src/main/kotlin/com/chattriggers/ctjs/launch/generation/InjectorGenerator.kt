@@ -7,12 +7,10 @@ import com.chattriggers.ctjs.engine.js.JSLoader
 import com.chattriggers.ctjs.launch.Descriptor
 import com.chattriggers.ctjs.launch.InvokeDynamicSupport
 import com.chattriggers.ctjs.launch.Local
-import com.chattriggers.ctjs.launch.Mappings
+import com.chattriggers.ctjs.utils.Mappings
 import com.chattriggers.ctjs.utils.descriptorString
 import com.chattriggers.ctjs.utils.descriptor
 import com.llamalad7.mixinextras.sugar.ref.*
-import org.objectweb.asm.Handle
-import org.objectweb.asm.Opcodes
 import org.objectweb.asm.tree.MethodNode
 
 internal abstract class InjectorGenerator(protected val ctx: GenerationContext, val id: Int) {

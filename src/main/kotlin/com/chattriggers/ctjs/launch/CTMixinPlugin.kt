@@ -2,6 +2,7 @@ package com.chattriggers.ctjs.launch
 
 import com.chattriggers.ctjs.console.printTraceToConsole
 import com.chattriggers.ctjs.engine.module.ModuleManager
+import com.chattriggers.ctjs.utils.Mappings
 import com.llamalad7.mixinextras.MixinExtrasBootstrap
 import org.objectweb.asm.tree.ClassNode
 import org.slf4j.LoggerFactory

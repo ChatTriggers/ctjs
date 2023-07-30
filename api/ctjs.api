@@ -2400,6 +2400,13 @@ public final class com/chattriggers/ctjs/utils/Config : gg/essential/vigilance/V
 	public final fun setShowUpdatesInChat (Z)V
 }
 
+public final class com/chattriggers/ctjs/utils/Mappings {
+	public static final field INSTANCE Lcom/chattriggers/ctjs/utils/Mappings;
+	public static final fun mapClassName (Ljava/lang/String;)Ljava/lang/String;
+	public static final fun unmapClass (Ljava/lang/Class;)Ljava/lang/String;
+	public static final fun unmapClassName (Ljava/lang/String;)Ljava/lang/String;
+}
+
 public final class com/chattriggers/ctjs/utils/vec/Vec2f {
 	public fun <init> ()V
 	public fun <init> (F)V

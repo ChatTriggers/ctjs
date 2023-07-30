@@ -1,8 +1,8 @@
 package com.chattriggers.ctjs.launch.generation
 
 import com.chattriggers.ctjs.launch.Descriptor
-import com.chattriggers.ctjs.launch.Mappings
 import com.chattriggers.ctjs.launch.WrapWithCondition
+import com.chattriggers.ctjs.utils.Mappings
 import com.chattriggers.ctjs.utils.descriptorString
 import org.objectweb.asm.tree.MethodNode
 import com.llamalad7.mixinextras.injector.WrapWithCondition as SPWrapWithCondition

@@ -7,6 +7,7 @@ import com.chattriggers.ctjs.engine.module.ModuleManager
 import com.chattriggers.ctjs.launch.generation.DynamicMixinGenerator
 import com.chattriggers.ctjs.launch.generation.GenerationContext
 import com.chattriggers.ctjs.launch.generation.Utils
+import com.chattriggers.ctjs.utils.Mappings
 import kotlinx.serialization.json.*
 import org.spongepowered.asm.mixin.Mixins
 import java.io.ByteArrayInputStream

@@ -1,6 +1,7 @@
 package com.chattriggers.ctjs.launch
 
 import com.chattriggers.ctjs.launch.generation.Utils
+import com.chattriggers.ctjs.utils.Mappings
 import org.objectweb.asm.Type
 
 sealed interface Descriptor {

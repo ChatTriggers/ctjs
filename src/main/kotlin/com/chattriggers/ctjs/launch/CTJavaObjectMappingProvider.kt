@@ -1,5 +1,6 @@
 package com.chattriggers.ctjs.launch
 
+import com.chattriggers.ctjs.utils.Mappings
 import org.mozilla.javascript.JavaObjectMappingProvider
 import java.lang.reflect.Modifier
 
