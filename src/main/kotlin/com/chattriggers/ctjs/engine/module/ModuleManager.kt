@@ -8,12 +8,12 @@ import com.chattriggers.ctjs.engine.js.JSContextFactory
 import com.chattriggers.ctjs.engine.js.JSLoader
 import com.chattriggers.ctjs.minecraft.libs.ChatLib
 import com.chattriggers.ctjs.minecraft.wrappers.World
-import gg.essential.vigilance.impl.nightconfig.core.file.FileConfig
 import kotlinx.serialization.json.Json
 import org.apache.commons.io.FileUtils
 import org.mozilla.javascript.Context
 import java.io.File
 import java.net.URLClassLoader
+import java.util.*
 
 object ModuleManager {
     val cachedModules = mutableListOf<Module>()
@@ -36,6 +36,8 @@ object ModuleManager {
         installedModules.distinct().forEach { module ->
             module.metadata.requires?.forEach { ModuleUpdater.importModule(it, module.name) }
         }
+
+        sortModules()
 
         loadAssetsAndJars(cachedModules)
     }
@@ -179,5 +181,45 @@ object ModuleManager {
     fun teardown() {
         cachedModules.clear()
         JSLoader.clearTriggers()
+    }
+
+    private fun sortModules() {
+        // Topological sort, Depth-first search
+        // https://en.wikipedia.org/wiki/Topological_sorting#Depth-first_search
+
+        val sortedModules = LinkedList<Module>()
+        val permanentMarks = mutableSetOf<Module>()
+        val temporaryMarks = LinkedHashSet<Module>()
+        val unmarkedModules = cachedModules.toMutableSet()
+
+        fun visit(module: Module) {
+            if (module in permanentMarks)
+                return
+
+            if (module in temporaryMarks)
+                error("Detected a module dependency cycle: ${temporaryMarks.joinToString(" -> ") { it.name }}")
+
+            temporaryMarks.add(module)
+
+            cachedModules.filter { module.name in it.requiredBy }.forEach(::visit)
+
+            temporaryMarks.remove(module)
+            permanentMarks.add(module)
+            unmarkedModules.remove(module)
+
+            // The Wikipedia algorithm sorts them with the dependants first, but we want them
+            // last, so append to the end instead of the front
+            sortedModules.add(module)
+        }
+
+        while (cachedModules.size != permanentMarks.size) {
+            val module = unmarkedModules.take(1).single()
+            unmarkedModules.remove(module)
+            visit(module)
+        }
+
+        check(sortedModules.size == cachedModules.size)
+        cachedModules.clear()
+        cachedModules.addAll(sortedModules)
     }
 }
