@@ -11,12 +11,14 @@ import kotlin.math.roundToInt
 object CPS : Initializer {
     private val leftClicks = ClicksTracker()
     private val rightClicks = ClicksTracker()
+    private val middleClicks = ClicksTracker()
 
     @InternalApi
     override fun init() {
         ClientTickEvents.START_CLIENT_TICK.register {
             leftClicks.tick()
             rightClicks.tick()
+            middleClicks.tick()
         }
 
         CTEvents.MOUSE_CLICKED.register { _, _, button, pressed ->
@@ -24,22 +26,23 @@ object CPS : Initializer {
                 when (button) {
                     0 -> leftClicks.click()
                     1 -> rightClicks.click()
+                    2 -> middleClicks.click()
                 }
             }
         }
     }
 
     fun getLeftClicksMax(): Int = leftClicks.maxClicks
-
     fun getRightClicksMax(): Int = rightClicks.maxClicks
+    fun getMiddleClicksMax(): Int = middleClicks.maxClicks
 
     fun getLeftClicks(): Int = leftClicks.clicks.size
-
     fun getRightClicks(): Int = rightClicks.clicks.size
+    fun getMiddleClicks(): Int = middleClicks.clicks.size
 
     fun getLeftClicksAverage(): Int = leftClicks.average()
-
     fun getRightClicksAverage(): Int = rightClicks.average()
+    fun getMiddleClicksAverage(): Int = middleClicks.average()
 
     private class ClicksTracker {
         val clicks = mutableListOf<Int>()
