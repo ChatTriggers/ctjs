@@ -2,6 +2,7 @@ package com.chattriggers.ctjs.engine.module
 
 import com.chattriggers.ctjs.CTJS
 import com.chattriggers.ctjs.Reference
+import com.chattriggers.ctjs.compat.ModMenuModule
 import com.chattriggers.ctjs.console.LogType
 import com.chattriggers.ctjs.console.printToConsole
 import com.chattriggers.ctjs.engine.js.JSContextFactory
@@ -39,6 +40,7 @@ object ModuleManager {
 
         sortModules()
 
+        ModMenuModule.addModulesToScreen(cachedModules)
         loadAssetsAndJars(cachedModules)
     }
 
@@ -111,6 +113,7 @@ object ModuleManager {
     fun importModule(moduleName: String): ImportedModule {
         val newModules = ModuleUpdater.importModule(moduleName)
 
+        ModMenuModule.addModulesToScreen(newModules)
         loadAssetsAndJars(newModules)
 
         newModules.forEach {
@@ -179,6 +182,7 @@ object ModuleManager {
     }
 
     fun teardown() {
+        ModMenuModule.clearModules()
         cachedModules.clear()
         JSLoader.clearTriggers()
     }
