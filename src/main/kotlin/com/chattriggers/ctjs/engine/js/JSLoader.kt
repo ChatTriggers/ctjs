@@ -79,7 +79,7 @@ object JSLoader {
         mixinLibsLoaded = false
     }
 
-    fun mixinSetup(modules: List<Module>): Map<Mixin, MixinDetails> {
+    internal fun mixinSetup(modules: List<Module>): Map<Mixin, MixinDetails> {
         loadMixinLibs()
 
         wrapInContext {
