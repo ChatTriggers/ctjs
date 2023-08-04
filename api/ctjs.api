@@ -958,6 +958,9 @@ public final class com/chattriggers/ctjs/minecraft/wrappers/CPS : com/chattrigge
 	public final fun getLeftClicks ()I
 	public final fun getLeftClicksAverage ()I
 	public final fun getLeftClicksMax ()I
+	public final fun getMiddleClicks ()I
+	public final fun getMiddleClicksAverage ()I
+	public final fun getMiddleClicksMax ()I
 	public final fun getRightClicks ()I
 	public final fun getRightClicksAverage ()I
 	public final fun getRightClicksMax ()I
