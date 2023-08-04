@@ -5,7 +5,9 @@ import com.chattriggers.ctjs.triggers.*
 
 @Suppress("unused")
 object Register {
-    private val methodMap = Register::class.java.methods.associateBy {
+    private val methodMap = Register::class.java.methods.filter {
+        it.name.startsWith("register") && it.name.length > "register".length
+    }.associateBy {
         it.name.lowercase().drop("register".length)
     }
     private val customTriggers = mutableSetOf<CustomTriggerType>()
@@ -23,11 +25,7 @@ object Register {
      * @param method The name of the method or the actual method to callback when the event is fired
      * @return The trigger for additional modification
      */
-    fun register(triggerType: Any, method: Any): Trigger {
-        require(triggerType is String) {
-            "register() expects a String as its first argument"
-        }
-
+    fun register(triggerType: String, method: Any): Trigger {
         val type = triggerType.lowercase()
 
         methodMap[type]?.let { return it.invoke(this, method) as Trigger }
