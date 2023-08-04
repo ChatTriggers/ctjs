@@ -11,10 +11,22 @@ object CTJavaObjectMappingProvider : JavaObjectMappingProvider {
         includeProtected: Boolean,
         includePrivate: Boolean
     ) {
+        val queue = ArrayDeque<Class<*>>()
         var current: Class<*>? = clazz
+
         while (current != null) {
             findRemappedMethods(current, map, includeProtected, includePrivate)
-            current = current.superclass
+
+            val superClass = current.superclass
+            if (superClass != null && Mappings.getMappedClass(superClass.name) != null)
+                queue.add(superClass)
+
+            for (itf in current.interfaces) {
+                if (Mappings.getMappedClass(itf.name) != null)
+                    queue.add(itf)
+            }
+
+            current = queue.removeFirstOrNull()
         }
     }
 
