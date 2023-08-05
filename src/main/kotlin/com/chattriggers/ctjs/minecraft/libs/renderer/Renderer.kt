@@ -53,6 +53,7 @@ object Renderer {
     val screen = ScreenWrapper()
 
     // The current partialTicks value
+    @JvmStatic
     var partialTicks = 0f
         internal set
 
@@ -104,6 +105,7 @@ object Renderer {
     @JvmField
     val WHITE = getColor(255, 255, 255, 255)
 
+    @JvmStatic
     fun getColor(color: Int): Long {
         return when (color) {
             0 -> BLACK
@@ -131,12 +133,16 @@ object Renderer {
         slimCTRenderPlayer = CTPlayerRenderer(context, slim = true)
     }
 
+    @JvmStatic
     fun getFontRenderer() = UMinecraft.getFontRenderer()
 
+    @JvmStatic
     fun getRenderManager() = UMinecraft.getMinecraft().worldRenderer
 
+    @JvmStatic
     fun getStringWidth(text: String) = getFontRenderer().getWidth(ChatLib.addColor(text))
 
+    @JvmStatic
     @JvmOverloads
     fun getColor(red: Int, green: Int, blue: Int, alpha: Int = 255): Long {
         return ((alpha.coerceIn(0, 255) shl 24) or
@@ -145,6 +151,7 @@ object Renderer {
             blue.coerceIn(0, 255)).toLong()
     }
 
+    @JvmStatic
     @JvmOverloads
     fun getRainbow(step: Float, speed: Float = 1f): Long {
         val red = ((sin(step / speed) + 0.75) * 170).toInt()
@@ -153,6 +160,7 @@ object Renderer {
         return getColor(red, green, blue)
     }
 
+    @JvmStatic
     @JvmOverloads
     fun getRainbowColors(step: Float, speed: Float = 1f): IntArray {
         val red = ((sin(step / speed) + 0.75) * 170).toInt()
@@ -161,54 +169,72 @@ object Renderer {
         return intArrayOf(red, green, blue)
     }
 
+    @JvmStatic
     fun retainTransforms(retain: Boolean) = apply {
         retainTransforms = retain
         resetTransformsIfNecessary()
     }
 
+    @JvmStatic
     fun disableAlpha() = apply { UGraphics.disableAlpha() }
 
+    @JvmStatic
     fun enableAlpha() = apply { UGraphics.enableAlpha() }
 
+    @JvmStatic
     fun enableLighting() = apply { UGraphics.enableLighting() }
 
+    @JvmStatic
     fun disableLighting() = apply { UGraphics.disableLighting() }
 
+    @JvmStatic
     fun enableDepth() = apply { UGraphics.enableDepth() }
 
+    @JvmStatic
     fun disableDepth() = apply { UGraphics.disableDepth() }
 
+    @JvmStatic
     fun depthFunc(func: Int) = apply { UGraphics.depthFunc(func) }
 
+    @JvmStatic
     fun depthMask(flag: Boolean) = apply { UGraphics.depthMask(flag) }
 
+    @JvmStatic
     fun disableBlend() = apply { UGraphics.disableBlend() }
 
+    @JvmStatic
     fun enableBlend() = apply { UGraphics.enableBlend() }
 
+    @JvmStatic
     fun blendFunc(func: Int) = apply { UGraphics.blendEquation(func) }
 
+    @JvmStatic
     fun tryBlendFuncSeparate(sourceFactor: Int, destFactor: Int, sourceFactorAlpha: Int, destFactorAlpha: Int) = apply {
         UGraphics.tryBlendFuncSeparate(sourceFactor, destFactor, sourceFactorAlpha, destFactorAlpha)
     }
 
+    @JvmStatic
     @JvmOverloads
     fun bindTexture(texture: Image, textureIndex: Int = 0) = apply {
         UGraphics.bindTexture(textureIndex, texture.getTexture().glId)
     }
 
+    @JvmStatic
     fun deleteTexture(texture: Image) = apply {
         UGraphics.deleteTexture(texture.getTexture().glId)
     }
 
+    @JvmStatic
     fun pushMatrix() = apply {
         matrixStack.push()
     }
 
+    @JvmStatic
     fun popMatrix() = apply {
         matrixStack.pop()
     }
 
+    @JvmStatic
     fun translateToPlayer() = apply {
         translate(-Client.camera.getX().toFloat(), -Client.camera.getY().toFloat(), -Client.camera.getZ().toFloat())
     }
@@ -221,6 +247,7 @@ object Renderer {
      * @return the Renderer to allow for method chaining
      * @see com.chattriggers.ctjs.minecraft.libs.renderer.Shape.setDrawMode
      */
+    @JvmStatic
     @JvmOverloads
     fun begin(
         drawMode: DrawMode? = Renderer.drawMode,
@@ -244,6 +271,7 @@ object Renderer {
      * @param z the z position
      * @return the Tessellator to allow for method chaining
      */
+    @JvmStatic
     fun pos(x: Float, y: Float, z: Float) = apply {
         if (!began)
             begin()
@@ -261,61 +289,75 @@ object Renderer {
      * @param v the v position in the texture
      * @return the Tessellator to allow for method chaining
      */
+    @JvmStatic
     fun tex(u: Float, v: Float) = apply {
         worldRenderer.tex(u.toDouble(), v.toDouble())
     }
 
+    @JvmStatic
     @JvmOverloads
     fun color(x: Float, y: Float, z: Float, a: Float = 1f) = apply {
         worldRenderer.color(x, y, z, a)
     }
 
+    @JvmStatic
     @JvmOverloads
     fun color(x: Int, y: Int, z: Int, a: Int = 255) = apply {
         worldRenderer.color(x, y, z, a)
     }
 
+    @JvmStatic
     fun color(color: Long) = apply {
         val (r, g, b, a) = Color(color.toInt())
         color(r, g, b, a)
     }
 
+    @JvmStatic
     @JvmOverloads
     fun translate(x: Float, y: Float, z: Float = 0.0F) = apply {
         matrixStack.translate(x, y, z)
     }
 
+    @JvmStatic
     @JvmOverloads
     fun scale(scaleX: Float, scaleY: Float = scaleX, scaleZ: Float = 1f) = apply {
         matrixStack.scale(scaleX, scaleY, scaleZ)
     }
 
+    @JvmStatic
     fun rotate(angle: Float) = apply {
         matrixStack.rotate(angle, 0f, 0f, 1f)
     }
 
+    @JvmStatic
     fun multiply(quaternion: Quaternionf) = apply {
         matrixStack.multiply(quaternion)
     }
 
+    @JvmStatic
     @JvmOverloads
     fun colorize(red: Float, green: Float, blue: Float, alpha: Float = 1f) = apply {
         colorized = fixAlpha(getColor(red.toInt(), green.toInt(), blue.toInt(), alpha.toInt()))
         RenderSystem.setShaderColor(red.coerceIn(0f, 1f), green.coerceIn(0f, 1f), blue.coerceIn(0f, 1f), alpha.coerceIn(0f, 1f))
     }
 
+    @JvmStatic
     @JvmOverloads
     fun colorize(red: Int, green: Int, blue: Int, alpha: Int = 255) =
         colorize(red / 255f, green / 255f, blue / 255f, alpha / 255f)
 
+    @JvmStatic
     fun setDrawMode(drawMode: Int) = setDrawMode(DrawMode.fromUC(UGraphics.DrawMode.fromGl(drawMode)))
 
+    @JvmStatic
     fun setDrawMode(drawMode: DrawMode) = apply {
         this.drawMode = drawMode
     }
 
+    @JvmStatic
     fun getDrawMode() = drawMode
 
+    @JvmStatic
     fun fixAlpha(color: Long): Long {
         val alpha = color ushr 24 and 255
         return if (alpha < 10)
@@ -330,6 +372,7 @@ object Renderer {
      * @param z the Z coordinate
      * @return the Vec3f position to render at
      */
+    @JvmStatic
     fun getRenderPos(x: Float, y: Float, z: Float): Vec3f {
         return Vec3f(
             x - Player.getRenderX().toFloat(),
@@ -338,6 +381,7 @@ object Renderer {
         )
     }
 
+    @JvmStatic
     fun drawRect(color: Long, x: Float, y: Float, width: Float, height: Float) = apply {
         val pos = mutableListOf(x, y, x + width, y + height)
         if (pos[0] > pos[2])
@@ -360,6 +404,7 @@ object Renderer {
         resetTransformsIfNecessary()
     }
 
+    @JvmStatic
     fun drawLine(
         color: Long,
         x1: Float,
@@ -387,6 +432,7 @@ object Renderer {
         resetTransformsIfNecessary()
     }
 
+    @JvmStatic
     fun drawCircle(
         color: Long,
         x: Float,
@@ -423,6 +469,7 @@ object Renderer {
         resetTransformsIfNecessary()
     }
 
+    @JvmStatic
     @JvmOverloads
     fun drawString(text: String, x: Float, y: Float, color: Long = colorized ?: WHITE, shadow: Boolean = false) {
         val fr = getFontRenderer()
@@ -450,6 +497,7 @@ object Renderer {
         resetTransformsIfNecessary()
     }
 
+    @JvmStatic
     @JvmOverloads
     fun drawStringWithShadow(text: String, x: Float, y: Float, color: Long = colorized ?: WHITE) = drawString(text, x, y, color, shadow = true)
 
@@ -465,6 +513,7 @@ object Renderer {
      * @param scale the scale of the text
      * @param increase whether to scale the text up as the player moves away
      */
+    @JvmStatic
     @JvmOverloads
     fun drawString3D(
         text: String,
@@ -556,6 +605,7 @@ object Renderer {
     /**
      * A variant of drawString3D that takes an object instead of positional parameters
      */
+    @JvmStatic
     fun drawString3D(obj: NativeObject) {
         drawString3D(
             obj.get<String>("text") ?: error("Expected \"text\" property in object passed to Renderer.drawString3D"),
@@ -581,6 +631,7 @@ object Renderer {
         )
     }
 
+    @JvmStatic
     fun drawImage(image: Image, x: Double, y: Double, width: Double, height: Double) {
         if (colorized == null)
             colorize(1f, 1f, 1f, 1f)
@@ -627,6 +678,7 @@ object Renderer {
      *
      * @param obj An options bag
      */
+    @JvmStatic
     fun drawPlayer(obj: NativeObject) {
         val entity = obj["player"].let {
             it as? AbstractClientPlayerEntity
@@ -744,6 +796,7 @@ object Renderer {
     /**
      * Finalizes vertices and draws the Renderer.
      */
+    @JvmStatic
     fun draw() {
         if (!began)
             return
