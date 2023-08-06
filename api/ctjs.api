@@ -430,94 +430,94 @@ public final class com/chattriggers/ctjs/minecraft/libs/renderer/Renderer {
 	public static final field YELLOW J
 	public static field colorized Ljava/lang/Long;
 	public static final field screen Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer$ScreenWrapper;
-	public final fun begin ()Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun begin (Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer$DrawMode;)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun begin (Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer$DrawMode;Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer$VertexFormat;)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public static synthetic fun begin$default (Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer$DrawMode;Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer$VertexFormat;ILjava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun bindTexture (Lcom/chattriggers/ctjs/minecraft/libs/renderer/Image;)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun bindTexture (Lcom/chattriggers/ctjs/minecraft/libs/renderer/Image;I)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public static synthetic fun bindTexture$default (Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;Lcom/chattriggers/ctjs/minecraft/libs/renderer/Image;IILjava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun blendFunc (I)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun color (FFF)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun color (FFFF)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun color (III)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun color (IIII)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun color (J)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public static synthetic fun color$default (Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;FFFFILjava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public static synthetic fun color$default (Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;IIIIILjava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun colorize (FFF)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun colorize (FFFF)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun colorize (III)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun colorize (IIII)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public static synthetic fun colorize$default (Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;FFFFILjava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public static synthetic fun colorize$default (Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;IIIIILjava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun deleteTexture (Lcom/chattriggers/ctjs/minecraft/libs/renderer/Image;)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun depthFunc (I)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun depthMask (Z)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun disableAlpha ()Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun disableBlend ()Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun disableDepth ()Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun disableLighting ()Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun draw ()V
-	public final fun drawCircle (JFFFI)V
-	public final fun drawImage (Lcom/chattriggers/ctjs/minecraft/libs/renderer/Image;DDDD)V
-	public final fun drawLine (JFFFFF)V
-	public final fun drawPlayer (Lorg/mozilla/javascript/NativeObject;)V
-	public final fun drawRect (JFFFF)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun drawString (Ljava/lang/String;FF)V
-	public final fun drawString (Ljava/lang/String;FFJ)V
-	public final fun drawString (Ljava/lang/String;FFJZ)V
-	public static synthetic fun drawString$default (Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;Ljava/lang/String;FFJZILjava/lang/Object;)V
-	public final fun drawString3D (Ljava/lang/String;FFF)V
-	public final fun drawString3D (Ljava/lang/String;FFFJ)V
-	public final fun drawString3D (Ljava/lang/String;FFFJZ)V
-	public final fun drawString3D (Ljava/lang/String;FFFJZF)V
-	public final fun drawString3D (Ljava/lang/String;FFFJZFZ)V
-	public final fun drawString3D (Ljava/lang/String;FFFJZFZZ)V
-	public final fun drawString3D (Lorg/mozilla/javascript/NativeObject;)V
-	public static synthetic fun drawString3D$default (Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;Ljava/lang/String;FFFJZFZZILjava/lang/Object;)V
-	public final fun drawStringWithShadow (Ljava/lang/String;FF)V
-	public final fun drawStringWithShadow (Ljava/lang/String;FFJ)V
-	public static synthetic fun drawStringWithShadow$default (Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;Ljava/lang/String;FFJILjava/lang/Object;)V
-	public final fun enableAlpha ()Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun enableBlend ()Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun enableDepth ()Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun enableLighting ()Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun fixAlpha (J)J
-	public final fun getColor (I)J
-	public final fun getColor (III)J
-	public final fun getColor (IIII)J
-	public static synthetic fun getColor$default (Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;IIIIILjava/lang/Object;)J
-	public final fun getDrawMode ()Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer$DrawMode;
-	public final fun getFontRenderer ()Lnet/minecraft/client/font/TextRenderer;
-	public final fun getPartialTicks ()F
-	public final fun getRainbow (F)J
-	public final fun getRainbow (FF)J
-	public static synthetic fun getRainbow$default (Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;FFILjava/lang/Object;)J
-	public final fun getRainbowColors (F)[I
-	public final fun getRainbowColors (FF)[I
-	public static synthetic fun getRainbowColors$default (Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;FFILjava/lang/Object;)[I
-	public final fun getRenderManager ()Lnet/minecraft/client/render/WorldRenderer;
-	public final fun getRenderPos (FFF)Lcom/chattriggers/ctjs/utils/vec/Vec3f;
-	public final fun getStringWidth (Ljava/lang/String;)I
-	public final fun multiply (Lorg/joml/Quaternionf;)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun popMatrix ()Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun pos (FFF)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun pushMatrix ()Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun retainTransforms (Z)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun rotate (F)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun scale (F)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun scale (FF)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun scale (FFF)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public static synthetic fun scale$default (Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;FFFILjava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun setDrawMode (I)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun setDrawMode (Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer$DrawMode;)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun tex (FF)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun translate (FF)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun translate (FFF)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public static synthetic fun translate$default (Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;FFFILjava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun translateToPlayer ()Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
-	public final fun tryBlendFuncSeparate (IIII)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun begin ()Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun begin (Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer$DrawMode;)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun begin (Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer$DrawMode;Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer$VertexFormat;)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static synthetic fun begin$default (Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer$DrawMode;Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer$VertexFormat;ILjava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun bindTexture (Lcom/chattriggers/ctjs/minecraft/libs/renderer/Image;)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun bindTexture (Lcom/chattriggers/ctjs/minecraft/libs/renderer/Image;I)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static synthetic fun bindTexture$default (Lcom/chattriggers/ctjs/minecraft/libs/renderer/Image;IILjava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun blendFunc (I)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun color (FFF)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun color (FFFF)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun color (III)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun color (IIII)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun color (J)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static synthetic fun color$default (FFFFILjava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static synthetic fun color$default (IIIIILjava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun colorize (FFF)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun colorize (FFFF)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun colorize (III)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun colorize (IIII)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static synthetic fun colorize$default (FFFFILjava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static synthetic fun colorize$default (IIIIILjava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun deleteTexture (Lcom/chattriggers/ctjs/minecraft/libs/renderer/Image;)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun depthFunc (I)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun depthMask (Z)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun disableAlpha ()Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun disableBlend ()Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun disableDepth ()Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun disableLighting ()Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun draw ()V
+	public static final fun drawCircle (JFFFI)V
+	public static final fun drawImage (Lcom/chattriggers/ctjs/minecraft/libs/renderer/Image;DDDD)V
+	public static final fun drawLine (JFFFFF)V
+	public static final fun drawPlayer (Lorg/mozilla/javascript/NativeObject;)V
+	public static final fun drawRect (JFFFF)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun drawString (Ljava/lang/String;FF)V
+	public static final fun drawString (Ljava/lang/String;FFJ)V
+	public static final fun drawString (Ljava/lang/String;FFJZ)V
+	public static synthetic fun drawString$default (Ljava/lang/String;FFJZILjava/lang/Object;)V
+	public static final fun drawString3D (Ljava/lang/String;FFF)V
+	public static final fun drawString3D (Ljava/lang/String;FFFJ)V
+	public static final fun drawString3D (Ljava/lang/String;FFFJZ)V
+	public static final fun drawString3D (Ljava/lang/String;FFFJZF)V
+	public static final fun drawString3D (Ljava/lang/String;FFFJZFZ)V
+	public static final fun drawString3D (Ljava/lang/String;FFFJZFZZ)V
+	public static final fun drawString3D (Lorg/mozilla/javascript/NativeObject;)V
+	public static synthetic fun drawString3D$default (Ljava/lang/String;FFFJZFZZILjava/lang/Object;)V
+	public static final fun drawStringWithShadow (Ljava/lang/String;FF)V
+	public static final fun drawStringWithShadow (Ljava/lang/String;FFJ)V
+	public static synthetic fun drawStringWithShadow$default (Ljava/lang/String;FFJILjava/lang/Object;)V
+	public static final fun enableAlpha ()Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun enableBlend ()Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun enableDepth ()Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun enableLighting ()Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun fixAlpha (J)J
+	public static final fun getColor (I)J
+	public static final fun getColor (III)J
+	public static final fun getColor (IIII)J
+	public static synthetic fun getColor$default (IIIIILjava/lang/Object;)J
+	public static final fun getDrawMode ()Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer$DrawMode;
+	public static final fun getFontRenderer ()Lnet/minecraft/client/font/TextRenderer;
+	public static final fun getPartialTicks ()F
+	public static final fun getRainbow (F)J
+	public static final fun getRainbow (FF)J
+	public static synthetic fun getRainbow$default (FFILjava/lang/Object;)J
+	public static final fun getRainbowColors (F)[I
+	public static final fun getRainbowColors (FF)[I
+	public static synthetic fun getRainbowColors$default (FFILjava/lang/Object;)[I
+	public static final fun getRenderManager ()Lnet/minecraft/client/render/WorldRenderer;
+	public static final fun getRenderPos (FFF)Lcom/chattriggers/ctjs/utils/vec/Vec3f;
+	public static final fun getStringWidth (Ljava/lang/String;)I
+	public static final fun multiply (Lorg/joml/Quaternionf;)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun popMatrix ()Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun pos (FFF)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun pushMatrix ()Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun retainTransforms (Z)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun rotate (F)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun scale (F)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun scale (FF)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun scale (FFF)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static synthetic fun scale$default (FFFILjava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun setDrawMode (I)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun setDrawMode (Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer$DrawMode;)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun tex (FF)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun translate (FF)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun translate (FFF)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static synthetic fun translate$default (FFFILjava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun translateToPlayer ()Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
+	public static final fun tryBlendFuncSeparate (IIII)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Renderer;
 }
 
 public final class com/chattriggers/ctjs/minecraft/libs/renderer/Renderer$DrawMode : java/lang/Enum {
