@@ -25,7 +25,7 @@ open class LivingEntity(override val mcValue: MCLivingEntity) : Entity(mcValue) 
      * @return the item in said slot
      */
      fun getStackInSlot(slot: Int): Item? {
-         return mcValue.getEquippedStack(EquipmentSlot.values()[slot])?.let(::Item)
+         return mcValue.getEquippedStack(EquipmentSlot.values()[slot])?.let(Item::fromMC)
      }
 
     fun getHP() = mcValue.health

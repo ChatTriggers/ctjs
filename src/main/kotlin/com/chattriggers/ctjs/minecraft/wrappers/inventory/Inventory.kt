@@ -37,8 +37,8 @@ class Inventory {
      * @param slot the slot index
      * @return the [Item] in that slot, or null if there is no item
      */
-    fun getStackInSlot(slot: Int): Item? = inventory?.getStack(slot)?.let(::Item)
-        ?: screen!!.screenHandler.getSlot(slot)?.stack?.let(::Item)
+    fun getStackInSlot(slot: Int): Item? = inventory?.getStack(slot)?.let(Item::fromMC)
+        ?: screen!!.screenHandler.getSlot(slot)?.stack?.let(Item::fromMC)
 
     /**
      * Returns the window identifier number of this Inventory.
