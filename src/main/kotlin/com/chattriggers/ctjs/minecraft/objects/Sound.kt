@@ -33,7 +33,7 @@ import java.io.InputStream
  * should be passed through as a normal JavaScript object.
  *
  * REQUIRED:
- * - source (String) - an namespaced-identifier (e.g. `minecraft:music_disc.cat`) for a Minecraft sound, or a filename
+ * - source (String) - a namespaced-identifier (e.g. `minecraft:music_disc.cat`) for a Minecraft sound, or a filename
  *                     relative to ChatTriggers assets directory
  *
  * OPTIONAL:
@@ -213,7 +213,7 @@ class Sound(private val config: NativeObject) {
             Client.scheduleTask(delay) {
                 isPaused = false
                 soundSystem.asMixin<SoundSystemAccessor>().sources[soundImpl]?.run {
-                    it.play()
+                    it.resume()
                 }
             }
         }
@@ -224,9 +224,12 @@ class Sound(private val config: NativeObject) {
      */
     fun pause() {
         bootstrap()
-        isPaused = true
-        soundSystem.asMixin<SoundSystemAccessor>().sources[soundImpl]?.run {
-            it.pause()
+
+        Client.scheduleTask {
+            isPaused = true
+            soundSystem.asMixin<SoundSystemAccessor>().sources[soundImpl]?.run {
+                it.pause()
+            }
         }
     }
 
