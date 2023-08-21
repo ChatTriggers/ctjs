@@ -17,6 +17,7 @@ import com.chattriggers.ctjs.utils.Initializer
 import com.chattriggers.ctjs.console.printToConsole
 import com.chattriggers.ctjs.engine.module.ModuleManager
 import com.chattriggers.ctjs.minecraft.objects.TextComponent
+import com.chattriggers.ctjs.minecraft.wrappers.Scoreboard
 import com.chattriggers.ctjs.minecraft.wrappers.inventory.Item
 import com.chattriggers.ctjs.utils.toMatrixStack
 import gg.essential.universal.UMatrixStack
@@ -74,8 +75,7 @@ object ClientListener : Initializer {
                 TriggerType.TICK.triggerAll(ticksPassed)
                 ticksPassed++
 
-                // TODO
-                // Scoreboard.resetCache()
+                Scoreboard.resetCache()
             }
         }
 
