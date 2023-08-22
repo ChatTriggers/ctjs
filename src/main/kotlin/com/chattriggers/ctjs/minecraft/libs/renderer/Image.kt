@@ -2,6 +2,7 @@ package com.chattriggers.ctjs.minecraft.libs.renderer
 
 import com.chattriggers.ctjs.CTJS
 import com.chattriggers.ctjs.minecraft.CTEvents
+import com.chattriggers.ctjs.minecraft.wrappers.Client
 import com.chattriggers.ctjs.utils.Initializer
 import com.chattriggers.ctjs.utils.InternalApi
 import net.minecraft.client.texture.NativeImage
@@ -22,6 +23,10 @@ class Image(var image: BufferedImage?) {
 
     init {
         CTJS.images.add(this)
+
+        Client.scheduleTask {
+            texture = image!!.toNativeTexture()
+        }
     }
 
     fun getTextureWidth(): Int = textureWidth
@@ -29,18 +34,8 @@ class Image(var image: BufferedImage?) {
     fun getTextureHeight(): Int = textureHeight
 
     fun getTexture(): NativeImageBackedTexture {
-        if (texture == null) {
-            // We're trying to access the texture before initialization. Presumably, the game overlay render event
-            // hasn't fired yet, so we haven't loaded the texture. Let's hope this is a rendering context!
-            try {
-                texture = image!!.toNativeTexture()
-                image = null
-            } catch (e: Exception) {
-                // Unlucky. This probably wasn't a rendering context.
-                println("Trying to bake texture in a non-rendering context.")
-
-                throw e
-            }
+        requireNotNull(texture) {
+            "Failed to bake Image texture"
         }
 
         return texture!!.texture
@@ -53,6 +48,8 @@ class Image(var image: BufferedImage?) {
     fun destroy() {
         texture?.texture?.close()
         texture?.buffer?.let(MemoryUtil::memFree)
+        texture = null
+        image = null
     }
 
     @JvmOverloads
@@ -75,19 +72,7 @@ class Image(var image: BufferedImage?) {
 
     private data class Texture(val texture: NativeImageBackedTexture, val buffer: ByteBuffer)
 
-    companion object : Initializer {
-        @InternalApi
-        override fun init() {
-            CTEvents.RENDER_OVERLAY.register { _, _ ->
-                for (image in CTJS.images) {
-                    if (image.image != null) {
-                        image.texture = image.image!!.toNativeTexture()
-                        image.image = null
-                    }
-                }
-            }
-        }
-
+    companion object {
         /**
          * Create an image object from a java.io.File object. Throws an exception
          * if the file cannot be found.

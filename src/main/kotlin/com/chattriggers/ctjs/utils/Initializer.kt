@@ -22,7 +22,6 @@ internal interface Initializer {
             CPS,
             CTCommand,
             DynamicCommands,
-            Image,
             KeyBind,
             ModuleUpdater,
             MouseListener,

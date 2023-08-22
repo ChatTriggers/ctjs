@@ -46,7 +46,7 @@ object ClientListener : Initializer {
     private var ticksPassed: Int = 0
     val chatHistory = mutableListOf<TextComponent>()
     val actionBarHistory = mutableListOf<TextComponent>()
-    private val tasks = CopyOnWriteArrayList<Task>()
+    private val tasks = mutableListOf<Task>()
     private lateinit var packetContext: Context
 
     class Task(var delay: Int, val callback: () -> Unit)
@@ -64,11 +64,13 @@ object ClientListener : Initializer {
         }
 
         ClientTickEvents.START_CLIENT_TICK.register {
-            tasks.removeAll {
-                if (it.delay-- <= 0) {
-                    UMinecraft.getMinecraft().submit(it.callback)
-                    true
-                } else false
+            synchronized(tasks) {
+                tasks.removeAll {
+                    if (it.delay-- <= 0) {
+                        UMinecraft.getMinecraft().submit(it.callback)
+                        true
+                    } else false
+                }
             }
 
             if (World.isLoaded()) {
@@ -247,7 +249,9 @@ object ClientListener : Initializer {
     }
 
     fun addTask(delay: Int, callback: () -> Unit) {
-        tasks.add(Task(delay, callback))
+        synchronized(tasks) {
+            tasks.add(Task(delay, callback))
+        }
     }
 
     private fun handleChatMessage(message: Text, actionBar: Boolean): Boolean {
