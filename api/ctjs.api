@@ -368,7 +368,7 @@ public final class com/chattriggers/ctjs/minecraft/libs/renderer/Image {
 	public final fun setImage (Ljava/awt/image/BufferedImage;)V
 }
 
-public final class com/chattriggers/ctjs/minecraft/libs/renderer/Image$Companion : com/chattriggers/ctjs/utils/Initializer {
+public final class com/chattriggers/ctjs/minecraft/libs/renderer/Image$Companion {
 	public final fun fromAsset (Ljava/lang/String;)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Image;
 	public final fun fromFile (Ljava/io/File;)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Image;
 	public final fun fromFile (Ljava/lang/String;)Lcom/chattriggers/ctjs/minecraft/libs/renderer/Image;
