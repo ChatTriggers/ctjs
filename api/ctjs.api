@@ -801,8 +801,17 @@ public final class com/chattriggers/ctjs/minecraft/objects/Sound {
 	public static final field Companion Lcom/chattriggers/ctjs/minecraft/objects/Sound$Companion;
 	public fun <init> (Lorg/mozilla/javascript/NativeObject;)V
 	public final fun destroy ()V
+	public final fun getAttenuation ()I
+	public final fun getAttenuationType ()Lcom/chattriggers/ctjs/minecraft/objects/Sound$AttenuationType;
+	public final fun getCategory ()Lcom/chattriggers/ctjs/minecraft/objects/Sound$Category;
+	public final fun getLoop ()Z
+	public final fun getLoopDelay ()I
 	public final fun getPitch ()F
+	public final fun getPosition ()Lnet/minecraft/util/math/Vec3d;
 	public final fun getVolume ()F
+	public final fun getX ()D
+	public final fun getY ()D
+	public final fun getZ ()D
 	public final fun pause ()V
 	public final fun play ()V
 	public final fun play (I)V
@@ -816,6 +825,9 @@ public final class com/chattriggers/ctjs/minecraft/objects/Sound {
 	public final fun setPitch (F)Lcom/chattriggers/ctjs/minecraft/objects/Sound;
 	public final fun setPosition (DDD)Lcom/chattriggers/ctjs/minecraft/objects/Sound;
 	public final fun setVolume (F)Lcom/chattriggers/ctjs/minecraft/objects/Sound;
+	public final fun setX (D)Lcom/chattriggers/ctjs/minecraft/objects/Sound;
+	public final fun setY (D)Lcom/chattriggers/ctjs/minecraft/objects/Sound;
+	public final fun setZ (D)Lcom/chattriggers/ctjs/minecraft/objects/Sound;
 	public final fun stop ()V
 }
 

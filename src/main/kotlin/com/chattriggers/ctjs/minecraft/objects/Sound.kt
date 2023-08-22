@@ -23,6 +23,7 @@ import net.minecraft.resource.metadata.ResourceMetadataReader
 import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvent
 import net.minecraft.util.Identifier
+import net.minecraft.util.math.Vec3d
 import net.minecraft.util.math.random.Random
 import org.mozilla.javascript.NativeObject
 import java.io.File
@@ -57,9 +58,14 @@ class Sound(private val config: NativeObject) {
     private lateinit var sound: MCSound
     private var isCustom = false
 
-    private var volume = 1f
-    private var pitch = 1f
     private var isPaused = false
+
+    private val source = config["source"]?.toString() ?: throw IllegalArgumentException("Sound source is null.")
+
+    // Before bootstrap, we need to store the values ourselves. Afterward, however, we should
+    // derive the values from the actual sound object. This switches implementations at the
+    // end of bootstrap()
+    private var soundData: SoundData = InitialSoundData(config)
 
     private fun bootstrap() {
         if (::sound.isInitialized)
@@ -68,17 +74,6 @@ class Sound(private val config: NativeObject) {
         CTJS.sounds.add(this)
 
         val soundManagerAccessor = UMinecraft.getMinecraft().soundManager.asMixin<SoundManagerAccessor>()
-
-        val source = config["source"]?.toString() ?: throw IllegalArgumentException("Sound source is null.")
-        val loop = config.getOrDefault("loop", false) as Boolean
-        val loopDelay = (config.getOrDefault("loopDelay", 0) as Number).toInt()
-        val stream = config.getOrDefault("stream", false) as Boolean
-        val x = (config.getOrDefault("x", Player.getX()) as Number).toDouble()
-        val y = (config.getOrDefault("y", Player.getY()) as Number).toDouble()
-        val z = (config.getOrDefault("z", Player.getZ()) as Number).toDouble()
-        val attenuation = (config.getOrDefault("attenuation", 16) as Number).toInt()
-        val category = config["category"]?.let(Category::from) ?: Category.MASTER
-        val attenuationType = config["attenuationType"]?.let(AttenuationType::from) ?: AttenuationType.LINEAR
 
         val sourceIdentifier = Identifier.tryParse(source)
         if (sourceIdentifier != null) {
@@ -93,16 +88,16 @@ class Sound(private val config: NativeObject) {
             soundManagerAccessor.soundResources[identifier.withPrefixedPath("sounds/").withSuffixedPath(".ogg")] = resource
         }
 
-        soundImpl = SoundImpl(SoundEvent.of(identifier), category.toMC(), attenuationType.toMC())
+        soundImpl = SoundImpl(SoundEvent.of(identifier), soundData.category.toMC(), soundData.attenuationType.toMC())
         sound = MCSound(
             identifier.toString(),
-            { this.volume },
-            { this.pitch },
+            { soundImpl.volume },
+            { soundImpl.pitch },
             1,
             RegistrationType.FILE,
-            stream,
+            soundData.stream,
             false,
-            attenuation,
+            soundData.attenuation,
         )
 
         if (isCustom) {
@@ -111,17 +106,20 @@ class Sound(private val config: NativeObject) {
             }
         }
 
-        setPosition(x, y, z)
-        setLoop(loop)
-        setLoopDelay(loopDelay)
+        val initialData = soundData
+        soundData = BootstrappedSoundData(sound, soundImpl)
 
-        if (config["volume"] != null) {
-            setVolume((config["volume"] as Number).toFloat())
-        }
-
-        if (config["pitch"] != null) {
-            setPitch((config["pitch"] as Number).toFloat())
-        }
+        // Apply all initial values as the user may have changed them
+        soundData.loop = initialData.loop
+        soundData.loopDelay = initialData.loopDelay
+        soundData.volume = initialData.volume
+        soundData.pitch = initialData.pitch
+        soundData.x = initialData.x
+        soundData.y = initialData.y
+        soundData.z = initialData.z
+        soundData.attenuation = initialData.attenuation
+        soundData.category = initialData.category
+        soundData.attenuationType = initialData.attenuationType
     }
 
     fun destroy() {
@@ -134,67 +132,128 @@ class Sound(private val config: NativeObject) {
     }
 
     /**
+     * Gets the category of this sound, making it respect the Player's sound volume sliders.
+     *
+     * @return the category
+     */
+    fun getCategory() = soundData.category
+
+    /**
      * Sets the category of this sound, making it respect the Player's sound volume sliders.
-     * Options are: master, music, record, weather, block, hostile, neutral, player, and ambient
      *
      * @param category the category
      */
     fun setCategory(category: Category) = apply {
-        soundImpl.categoryOverride = category.toMC()
+        soundData.category = category
     }
+
+    /**
+     * Gets this sound's volume.
+     *
+     * @return A float value (0.0f - 1.0f).
+     */
+    fun getVolume() = soundData.volume
 
     /**
      * Sets this sound's volume.
-     * Will override the category if called after [setCategory], but not if called before.
      *
-     * @param volume New volume, float value ( 0.0f - 1.0f ).
+     * @param volume A float value (0.0f - 1.0f).
      */
-    fun setVolume(volume: Float) = apply { this.volume = volume }
+    fun setVolume(volume: Float) = apply {
+        soundData.volume = volume
+    }
 
-    fun getVolume() = volume
+    fun getX() = soundData.x
+
+    fun getY() = soundData.y
+
+    fun getZ() = soundData.z
+
+    fun setX(x: Double) = apply {
+        soundData.x = x
+    }
+
+    fun setY(y: Double) = apply {
+        soundData.y = y
+    }
+
+    fun setZ(z: Double) = apply {
+        soundData.z = z
+    }
+
+    fun getPosition() = Vec3d(getX(), getY(), getZ())
+
+    fun setPosition(x: Double, y: Double, z: Double) = apply {
+        soundData.x = x
+        soundData.y = y
+        soundData.z = z
+    }
 
     /**
-     * Updates the position of this sound
+     * Gets this sound's pitch.
      *
-     * @param x the x coordinate
-     * @param y the y coordinate
-     * @param z the z coordinate
+     * @return A float value (0.5f - 2.0f).
      */
-    fun setPosition(x: Double, y: Double, z: Double) = apply {
-        soundImpl.setPosition(x, y, z)
-    }
+    fun getPitch() = soundData.pitch
 
     /**
      * Sets this sound's pitch.
      *
-     * @param pitch A float value ( 0.5f - 2.0f ).
+     * @param pitch A float value (0.5f - 2.0f).
      */
-    fun setPitch(pitch: Float) = apply { this.pitch = pitch }
+    fun setPitch(pitch: Float) = apply {
+        soundData.pitch = pitch
+    }
 
-    fun getPitch() = pitch
+    /**
+     * Gets the attenuation type (fade out over space) of the sound
+     *
+     * @return The type of Attenuation
+     */
+    fun getAttenuationType() = soundData.attenuationType
 
     /**
      * Sets the attenuation type (fade out over space) of the sound
      *
-     * @param attenuationType the type of Attenuation
+     * @param attenuationType The type of Attenuation
      */
     fun setAttenuationType(attenuationType: AttenuationType) = apply {
-        soundImpl.attenuationType = attenuationType.toMC()
+        soundData.attenuationType = attenuationType
     }
+    /**
+     * Gets the attenuation distance of the sound
+     */
+    fun getAttenuation() = soundData.attenuation
 
     /**
      * Sets the attenuation distance of the sound
      */
     fun setAttenuation(attenuation: Int) = apply {
-        sound.asMixin<SoundAccessor>().setAttenuation(attenuation)
+        soundData.attenuation = attenuation
     }
 
+    /**
+     * Gets whether the sound should repeat after finishing
+     */
+    fun getLoop() = soundData.loop
+
+    /**
+     * Sets whether the sound should repeat after finishing
+     */
     fun setLoop(loop: Boolean) = apply {
-        soundImpl.asMixin<AbstractSoundInstanceAccessor>().setRepeat(loop)
+        soundData.loop = loop
     }
 
+    /**
+     * Gets the tick delay after finishing before looping again (if getLoop() is true)
+     */
+    fun getLoopDelay() = soundData.loopDelay
+
+    /**
+     * Sets the tick delay after finishing before looping again (if getLoop() is true)
+     */
     fun setLoopDelay(loopDelay: Int) = apply {
-        soundImpl.asMixin<AbstractSoundInstanceAccessor>().setRepeatDelay(loopDelay)
+        soundData.loopDelay = loopDelay
     }
 
     /**
@@ -257,12 +316,92 @@ class Sound(private val config: NativeObject) {
         )
     }
 
+    private interface SoundData {
+        var loop: Boolean
+        var loopDelay: Int
+        var stream: Boolean
+        var volume: Float
+        var pitch: Float
+        var x: Double
+        var y: Double
+        var z: Double
+        var attenuation: Int
+        var category: Category
+        var attenuationType: AttenuationType
+    }
+
+    private class InitialSoundData(config: NativeObject) : SoundData {
+        override var loop = config.getOrDefault("loop", false) as Boolean
+        override var loopDelay = (config.getOrDefault("loopDelay", 0) as Number).toInt()
+        override var stream = config.getOrDefault("stream", false) as Boolean
+        override var volume = (config.getOrDefault("volume", 1f) as Number).toFloat()
+        override var pitch = (config.getOrDefault("pitch", 1f) as Number).toFloat()
+        override var x = (config.getOrDefault("x", Player.getX()) as Number).toDouble()
+        override var y = (config.getOrDefault("y", Player.getY()) as Number).toDouble()
+        override var z = (config.getOrDefault("z", Player.getZ()) as Number).toDouble()
+        override var attenuation = (config.getOrDefault("attenuation", 16) as Number).toInt()
+        override var category = config["category"]?.let(Sound.Category::from) ?: Sound.Category.MASTER
+        override var attenuationType = config["attenuationType"]?.let(Sound.AttenuationType::from) ?: Sound.AttenuationType.LINEAR
+    }
+
+    private class BootstrappedSoundData(
+        private val sound: MCSound,
+        private val impl: SoundImpl,
+    ) : SoundData {
+        private val mixedSound: SoundAccessor = sound.asMixin()
+        private val mixedImpl: AbstractSoundInstanceAccessor = impl.asMixin()
+
+        override var loop: Boolean
+            get() = impl.isRepeatable
+            set(value) { mixedImpl.setRepeat(value) }
+
+        override var loopDelay: Int
+            get() = impl.repeatDelay
+            set(value) { mixedImpl.setRepeatDelay(value) }
+
+        override var stream: Boolean
+            get() = error("stream should not be accessed after bootstrap")
+            set(_) = error("stream should not be accessed after bootstrap")
+
+        override var volume: Float
+            get() = impl.volume
+            set(value) { impl.volume = value }
+
+        override var pitch: Float
+            get() = impl.pitch
+            set(value) { impl.pitch = value }
+
+        override var x: Double
+            get() = impl.x
+            set(value) { impl.setPosition(value, y, z) }
+
+        override var y: Double
+            get() = impl.y
+            set(value) { impl.setPosition(x, value, z) }
+
+        override var z: Double
+            get() = impl.z
+            set(value) { impl.setPosition(x, y, value) }
+
+        override var attenuation: Int
+            get() = sound.attenuation
+            set(value) { mixedSound.setAttenuation(value) }
+
+        override var category: Category
+            get() = Category.fromMC(impl.categoryOverride)
+            set(value) { impl.categoryOverride = value.toMC() }
+
+        override var attenuationType: AttenuationType
+            get() = AttenuationType.fromMC(impl.attenuationType)
+            set(value) { impl.attenuationType = value.toMC() }
+    }
+
     private class SoundImpl(
         soundEvent: SoundEvent,
         soundCategory: SoundCategory,
         attenuationType: MCAttenuationType,
     ) : MovingSoundInstance(soundEvent, soundCategory, Random.create()) {
-        var categoryOverride: SoundCategory? = null
+        var categoryOverride: SoundCategory = super.category
 
         init {
             this.attenuationType = attenuationType
@@ -274,7 +413,7 @@ class Sound(private val config: NativeObject) {
         }
 
         override fun getCategory(): SoundCategory {
-            return categoryOverride ?: super.getCategory()
+            return categoryOverride
         }
 
         fun setPosition(x: Double, y: Double, z: Double) {
@@ -285,6 +424,14 @@ class Sound(private val config: NativeObject) {
 
         fun setAttenuationType(attenuationType: MCAttenuationType) {
             this.attenuationType = attenuationType
+        }
+
+        fun setVolume(volume: Float) {
+            this.volume = volume.coerceIn(0f, 1f)
+        }
+
+        fun setPitch(pitch: Float) {
+            this.pitch = pitch.coerceIn(0.5f, 2f)
         }
     }
 
