@@ -17,6 +17,7 @@ import java.net.URLClassLoader
 import java.net.URLDecoder
 import java.nio.charset.Charset
 import kotlin.concurrent.thread
+import kotlin.io.path.Path
 
 /**
  * Responsible for spawning and managing a separate Java console process (which uses AWT)
@@ -64,7 +65,7 @@ class RemoteConsoleHost(private val loader: JSLoader?) : Console {
         process = ProcessBuilder()
             .directory(File("."))
             .command(
-                "java",
+                Path(System.getProperty("java.home"), "bin", "java").toString(),
                 "-cp",
                 urls,
                 RemoteConsoleClient::class.qualifiedName,
