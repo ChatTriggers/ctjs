@@ -17,7 +17,6 @@ object ConsoleManager : Initializer {
 
     private val consoles = listOf(generalConsole, jsConsole)
     private val keyBinds = mutableMapOf<Console, KeyBinding>()
-    private var timeSinceLastPing = 0L
 
     override fun init() {
         keyBinds[generalConsole] = KeyBindingHelper.registerKeyBinding(KeyBinding(
@@ -38,11 +37,6 @@ object ConsoleManager : Initializer {
             for ((console, binding) in keyBinds) {
                 if (binding.wasPressed())
                     console.show()
-            }
-
-            if (Client.getSystemTime() - timeSinceLastPing > CONSOLE_PING_TIME) {
-                consoles.forEach(RemoteConsoleHost::ping)
-                timeSinceLastPing = Client.getSystemTime()
             }
         }
     }

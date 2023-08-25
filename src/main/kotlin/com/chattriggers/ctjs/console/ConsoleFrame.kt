@@ -234,7 +234,7 @@ class ConsoleFrame(
             try {
                 block()
             } catch (e: Throwable) {
-                client.reportAsyncException(e)
+                client.reportException(e)
             }
         }
     }

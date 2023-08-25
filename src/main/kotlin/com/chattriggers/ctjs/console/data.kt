@@ -3,8 +3,6 @@ package com.chattriggers.ctjs.console
 import com.chattriggers.ctjs.utils.Config
 import kotlinx.serialization.Serializable
 
-const val CONSOLE_PING_TIME = 5000
-
 @Serializable
 sealed class H2CMessage
 
@@ -48,9 +46,6 @@ object OpenMessage : H2CMessage()
 
 @Serializable
 object TerminateMessage : H2CMessage()
-
-@Serializable
-object PingMessage : H2CMessage()
 
 @Serializable
 class EvalResultMessage(val id: Int, val result: String) : H2CMessage()

@@ -10,6 +10,7 @@ import kotlinx.serialization.json.Json
 import java.awt.Color
 import java.io.BufferedReader
 import java.io.File
+import java.io.IOException
 import java.io.InputStreamReader
 import java.io.PrintWriter
 import java.net.ServerSocket
@@ -70,43 +71,59 @@ class RemoteConsoleHost(private val loader: JSLoader?) : Console {
                 urls,
                 RemoteConsoleClient::class.qualifiedName,
                 port.toString(),
+                ProcessHandle.current().pid().toString(),
             )
             .start()
 
-        ServerSocket(port).accept().use { socket ->
-            socketOut = PrintWriter(socket.outputStream, true, Charsets.UTF_8)
-            val socketIn = BufferedReader(InputStreamReader(socket.inputStream, Charsets.UTF_8))
-            connected = true
+        while (running) {
+            ServerSocket(port).accept().use { socket ->
+                socketOut = PrintWriter(socket.outputStream, true, Charsets.UTF_8)
+                val socketIn = BufferedReader(InputStreamReader(socket.inputStream, Charsets.UTF_8))
+                connected = true
 
-            val initMessage = InitMessage(
-                Reference.MOD_VERSION,
-                loader == null,
-                ConfigUpdateMessage.constructFromConfig(Config.ConsoleSettings.make()),
-                this::class.java.getResourceAsStream("/assets/chattriggers/FiraCode-Regular.otf")?.readAllBytes(),
-            )
+                val initMessage = InitMessage(
+                    Reference.MOD_VERSION,
+                    loader == null,
+                    ConfigUpdateMessage.constructFromConfig(Config.ConsoleSettings.make()),
+                    this::class.java.getResourceAsStream("/assets/chattriggers/FiraCode-Regular.otf")?.readAllBytes(),
+                )
 
-            synchronized(socketOut) {
-                socketOut.println(Json.encodeToString<H2CMessage>(initMessage))
-                pendingMessages.forEach { socketOut.println(Json.encodeToString<H2CMessage>(it)) }
-            }
+                synchronized(socketOut) {
+                    socketOut.println(Json.encodeToString<H2CMessage>(initMessage))
+                    pendingMessages.forEach { socketOut.println(Json.encodeToString<H2CMessage>(it)) }
+                }
 
-            while (running) {
-                val messageText = socketIn.readLine() ?: error("Unexpected socket close")
-                when (val message = Json.decodeFromString<C2HMessage>(messageText)) {
-                    is EvalTextMessage -> {
-                        // If this is the general console, we effectively just ignore this message
-                        try {
-                            val result = loader?.eval(message.string) ?: continue
-                            synchronized(socketOut) {
-                                socketOut.println(Json.encodeToString<H2CMessage>(EvalResultMessage(message.id, result)))
-                            }
-                        } catch (e: Throwable) {
-                            printStackTrace(e)
-                        }
+                while (running) {
+                    val messageText = try {
+                        socketIn.readLine()
+                    } catch (_: Throwable) {
+                        println("Received error, reopening the connection")
+                        return@use
                     }
-                    ReloadCTMessage -> Client.scheduleTask { Reference.loadCT() }
+
+                    if (messageText == null) {
+                        Thread.sleep(50)
+                        continue
+                    }
+
+                    when (val message = Json.decodeFromString<C2HMessage>(messageText)) {
+                        is EvalTextMessage -> {
+                            // If this is the general console, we effectively just ignore this message
+                            try {
+                                val result = loader?.eval(message.string) ?: continue
+                                synchronized(socketOut) {
+                                    socketOut.println(Json.encodeToString<H2CMessage>(EvalResultMessage(message.id, result)))
+                                }
+                            } catch (e: Throwable) {
+                                printStackTrace(e)
+                            }
+                        }
+                        ReloadCTMessage -> Client.scheduleTask { Reference.loadCT() }
+                    }
                 }
             }
+
+            connected = false
         }
     }
 
@@ -133,8 +150,6 @@ class RemoteConsoleHost(private val loader: JSLoader?) : Console {
 
     override fun onConsoleSettingsChanged(settings: Config.ConsoleSettings) =
         trySendMessage(ConfigUpdateMessage.constructFromConfig(settings))
-
-    fun ping() = trySendMessage(PingMessage)
 
     private fun trySendMessage(message: H2CMessage) {
         if (connected) {
