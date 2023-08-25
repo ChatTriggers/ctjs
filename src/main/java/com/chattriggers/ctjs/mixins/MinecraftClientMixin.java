@@ -6,14 +6,19 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.world.ClientWorld;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(MinecraftClient.class)
-public class MinecraftClientMixin {
-    @Inject(method = "joinWorld", at = @At("TAIL"))
+public abstract class MinecraftClientMixin {
+
+    @Shadow protected abstract boolean isConnectedToServer();
+
+    @Inject(method = "joinWorld", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/ApiServices;create(Lcom/mojang/authlib/yggdrasil/YggdrasilAuthenticationService;Ljava/io/File;)Lnet/minecraft/util/ApiServices;", shift = At.Shift.AFTER))
     private void injectJoinWorld(ClientWorld world, CallbackInfo ci) {
+        if (!this.isConnectedToServer()) return;
         TriggerType.SERVER_CONNECT.triggerAll();
     }
 
