@@ -1,10 +1,12 @@
 package com.chattriggers.ctjs.minecraft.wrappers.inventory
 
+import com.chattriggers.ctjs.Skippable
 import com.chattriggers.ctjs.TooltipOverridable
 import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer
 import com.chattriggers.ctjs.minecraft.objects.TextComponent
 import com.chattriggers.ctjs.minecraft.wrappers.CTWrapper
 import com.chattriggers.ctjs.minecraft.wrappers.Client
+import com.chattriggers.ctjs.minecraft.wrappers.Player
 import com.chattriggers.ctjs.minecraft.wrappers.World
 import com.chattriggers.ctjs.minecraft.wrappers.entity.Entity
 import com.chattriggers.ctjs.minecraft.wrappers.inventory.nbt.NBTTagCompound
@@ -81,8 +83,12 @@ class Item(override val mcValue: ItemStack) : CTWrapper<ItemStack> {
     }
 
     @JvmOverloads
-    fun getLore(advanced: Boolean = false): List<TextComponent>? = (getHolder()?.toMC() as? PlayerEntity)?.let {
-        mcValue.getTooltip(it, if (advanced) TooltipContext.ADVANCED else TooltipContext.BASIC).map(::TextComponent)
+    fun getLore(advanced: Boolean = false): List<TextComponent> {
+        mcValue.asMixin<Skippable>().ctjs_setShouldSkip(true)
+        val tooltip = mcValue.getTooltip(Player.toMC(), if (advanced) TooltipContext.ADVANCED else TooltipContext.BASIC).map(::TextComponent)
+        mcValue.asMixin<Skippable>().ctjs_setShouldSkip(false)
+
+        return tooltip
     }
 
     fun setLore(lore: List<TextComponent>) {
