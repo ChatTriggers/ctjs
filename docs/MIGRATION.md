@@ -43,6 +43,7 @@ These custom triggers are designed to be used with Mixins to provide triggers fo
 - Added a new `BossBars` API
 - Added `Client.copy(text: string)`
 - Added `Sound.setLoop()` and `Sound.setLoopDelay()`
+- Added middle-click tracking to `CPS`
 
 TODO: Add more things here?
 
