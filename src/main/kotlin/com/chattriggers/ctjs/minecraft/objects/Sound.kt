@@ -28,6 +28,8 @@ import net.minecraft.util.math.random.Random
 import org.mozilla.javascript.NativeObject
 import java.io.File
 import java.io.InputStream
+import kotlin.io.path.Path
+import kotlin.io.path.nameWithoutExtension
 
 /**
  * Instances a new Sound with certain properties. These properties
@@ -74,25 +76,21 @@ class Sound(private val config: NativeObject) {
         CTJS.sounds.add(this)
 
         val soundManagerAccessor = UMinecraft.getMinecraft().soundManager.asMixin<SoundManagerAccessor>()
-
-        val sourceIdentifier = Identifier.tryParse(source)
-        if (sourceIdentifier != null) {
-            identifier = sourceIdentifier
-        } else {
+        val soundFile = File(CTJS.assetsDir, source)
+        if (soundFile.exists()) {
             isCustom = true
             identifier = makeIdentifier(source)
-            val soundFile = File(CTJS.assetsDir, source)
-            require(soundFile.exists()) { "Cannot find sound resource \"$source\"" }
-
             val resource = Resource(CTResourcePack, soundFile::inputStream, ResourceMetadata::NONE)
             soundManagerAccessor.soundResources[identifier.withPrefixedPath("sounds/").withSuffixedPath(".ogg")] = resource
+        } else {
+            identifier = Identifier(source)
         }
 
         soundImpl = SoundImpl(SoundEvent.of(identifier), soundData.category.toMC(), soundData.attenuationType.toMC())
         sound = MCSound(
             identifier.toString(),
-            { soundImpl.volume },
-            { soundImpl.pitch },
+            { soundData.volume },
+            { soundData.pitch },
             1,
             RegistrationType.FILE,
             soundData.stream,
@@ -107,13 +105,11 @@ class Sound(private val config: NativeObject) {
         }
 
         val initialData = soundData
-        soundData = BootstrappedSoundData(sound, soundImpl)
+        soundData = BootstrappedSoundData(sound, soundImpl, initialData.volume, initialData.pitch)
 
         // Apply all initial values as the user may have changed them
         soundData.loop = initialData.loop
         soundData.loopDelay = initialData.loopDelay
-        soundData.volume = initialData.volume
-        soundData.pitch = initialData.pitch
         soundData.x = initialData.x
         soundData.y = initialData.y
         soundData.z = initialData.z
@@ -312,7 +308,7 @@ class Sound(private val config: NativeObject) {
     private fun makeIdentifier(source: String): Identifier {
         return Identifier(
             "ctjs",
-            source.replace(".ogg", "").lowercase().filter { it in validIdentChars } + "_${counter++}",
+            Path(source).nameWithoutExtension.lowercase().filter { it in validIdentChars } + "_${counter++}",
         )
     }
 
@@ -347,6 +343,8 @@ class Sound(private val config: NativeObject) {
     private class BootstrappedSoundData(
         private val sound: MCSound,
         private val impl: SoundImpl,
+        override var volume: Float,
+        override var pitch: Float,
     ) : SoundData {
         private val mixedSound: SoundAccessor = sound.asMixin()
         private val mixedImpl: AbstractSoundInstanceAccessor = impl.asMixin()
@@ -362,14 +360,6 @@ class Sound(private val config: NativeObject) {
         override var stream: Boolean
             get() = error("stream should not be accessed after bootstrap")
             set(_) = error("stream should not be accessed after bootstrap")
-
-        override var volume: Float
-            get() = impl.volume
-            set(value) { impl.volume = value }
-
-        override var pitch: Float
-            get() = impl.pitch
-            set(value) { impl.pitch = value }
 
         override var x: Double
             get() = impl.x
