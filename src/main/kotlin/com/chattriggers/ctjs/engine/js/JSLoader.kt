@@ -239,7 +239,7 @@ object JSLoader {
     @JvmStatic
     fun invokeMixin(func: Callable, args: Array<Any?>): Any? {
         return wrapInContext {
-            func.call(Context.getCurrentContext(), scope, scope, args)
+            Context.jsToJava(func.call(Context.getCurrentContext(), scope, scope, args), Any::class.java)
         }
     }
 
@@ -253,8 +253,8 @@ object JSLoader {
             if (existing != null) {
                 existing
             } else {
-                "A new injector mixin was registered at runtime. This will require a restart, and will " +
-                    "have no effect until then!".printToConsole(console)
+                ("A new injector mixin was registered at runtime. This will require a restart, and will " +
+                    "have no effect until then!").printToConsole(console)
                 null
             }
         } else {
@@ -269,8 +269,8 @@ object JSLoader {
     fun registerFieldWidener(mixin: Mixin, fieldName: String, isMutable: Boolean) {
         if (mixinsFinalized) {
             if (mixins[mixin]?.fieldWideners?.contains(fieldName) != null) {
-                "A new field widener was registered at runtime. This will require a restart, and will " +
-                    "have no effect until then!".printToConsole(console)
+                ("A new field widener was registered at runtime. This will require a restart, and will " +
+                    "have no effect until then!").printToConsole(console)
             }
         } else {
             mixins.getOrPut(mixin, ::MixinDetails).fieldWideners[fieldName] = isMutable
@@ -280,8 +280,8 @@ object JSLoader {
     fun registerMethodWidener(mixin: Mixin, methodName: String, isMutable: Boolean) {
         if (mixinsFinalized) {
             if (mixins[mixin]?.methodWideners?.contains(methodName) != null) {
-                "A new method widener was registered at runtime. This will require a restart, and will " +
-                    "have no effect until then!".printToConsole(console)
+                ("A new method widener was registered at runtime. This will require a restart, and will " +
+                    "have no effect until then!").printToConsole(console)
             }
         } else {
             mixins.getOrPut(mixin, ::MixinDetails).methodWideners[methodName] = isMutable
