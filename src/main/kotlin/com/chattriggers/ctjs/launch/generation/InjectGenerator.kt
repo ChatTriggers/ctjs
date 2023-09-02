@@ -26,7 +26,7 @@ internal class InjectGenerator(
         }
 
         inject.locals?.forEach {
-            parameters.add(Utils.getParameterFromLocal(it, mappedMethod))
+            parameters.add(Utils.getParameterFromLocal(it))
         }
 
         return InjectionSignature(

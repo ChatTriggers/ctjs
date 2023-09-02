@@ -16,9 +16,7 @@ internal class ModifyConstantGenerator(
         val (mappedMethod, method) = ctx.findMethod(modifyConstant.method)
 
         val type = modifyConstant.constant.getTypeDescriptor()
-        val parameters = listOf(Parameter(type)) + modifyConstant.locals?.map {
-            Utils.getParameterFromLocal(it, mappedMethod)
-        }.orEmpty()
+        val parameters = listOf(Parameter(type)) + modifyConstant.locals?.map(Utils::getParameterFromLocal).orEmpty()
 
         return InjectionSignature(
             mappedMethod,

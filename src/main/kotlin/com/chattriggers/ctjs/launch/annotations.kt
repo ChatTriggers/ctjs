@@ -42,13 +42,14 @@ data class Slice(
     val to: At?,
 )
 
-// There are three ways to capture a local:
-//   - By name, only if the local is a parameter: Local(parameterName = "foo")
-//   - By absolute local index: Local(index = 4)
+// There are two ways to capture a local:
+//   - By absolute local index: Local(type = "F", index = 4)
 //   - By ordinal and type: Local(type = "F", ordinal = 1)
+//
+// If print is required, then type is not required since the local
+// is not actually captured
 data class Local(
     val print: Boolean?,
-    val parameterName: String?,
     val index: Int?,
     val ordinal: Int?,
     val type: String?,
@@ -187,7 +188,6 @@ data class ModifyVariable(
     val ordinal: Int?,
     val index: Int?,
     val type: String?,
-    val parameterName: String?,
     val locals: List<Local>?,
     val remap: Boolean?,
     val require: Int?,

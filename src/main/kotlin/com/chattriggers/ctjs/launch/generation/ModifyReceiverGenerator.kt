@@ -31,7 +31,7 @@ internal class ModifyReceiverGenerator(
 
         val params = listOf(Parameter(owner!!)) +
             extraParams!!.map(::Parameter) +
-            modifyReceiver.locals?.map { Utils.getParameterFromLocal(it, mappedMethod) }.orEmpty()
+            modifyReceiver.locals?.map(Utils::getParameterFromLocal).orEmpty()
 
         return InjectionSignature(
             mappedMethod,

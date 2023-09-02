@@ -19,14 +19,13 @@ internal class ModifyVariableGenerator(
         // Construct a temporary local so we can call Utils.getParameterFromLocal
         val tempLocal = Local(
             modifyVariable.print,
-            modifyVariable.parameterName,
             modifyVariable.index,
             modifyVariable.ordinal,
             modifyVariable.type,
             mutable = false,
         )
 
-        val parameter = Utils.getParameterFromLocal(tempLocal, mappedMethod, name = "ModifyVariable")
+        val parameter = Utils.getParameterFromLocal(tempLocal, name = "ModifyVariable")
 
         // Update our ModifyVariable annotation since we may have changed the index
         modifyVariable = modifyVariable.copy(

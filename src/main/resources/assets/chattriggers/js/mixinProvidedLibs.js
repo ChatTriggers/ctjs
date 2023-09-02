@@ -162,9 +162,7 @@
 
     class Local {
         constructor(obj) {
-            if (typeof obj === 'string') {
-                this._initProps({ parameterName: obj });
-            } else if (typeof obj === 'number') {
+            if (typeof obj === 'number') {
                 this._initProps({ index: obj });
             } else {
                 this._initProps(obj);
@@ -173,20 +171,18 @@
 
         _initProps(obj) {
             const print = obj.print;
-            const parameterName = obj.parameterName;
             const index = obj.index;
             const ordinal = obj.ordinal;
             const type = obj.type;
             const mutable = obj.mutable;
 
             assertType(print, 'boolean', 'Local.print');
-            assertType(parameterName, 'string', 'Local.parameterName');
             assertType(index, 'number', 'Local.index');
             assertType(ordinal, 'number', 'Local.ordinal');
             assertType(type, 'string', 'Local.type');
             assertType(mutable, 'boolean', 'Local.mutable');
 
-            this.localObj = new LocalObj(print, parameterName, index, ordinal, type, mutable);
+            this.localObj = new LocalObj(print, index, ordinal, type, mutable);
         }
     }
 
@@ -661,7 +657,6 @@
             const ordinal = obj.ordinal;
             const index = obj.index;
             const type = obj.type;
-            const parameterName = obj.parameterName;
             let locals = obj.locals;
             if (locals instanceof Local)
                 locals = [locals];
@@ -679,7 +674,6 @@
             assertType(ordinal, 'number', 'ModifyVariable.ordinal');
             assertType(index, 'number', 'ModifyVariable.index');
             assertType(type, 'string', 'ModifyVariable.type');
-            assertType(parameterName, 'string', 'ModifyVariable.type');
             assertArrayType(locals, Local, 'ModifyVariable.locals');
             assertType(remap, 'number', 'ModifyVariable.remap');
             assertType(require, 'number', 'ModifyVariable.require');
@@ -695,7 +689,6 @@
                 ordinal,
                 index,
                 type,
-                parameterName,
                 locals?.map(l => l.localObj),
                 remap,
                 require,

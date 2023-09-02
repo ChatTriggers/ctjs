@@ -31,7 +31,7 @@ internal class ModifyArgGenerator(
         val returnType = targetDescriptor.parameters[modifyArg.index]
 
         modifyArg.locals?.forEach {
-            parameters.add(Utils.getParameterFromLocal(it, mappedMethod))
+            parameters.add(Utils.getParameterFromLocal(it))
         }
 
         return InjectionSignature(

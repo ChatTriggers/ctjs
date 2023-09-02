@@ -174,27 +174,11 @@ internal object Utils {
         error("Unable to match method $descriptor in class ${mappedClass.name.original}")
     }
 
-    fun getParameterFromLocal(
-        local: Local,
-        method: Mappings.MappedMethod,
-        name: String = "Local",
-    ): InjectorGenerator.Parameter {
-        var modifiedLocal = local
-
+    fun getParameterFromLocal(local: Local, name: String = "Local"): InjectorGenerator.Parameter {
         val descriptor = when {
             local.print == true -> {
                 // The type doesn't matter, it won't actually be applied
                 Descriptor.Primitive.INT
-            }
-            local.parameterName != null -> {
-                require(local.type == null && local.index == null && local.ordinal == null) {
-                    "$name that specifies parameterName cannot specify type, index, or ordinal"
-                }
-
-                val parameter = method.parameters.find { p -> p.name.original == local.parameterName }
-                    ?: error("Could not find parameter \"${local.parameterName}\" in method ${method.name.original}")
-                modifiedLocal = local.copy(index = parameter.lvtIndex)
-                Descriptor.Parser(parameter.type.value).parseType(full = true)
             }
             local.type != null -> {
                 if (local.index != null) {
@@ -208,13 +192,12 @@ internal object Utils {
                 }
                 Descriptor.Parser(local.type).parseType(full = true)
             }
-            else -> error("$name must specify one of the following options: \"print\"; \"parameterName\"; " +
-                "\"type\" and either \"ordinal\" or \"index\"")
+            else -> error("$name must specify \"print\", or \"type\" and either \"ordinal\" or \"index\"")
         }
 
         require(descriptor.isType)
 
-        return InjectorGenerator.Parameter(descriptor, modifiedLocal)
+        return InjectorGenerator.Parameter(descriptor, local)
     }
 
     sealed class AtTarget<T : Descriptor>(val descriptor: T, val targetName: String)

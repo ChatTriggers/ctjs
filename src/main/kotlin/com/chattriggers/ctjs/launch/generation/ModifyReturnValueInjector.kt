@@ -17,9 +17,9 @@ internal class ModifyReturnValueInjector(
         val (mappedMethod, method) = ctx.findMethod(modifyReturnValue.method)
         val returnType = Descriptor.Parser(mappedMethod.returnType.value).parseType(full = true)
 
-        val parameters = listOf(Parameter(returnType)) + modifyReturnValue.locals?.map {
-            Utils.getParameterFromLocal(it, mappedMethod)
-        }.orEmpty()
+        val parameters = listOf(Parameter(returnType)) + modifyReturnValue.locals
+            ?.map(Utils::getParameterFromLocal)
+            .orEmpty()
 
         return InjectionSignature(
             mappedMethod,

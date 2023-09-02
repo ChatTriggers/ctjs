@@ -21,7 +21,7 @@ internal class ModifyArgsGenerator(
         val parameters = mutableListOf<Parameter>()
         parameters.add(Parameter(Args::class.descriptor()))
         modifyArgs.locals?.forEach {
-            parameters.add(Utils.getParameterFromLocal(it, mappedMethod))
+            parameters.add(Utils.getParameterFromLocal(it))
         }
 
         return InjectionSignature(

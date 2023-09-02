@@ -60,9 +60,6 @@ internal abstract class InjectorGenerator(protected val ctx: GenerationContext, 
                     local.print?.let { visit("print", it) }
                     local.index?.let { visit("index", it) }
                     local.ordinal?.let { visit("ordinal", it) }
-
-                    if (local.parameterName != null)
-                        visit("argsOnly", true)
                 }
             }
 

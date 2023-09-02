@@ -24,9 +24,9 @@ internal class ModifyExpressionValueGenerator(
 
         check(exprDescriptor != null && exprDescriptor.isType)
 
-        val parameters = listOf(Parameter(exprDescriptor)) + modifyExpressionValue.locals?.map {
-            Utils.getParameterFromLocal(it, mappedMethod)
-        }.orEmpty()
+        val parameters = listOf(Parameter(exprDescriptor)) + modifyExpressionValue.locals
+            ?.map(Utils::getParameterFromLocal)
+            .orEmpty()
 
         return InjectionSignature(
             mappedMethod,
