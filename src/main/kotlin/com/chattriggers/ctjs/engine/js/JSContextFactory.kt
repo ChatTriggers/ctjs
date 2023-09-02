@@ -26,13 +26,6 @@ object JSContextFactory : ContextFactory() {
         cx.optimizationLevel = if (optimize) 9 else 0
         cx.languageVersion = Context.VERSION_ES6
         cx.errorReporter = JSErrorReporter(JSLoader.console)
-        cx.wrapFactory = object : WrapFactory() {
-            override fun wrap(cx: Context?, scope: Scriptable?, obj: Any?, staticType: Class<*>?): Any? {
-                if (obj is Collection<*>)
-                    return super.wrap(cx, scope, obj.toTypedArray(), staticType)
-                return super.wrap(cx, scope, obj, staticType)
-            }
-        }.apply { isJavaPrimitiveWrap = false }
 
         if (!CTJS.isDevelopment)
             cx.javaObjectMappingProvider = CTJavaObjectMappingProvider
