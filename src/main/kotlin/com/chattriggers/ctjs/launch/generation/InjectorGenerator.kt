@@ -66,10 +66,6 @@ internal abstract class InjectorGenerator(protected val ctx: GenerationContext, 
                 }
             }
 
-            getstatic(JSLoader::class, "INSTANCE", JSLoader::class)
-
-            ldc(id)
-
             ldc(parameters.size + if (isStatic) 0 else 1)
             anewarray(Any::class)
 
