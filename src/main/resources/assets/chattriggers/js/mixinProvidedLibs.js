@@ -162,11 +162,7 @@
 
     class Local {
         constructor(obj) {
-            if (typeof obj === 'number') {
-                this._initProps({ index: obj });
-            } else {
-                this._initProps(obj);
-            }
+            this._initProps(obj);
         }
 
         _initProps(obj) {
