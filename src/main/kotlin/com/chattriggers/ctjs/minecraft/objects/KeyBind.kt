@@ -1,5 +1,6 @@
 package com.chattriggers.ctjs.minecraft.objects
 
+import com.chattriggers.ctjs.BoundKeyUpdater
 import com.chattriggers.ctjs.minecraft.wrappers.Client
 import com.chattriggers.ctjs.minecraft.wrappers.World
 import com.chattriggers.ctjs.mixins.GameOptionsAccessor
@@ -10,7 +11,6 @@ import com.chattriggers.ctjs.utils.Initializer
 import com.chattriggers.ctjs.utils.InternalApi
 import com.chattriggers.ctjs.utils.asMixin
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
-import net.fabricmc.fabric.impl.client.keybinding.KeyBindingRegistryImpl
 import net.minecraft.client.option.KeyBinding
 import net.minecraft.client.resource.language.I18n
 import org.apache.commons.lang3.ArrayUtils
@@ -55,7 +55,14 @@ class KeyBind {
             }
             uniqueCategories[category] = uniqueCategories[category]!! + 1
             keyBinding = KeyBinding(description, keyCode, category)
-            addRawKeyBinding(keyBinding)
+
+            // We need to update the bound key for the KeyBind we just made to the previous binding,
+            // just in case it existed last time the game was opened. This will only matter for the first
+            // time launching the game, as subsequent CT loads will cause possibleDuplicate to be found.
+            Client.getMinecraft().options.asMixin<BoundKeyUpdater>().ctjs_updateBoundKey(keyBinding)
+            KeyBinding.updateKeysByCode()
+
+            addKeyBinding(keyBinding)
             customKeyBindings.add(keyBinding)
         }
     }
@@ -184,7 +191,10 @@ class KeyBind {
         }
 
         private fun removeKeyBinding(keyBinding: KeyBinding) {
-            removeRawKeyBinding(keyBinding)
+            Client.getMinecraft().options.asMixin<GameOptionsAccessor>().setAllKeys(ArrayUtils.removeElement(
+                Client.getMinecraft().options.allKeys,
+                keyBinding
+            ))
             val category = keyBinding.category
 
             if (category in uniqueCategories) {
@@ -206,7 +216,7 @@ class KeyBind {
             keyBinds.remove(keyBind)
         }
 
-        private fun addRawKeyBinding(keyBinding: KeyBinding) {
+        internal fun addKeyBinding(keyBinding: KeyBinding): KeyBinding {
             Client.getMinecraft().options.asMixin<GameOptionsAccessor>().setAllKeys(ArrayUtils.add(
                 Client.getMinecraft().options.allKeys,
                 keyBinding
@@ -215,13 +225,8 @@ class KeyBind {
             val categoryMap = KeyBindingAccessor.getCategoryMap()
             val maxInt = categoryMap.values.max() ?: 0
             categoryMap[keyBinding.category] = maxInt + 1
-        }
 
-        private fun removeRawKeyBinding(keyBinding: KeyBinding) {
-            Client.getMinecraft().options.asMixin<GameOptionsAccessor>().setAllKeys(ArrayUtils.removeElement(
-                Client.getMinecraft().options.allKeys,
-                keyBinding
-            ))
+            return keyBinding
         }
     }
 }
