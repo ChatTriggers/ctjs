@@ -21,21 +21,23 @@ import kotlin.concurrent.thread
 
 internal class CTJS : ClientModInitializer {
     override fun onInitializeClient() {
-        Client.referenceSystemTime = System.nanoTime()
+        Client.getMinecraft().send {
+            Client.referenceSystemTime = System.nanoTime()
 
-        Initializer.initializers.forEach(Initializer::init)
+            Initializer.initializers.forEach(Initializer::init)
 
-        thread {
-            ModuleManager.entryPass()
-            reportHashedUUID()
+            thread {
+                ModuleManager.entryPass()
+                reportHashedUUID()
+            }
+
+            Config.loadData()
+
+            Runtime.getRuntime().addShutdownHook(Thread {
+                TriggerType.GAME_UNLOAD.triggerAll()
+                ConsoleManager.closeConsoles()
+            })
         }
-
-        Config.loadData()
-
-        Runtime.getRuntime().addShutdownHook(Thread {
-            TriggerType.GAME_UNLOAD.triggerAll()
-            ConsoleManager.closeConsoles()
-        })
     }
 
     private fun reportHashedUUID() {

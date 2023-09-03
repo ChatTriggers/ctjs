@@ -2,11 +2,9 @@ package com.chattriggers.ctjs.console
 
 import com.chattriggers.ctjs.engine.js.JSLoader
 import com.chattriggers.ctjs.minecraft.CTEvents
-import com.chattriggers.ctjs.minecraft.wrappers.Client
+import com.chattriggers.ctjs.minecraft.objects.KeyBind
 import com.chattriggers.ctjs.utils.Config
 import com.chattriggers.ctjs.utils.Initializer
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper
 import net.minecraft.client.option.KeyBinding
 import net.minecraft.client.util.InputUtil
 import org.lwjgl.glfw.GLFW
@@ -19,14 +17,14 @@ object ConsoleManager : Initializer {
     private val keyBinds = mutableMapOf<Console, KeyBinding>()
 
     override fun init() {
-        keyBinds[generalConsole] = KeyBindingHelper.registerKeyBinding(KeyBinding(
+        keyBinds[generalConsole] = KeyBind.addKeyBinding(KeyBinding(
             "chattriggers.key.binding.console.general",
             InputUtil.Type.KEYSYM,
             GLFW.GLFW_KEY_UNKNOWN,
             "chattriggers.key.category.console",
         ))
 
-        keyBinds[jsConsole] = KeyBindingHelper.registerKeyBinding(KeyBinding(
+        keyBinds[jsConsole] = KeyBind.addKeyBinding(KeyBinding(
             "chattriggers.key.binding.console.js",
             InputUtil.Type.KEYSYM,
             GLFW.GLFW_KEY_GRAVE_ACCENT,

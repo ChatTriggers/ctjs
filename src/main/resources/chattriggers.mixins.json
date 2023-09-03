@@ -23,6 +23,7 @@
         "EntityRenderDispatcherAccessor",
         "EntityRenderDispatcherMixin",
         "GameOptionsAccessor",
+        "GameOptionsMixin",
         "GameRendererMixin",
         "HandledScreenAccessor",
         "HandledScreenMixin",
