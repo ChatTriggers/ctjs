@@ -123,7 +123,10 @@ Here is a list of targeted changes for various different APIs:
   - Renamed `fromMCEnumFacing()` to `fromMC()`
   - Enum values are now UPPER_CASE
 - `BlockType`: Removed `getDefaultMetadata()` and `getHarvestLevel()`
-- Remove `Scoreboard.getScoreboardTitle()` in favor of the less verbose `Scoreboard.getTitle()`
+- `Scoreboard`
+  - Remove `Scoreboard.getScoreboardTitle()` in favor of the less verbose `Scoreboard.getTitle()`
+  - `Scoreboard.getTitle()` now returns `TextComponent` instead of `String`
+  - `Score.getName()` now returns `TextComponent` instead of `String`
 - `Book` now uses `TextComponent` instead of `Message`
 - `Settings`
   - Renamed all methods in the `skin` object to indicate they return whether the part is enabled, not the actual part themselves (i.e. `getCape()` -> `isCapeEnabled()`)

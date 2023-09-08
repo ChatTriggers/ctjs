@@ -3,6 +3,7 @@ package com.chattriggers.ctjs.minecraft.wrappers
 import com.chattriggers.ctjs.minecraft.objects.TextComponent
 import com.chattriggers.ctjs.utils.MCScoreboard
 import com.chattriggers.ctjs.utils.MCTeam
+import gg.essential.universal.utils.MCITextComponent
 import net.minecraft.scoreboard.ScoreboardObjective
 import net.minecraft.scoreboard.ScoreboardPlayerScore
 
@@ -17,7 +18,7 @@ object Scoreboard : CTWrapper<MCScoreboard?> {
     @Deprecated("Use toMC", ReplaceWith("toMC()"))
     fun getScoreboard() = toMC()
 
-    fun getSidebar(): ScoreboardObjective? = toMC()?.getObjectiveForSlot(1)
+    fun getSidebar(): ScoreboardObjective? = toMC()?.objectives?.firstOrNull()
 
     /**
      * Gets the top-most string which is displayed on the scoreboard. (doesn't have a score on the side).
@@ -25,13 +26,13 @@ object Scoreboard : CTWrapper<MCScoreboard?> {
      *
      * @return the scoreboard title
      */
-    fun getTitle(): String {
+    fun getTitle(): TextComponent {
         if (needsUpdate) {
             updateNames()
             needsUpdate = false
         }
 
-        return scoreboardTitle.formattedText
+        return scoreboardTitle
     }
 
     /**
@@ -107,6 +108,10 @@ object Scoreboard : CTWrapper<MCScoreboard?> {
         scoreboard.getPlayerScore(line, sidebarObjective).score = score
     }
 
+    fun setLine(score: Int, line: TextComponent, override: Boolean) {
+        setLine(score, line.formattedText, override)
+    }
+
     fun setShouldRender(shouldRender: Boolean) {
         this.shouldRender = shouldRender
     }
@@ -118,10 +123,12 @@ object Scoreboard : CTWrapper<MCScoreboard?> {
         scoreboardTitle = TextComponent("")
 
         val scoreboard = toMC() ?: return
-        val sidebarObjective = getSidebar() ?: return
-        scoreboardTitle = TextComponent(sidebarObjective.displayName)
+        val objective = scoreboard.objectives.singleOrNull() ?: return
 
-        scoreboardNames = scoreboard.getAllPlayerScores(sidebarObjective).map(::Score).toMutableList()
+        scoreboardTitle = TextComponent(objective.displayName)
+        scoreboardNames = scoreboard.getAllPlayerScores(objective).filter {
+            it.playerName != null && !it.playerName.startsWith("#")
+        }.map(::Score).toMutableList()
     }
 
     fun resetCache() {
@@ -143,10 +150,10 @@ object Scoreboard : CTWrapper<MCScoreboard?> {
          * @return the display name
          */
         fun getName() = TextComponent(MCTeam.decorateName(
-            Scoreboard.toMC()!!.getTeam(mcValue.playerName),
+            Scoreboard.toMC()!!.getPlayerTeam(mcValue.playerName),
             TextComponent(mcValue.playerName),
-        )).formattedText
+        ))
 
-        override fun toString(): String = getName()
+        override fun toString(): String = getName().formattedText
     }
 }

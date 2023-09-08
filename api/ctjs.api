@@ -1173,8 +1173,9 @@ public final class com/chattriggers/ctjs/minecraft/wrappers/Scoreboard : com/cha
 	public final fun getScoreboard ()Lnet/minecraft/scoreboard/Scoreboard;
 	public final fun getShouldRender ()Z
 	public final fun getSidebar ()Lnet/minecraft/scoreboard/ScoreboardObjective;
-	public final fun getTitle ()Ljava/lang/String;
+	public final fun getTitle ()Lcom/chattriggers/ctjs/minecraft/objects/TextComponent;
 	public final fun resetCache ()V
+	public final fun setLine (ILcom/chattriggers/ctjs/minecraft/objects/TextComponent;Z)V
 	public final fun setLine (ILjava/lang/String;Z)V
 	public final fun setShouldRender (Z)V
 	public final fun setTitle (Lcom/chattriggers/ctjs/minecraft/objects/TextComponent;)V
@@ -1187,7 +1188,7 @@ public final class com/chattriggers/ctjs/minecraft/wrappers/Scoreboard$Score : c
 	public fun <init> (Lnet/minecraft/scoreboard/ScoreboardPlayerScore;)V
 	public synthetic fun getMcValue ()Ljava/lang/Object;
 	public fun getMcValue ()Lnet/minecraft/scoreboard/ScoreboardPlayerScore;
-	public final fun getName ()Ljava/lang/String;
+	public final fun getName ()Lcom/chattriggers/ctjs/minecraft/objects/TextComponent;
 	public final fun getPoints ()I
 	public synthetic fun toMC ()Ljava/lang/Object;
 	public fun toMC ()Lnet/minecraft/scoreboard/ScoreboardPlayerScore;
