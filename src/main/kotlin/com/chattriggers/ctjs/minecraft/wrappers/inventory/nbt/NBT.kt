@@ -25,6 +25,7 @@ object NBT {
      * @return [NBTTagCompound] if [nbt] is an object, [NBTTagList] if [nbt]
      * is an array and preferArraysOverLists is false, or [NBTBase] otherwise.
      */
+    @JvmStatic
     @JvmOverloads
     fun parse(nbt: Any, options: NativeObject? = null): NBTBase {
         return when (nbt) {
@@ -42,8 +43,10 @@ object NBT {
         }
     }
 
+    @JvmStatic
     fun toObject(nbt: NBTTagCompound): NativeObject = nbt.toObject()
 
+    @JvmStatic
     fun toArray(nbt: NBTTagList): NativeArray = nbt.toArray()
 
     private fun Any.toNBT(options: NativeObject?): MCNbtBase {

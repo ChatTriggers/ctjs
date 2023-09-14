@@ -23,8 +23,9 @@ import net.minecraft.util.math.Vec2f
 import org.mozilla.javascript.NativeObject
 import java.util.*
 
-object Player : CTWrapper<ClientPlayerEntity?> {
-    override val mcValue get() = UMinecraft.getMinecraft().player
+object Player {
+    @JvmStatic
+    fun toMC() = UMinecraft.getMinecraft().player
 
     @JvmField
     val armor = ArmorWrapper()
@@ -35,32 +36,46 @@ object Player : CTWrapper<ClientPlayerEntity?> {
      * @return The Minecraft EntityPlayerSP object representing the user
      */
     @Deprecated("Use toMC", ReplaceWith("toMC()"))
+    @JvmStatic
     fun getPlayer() = toMC()
 
+    @JvmStatic
     fun getTeam(): Team? = Scoreboard.toMC()?.getPlayerTeam(getName())?.let(::Team)
 
+    @JvmStatic
     fun asPlayerMP(): PlayerMP? = toMC()?.let(::PlayerMP)
 
+    @JvmStatic
     fun getX(): Double = toMC()?.x ?: 0.0
 
+    @JvmStatic
     fun getY(): Double = toMC()?.y ?: 0.0
 
+    @JvmStatic
     fun getZ(): Double = toMC()?.z ?: 0.0
 
+    @JvmStatic
     fun getPos(): BlockPos = BlockPos(getX(), getY(), getZ())
 
+    @JvmStatic
     fun getRotation() = toMC()?.rotationClient ?: Vec2f(0f, 0f)
 
+    @JvmStatic
     fun getLastX(): Double = toMC()?.lastRenderX ?: 0.0
 
+    @JvmStatic
     fun getLastY(): Double = toMC()?.lastRenderY ?: 0.0
 
+    @JvmStatic
     fun getLastZ(): Double = toMC()?.lastRenderZ ?: 0.0
 
+    @JvmStatic
     fun getRenderX(): Double = getLastX() + (getX() - getLastX()) * Renderer.partialTicks
 
+    @JvmStatic
     fun getRenderY(): Double = getLastY() + (getY() - getLastY()) * Renderer.partialTicks
 
+    @JvmStatic
     fun getRenderZ(): Double = getLastZ() + (getZ() - getLastZ()) * Renderer.partialTicks
 
     /**
@@ -69,6 +84,7 @@ object Player : CTWrapper<ClientPlayerEntity?> {
      *
      * @return the player's x motion
      */
+    @JvmStatic
     fun getMotionX(): Double = toMC()?.velocity?.x ?: 0.0
 
     /**
@@ -77,6 +93,7 @@ object Player : CTWrapper<ClientPlayerEntity?> {
      *
      * @return the player's y motion
      */
+    @JvmStatic
     fun getMotionY(): Double = toMC()?.velocity?.y ?: 0.0
 
     /**
@@ -85,6 +102,7 @@ object Player : CTWrapper<ClientPlayerEntity?> {
      *
      * @return the player's z motion
      */
+    @JvmStatic
     fun getMotionZ(): Double = toMC()?.velocity?.z ?: 0.0
 
     /**
@@ -92,6 +110,7 @@ object Player : CTWrapper<ClientPlayerEntity?> {
      *
      * @return the player's camera pitch
      */
+    @JvmStatic
     fun getPitch(): Double = UMath.wrapAngleTo180(toMC()?.pitch?.toDouble() ?: 0.0)
 
     /**
@@ -99,6 +118,7 @@ object Player : CTWrapper<ClientPlayerEntity?> {
      *
      * @return the player's camera yaw
      */
+    @JvmStatic
     fun getYaw(): Double = UMath.wrapAngleTo180(toMC()?.yaw?.toDouble() ?: 0.0)
 
     /**
@@ -106,6 +126,7 @@ object Player : CTWrapper<ClientPlayerEntity?> {
      *
      * @return the player's username
      */
+    @JvmStatic
     fun getName(): String = UMinecraft.getMinecraft().session.username
 
     /**
@@ -114,14 +135,19 @@ object Player : CTWrapper<ClientPlayerEntity?> {
      *
      * @return the player's uuid
      */
+    @JvmStatic
     fun getUUID(): UUID = UMinecraft.getMinecraft().session.profile.id
 
+    @JvmStatic
     fun getHP(): Float = toMC()?.health ?: 0f
 
+    @JvmStatic
     fun getHunger(): Int = toMC()?.hungerManager?.foodLevel ?: 0
 
+    @JvmStatic
     fun getSaturation(): Float = toMC()?.hungerManager?.saturationLevel ?: 0f
 
+    @JvmStatic
     fun getArmorPoints(): Int = toMC()?.armor ?: 0
 
     /**
@@ -133,12 +159,16 @@ object Player : CTWrapper<ClientPlayerEntity?> {
      *
      * @return the player's air level
      */
+    @JvmStatic
     fun getAirLevel(): Int = toMC()?.air ?: 0
 
+    @JvmStatic
     fun getXPLevel(): Int = toMC()?.experienceLevel ?: 0
 
+    @JvmStatic
     fun getXPProgress(): Float = toMC()?.experienceProgress ?: 0f
 
+    @JvmStatic
     fun getBiome(): String {
         val pos = toMC()?.blockPos ?: return ""
         val biomeEntry = World.toMC()?.getBiome(pos) ?: return ""
@@ -151,12 +181,16 @@ object Player : CTWrapper<ClientPlayerEntity?> {
      *
      * @return the light level at the player's current position
      */
+    @JvmStatic
     fun getLightLevel(): Int = World.toMC()?.getLightLevel(toMC()?.blockPos) ?: 0
 
+    @JvmStatic
     fun isMoving(): Boolean = toMC()?.movementSpeed?.let { it != 0f } ?: false
 
+    @JvmStatic
     fun isSneaking(): Boolean = toMC()?.isSneaking ?: false
 
+    @JvmStatic
     fun isSprinting(): Boolean = toMC()?.isSprinting ?: false
 
     /**
@@ -164,8 +198,10 @@ object Player : CTWrapper<ClientPlayerEntity?> {
      *
      * @return true if the player is flying, false otherwise
      */
+    @JvmStatic
     fun isFlying(): Boolean = toMC()?.abilities?.flying ?: false
 
+    @JvmStatic
     fun isSleeping(): Boolean = toMC()?.isSleeping ?: false
 
     /**
@@ -174,6 +210,7 @@ object Player : CTWrapper<ClientPlayerEntity?> {
      *
      * @return The direction the player is facing, one of the four cardinal directions
      */
+    @JvmStatic
     fun facing(): String {
         if (toMC() == null) return ""
 
@@ -198,6 +235,7 @@ object Player : CTWrapper<ClientPlayerEntity?> {
      *
      * @return a list of the active [PotionEffect]s
      */
+    @JvmStatic
     fun getActivePotionEffects(): List<PotionEffect> = toMC()?.activeStatusEffects?.values?.map(::PotionEffect).orEmpty()
 
     /**
@@ -207,6 +245,7 @@ object Player : CTWrapper<ClientPlayerEntity?> {
      *
      * @return the [Block] or [Entity] being looked at, or null if air
      */
+    @JvmStatic
     fun lookingAt(): Any? {
         val target = Client.getMinecraft().crosshairTarget
 
@@ -230,6 +269,7 @@ object Player : CTWrapper<ClientPlayerEntity?> {
      * @return the current held [Item]
      */
     @JvmOverloads
+    @JvmStatic
     fun getHeldItem(hand: Hand = Hand.MAIN_HAND): Item? {
         return toMC()?.getStackInHand(hand)?.let(Item::fromMC)
     }
@@ -239,6 +279,7 @@ object Player : CTWrapper<ClientPlayerEntity?> {
      *
      * @param index the new held item index
      */
+    @JvmStatic
     fun setHeldItemIndex(index: Int) {
         toMC()?.inventory?.selectedSlot = index
     }
@@ -248,6 +289,7 @@ object Player : CTWrapper<ClientPlayerEntity?> {
      *
      * @return the current index
      */
+    @JvmStatic
     fun getHeldItemIndex(): Int = toMC()?.inventory?.selectedSlot ?: -1
 
     /**
@@ -255,6 +297,7 @@ object Player : CTWrapper<ClientPlayerEntity?> {
      *
      * @return the player's inventory
      */
+    @JvmStatic
     fun getInventory(): Inventory? = toMC()?.inventory?.let(::Inventory)
 
     /**
@@ -262,6 +305,7 @@ object Player : CTWrapper<ClientPlayerEntity?> {
      * i.e. the name shown in tab list and in the player's nametag.
      * @return the display name
      */
+    @JvmStatic
     fun getDisplayName(): TextComponent = asPlayerMP()?.getDisplayName() ?: TextComponent("")
 
     /**
@@ -269,6 +313,7 @@ object Player : CTWrapper<ClientPlayerEntity?> {
      *
      * @param textComponent the new name to display
      */
+    @JvmStatic
     fun setTabDisplayName(textComponent: TextComponent) {
         asPlayerMP()?.setTabDisplayName(textComponent)
     }
@@ -279,6 +324,7 @@ object Player : CTWrapper<ClientPlayerEntity?> {
      *
      * @param textComponent the new name to display
      */
+    @JvmStatic
     fun setNametagName(textComponent: TextComponent) {
         asPlayerMP()?.setNametagName(textComponent)
     }
@@ -288,6 +334,7 @@ object Player : CTWrapper<ClientPlayerEntity?> {
      *
      * @return the currently opened container
      */
+    @JvmStatic
     fun getContainer(): Inventory? = (Client.getMinecraft().currentScreen as? HandledScreen<*>)?.let(::Inventory)
 
     /**
@@ -296,6 +343,7 @@ object Player : CTWrapper<ClientPlayerEntity?> {
      *
      * @see Renderer.drawPlayer
      */
+    @JvmStatic
     fun draw(obj: NativeObject) = apply {
         obj["player"] = this
         Renderer.drawPlayer(obj)

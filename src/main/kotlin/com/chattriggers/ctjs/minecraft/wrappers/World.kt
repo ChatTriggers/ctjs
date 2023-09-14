@@ -22,8 +22,8 @@ import net.minecraft.particle.ParticleType
 import net.minecraft.registry.Registries
 import net.minecraft.world.LightType
 
-object World : CTWrapper<ClientWorld?> {
-    override val mcValue get() = UMinecraft.getMinecraft().world
+object World {
+    fun toMC() = UMinecraft.getMinecraft().world
 
     @JvmField
     val spawn = SpawnWrapper()
@@ -40,18 +40,25 @@ object World : CTWrapper<ClientWorld?> {
      * @return The Minecraft [ClientWorld] object
      */
     @Deprecated("Use toMC", ReplaceWith("toMC()"))
+    @JvmStatic
     fun getWorld(): ClientWorld? = toMC()
 
+    @JvmStatic
     fun isLoaded(): Boolean = toMC() != null
 
+    @JvmStatic
     fun isRaining(): Boolean = toMC()?.isRaining ?: false
 
+    @JvmStatic
     fun getRainingStrength(): Float = toMC()?.getRainGradient(Renderer.partialTicks) ?: -1f
 
+    @JvmStatic
     fun getTime(): Long = toMC()?.time ?: -1L
 
+    @JvmStatic
     fun getDifficulty(): Settings.Difficulty? = toMC()?.difficulty?.let(Settings.Difficulty::fromMC)
 
+    @JvmStatic
     fun getMoonPhase(): Int = toMC()?.moonPhase ?: -1
 
     /**
@@ -62,6 +69,7 @@ object World : CTWrapper<ClientWorld?> {
      * @param z the z position
      * @return the [Block] at the location
      */
+    @JvmStatic
     fun getBlockAt(x: Number, y: Number, z: Number) = getBlockAt(BlockPos(x, y, z))
 
     /**
@@ -70,6 +78,7 @@ object World : CTWrapper<ClientWorld?> {
      * @param pos The block position
      * @return the [Block] at the location
      */
+    @JvmStatic
     fun getBlockAt(pos: BlockPos): Block {
         return Block(BlockType(getBlockStateAt(pos).block), pos)
     }
@@ -80,6 +89,7 @@ object World : CTWrapper<ClientWorld?> {
      * @param pos The block position
      * @return the [BlockState] at the location
      */
+    @JvmStatic
     fun getBlockStateAt(pos: BlockPos): BlockState {
         return toMC()!!.getBlockState(pos.toMC())
     }
@@ -92,6 +102,7 @@ object World : CTWrapper<ClientWorld?> {
      * @param z the z coordinate
      * @return the skylight level at the location
      */
+    @JvmStatic
     fun getSkyLightLevel(x: Int, y: Int, z: Int): Int = getSkyLightLevel(BlockPos(x, y, z))
 
     /**
@@ -100,6 +111,7 @@ object World : CTWrapper<ClientWorld?> {
      * @param pos The block position
      * @return the skylight level at the location
      */
+    @JvmStatic
     fun getSkyLightLevel(pos: BlockPos): Int {
         return toMC()?.getLightLevel(LightType.SKY, pos.toMC()) ?: 0
     }
@@ -112,6 +124,7 @@ object World : CTWrapper<ClientWorld?> {
      * @param z the z coordinate
      * @return the block light level at the location
      */
+    @JvmStatic
     fun getBlockLightLevel(x: Int, y: Int, z: Int): Int = getBlockLightLevel(BlockPos(x, y, z))
 
     /**
@@ -120,6 +133,7 @@ object World : CTWrapper<ClientWorld?> {
      * @param pos The block position
      * @return the block light level at the location
      */
+    @JvmStatic
     fun getBlockLightLevel(pos: BlockPos): Int {
         return toMC()?.getLightLevel(LightType.BLOCK, pos.toMC()) ?: 0
     }
@@ -129,6 +143,7 @@ object World : CTWrapper<ClientWorld?> {
      *
      * @return the players
      */
+    @JvmStatic
     fun getAllPlayers(): List<PlayerMP> = toMC()?.players?.map(::PlayerMP) ?: listOf()
 
     /**
@@ -137,12 +152,16 @@ object World : CTWrapper<ClientWorld?> {
      * @param name the username
      * @return the player with said username, or null if they don't exist.
      */
+    @JvmStatic
     fun getPlayerByName(name: String) = getAllPlayers().firstOrNull { it.getName() == name }
 
+    @JvmStatic
     fun hasPlayer(name: String) = getPlayerByName(name) != null
 
+    @JvmStatic
     fun getChunk(x: Int, y: Int, z: Int) = Chunk(toMC()!!.getWorldChunk(MCBlockPos(x, y, z)))
 
+    @JvmStatic
     fun getAllEntities() = toMC()?.entities?.map(Entity::fromMC) ?: listOf()
 
     /**
@@ -151,12 +170,14 @@ object World : CTWrapper<ClientWorld?> {
      * @param clazz the class to filter for (Use `Java.type().class` to get this)
      * @return the entity list
      */
+    @JvmStatic
     fun getAllEntitiesOfType(clazz: Class<*>): List<Entity> {
         return getAllEntities().filter {
             clazz.isInstance(it.toMC())
         }
     }
 
+    @JvmStatic
     fun getAllBlockEntities(): List<BlockEntity> {
         val chunks = toMC()
             ?.asMixin<ClientWorldAccessor>()
@@ -173,6 +194,7 @@ object World : CTWrapper<ClientWorld?> {
         return blockEntities
     }
 
+    @JvmStatic
     fun getAllBlockEntitiesOfType(clazz: Class<*>): List<BlockEntity> {
         return getAllBlockEntities().filter {
             clazz.isInstance(it.toMC())

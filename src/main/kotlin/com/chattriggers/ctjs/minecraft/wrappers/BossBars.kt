@@ -12,15 +12,16 @@ import net.minecraft.client.gui.hud.ClientBossBar
 import org.mozilla.javascript.NativeObject
 import java.util.UUID
 
-object BossBars : CTWrapper<BossBarHud> {
-    override val mcValue: BossBarHud
-        get() = Client.getMinecraft().inGameHud.bossBarHud
+object BossBars {
+    @JvmStatic
+    fun toMC() = Client.getMinecraft().inGameHud.bossBarHud
 
     /**
      * Gets the list of currently shown [BossBar]s
      *
      * @return the currently displayed [BossBar]s
      */
+    @JvmStatic
     fun getBossBars(): List<BossBar> {
         return toMC().asMixin<BossBarHudAccessor>().bossBars.values.map(::BossBar)
     }
@@ -31,6 +32,7 @@ object BossBars : CTWrapper<BossBarHud> {
      * @param name the name to match
      * @return the [BossBar]s
      */
+    @JvmStatic
     fun getBossBarsByName(name: String): List<BossBar> {
         return getBossBars().filter { it.getName() == name }
     }
@@ -52,6 +54,7 @@ object BossBars : CTWrapper<BossBarHud> {
      *
      * @return the [BossBar] for further modification
      */
+    @JvmStatic
     fun addBossBar(obj: NativeObject): BossBar {
         val name = obj.getOption("name", "")
         val percent = obj.getOption("percent", 1f).toFloat().coerceIn(0f..1f)
@@ -82,6 +85,7 @@ object BossBars : CTWrapper<BossBarHud> {
     /**
      * Clears all [BossBar]s on screen
      */
+    @JvmStatic
     fun clearBossBars() {
         toMC().clear()
     }
@@ -91,6 +95,7 @@ object BossBars : CTWrapper<BossBarHud> {
      *
      * @param name the name to match
      */
+    @JvmStatic
     fun removeBossBarsByName(name: String) {
         toMC().asMixin<BossBarHudAccessor>().bossBars.values.removeIf {
             TextComponent(it.name).formattedText == ChatLib.addColor(name)
@@ -102,6 +107,7 @@ object BossBars : CTWrapper<BossBarHud> {
      *
      * @param bossBar the BossBar to remove
      */
+    @JvmStatic
     fun removeBossBar(bossBar: BossBar) {
         toMC().asMixin<BossBarHudAccessor>().bossBars.remove(bossBar.getUUID())
     }

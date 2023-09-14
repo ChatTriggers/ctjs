@@ -10,6 +10,7 @@ import java.io.File
 import kotlin.reflect.KProperty
 
 object Config : Vigilant(File(CTJS.configLocation, "ChatTriggers.toml"), sortingBehavior = CategorySorting) {
+    @JvmStatic
     @Property(
         PropertyType.SWITCH,
         name = "Show module help on import",
@@ -18,6 +19,7 @@ object Config : Vigilant(File(CTJS.configLocation, "ChatTriggers.toml"), sorting
     )
     var moduleImportHelp = true
 
+    @JvmStatic
     @Property(
         PropertyType.SWITCH,
         name = "Show module changelog on update",
@@ -26,6 +28,7 @@ object Config : Vigilant(File(CTJS.configLocation, "ChatTriggers.toml"), sorting
     )
     var moduleChangelog = true
 
+    @JvmStatic
     @Property(
         PropertyType.SWITCH,
         name = "Print chat to console",
@@ -34,6 +37,7 @@ object Config : Vigilant(File(CTJS.configLocation, "ChatTriggers.toml"), sorting
     )
     var printChatToConsole = true
 
+    @JvmStatic
     @Property(
         PropertyType.SWITCH,
         name = "Show updates in chat",
@@ -42,6 +46,7 @@ object Config : Vigilant(File(CTJS.configLocation, "ChatTriggers.toml"), sorting
     )
     var showUpdatesInChat = true
 
+    @JvmStatic
     @Property(
         PropertyType.SWITCH,
         name = "Auto-update modules",
@@ -50,6 +55,7 @@ object Config : Vigilant(File(CTJS.configLocation, "ChatTriggers.toml"), sorting
     )
     var autoUpdateModules = true
 
+    @JvmStatic
     @Property(
         PropertyType.SWITCH,
         name = "Clear console on CT load",
@@ -57,6 +63,7 @@ object Config : Vigilant(File(CTJS.configLocation, "ChatTriggers.toml"), sorting
     )
     var clearConsoleOnLoad = true
 
+    @JvmStatic
     @Property(
         PropertyType.SWITCH,
         name = "Open console on error",
@@ -65,6 +72,7 @@ object Config : Vigilant(File(CTJS.configLocation, "ChatTriggers.toml"), sorting
     )
     var openConsoleOnError = false
 
+    @JvmStatic
     @Property(
         PropertyType.SWITCH,
         name = "Use Fira Code font for console",
@@ -72,6 +80,7 @@ object Config : Vigilant(File(CTJS.configLocation, "ChatTriggers.toml"), sorting
     )
     var consoleFiraCodeFont = true
 
+    @JvmStatic
     @Property(
         PropertyType.NUMBER,
         name = "Console font size",
@@ -81,6 +90,7 @@ object Config : Vigilant(File(CTJS.configLocation, "ChatTriggers.toml"), sorting
     )
     var consoleFontSize = 12
 
+    @JvmStatic
     @Property(
         PropertyType.SWITCH,
         name = "Use custom console theme",
@@ -88,6 +98,7 @@ object Config : Vigilant(File(CTJS.configLocation, "ChatTriggers.toml"), sorting
     )
     var customTheme = false
 
+    @JvmStatic
     @Property(
         PropertyType.SELECTOR,
         name = "Console theme",
@@ -111,6 +122,7 @@ object Config : Vigilant(File(CTJS.configLocation, "ChatTriggers.toml"), sorting
     )
     var consoleTheme = 0
 
+    @JvmStatic
     @Property(
         PropertyType.COLOR,
         name = "Console Text color",
@@ -118,6 +130,7 @@ object Config : Vigilant(File(CTJS.configLocation, "ChatTriggers.toml"), sorting
     )
     var consoleTextColor = Color(208, 208, 208)
 
+    @JvmStatic
     @Property(
         PropertyType.COLOR,
         name = "Console background color",
@@ -125,6 +138,7 @@ object Config : Vigilant(File(CTJS.configLocation, "ChatTriggers.toml"), sorting
     )
     var consoleBackgroundColor = Color(21, 21, 21)
 
+    @JvmStatic
     @Property(
         PropertyType.COLOR,
         name = "Console error color",
@@ -132,6 +146,7 @@ object Config : Vigilant(File(CTJS.configLocation, "ChatTriggers.toml"), sorting
     )
     var consoleErrorColor = Color(225, 65, 73)
 
+    @JvmStatic
     @Property(
         PropertyType.COLOR,
         name = "Console warning color",
