@@ -7,17 +7,20 @@ import gg.essential.universal.utils.MCITextComponent
 import net.minecraft.scoreboard.ScoreboardObjective
 import net.minecraft.scoreboard.ScoreboardPlayerScore
 
-object Scoreboard : CTWrapper<MCScoreboard?> {
+object Scoreboard {
     private var needsUpdate = true
     private var scoreboardNames = mutableListOf<Score>()
     private var scoreboardTitle = TextComponent("")
     private var shouldRender = true
 
-    override val mcValue get() = World.toMC()?.scoreboard
+    @JvmStatic
+    fun toMC() = World.toMC()?.scoreboard
 
     @Deprecated("Use toMC", ReplaceWith("toMC()"))
+    @JvmStatic
     fun getScoreboard() = toMC()
 
+    @JvmStatic
     fun getSidebar(): ScoreboardObjective? = toMC()?.objectives?.firstOrNull()
 
     /**
@@ -26,6 +29,7 @@ object Scoreboard : CTWrapper<MCScoreboard?> {
      *
      * @return the scoreboard title
      */
+    @JvmStatic
     fun getTitle(): TextComponent {
         if (needsUpdate) {
             updateNames()
@@ -41,10 +45,12 @@ object Scoreboard : CTWrapper<MCScoreboard?> {
      * @param title the new title
      * @return the scoreboard title
      */
+    @JvmStatic
     fun setTitle(title: TextComponent) {
         getSidebar()?.displayName = title
     }
 
+    @JvmStatic
     fun setTitle(title: String) = setTitle(TextComponent(title))
 
     /**
@@ -53,6 +59,7 @@ object Scoreboard : CTWrapper<MCScoreboard?> {
      *
      * @return the list of lines
      */
+    @JvmStatic
     @JvmOverloads
     fun getLines(descending: Boolean = true): List<Score> {
         // the array will only be updated upon request
@@ -71,6 +78,7 @@ object Scoreboard : CTWrapper<MCScoreboard?> {
      * @param index the line index
      * @return the score object at the index
      */
+    @JvmStatic
     fun getLineByIndex(index: Int): Score = getLines()[index]
 
     /**
@@ -80,6 +88,7 @@ object Scoreboard : CTWrapper<MCScoreboard?> {
      * @param score the score to look for
      * @return a list of actual score objects
      */
+    @JvmStatic
     fun getLinesByScore(score: Int): List<Score> = getLines().filter {
         it.getPoints() == score
     }
@@ -91,6 +100,7 @@ object Scoreboard : CTWrapper<MCScoreboard?> {
      * @param line the string to display on said line
      * @param override whether to remove old lines with the same score
      */
+    @JvmStatic
     fun setLine(score: Int, line: String, override: Boolean) {
         val scoreboard = toMC() ?: return
         val sidebarObjective = getSidebar() ?: return
@@ -108,14 +118,17 @@ object Scoreboard : CTWrapper<MCScoreboard?> {
         scoreboard.getPlayerScore(line, sidebarObjective).score = score
     }
 
+    @JvmStatic
     fun setLine(score: Int, line: TextComponent, override: Boolean) {
         setLine(score, line.formattedText, override)
     }
 
+    @JvmStatic
     fun setShouldRender(shouldRender: Boolean) {
         this.shouldRender = shouldRender
     }
 
+    @JvmStatic
     fun getShouldRender() = shouldRender
 
     private fun updateNames() {
@@ -131,11 +144,13 @@ object Scoreboard : CTWrapper<MCScoreboard?> {
         }.map(::Score).toMutableList()
     }
 
-    fun resetCache() {
+    internal fun resetCache() {
         needsUpdate = true
     }
 
-    class Score(override val mcValue: ScoreboardPlayerScore) : CTWrapper<ScoreboardPlayerScore> {
+    class Score(private val mcValue: ScoreboardPlayerScore) {
+        fun toMC() = mcValue
+
         /**
          * Gets the score point value for this score,
          * i.e. the number on the right of the board

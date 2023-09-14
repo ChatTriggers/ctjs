@@ -235,117 +235,117 @@ public final class com/chattriggers/ctjs/commands/DynamicCommands$PosArgumentWra
 
 public final class com/chattriggers/ctjs/engine/Register {
 	public static final field INSTANCE Lcom/chattriggers/ctjs/engine/Register;
-	public final fun createCustomTrigger (Ljava/lang/String;)Ljava/lang/Object;
-	public final fun register (Ljava/lang/String;Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
-	public final fun registerActionBar (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
-	public final fun registerChat (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
-	public final fun registerClicked (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
-	public final fun registerCommand (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
-	public final fun registerDragged (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
-	public final fun registerDrawBlockHighlight (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
-	public final fun registerDropItem (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
-	public final fun registerEntityDamage (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
-	public final fun registerEntityDeath (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
-	public final fun registerGameLoad (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
-	public final fun registerGameUnload (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
-	public final fun registerGuiClosed (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
-	public final fun registerGuiKey (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
-	public final fun registerGuiMouseClick (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
-	public final fun registerGuiMouseDrag (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
-	public final fun registerGuiOpened (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
-	public final fun registerGuiRender (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
-	public final fun registerItemTooltip (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
-	public final fun registerMessageSent (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
-	public final fun registerPacketReceived (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
-	public final fun registerPacketSent (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
-	public final fun registerPlayerInteract (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
-	public final fun registerPostGuiRender (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
-	public final fun registerPostRenderWorld (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
-	public final fun registerPreRenderWorld (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
-	public final fun registerRenderBlockEntity (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
-	public final fun registerRenderEntity (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
-	public final fun registerRenderOverlay (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
-	public final fun registerRenderPlayerList (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
-	public final fun registerRenderWorld (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
-	public final fun registerScrolled (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
-	public final fun registerServerConnect (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
-	public final fun registerServerDisconnect (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
-	public final fun registerSoundPlay (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
-	public final fun registerSpawnParticle (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
-	public final fun registerStep (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
-	public final fun registerTick (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
-	public final fun registerWorldLoad (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
-	public final fun registerWorldUnload (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
+	public static final fun createCustomTrigger (Ljava/lang/String;)Ljava/lang/Object;
+	public static final fun register (Ljava/lang/String;Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
+	public static final fun registerActionBar (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
+	public static final fun registerChat (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
+	public static final fun registerClicked (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
+	public static final fun registerCommand (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
+	public static final fun registerDragged (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
+	public static final fun registerDrawBlockHighlight (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
+	public static final fun registerDropItem (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
+	public static final fun registerEntityDamage (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
+	public static final fun registerEntityDeath (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
+	public static final fun registerGameLoad (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
+	public static final fun registerGameUnload (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
+	public static final fun registerGuiClosed (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
+	public static final fun registerGuiKey (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
+	public static final fun registerGuiMouseClick (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
+	public static final fun registerGuiMouseDrag (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
+	public static final fun registerGuiOpened (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
+	public static final fun registerGuiRender (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
+	public static final fun registerItemTooltip (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
+	public static final fun registerMessageSent (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
+	public static final fun registerPacketReceived (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
+	public static final fun registerPacketSent (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
+	public static final fun registerPlayerInteract (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
+	public static final fun registerPostGuiRender (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
+	public static final fun registerPostRenderWorld (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
+	public static final fun registerPreRenderWorld (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
+	public static final fun registerRenderBlockEntity (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
+	public static final fun registerRenderEntity (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
+	public static final fun registerRenderOverlay (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
+	public static final fun registerRenderPlayerList (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
+	public static final fun registerRenderWorld (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
+	public static final fun registerScrolled (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
+	public static final fun registerServerConnect (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
+	public static final fun registerServerDisconnect (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
+	public static final fun registerSoundPlay (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
+	public static final fun registerSpawnParticle (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
+	public static final fun registerStep (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
+	public static final fun registerTick (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
+	public static final fun registerWorldLoad (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
+	public static final fun registerWorldUnload (Ljava/lang/Object;)Lcom/chattriggers/ctjs/triggers/Trigger;
 }
 
 public final class com/chattriggers/ctjs/minecraft/libs/ChatLib {
 	public static final field INSTANCE Lcom/chattriggers/ctjs/minecraft/libs/ChatLib;
-	public final fun actionBar (Ljava/lang/Object;)V
-	public final fun addColor (Ljava/lang/String;)Ljava/lang/String;
-	public final fun addToSentMessageHistory (ILjava/lang/String;)V
-	public final fun addToSentMessageHistory (Ljava/lang/String;)V
-	public static synthetic fun addToSentMessageHistory$default (Lcom/chattriggers/ctjs/minecraft/libs/ChatLib;ILjava/lang/String;ILjava/lang/Object;)V
-	public final fun chat (Ljava/lang/Object;)V
-	public final fun checkPlayerExists (Ljava/lang/String;)Z
-	public final fun clearChat ()V
-	public final fun command (Ljava/lang/String;)V
-	public final fun command (Ljava/lang/String;Z)V
-	public static synthetic fun command$default (Lcom/chattriggers/ctjs/minecraft/libs/ChatLib;Ljava/lang/String;ZILjava/lang/Object;)V
-	public final fun copyToClipboard (Ljava/lang/String;)V
-	public final fun deleteChat (I)V
-	public final fun deleteChat (Lcom/chattriggers/ctjs/minecraft/objects/Message;)V
-	public final fun deleteChat (Ljava/lang/String;)V
-	public final fun deleteChat (Lorg/mozilla/javascript/regexp/NativeRegExp;)V
-	public final fun editChat (I[Ljava/lang/Object;)V
-	public final fun editChat (Lcom/chattriggers/ctjs/minecraft/objects/Message;[Ljava/lang/Object;)V
-	public final fun editChat (Ljava/lang/String;[Ljava/lang/Object;)V
-	public final fun editChat (Lorg/mozilla/javascript/regexp/NativeRegExp;[Ljava/lang/Object;)V
-	public final fun getCenteredText (Ljava/lang/String;)Ljava/lang/String;
-	public final fun getChatBreak ()Ljava/lang/String;
-	public final fun getChatBreak (Ljava/lang/String;)Ljava/lang/String;
-	public static synthetic fun getChatBreak$default (Lcom/chattriggers/ctjs/minecraft/libs/ChatLib;Ljava/lang/String;ILjava/lang/Object;)Ljava/lang/String;
-	public final fun getChatLines ()Ljava/util/List;
-	public final fun getChatWidth ()I
-	public final fun removeFormatting (Ljava/lang/String;)Ljava/lang/String;
-	public final fun replaceFormatting (Ljava/lang/String;)Ljava/lang/String;
-	public final fun say (Ljava/lang/String;)Lkotlin/Unit;
-	public final fun simulateChat (Ljava/lang/Object;)V
+	public static final fun actionBar (Ljava/lang/Object;)V
+	public static final fun addColor (Ljava/lang/String;)Ljava/lang/String;
+	public static final fun addToSentMessageHistory (ILjava/lang/String;)V
+	public static final fun addToSentMessageHistory (Ljava/lang/String;)V
+	public static synthetic fun addToSentMessageHistory$default (ILjava/lang/String;ILjava/lang/Object;)V
+	public static final fun chat (Ljava/lang/Object;)V
+	public static final fun checkPlayerExists (Ljava/lang/String;)Z
+	public static final fun clearChat ()V
+	public static final fun command (Ljava/lang/String;)V
+	public static final fun command (Ljava/lang/String;Z)V
+	public static synthetic fun command$default (Ljava/lang/String;ZILjava/lang/Object;)V
+	public static final fun copyToClipboard (Ljava/lang/String;)V
+	public static final fun deleteChat (I)V
+	public static final fun deleteChat (Lcom/chattriggers/ctjs/minecraft/objects/Message;)V
+	public static final fun deleteChat (Ljava/lang/String;)V
+	public static final fun deleteChat (Lorg/mozilla/javascript/regexp/NativeRegExp;)V
+	public static final fun editChat (I[Ljava/lang/Object;)V
+	public static final fun editChat (Lcom/chattriggers/ctjs/minecraft/objects/Message;[Ljava/lang/Object;)V
+	public static final fun editChat (Ljava/lang/String;[Ljava/lang/Object;)V
+	public static final fun editChat (Lorg/mozilla/javascript/regexp/NativeRegExp;[Ljava/lang/Object;)V
+	public static final fun getCenteredText (Ljava/lang/String;)Ljava/lang/String;
+	public static final fun getChatBreak ()Ljava/lang/String;
+	public static final fun getChatBreak (Ljava/lang/String;)Ljava/lang/String;
+	public static synthetic fun getChatBreak$default (Ljava/lang/String;ILjava/lang/Object;)Ljava/lang/String;
+	public static final fun getChatLines ()Ljava/util/List;
+	public static final fun getChatWidth ()I
+	public static final fun removeFormatting (Ljava/lang/String;)Ljava/lang/String;
+	public static final fun replaceFormatting (Ljava/lang/String;)Ljava/lang/String;
+	public static final fun say (Ljava/lang/String;)Lkotlin/Unit;
+	public static final fun simulateChat (Ljava/lang/Object;)V
 }
 
 public final class com/chattriggers/ctjs/minecraft/libs/FileLib {
 	public static final field INSTANCE Lcom/chattriggers/ctjs/minecraft/libs/FileLib;
-	public final fun append (Ljava/lang/String;Ljava/lang/String;)V
-	public final fun append (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
-	public final fun decodeBase64 (Ljava/lang/String;)Ljava/lang/String;
-	public final fun delete (Ljava/lang/String;)Z
-	public final fun delete (Ljava/lang/String;Ljava/lang/String;)Z
-	public final fun deleteDirectory (Ljava/io/File;)Z
-	public final fun deleteDirectory (Ljava/lang/String;)Z
-	public final fun encodeBase64 (Ljava/lang/String;)Ljava/lang/String;
-	public final fun exists (Ljava/lang/String;)Z
-	public final fun exists (Ljava/lang/String;Ljava/lang/String;)Z
-	public final fun getUrlContent (Ljava/lang/String;)Ljava/lang/String;
-	public final fun getUrlContent (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
-	public static synthetic fun getUrlContent$default (Lcom/chattriggers/ctjs/minecraft/libs/FileLib;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ljava/lang/String;
-	public final fun isDirectory (Ljava/lang/String;)Z
-	public final fun isDirectory (Ljava/lang/String;Ljava/lang/String;)Z
-	public final fun read (Ljava/io/File;)Ljava/lang/String;
-	public final fun read (Ljava/lang/String;)Ljava/lang/String;
-	public final fun read (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
-	public final fun unzip (Ljava/lang/String;Ljava/lang/String;)V
-	public final fun write (Ljava/lang/String;Ljava/lang/String;)V
-	public final fun write (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
-	public final fun write (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)V
-	public final fun write (Ljava/lang/String;Ljava/lang/String;Z)V
-	public static synthetic fun write$default (Lcom/chattriggers/ctjs/minecraft/libs/FileLib;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZILjava/lang/Object;)V
-	public static synthetic fun write$default (Lcom/chattriggers/ctjs/minecraft/libs/FileLib;Ljava/lang/String;Ljava/lang/String;ZILjava/lang/Object;)V
+	public static final fun append (Ljava/lang/String;Ljava/lang/String;)V
+	public static final fun append (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	public static final fun decodeBase64 (Ljava/lang/String;)Ljava/lang/String;
+	public static final fun delete (Ljava/lang/String;)Z
+	public static final fun delete (Ljava/lang/String;Ljava/lang/String;)Z
+	public static final fun deleteDirectory (Ljava/io/File;)Z
+	public static final fun deleteDirectory (Ljava/lang/String;)Z
+	public static final fun encodeBase64 (Ljava/lang/String;)Ljava/lang/String;
+	public static final fun exists (Ljava/lang/String;)Z
+	public static final fun exists (Ljava/lang/String;Ljava/lang/String;)Z
+	public static final fun getUrlContent (Ljava/lang/String;)Ljava/lang/String;
+	public static final fun getUrlContent (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+	public static synthetic fun getUrlContent$default (Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ljava/lang/String;
+	public static final fun isDirectory (Ljava/lang/String;)Z
+	public static final fun isDirectory (Ljava/lang/String;Ljava/lang/String;)Z
+	public static final fun read (Ljava/io/File;)Ljava/lang/String;
+	public static final fun read (Ljava/lang/String;)Ljava/lang/String;
+	public static final fun read (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+	public static final fun unzip (Ljava/lang/String;Ljava/lang/String;)V
+	public static final fun write (Ljava/lang/String;Ljava/lang/String;)V
+	public static final fun write (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	public static final fun write (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)V
+	public static final fun write (Ljava/lang/String;Ljava/lang/String;Z)V
+	public static synthetic fun write$default (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZILjava/lang/Object;)V
+	public static synthetic fun write$default (Ljava/lang/String;Ljava/lang/String;ZILjava/lang/Object;)V
 }
 
 public final class com/chattriggers/ctjs/minecraft/libs/MathLib {
 	public static final field INSTANCE Lcom/chattriggers/ctjs/minecraft/libs/MathLib;
-	public final fun clamp (III)I
-	public final fun clampFloat (FFF)F
-	public final fun map (FFFFF)F
+	public static final fun clamp (III)I
+	public static final fun clampFloat (FFF)F
+	public static final fun map (FFFFF)F
 }
 
 public final class com/chattriggers/ctjs/minecraft/libs/renderer/Image {
@@ -925,18 +925,15 @@ public final class com/chattriggers/ctjs/minecraft/objects/TextComponent$Compani
 	public final fun stripFormatting (Ljava/lang/String;)Ljava/lang/String;
 }
 
-public final class com/chattriggers/ctjs/minecraft/wrappers/BossBars : com/chattriggers/ctjs/minecraft/wrappers/CTWrapper {
+public final class com/chattriggers/ctjs/minecraft/wrappers/BossBars {
 	public static final field INSTANCE Lcom/chattriggers/ctjs/minecraft/wrappers/BossBars;
-	public final fun addBossBar (Lorg/mozilla/javascript/NativeObject;)Lcom/chattriggers/ctjs/minecraft/wrappers/BossBars$BossBar;
-	public final fun clearBossBars ()V
-	public final fun getBossBars ()Ljava/util/List;
-	public final fun getBossBarsByName (Ljava/lang/String;)Ljava/util/List;
-	public synthetic fun getMcValue ()Ljava/lang/Object;
-	public fun getMcValue ()Lnet/minecraft/client/gui/hud/BossBarHud;
-	public final fun removeBossBar (Lcom/chattriggers/ctjs/minecraft/wrappers/BossBars$BossBar;)V
-	public final fun removeBossBarsByName (Ljava/lang/String;)V
-	public synthetic fun toMC ()Ljava/lang/Object;
-	public fun toMC ()Lnet/minecraft/client/gui/hud/BossBarHud;
+	public static final fun addBossBar (Lorg/mozilla/javascript/NativeObject;)Lcom/chattriggers/ctjs/minecraft/wrappers/BossBars$BossBar;
+	public static final fun clearBossBars ()V
+	public static final fun getBossBars ()Ljava/util/List;
+	public static final fun getBossBarsByName (Ljava/lang/String;)Ljava/util/List;
+	public static final fun removeBossBar (Lcom/chattriggers/ctjs/minecraft/wrappers/BossBars$BossBar;)V
+	public static final fun removeBossBarsByName (Ljava/lang/String;)V
+	public static final fun toMC ()Lnet/minecraft/client/gui/hud/BossBarHud;
 }
 
 public final class com/chattriggers/ctjs/minecraft/wrappers/BossBars$BossBar : com/chattriggers/ctjs/minecraft/wrappers/CTWrapper {
@@ -1012,15 +1009,15 @@ public final class com/chattriggers/ctjs/minecraft/wrappers/BossBars$Style$Compa
 
 public final class com/chattriggers/ctjs/minecraft/wrappers/CPS : com/chattriggers/ctjs/utils/Initializer {
 	public static final field INSTANCE Lcom/chattriggers/ctjs/minecraft/wrappers/CPS;
-	public final fun getLeftClicks ()I
-	public final fun getLeftClicksAverage ()I
-	public final fun getLeftClicksMax ()I
-	public final fun getMiddleClicks ()I
-	public final fun getMiddleClicksAverage ()I
-	public final fun getMiddleClicksMax ()I
-	public final fun getRightClicks ()I
-	public final fun getRightClicksAverage ()I
-	public final fun getRightClicksMax ()I
+	public static final fun getLeftClicks ()I
+	public static final fun getLeftClicksAverage ()I
+	public static final fun getLeftClicksMax ()I
+	public static final fun getMiddleClicks ()I
+	public static final fun getMiddleClicksAverage ()I
+	public static final fun getMiddleClicksMax ()I
+	public static final fun getRightClicks ()I
+	public static final fun getRightClicksAverage ()I
+	public static final fun getRightClicksMax ()I
 }
 
 public abstract interface class com/chattriggers/ctjs/minecraft/wrappers/CTWrapper {
@@ -1037,46 +1034,46 @@ public final class com/chattriggers/ctjs/minecraft/wrappers/Client {
 	public static final field camera Lcom/chattriggers/ctjs/minecraft/wrappers/Client$CameraWrapper;
 	public static final field currentGui Lcom/chattriggers/ctjs/minecraft/wrappers/Client$CurrentGuiWrapper;
 	public static final field settings Lcom/chattriggers/ctjs/minecraft/wrappers/Settings;
-	public final fun connect (Ljava/lang/String;)V
-	public final fun connect (Ljava/lang/String;I)V
-	public static synthetic fun connect$default (Lcom/chattriggers/ctjs/minecraft/wrappers/Client;Ljava/lang/String;IILjava/lang/Object;)V
-	public final fun copy ()V
-	public final fun copy (Ljava/lang/String;)V
-	public static synthetic fun copy$default (Lcom/chattriggers/ctjs/minecraft/wrappers/Client;Ljava/lang/String;ILjava/lang/Object;)V
-	public final fun disconnect ()V
-	public final fun getChatGui ()Lnet/minecraft/client/gui/hud/ChatHud;
-	public final fun getConnection ()Lnet/minecraft/client/network/ClientPlayNetworkHandler;
-	public final fun getCurrentChatMessage ()Ljava/lang/String;
-	public final fun getFPS ()I
-	public final fun getFreeMemory ()J
-	public final fun getKeyBindFromDescription (Ljava/lang/String;)Lcom/chattriggers/ctjs/minecraft/objects/KeyBind;
-	public final fun getKeyBindFromKey (I)Lcom/chattriggers/ctjs/minecraft/objects/KeyBind;
-	public final fun getKeyBindFromKey (ILjava/lang/String;)Lcom/chattriggers/ctjs/minecraft/objects/KeyBind;
-	public final fun getKeyBindFromKey (ILjava/lang/String;Ljava/lang/String;)Lcom/chattriggers/ctjs/minecraft/objects/KeyBind;
-	public static synthetic fun getKeyBindFromKey$default (Lcom/chattriggers/ctjs/minecraft/wrappers/Client;ILjava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/objects/KeyBind;
-	public final fun getMaxMemory ()J
-	public final fun getMemoryUsage ()I
-	public final fun getMinecraft ()Lnet/minecraft/client/MinecraftClient;
-	public final fun getMouseX ()D
-	public final fun getMouseY ()D
-	public final fun getSystemTime ()J
-	public final fun getTabGui ()Lnet/minecraft/client/gui/hud/PlayerListHud;
-	public final fun getTotalMemory ()J
-	public final fun getVersion ()Ljava/lang/String;
-	public final fun isAltDown ()Z
-	public final fun isControlDown ()Z
-	public final fun isInChat ()Z
-	public final fun isInGui ()Z
-	public final fun isInTab ()Z
-	public final fun isShiftDown ()Z
-	public final fun isTabbedIn ()Z
-	public final fun paste ()Ljava/lang/String;
-	public final fun scheduleTask (ILkotlin/jvm/functions/Function0;)V
-	public final fun scheduleTask (Lkotlin/jvm/functions/Function0;)V
-	public static synthetic fun scheduleTask$default (Lcom/chattriggers/ctjs/minecraft/wrappers/Client;ILkotlin/jvm/functions/Function0;ILjava/lang/Object;)V
-	public final fun sendPacket (Lnet/minecraft/network/packet/Packet;)V
-	public final fun setCurrentChatMessage (Ljava/lang/String;)V
-	public final fun showTitle (Ljava/lang/String;Ljava/lang/String;III)V
+	public static final fun connect (Ljava/lang/String;)V
+	public static final fun connect (Ljava/lang/String;I)V
+	public static synthetic fun connect$default (Ljava/lang/String;IILjava/lang/Object;)V
+	public static final fun copy ()V
+	public static final fun copy (Ljava/lang/String;)V
+	public static synthetic fun copy$default (Ljava/lang/String;ILjava/lang/Object;)V
+	public static final fun disconnect ()V
+	public static final fun getChatGui ()Lnet/minecraft/client/gui/hud/ChatHud;
+	public static final fun getConnection ()Lnet/minecraft/client/network/ClientPlayNetworkHandler;
+	public static final fun getCurrentChatMessage ()Ljava/lang/String;
+	public static final fun getFPS ()I
+	public static final fun getFreeMemory ()J
+	public static final fun getKeyBindFromDescription (Ljava/lang/String;)Lcom/chattriggers/ctjs/minecraft/objects/KeyBind;
+	public static final fun getKeyBindFromKey (I)Lcom/chattriggers/ctjs/minecraft/objects/KeyBind;
+	public static final fun getKeyBindFromKey (ILjava/lang/String;)Lcom/chattriggers/ctjs/minecraft/objects/KeyBind;
+	public static final fun getKeyBindFromKey (ILjava/lang/String;Ljava/lang/String;)Lcom/chattriggers/ctjs/minecraft/objects/KeyBind;
+	public static synthetic fun getKeyBindFromKey$default (ILjava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/objects/KeyBind;
+	public static final fun getMaxMemory ()J
+	public static final fun getMemoryUsage ()I
+	public static final fun getMinecraft ()Lnet/minecraft/client/MinecraftClient;
+	public static final fun getMouseX ()D
+	public static final fun getMouseY ()D
+	public static final fun getSystemTime ()J
+	public static final fun getTabGui ()Lnet/minecraft/client/gui/hud/PlayerListHud;
+	public static final fun getTotalMemory ()J
+	public static final fun getVersion ()Ljava/lang/String;
+	public static final fun isAltDown ()Z
+	public static final fun isControlDown ()Z
+	public static final fun isInChat ()Z
+	public static final fun isInGui ()Z
+	public static final fun isInTab ()Z
+	public static final fun isShiftDown ()Z
+	public static final fun isTabbedIn ()Z
+	public static final fun paste ()Ljava/lang/String;
+	public static final fun scheduleTask (ILkotlin/jvm/functions/Function0;)V
+	public static final fun scheduleTask (Lkotlin/jvm/functions/Function0;)V
+	public static synthetic fun scheduleTask$default (ILkotlin/jvm/functions/Function0;ILjava/lang/Object;)V
+	public static final fun sendPacket (Lnet/minecraft/network/packet/Packet;)V
+	public static final fun setCurrentChatMessage (Ljava/lang/String;)V
+	public static final fun showTitle (Ljava/lang/String;Ljava/lang/String;III)V
 }
 
 public final class com/chattriggers/ctjs/minecraft/wrappers/Client$CameraWrapper {
@@ -1095,62 +1092,59 @@ public final class com/chattriggers/ctjs/minecraft/wrappers/Client$CurrentGuiWra
 	public final fun set (Lnet/minecraft/client/gui/screen/Screen;)V
 }
 
-public final class com/chattriggers/ctjs/minecraft/wrappers/Player : com/chattriggers/ctjs/minecraft/wrappers/CTWrapper {
+public final class com/chattriggers/ctjs/minecraft/wrappers/Player {
 	public static final field INSTANCE Lcom/chattriggers/ctjs/minecraft/wrappers/Player;
 	public static final field armor Lcom/chattriggers/ctjs/minecraft/wrappers/Player$ArmorWrapper;
-	public final fun asPlayerMP ()Lcom/chattriggers/ctjs/minecraft/wrappers/entity/PlayerMP;
-	public final fun draw (Lorg/mozilla/javascript/NativeObject;)Lcom/chattriggers/ctjs/minecraft/wrappers/Player;
-	public final fun facing ()Ljava/lang/String;
-	public final fun getActivePotionEffects ()Ljava/util/List;
-	public final fun getAirLevel ()I
-	public final fun getArmorPoints ()I
-	public final fun getBiome ()Ljava/lang/String;
-	public final fun getContainer ()Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/Inventory;
-	public final fun getDisplayName ()Lcom/chattriggers/ctjs/minecraft/objects/TextComponent;
-	public final fun getHP ()F
-	public final fun getHeldItem ()Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/Item;
-	public final fun getHeldItem (Lnet/minecraft/util/Hand;)Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/Item;
-	public static synthetic fun getHeldItem$default (Lcom/chattriggers/ctjs/minecraft/wrappers/Player;Lnet/minecraft/util/Hand;ILjava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/Item;
-	public final fun getHeldItemIndex ()I
-	public final fun getHunger ()I
-	public final fun getInventory ()Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/Inventory;
-	public final fun getLastX ()D
-	public final fun getLastY ()D
-	public final fun getLastZ ()D
-	public final fun getLightLevel ()I
-	public synthetic fun getMcValue ()Ljava/lang/Object;
-	public fun getMcValue ()Lnet/minecraft/client/network/ClientPlayerEntity;
-	public final fun getMotionX ()D
-	public final fun getMotionY ()D
-	public final fun getMotionZ ()D
-	public final fun getName ()Ljava/lang/String;
-	public final fun getPitch ()D
-	public final fun getPlayer ()Lnet/minecraft/client/network/ClientPlayerEntity;
-	public final fun getPos ()Lcom/chattriggers/ctjs/minecraft/wrappers/world/block/BlockPos;
-	public final fun getRenderX ()D
-	public final fun getRenderY ()D
-	public final fun getRenderZ ()D
-	public final fun getRotation ()Lnet/minecraft/util/math/Vec2f;
-	public final fun getSaturation ()F
-	public final fun getTeam ()Lcom/chattriggers/ctjs/minecraft/wrappers/entity/Team;
-	public final fun getUUID ()Ljava/util/UUID;
-	public final fun getX ()D
-	public final fun getXPLevel ()I
-	public final fun getXPProgress ()F
-	public final fun getY ()D
-	public final fun getYaw ()D
-	public final fun getZ ()D
-	public final fun isFlying ()Z
-	public final fun isMoving ()Z
-	public final fun isSleeping ()Z
-	public final fun isSneaking ()Z
-	public final fun isSprinting ()Z
-	public final fun lookingAt ()Ljava/lang/Object;
-	public final fun setHeldItemIndex (I)V
-	public final fun setNametagName (Lcom/chattriggers/ctjs/minecraft/objects/TextComponent;)V
-	public final fun setTabDisplayName (Lcom/chattriggers/ctjs/minecraft/objects/TextComponent;)V
-	public synthetic fun toMC ()Ljava/lang/Object;
-	public fun toMC ()Lnet/minecraft/client/network/ClientPlayerEntity;
+	public static final fun asPlayerMP ()Lcom/chattriggers/ctjs/minecraft/wrappers/entity/PlayerMP;
+	public static final fun draw (Lorg/mozilla/javascript/NativeObject;)Lcom/chattriggers/ctjs/minecraft/wrappers/Player;
+	public static final fun facing ()Ljava/lang/String;
+	public static final fun getActivePotionEffects ()Ljava/util/List;
+	public static final fun getAirLevel ()I
+	public static final fun getArmorPoints ()I
+	public static final fun getBiome ()Ljava/lang/String;
+	public static final fun getContainer ()Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/Inventory;
+	public static final fun getDisplayName ()Lcom/chattriggers/ctjs/minecraft/objects/TextComponent;
+	public static final fun getHP ()F
+	public static final fun getHeldItem ()Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/Item;
+	public static final fun getHeldItem (Lnet/minecraft/util/Hand;)Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/Item;
+	public static synthetic fun getHeldItem$default (Lnet/minecraft/util/Hand;ILjava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/Item;
+	public static final fun getHeldItemIndex ()I
+	public static final fun getHunger ()I
+	public static final fun getInventory ()Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/Inventory;
+	public static final fun getLastX ()D
+	public static final fun getLastY ()D
+	public static final fun getLastZ ()D
+	public static final fun getLightLevel ()I
+	public static final fun getMotionX ()D
+	public static final fun getMotionY ()D
+	public static final fun getMotionZ ()D
+	public static final fun getName ()Ljava/lang/String;
+	public static final fun getPitch ()D
+	public static final fun getPlayer ()Lnet/minecraft/client/network/ClientPlayerEntity;
+	public static final fun getPos ()Lcom/chattriggers/ctjs/minecraft/wrappers/world/block/BlockPos;
+	public static final fun getRenderX ()D
+	public static final fun getRenderY ()D
+	public static final fun getRenderZ ()D
+	public static final fun getRotation ()Lnet/minecraft/util/math/Vec2f;
+	public static final fun getSaturation ()F
+	public static final fun getTeam ()Lcom/chattriggers/ctjs/minecraft/wrappers/entity/Team;
+	public static final fun getUUID ()Ljava/util/UUID;
+	public static final fun getX ()D
+	public static final fun getXPLevel ()I
+	public static final fun getXPProgress ()F
+	public static final fun getY ()D
+	public static final fun getYaw ()D
+	public static final fun getZ ()D
+	public static final fun isFlying ()Z
+	public static final fun isMoving ()Z
+	public static final fun isSleeping ()Z
+	public static final fun isSneaking ()Z
+	public static final fun isSprinting ()Z
+	public static final fun lookingAt ()Ljava/lang/Object;
+	public static final fun setHeldItemIndex (I)V
+	public static final fun setNametagName (Lcom/chattriggers/ctjs/minecraft/objects/TextComponent;)V
+	public static final fun setTabDisplayName (Lcom/chattriggers/ctjs/minecraft/objects/TextComponent;)V
+	public static final fun toMC ()Lnet/minecraft/client/network/ClientPlayerEntity;
 }
 
 public final class com/chattriggers/ctjs/minecraft/wrappers/Player$ArmorWrapper {
@@ -1161,67 +1155,54 @@ public final class com/chattriggers/ctjs/minecraft/wrappers/Player$ArmorWrapper 
 	public final fun getLeggings ()Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/Item;
 }
 
-public final class com/chattriggers/ctjs/minecraft/wrappers/Scoreboard : com/chattriggers/ctjs/minecraft/wrappers/CTWrapper {
+public final class com/chattriggers/ctjs/minecraft/wrappers/Scoreboard {
 	public static final field INSTANCE Lcom/chattriggers/ctjs/minecraft/wrappers/Scoreboard;
-	public final fun getLineByIndex (I)Lcom/chattriggers/ctjs/minecraft/wrappers/Scoreboard$Score;
-	public final fun getLines ()Ljava/util/List;
-	public final fun getLines (Z)Ljava/util/List;
-	public static synthetic fun getLines$default (Lcom/chattriggers/ctjs/minecraft/wrappers/Scoreboard;ZILjava/lang/Object;)Ljava/util/List;
-	public final fun getLinesByScore (I)Ljava/util/List;
-	public synthetic fun getMcValue ()Ljava/lang/Object;
-	public fun getMcValue ()Lnet/minecraft/scoreboard/Scoreboard;
-	public final fun getScoreboard ()Lnet/minecraft/scoreboard/Scoreboard;
-	public final fun getShouldRender ()Z
-	public final fun getSidebar ()Lnet/minecraft/scoreboard/ScoreboardObjective;
-	public final fun getTitle ()Lcom/chattriggers/ctjs/minecraft/objects/TextComponent;
-	public final fun resetCache ()V
-	public final fun setLine (ILcom/chattriggers/ctjs/minecraft/objects/TextComponent;Z)V
-	public final fun setLine (ILjava/lang/String;Z)V
-	public final fun setShouldRender (Z)V
-	public final fun setTitle (Lcom/chattriggers/ctjs/minecraft/objects/TextComponent;)V
-	public final fun setTitle (Ljava/lang/String;)V
-	public synthetic fun toMC ()Ljava/lang/Object;
-	public fun toMC ()Lnet/minecraft/scoreboard/Scoreboard;
+	public static final fun getLineByIndex (I)Lcom/chattriggers/ctjs/minecraft/wrappers/Scoreboard$Score;
+	public static final fun getLines ()Ljava/util/List;
+	public static final fun getLines (Z)Ljava/util/List;
+	public static synthetic fun getLines$default (ZILjava/lang/Object;)Ljava/util/List;
+	public static final fun getLinesByScore (I)Ljava/util/List;
+	public static final fun getScoreboard ()Lnet/minecraft/scoreboard/Scoreboard;
+	public static final fun getShouldRender ()Z
+	public static final fun getSidebar ()Lnet/minecraft/scoreboard/ScoreboardObjective;
+	public static final fun getTitle ()Lcom/chattriggers/ctjs/minecraft/objects/TextComponent;
+	public static final fun setLine (ILcom/chattriggers/ctjs/minecraft/objects/TextComponent;Z)V
+	public static final fun setLine (ILjava/lang/String;Z)V
+	public static final fun setShouldRender (Z)V
+	public static final fun setTitle (Lcom/chattriggers/ctjs/minecraft/objects/TextComponent;)V
+	public static final fun setTitle (Ljava/lang/String;)V
+	public static final fun toMC ()Lnet/minecraft/scoreboard/Scoreboard;
 }
 
-public final class com/chattriggers/ctjs/minecraft/wrappers/Scoreboard$Score : com/chattriggers/ctjs/minecraft/wrappers/CTWrapper {
+public final class com/chattriggers/ctjs/minecraft/wrappers/Scoreboard$Score {
 	public fun <init> (Lnet/minecraft/scoreboard/ScoreboardPlayerScore;)V
-	public synthetic fun getMcValue ()Ljava/lang/Object;
-	public fun getMcValue ()Lnet/minecraft/scoreboard/ScoreboardPlayerScore;
 	public final fun getName ()Lcom/chattriggers/ctjs/minecraft/objects/TextComponent;
 	public final fun getPoints ()I
-	public synthetic fun toMC ()Ljava/lang/Object;
-	public fun toMC ()Lnet/minecraft/scoreboard/ScoreboardPlayerScore;
+	public final fun toMC ()Lnet/minecraft/scoreboard/ScoreboardPlayerScore;
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/chattriggers/ctjs/minecraft/wrappers/Server : com/chattriggers/ctjs/minecraft/wrappers/CTWrapper {
+public final class com/chattriggers/ctjs/minecraft/wrappers/Server {
 	public static final field INSTANCE Lcom/chattriggers/ctjs/minecraft/wrappers/Server;
-	public final fun getIP ()Ljava/lang/String;
-	public final fun getMOTD ()Ljava/lang/String;
-	public synthetic fun getMcValue ()Ljava/lang/Object;
-	public fun getMcValue ()Lnet/minecraft/client/network/ServerInfo;
-	public final fun getName ()Ljava/lang/String;
-	public final fun getPing ()J
-	public final fun isSingleplayer ()Z
-	public synthetic fun toMC ()Ljava/lang/Object;
-	public fun toMC ()Lnet/minecraft/client/network/ServerInfo;
+	public static final fun getIP ()Ljava/lang/String;
+	public static final fun getMOTD ()Ljava/lang/String;
+	public static final fun getName ()Ljava/lang/String;
+	public static final fun getPing ()J
+	public static final fun isSingleplayer ()Z
+	public static final fun toMC ()Lnet/minecraft/client/network/ServerInfo;
 }
 
-public final class com/chattriggers/ctjs/minecraft/wrappers/Settings : com/chattriggers/ctjs/minecraft/wrappers/CTWrapper {
+public final class com/chattriggers/ctjs/minecraft/wrappers/Settings {
 	public static final field INSTANCE Lcom/chattriggers/ctjs/minecraft/wrappers/Settings;
 	public static final field chat Lcom/chattriggers/ctjs/minecraft/wrappers/Settings$ChatWrapper;
 	public static final field skin Lcom/chattriggers/ctjs/minecraft/wrappers/Settings$SkinWrapper;
 	public static final field sound Lcom/chattriggers/ctjs/minecraft/wrappers/Settings$SoundWrapper;
 	public static final field video Lcom/chattriggers/ctjs/minecraft/wrappers/Settings$VideoWrapper;
-	public final fun getDifficulty ()Lcom/chattriggers/ctjs/minecraft/wrappers/Settings$Difficulty;
-	public final fun getFOV ()Ljava/lang/Integer;
-	public synthetic fun getMcValue ()Ljava/lang/Object;
-	public fun getMcValue ()Lnet/minecraft/client/option/GameOptions;
-	public final fun getSettings ()Lnet/minecraft/client/option/GameOptions;
-	public final fun setFOV (I)V
-	public synthetic fun toMC ()Ljava/lang/Object;
-	public fun toMC ()Lnet/minecraft/client/option/GameOptions;
+	public static final fun getDifficulty ()Lcom/chattriggers/ctjs/minecraft/wrappers/Settings$Difficulty;
+	public static final fun getFOV ()Ljava/lang/Integer;
+	public static final fun getSettings ()Lnet/minecraft/client/option/GameOptions;
+	public static final fun setFOV (I)V
+	public static final fun toMC ()Lnet/minecraft/client/option/GameOptions;
 }
 
 public final class com/chattriggers/ctjs/minecraft/wrappers/Settings$ChatVisibility : java/lang/Enum, com/chattriggers/ctjs/minecraft/wrappers/CTWrapper {
@@ -1415,56 +1396,50 @@ public final class com/chattriggers/ctjs/minecraft/wrappers/Settings$VideoWrappe
 	public final fun setVsync (Z)V
 }
 
-public final class com/chattriggers/ctjs/minecraft/wrappers/TabList : com/chattriggers/ctjs/minecraft/wrappers/CTWrapper {
+public final class com/chattriggers/ctjs/minecraft/wrappers/TabList {
 	public static final field INSTANCE Lcom/chattriggers/ctjs/minecraft/wrappers/TabList;
-	public final fun clearFooter ()V
-	public final fun clearHeader ()V
-	public final fun getFooter ()Ljava/lang/String;
-	public final fun getFooterComponent ()Lcom/chattriggers/ctjs/minecraft/objects/TextComponent;
-	public final fun getHeader ()Ljava/lang/String;
-	public final fun getHeaderComponent ()Lcom/chattriggers/ctjs/minecraft/objects/TextComponent;
-	public synthetic fun getMcValue ()Ljava/lang/Object;
-	public fun getMcValue ()Lnet/minecraft/client/gui/hud/PlayerListHud;
-	public final fun getNames ()Ljava/util/List;
-	public final fun getNamesByObjectives ()Ljava/util/List;
-	public final fun getUnformattedNames ()Ljava/util/List;
-	public final fun setFooter (Ljava/lang/Object;)V
-	public final fun setHeader (Ljava/lang/Object;)V
-	public synthetic fun toMC ()Ljava/lang/Object;
-	public fun toMC ()Lnet/minecraft/client/gui/hud/PlayerListHud;
+	public static final fun clearFooter ()V
+	public static final fun clearHeader ()V
+	public static final fun getFooter ()Ljava/lang/String;
+	public static final fun getFooterComponent ()Lcom/chattriggers/ctjs/minecraft/objects/TextComponent;
+	public static final fun getHeader ()Ljava/lang/String;
+	public static final fun getHeaderComponent ()Lcom/chattriggers/ctjs/minecraft/objects/TextComponent;
+	public static final fun getNames ()Ljava/util/List;
+	public static final fun getNamesByObjectives ()Ljava/util/List;
+	public static final fun getUnformattedNames ()Ljava/util/List;
+	public static final fun setFooter (Ljava/lang/Object;)V
+	public static final fun setHeader (Ljava/lang/Object;)V
+	public static final fun toMC ()Lnet/minecraft/client/gui/hud/PlayerListHud;
 }
 
-public final class com/chattriggers/ctjs/minecraft/wrappers/World : com/chattriggers/ctjs/minecraft/wrappers/CTWrapper {
+public final class com/chattriggers/ctjs/minecraft/wrappers/World {
 	public static final field INSTANCE Lcom/chattriggers/ctjs/minecraft/wrappers/World;
 	public static final field border Lcom/chattriggers/ctjs/minecraft/wrappers/World$BorderWrapper;
 	public static final field particle Lcom/chattriggers/ctjs/minecraft/wrappers/World$ParticleWrapper;
 	public static final field spawn Lcom/chattriggers/ctjs/minecraft/wrappers/World$SpawnWrapper;
-	public final fun getAllBlockEntities ()Ljava/util/List;
-	public final fun getAllBlockEntitiesOfType (Ljava/lang/Class;)Ljava/util/List;
-	public final fun getAllEntities ()Ljava/util/List;
-	public final fun getAllEntitiesOfType (Ljava/lang/Class;)Ljava/util/List;
-	public final fun getAllPlayers ()Ljava/util/List;
-	public final fun getBlockAt (Lcom/chattriggers/ctjs/minecraft/wrappers/world/block/BlockPos;)Lcom/chattriggers/ctjs/minecraft/wrappers/world/block/Block;
-	public final fun getBlockAt (Ljava/lang/Number;Ljava/lang/Number;Ljava/lang/Number;)Lcom/chattriggers/ctjs/minecraft/wrappers/world/block/Block;
-	public final fun getBlockLightLevel (III)I
-	public final fun getBlockLightLevel (Lcom/chattriggers/ctjs/minecraft/wrappers/world/block/BlockPos;)I
-	public final fun getBlockStateAt (Lcom/chattriggers/ctjs/minecraft/wrappers/world/block/BlockPos;)Lnet/minecraft/block/BlockState;
-	public final fun getChunk (III)Lcom/chattriggers/ctjs/minecraft/wrappers/world/Chunk;
-	public final fun getDifficulty ()Lcom/chattriggers/ctjs/minecraft/wrappers/Settings$Difficulty;
-	public synthetic fun getMcValue ()Ljava/lang/Object;
-	public fun getMcValue ()Lnet/minecraft/client/world/ClientWorld;
-	public final fun getMoonPhase ()I
-	public final fun getPlayerByName (Ljava/lang/String;)Lcom/chattriggers/ctjs/minecraft/wrappers/entity/PlayerMP;
-	public final fun getRainingStrength ()F
-	public final fun getSkyLightLevel (III)I
-	public final fun getSkyLightLevel (Lcom/chattriggers/ctjs/minecraft/wrappers/world/block/BlockPos;)I
-	public final fun getTime ()J
-	public final fun getWorld ()Lnet/minecraft/client/world/ClientWorld;
-	public final fun hasPlayer (Ljava/lang/String;)Z
-	public final fun isLoaded ()Z
-	public final fun isRaining ()Z
-	public synthetic fun toMC ()Ljava/lang/Object;
-	public fun toMC ()Lnet/minecraft/client/world/ClientWorld;
+	public static final fun getAllBlockEntities ()Ljava/util/List;
+	public static final fun getAllBlockEntitiesOfType (Ljava/lang/Class;)Ljava/util/List;
+	public static final fun getAllEntities ()Ljava/util/List;
+	public static final fun getAllEntitiesOfType (Ljava/lang/Class;)Ljava/util/List;
+	public static final fun getAllPlayers ()Ljava/util/List;
+	public static final fun getBlockAt (Lcom/chattriggers/ctjs/minecraft/wrappers/world/block/BlockPos;)Lcom/chattriggers/ctjs/minecraft/wrappers/world/block/Block;
+	public static final fun getBlockAt (Ljava/lang/Number;Ljava/lang/Number;Ljava/lang/Number;)Lcom/chattriggers/ctjs/minecraft/wrappers/world/block/Block;
+	public static final fun getBlockLightLevel (III)I
+	public static final fun getBlockLightLevel (Lcom/chattriggers/ctjs/minecraft/wrappers/world/block/BlockPos;)I
+	public static final fun getBlockStateAt (Lcom/chattriggers/ctjs/minecraft/wrappers/world/block/BlockPos;)Lnet/minecraft/block/BlockState;
+	public static final fun getChunk (III)Lcom/chattriggers/ctjs/minecraft/wrappers/world/Chunk;
+	public static final fun getDifficulty ()Lcom/chattriggers/ctjs/minecraft/wrappers/Settings$Difficulty;
+	public static final fun getMoonPhase ()I
+	public static final fun getPlayerByName (Ljava/lang/String;)Lcom/chattriggers/ctjs/minecraft/wrappers/entity/PlayerMP;
+	public static final fun getRainingStrength ()F
+	public static final fun getSkyLightLevel (III)I
+	public static final fun getSkyLightLevel (Lcom/chattriggers/ctjs/minecraft/wrappers/world/block/BlockPos;)I
+	public static final fun getTime ()J
+	public static final fun getWorld ()Lnet/minecraft/client/world/ClientWorld;
+	public static final fun hasPlayer (Ljava/lang/String;)Z
+	public static final fun isLoaded ()Z
+	public static final fun isRaining ()Z
+	public final fun toMC ()Lnet/minecraft/client/world/ClientWorld;
 }
 
 public final class com/chattriggers/ctjs/minecraft/wrappers/World$BorderWrapper {
@@ -1920,11 +1895,11 @@ public final class com/chattriggers/ctjs/minecraft/wrappers/inventory/action/Key
 
 public final class com/chattriggers/ctjs/minecraft/wrappers/inventory/nbt/NBT {
 	public static final field INSTANCE Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/nbt/NBT;
-	public final fun parse (Ljava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/nbt/NBTBase;
-	public final fun parse (Ljava/lang/Object;Lorg/mozilla/javascript/NativeObject;)Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/nbt/NBTBase;
-	public static synthetic fun parse$default (Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/nbt/NBT;Ljava/lang/Object;Lorg/mozilla/javascript/NativeObject;ILjava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/nbt/NBTBase;
-	public final fun toArray (Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/nbt/NBTTagList;)Lorg/mozilla/javascript/NativeArray;
-	public final fun toObject (Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/nbt/NBTTagCompound;)Lorg/mozilla/javascript/NativeObject;
+	public static final fun parse (Ljava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/nbt/NBTBase;
+	public static final fun parse (Ljava/lang/Object;Lorg/mozilla/javascript/NativeObject;)Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/nbt/NBTBase;
+	public static synthetic fun parse$default (Ljava/lang/Object;Lorg/mozilla/javascript/NativeObject;ILjava/lang/Object;)Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/nbt/NBTBase;
+	public static final fun toArray (Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/nbt/NBTTagList;)Lorg/mozilla/javascript/NativeArray;
+	public static final fun toObject (Lcom/chattriggers/ctjs/minecraft/wrappers/inventory/nbt/NBTTagCompound;)Lorg/mozilla/javascript/NativeObject;
 }
 
 public class com/chattriggers/ctjs/minecraft/wrappers/inventory/nbt/NBTBase : com/chattriggers/ctjs/minecraft/wrappers/CTWrapper {
@@ -2431,36 +2406,36 @@ public final class com/chattriggers/ctjs/triggers/TriggerType : java/lang/Enum, 
 
 public final class com/chattriggers/ctjs/utils/Config : gg/essential/vigilance/Vigilant {
 	public static final field INSTANCE Lcom/chattriggers/ctjs/utils/Config;
-	public final fun getAutoUpdateModules ()Z
-	public final fun getClearConsoleOnLoad ()Z
-	public final fun getConsoleBackgroundColor ()Ljava/awt/Color;
-	public final fun getConsoleErrorColor ()Ljava/awt/Color;
-	public final fun getConsoleFiraCodeFont ()Z
-	public final fun getConsoleFontSize ()I
-	public final fun getConsoleTextColor ()Ljava/awt/Color;
-	public final fun getConsoleTheme ()I
-	public final fun getConsoleWarningColor ()Ljava/awt/Color;
-	public final fun getCustomTheme ()Z
-	public final fun getModuleChangelog ()Z
-	public final fun getModuleImportHelp ()Z
-	public final fun getOpenConsoleOnError ()Z
-	public final fun getPrintChatToConsole ()Z
-	public final fun getShowUpdatesInChat ()Z
-	public final fun setAutoUpdateModules (Z)V
-	public final fun setClearConsoleOnLoad (Z)V
-	public final fun setConsoleBackgroundColor (Ljava/awt/Color;)V
-	public final fun setConsoleErrorColor (Ljava/awt/Color;)V
-	public final fun setConsoleFiraCodeFont (Z)V
-	public final fun setConsoleFontSize (I)V
-	public final fun setConsoleTextColor (Ljava/awt/Color;)V
-	public final fun setConsoleTheme (I)V
-	public final fun setConsoleWarningColor (Ljava/awt/Color;)V
-	public final fun setCustomTheme (Z)V
-	public final fun setModuleChangelog (Z)V
-	public final fun setModuleImportHelp (Z)V
-	public final fun setOpenConsoleOnError (Z)V
-	public final fun setPrintChatToConsole (Z)V
-	public final fun setShowUpdatesInChat (Z)V
+	public static final fun getAutoUpdateModules ()Z
+	public static final fun getClearConsoleOnLoad ()Z
+	public static final fun getConsoleBackgroundColor ()Ljava/awt/Color;
+	public static final fun getConsoleErrorColor ()Ljava/awt/Color;
+	public static final fun getConsoleFiraCodeFont ()Z
+	public static final fun getConsoleFontSize ()I
+	public static final fun getConsoleTextColor ()Ljava/awt/Color;
+	public static final fun getConsoleTheme ()I
+	public static final fun getConsoleWarningColor ()Ljava/awt/Color;
+	public static final fun getCustomTheme ()Z
+	public static final fun getModuleChangelog ()Z
+	public static final fun getModuleImportHelp ()Z
+	public static final fun getOpenConsoleOnError ()Z
+	public static final fun getPrintChatToConsole ()Z
+	public static final fun getShowUpdatesInChat ()Z
+	public static final fun setAutoUpdateModules (Z)V
+	public static final fun setClearConsoleOnLoad (Z)V
+	public static final fun setConsoleBackgroundColor (Ljava/awt/Color;)V
+	public static final fun setConsoleErrorColor (Ljava/awt/Color;)V
+	public static final fun setConsoleFiraCodeFont (Z)V
+	public static final fun setConsoleFontSize (I)V
+	public static final fun setConsoleTextColor (Ljava/awt/Color;)V
+	public static final fun setConsoleTheme (I)V
+	public static final fun setConsoleWarningColor (Ljava/awt/Color;)V
+	public static final fun setCustomTheme (Z)V
+	public static final fun setModuleChangelog (Z)V
+	public static final fun setModuleImportHelp (Z)V
+	public static final fun setOpenConsoleOnError (Z)V
+	public static final fun setPrintChatToConsole (Z)V
+	public static final fun setShowUpdatesInChat (Z)V
 }
 
 public final class com/chattriggers/ctjs/utils/Mappings {

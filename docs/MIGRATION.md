@@ -55,7 +55,7 @@ This update includes _many_ API changes that will break a wide range of modules.
 
 These are API changes that typically involve consistency and affect multiple different APIs.
 
-- All MC wrapper classes (`Entity`, `Player`, etc.) now have their wrapped object named `mcValue`, and will have a `.toMC()` method that exposes this value. This change makes these APIs much more uniform, as previously some adhered to this scheme and others didn't.
+- All MC wrapper classes (`Entity`, `Player`, etc.) now all have a `.toMC()` method that exposes the underlying Minecraft value. This change makes these APIs much more uniform, as previously some adhered to this scheme and others didn't.
 - We have removed all server-side methods, which wouldn't have done anything anyway if used outside of singleplayer. Specifically, the following methods have been removed:
   - `Entity`: `setAir()`, `dropItem()`, `setIsOutsideBorder()`, `setPosition()`, `setAngles()`, `setOnFire()`, `extinguish()`, `move()`, `setIsSilent()`, `addVelocity()`, `setIsSneaking()`, `setIsSprinting()`, and `setIsInvisible()`
   - `LivingEntity`: `addPotionEffect()`, `clearPotionEffects()`, `setHP()`, and `setAbsorption()`

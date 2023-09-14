@@ -6,18 +6,23 @@ import net.minecraft.client.option.GameOptions
 import net.minecraft.client.render.entity.PlayerModelPart
 import net.minecraft.sound.SoundCategory
 
-object Settings : CTWrapper<GameOptions> {
-    override val mcValue get() = UMinecraft.getSettings()
+object Settings {
+    @JvmStatic
+    fun toMC() = UMinecraft.getSettings()
 
+    @JvmStatic
     @Deprecated("Use toMC", ReplaceWith("toMC()"))
     fun getSettings() = toMC()
 
+    @JvmStatic
     fun getFOV() = toMC().fov.value
 
+    @JvmStatic
     fun setFOV(fov: Int) {
         toMC().fov.value = fov
     }
 
+    @JvmStatic
     fun getDifficulty() = World.getDifficulty()
 
     @JvmField

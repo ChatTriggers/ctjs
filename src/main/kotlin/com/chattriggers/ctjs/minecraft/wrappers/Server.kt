@@ -3,9 +3,11 @@ package com.chattriggers.ctjs.minecraft.wrappers
 import com.chattriggers.ctjs.minecraft.objects.TextComponent
 import net.minecraft.client.network.ServerInfo
 
-object Server : CTWrapper<ServerInfo?> {
-    override val mcValue get() = Client.getMinecraft().currentServerEntry
+object Server {
+    @JvmStatic
+    fun toMC() = Client.getMinecraft().currentServerEntry
 
+    @JvmStatic
     fun isSingleplayer(): Boolean = Client.getMinecraft().isInSingleplayer
 
     /**
@@ -14,6 +16,7 @@ object Server : CTWrapper<ServerInfo?> {
      *
      * @return The IP of the current server
      */
+    @JvmStatic
     fun getIP(): String {
         if (isSingleplayer())
             return "localhost"
@@ -27,6 +30,7 @@ object Server : CTWrapper<ServerInfo?> {
      *
      * @return The name of the current server
      */
+    @JvmStatic
     fun getName(): String {
         if (isSingleplayer())
             return "SinglePlayer"
@@ -40,6 +44,7 @@ object Server : CTWrapper<ServerInfo?> {
      *
      * @return The MOTD of the current server
      */
+    @JvmStatic
     fun getMOTD(): String {
         if (isSingleplayer())
             return "SinglePlayer"
@@ -54,6 +59,7 @@ object Server : CTWrapper<ServerInfo?> {
      *
      * @return The ping to the current server
      */
+    @JvmStatic
     fun getPing(): Long {
         if (isSingleplayer()) {
             return 5L

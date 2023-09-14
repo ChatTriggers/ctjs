@@ -11,16 +11,18 @@ import net.minecraft.client.network.PlayerListEntry
 import net.minecraft.text.Text
 import net.minecraft.world.GameMode
 
-object TabList : CTWrapper<PlayerListHud?> {
-    override val mcValue get() = Client.getTabGui()
-
+object TabList {
     private val playerComparator = Ordering.from(PlayerComparator())
+
+    @JvmStatic
+    fun toMC() = Client.getTabGui()
 
     /**
      * Gets names set in scoreboard objectives
      *
      * @return The formatted names
      */
+    @JvmStatic
     fun getNamesByObjectives(): List<String> {
         val scoreboard = Scoreboard.toMC() ?: return emptyList()
         val sidebarObjective = scoreboard.getObjectiveForSlot(0) ?: return emptyList()
@@ -33,6 +35,7 @@ object TabList : CTWrapper<PlayerListHud?> {
         }
     }
 
+    @JvmStatic
     fun getNames(): List<String> {
         if (toMC() == null) return listOf()
 
@@ -46,6 +49,7 @@ object TabList : CTWrapper<PlayerListHud?> {
      *
      * @return the unformatted names
      */
+    @JvmStatic
     fun getUnformattedNames(): List<String> {
         if (Player.toMC() == null) return listOf()
 
@@ -56,8 +60,10 @@ object TabList : CTWrapper<PlayerListHud?> {
         } ?: emptyList()
     }
 
+    @JvmStatic
     fun getHeaderComponent() = toMC()?.asMixin<PlayerListHudAccessor>()?.header?.let(::TextComponent)
 
+    @JvmStatic
     fun getHeader() = getHeaderComponent()?.formattedText
 
     /**
@@ -66,6 +72,7 @@ object TabList : CTWrapper<PlayerListHud?> {
      *
      * @param header the header to set, or null to clear
      */
+    @JvmStatic
     fun setHeader(header: Any?) {
         when (header) {
             is String -> toMC()?.setHeader(TextComponent(header))
@@ -75,10 +82,13 @@ object TabList : CTWrapper<PlayerListHud?> {
         }
     }
 
+    @JvmStatic
     fun clearHeader() = setHeader(null)
 
+    @JvmStatic
     fun getFooterComponent() = toMC()?.asMixin<PlayerListHudAccessor>()?.footer?.let(::TextComponent)
 
+    @JvmStatic
     fun getFooter() = getFooterComponent()?.formattedText
 
     /**
@@ -87,6 +97,7 @@ object TabList : CTWrapper<PlayerListHud?> {
      *
      * @param footer the footer to set, or null to clear
      */
+    @JvmStatic
     fun setFooter(footer: Any?) {
         when (footer) {
             is String -> toMC()?.setFooter(TextComponent(footer))
@@ -96,6 +107,7 @@ object TabList : CTWrapper<PlayerListHud?> {
         }
     }
 
+    @JvmStatic
     fun clearFooter() = setFooter(null)
 
     internal class PlayerComparator internal constructor() : Comparator<PlayerListEntry> {
