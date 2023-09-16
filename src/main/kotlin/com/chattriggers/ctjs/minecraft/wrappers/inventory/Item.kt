@@ -116,9 +116,10 @@ class Item(override val mcValue: ItemStack) : CTWrapper<ItemStack> {
     fun draw(x: Float = 0f, y: Float = 0f, scale: Float = 1f, z: Float = 200f) {
         val itemRenderer = Client.getMinecraft().itemRenderer
 
-        Renderer.scale(scale, scale, 1f)
-        Renderer.translate(x / scale, y / scale, z)
-        Renderer.colorize(1f, 1f, 1f, 1f)
+        Renderer.pushMatrix()
+            .scale(scale, scale, 1f)
+            .translate(x / scale, y / scale, z)
+            .colorize(1f, 1f, 1f, 1f)
 
         // The item draw method moved to DrawContext in 1.20, which we don't have access
         // to here, so its drawItem method has been copy-pasted here instead
@@ -163,8 +164,7 @@ class Item(override val mcValue: ItemStack) : CTWrapper<ItemStack> {
         //#else
         //$$ itemRenderer.renderInGui(Renderer.matrixStack.toMC(), mcValue, 0, 0)
         //#endif
-
-        Renderer.resetTransformsIfNecessary()
+        Renderer.popMatrix()
     }
 
     override fun toString(): String = "Item{name=${getName()}, type=${type.getRegistryName()}, size=${getStackSize()}}"

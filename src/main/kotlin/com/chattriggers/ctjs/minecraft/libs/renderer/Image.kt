@@ -19,7 +19,7 @@ class Image(var image: BufferedImage?) {
     private var texture: Texture? = null
     private val textureWidth = image?.width ?: 0
     private val textureHeight = image?.height ?: 0
-    private val aspectRatio = if (textureHeight != 0) textureHeight.toDouble() / textureWidth else 0.0
+    private val aspectRatio = if (textureHeight != 0) textureHeight.toFloat() / textureWidth else 0f
 
     init {
         CTJS.images.add(this)
@@ -54,13 +54,13 @@ class Image(var image: BufferedImage?) {
 
     @JvmOverloads
     fun draw(
-        x: Double,
-        y: Double,
-        width: Double? = null,
-        height: Double? = null,
+        x: Float,
+        y: Float,
+        width: Float? = null,
+        height: Float? = null,
     ) = apply {
         val (drawWidth, drawHeight) = when {
-            width == null && height == null -> textureWidth.toDouble() to textureHeight.toDouble()
+            width == null && height == null -> textureWidth.toFloat() to textureHeight.toFloat()
             width == null -> height!! / aspectRatio to height
             height == null -> width to width * aspectRatio
             else -> width to height

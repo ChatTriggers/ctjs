@@ -281,9 +281,6 @@ object Register {
     /**
      * Registers a new trigger that runs before the overlay is drawn.
      *
-     * Passes through one argument:
-     * - The render event, which cannot be cancelled
-     *
      * Available modifications:
      * - [Trigger.setPriority] Sets the priority
      *
@@ -292,7 +289,7 @@ object Register {
      */
     @JvmStatic
     fun registerRenderOverlay(method: Any): Trigger {
-        return EventTrigger(method, TriggerType.RENDER_OVERLAY)
+        return RegularTrigger(method, TriggerType.RENDER_OVERLAY)
     }
 
     /**
@@ -655,9 +652,6 @@ object Register {
     /**
      * Registers a new trigger that runs whenever the player connects to a server
      *
-     * Passes through one argument:
-     * - The event, which cannot be cancelled
-     *
      * Available modifications:
      * - [Trigger.setPriority] Sets the priority
      *
@@ -671,9 +665,6 @@ object Register {
 
     /**
      * Registers a new trigger that runs whenever the player disconnects from a server
-     *
-     * Passes through two arguments:
-     * - The event, which cannot be cancelled
      *
      * Available modifications:
      * - [Trigger.setPriority] Sets the priority

@@ -271,13 +271,12 @@ class Gui @JvmOverloads constructor(
         //#if MC>=12000
         @Suppress("UNCHECKED_CAST")
         val drawContexts = drawContextsField.get(this) as List<DrawContext>
-        Renderer.matrixStack = UMatrixStack(drawContexts.last().matrices)
+        Renderer.pushMatrix(UMatrixStack(drawContexts.last().matrices))
         //#else
-        //$$ Renderer.matrixStack = matrixStack
+        //$$ Renderer.pushMatrix(matrixStack)
         //#endif
 
         Renderer.partialTicks = partialTicks
-        Renderer.pushMatrix()
 
         this.mouseX = mouseX
         this.mouseY = mouseY
