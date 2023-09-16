@@ -1,24 +1,24 @@
 package com.chattriggers.ctjs.minecraft.listeners
 
+import com.chattriggers.ctjs.console.printToConsole
 import com.chattriggers.ctjs.engine.js.JSContextFactory
 import com.chattriggers.ctjs.engine.js.JSLoader
+import com.chattriggers.ctjs.engine.module.ModuleManager
 import com.chattriggers.ctjs.minecraft.CTEvents
 import com.chattriggers.ctjs.minecraft.libs.ChatLib
 import com.chattriggers.ctjs.minecraft.libs.renderer.Renderer
+import com.chattriggers.ctjs.minecraft.objects.TextComponent
+import com.chattriggers.ctjs.minecraft.wrappers.Scoreboard
 import com.chattriggers.ctjs.minecraft.wrappers.World
 import com.chattriggers.ctjs.minecraft.wrappers.entity.BlockEntity
 import com.chattriggers.ctjs.minecraft.wrappers.entity.Entity
+import com.chattriggers.ctjs.minecraft.wrappers.inventory.Item
 import com.chattriggers.ctjs.minecraft.wrappers.world.block.BlockFace
 import com.chattriggers.ctjs.minecraft.wrappers.world.block.BlockPos
 import com.chattriggers.ctjs.triggers.ChatTrigger
 import com.chattriggers.ctjs.triggers.TriggerType
 import com.chattriggers.ctjs.utils.Config
 import com.chattriggers.ctjs.utils.Initializer
-import com.chattriggers.ctjs.console.printToConsole
-import com.chattriggers.ctjs.engine.module.ModuleManager
-import com.chattriggers.ctjs.minecraft.objects.TextComponent
-import com.chattriggers.ctjs.minecraft.wrappers.Scoreboard
-import com.chattriggers.ctjs.minecraft.wrappers.inventory.Item
 import com.chattriggers.ctjs.utils.toMatrixStack
 import gg.essential.universal.UMatrixStack
 import gg.essential.universal.UMinecraft
@@ -26,6 +26,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
 import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents
 import net.fabricmc.fabric.api.client.screen.v1.ScreenKeyboardEvents
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback
@@ -40,7 +41,6 @@ import net.minecraft.util.Hand
 import net.minecraft.util.TypedActionResult
 import org.lwjgl.glfw.GLFW
 import org.mozilla.javascript.Context
-import java.util.concurrent.CopyOnWriteArrayList
 
 object ClientListener : Initializer {
     private var ticksPassed: Int = 0
@@ -132,7 +132,7 @@ object ClientListener : Initializer {
             TriggerType.WORLD_UNLOAD.triggerAll()
         }
 
-        CTEvents.PACKET_RECECIVED.register { packet, ctx ->
+        CTEvents.PACKET_RECEIVED.register { packet, ctx ->
             JSLoader.wrapInContext(packetContext) {
                 TriggerType.PACKET_RECEIVED.triggerAll(packet, ctx)
             }
@@ -144,19 +144,7 @@ object ClientListener : Initializer {
 
         CTEvents.RENDER_OVERLAY.register { stack, partialTicks ->
             renderTrigger(stack, partialTicks) {
-                TriggerType.RENDER_OVERLAY.triggerAll(CancellableEvent())
-            }
-        }
-
-        CTEvents.PRE_RENDER_WORLD.register { stack, partialTicks ->
-            renderTrigger(stack, partialTicks) {
-                TriggerType.PRE_RENDER_WORLD.triggerAll(partialTicks)
-            }
-        }
-
-        CTEvents.POST_RENDER_WORLD.register { stack, partialTicks ->
-            renderTrigger(stack, partialTicks) {
-                TriggerType.POST_RENDER_WORLD.triggerAll(partialTicks)
+                TriggerType.RENDER_OVERLAY.triggerAll()
             }
         }
 
@@ -280,10 +268,9 @@ object ClientListener : Initializer {
         }
     }
 
-    private fun renderTrigger(stack: MatrixStack, partialTicks: Float, block: () -> Unit) {
+    internal fun renderTrigger(stack: MatrixStack, partialTicks: Float, block: () -> Unit) {
         Renderer.partialTicks = partialTicks
-        Renderer.matrixStack = UMatrixStack(stack)
-        Renderer.pushMatrix()
+        Renderer.pushMatrix(UMatrixStack(stack))
         block()
         Renderer.popMatrix()
     }

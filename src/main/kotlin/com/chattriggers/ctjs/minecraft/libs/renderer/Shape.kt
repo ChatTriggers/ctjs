@@ -102,18 +102,16 @@ class Shape(private var color: Long) {
 
     fun draw() = apply {
         Renderer.apply {
-            enableBlend()
-            tryBlendFuncSeparate(770, 771, 1, 0)
             doColor(color)
-            begin(drawMode)
+            Renderer3d.begin(drawMode)
 
             if (area < 0) {
-                vertexes.forEach { pos(it.x, it.y, 0f) }
+                vertexes.forEach { Renderer3d.pos(it.x, it.y, 0f) }
             } else {
-                reversedVertexes.forEach { pos(it.x, it.y, 0f) }
+                reversedVertexes.forEach { Renderer3d.pos(it.x, it.y, 0f) }
             }
 
-            draw()
+            Renderer3d.draw()
         }
     }
 

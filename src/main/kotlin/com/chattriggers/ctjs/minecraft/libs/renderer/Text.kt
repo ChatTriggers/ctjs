@@ -176,7 +176,6 @@ class Text {
             yHolder += scale * 10
         }
         Renderer.disableBlend()
-        Renderer.resetTransformsIfNecessary()
     }
 
     private fun updateFormatting() {

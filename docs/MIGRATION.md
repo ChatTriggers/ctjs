@@ -86,6 +86,7 @@ Here is a list of targeted changes for various different APIs:
     - It previously took a `PlayerMP` (which was always the player since this is a client mod) and the item's position/motion, both of which can be obtained by methods on `Item`
   - `renderEntity` no longer takes the entity's position as an argument. Instead, call `Entity.getPos()`
   - `spawnParticle` no longer passes in the particle type (which no longer exists in the MC codebase). Instead, the class can be access from the particle wrapper's underlying MC type
+  - `renderOverlay` no longer passes in the event, as it was unused previously
 - The `/ct` command
   - Removed `/ct copy`. Replace this with `Client.copy(text: String)`
   - Removed the following aliases: 
@@ -164,16 +165,19 @@ Here is a list of targeted changes for various different APIs:
 - `Image`
   - Remove deprecated constructors. Instead, use the static helper methods: `Image.fromFile(File)`, `Image.fromFile(string)`, `Image.fromAsset(string)`, and `Image.fromUrl(String[, String])`
 - `Renderer`/`Tessellator`
-  - `Tessellator` has been removed. Instead, all of its methods have been added to `Renderer`. This means that all rendering is done through the same unified API
+  - `Tessellator` has been renamed to `Renderer3d`. Some of its methods may have changed and/or moved to `Renderer`
+  - `Renderer.color()` has been replaced with `Renderer.getColor()`. The new `color()` method is used to color the vertices instead
   - Removed `drawShape`. Instead, create a `Shape` and invoke its `draw()` method
-  - Renamed `color()` to `getColor()`
   - `begin()` now no longer translates to the player's camera position. Instead, use `Renderer.translateToPlayer()`
   - `begin()` now takes a `Renderer.VertexFormat` as an optional second argument
   - `drawString` now takes an optional `color` parameter as its 4th argument
   - `drawPlayer` now takes an object, as even more parameters were added. Check the javadocs for a full description of the parameters
-  - Added `drawString3D()` to replace `Tessellator.drawString()`
   - Removed `drawLine()`'s `drawMode` argument
   - Removed `drawCircle()`'s `drawMode` argument
+  - Removed `getDrawMode()` and `setDrawMode()`. Pass the drawMode to `begin`
+  - Removed `retainTransforms()`
+  - `Renderer3d`'s `drawString()` should be placed in the `preRenderWorld` trigger
+    - Most other rendering should be in `postRenderWorld`
 - `Gui`/`GuiHandler`
   - `GuiHandler` has been removed. It only had one relevant method (`openGui()`), which can be replaced by `Client.currentGui.set()`
   - Removed `isControlDown()`, `isAltDown()`, and `isShiftDown()`. Instead, use the method that already exist on `Screen`: `hasControlDown()`, `hasAltDown()`, and `hasShiftDown()`

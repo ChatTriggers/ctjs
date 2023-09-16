@@ -7,6 +7,7 @@ import com.chattriggers.ctjs.utils.MCBlockPos
 import com.chattriggers.ctjs.utils.MCEntity
 import com.mojang.brigadier.CommandDispatcher
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
+import net.fabricmc.fabric.api.event.Event
 import net.fabricmc.fabric.api.event.EventFactory
 import net.minecraft.client.gui.Drawable
 import net.minecraft.client.gui.screen.Screen
@@ -108,7 +109,7 @@ internal object CTEvents {
     }
 
     @JvmField
-    val PACKET_RECECIVED = make<PacketReceivedCallback> { listeners ->
+    val PACKET_RECEIVED = make<PacketReceivedCallback> { listeners ->
         PacketReceivedCallback { packet, cb -> listeners.forEach { it.receive(packet, cb) } }
     }
 
@@ -159,5 +160,7 @@ internal object CTEvents {
         }
     }
 
-    private inline fun <reified T> make(noinline reducer: (Array<T>) -> T) = EventFactory.createArrayBacked(T::class.java, reducer)
+    private inline fun <reified T> make(noinline reducer: (Array<T>) -> T): Event<T> {
+        return EventFactory.createArrayBacked(T::class.java, reducer)
+    }
 }

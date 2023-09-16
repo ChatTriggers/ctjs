@@ -25,3 +25,4 @@ typealias MCChatVisibility = net.minecraft.client.option.ChatVisibility
 typealias MCCloudRenderMode = net.minecraft.client.option.CloudRenderMode
 typealias MCParticlesMode = net.minecraft.client.option.ParticlesMode
 typealias MCDimensionType = net.minecraft.world.dimension.DimensionType
+typealias MCVertexFormat = net.minecraft.client.render.VertexFormat
