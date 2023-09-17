@@ -55,12 +55,16 @@ object Reference {
 
         thread {
             ModuleManager.setup()
+            Client.getMinecraft().options.load()
+
+            // Need to set isLoaded to true before running modules, otherwise custom triggers
+            // activated at the top level will not work
+            isLoaded = true
+
             ModuleManager.entryPass()
 
-            Client.getMinecraft().options.load()
             if (asCommand)
                 ChatLib.chat("&aDone reloading!")
-            isLoaded = true
 
             TriggerType.GAME_LOAD.triggerAll()
             if (World.isLoaded())
