@@ -2,22 +2,27 @@ package com.chattriggers.ctjs.commands
 
 import com.chattriggers.ctjs.Reference
 import com.chattriggers.ctjs.commands.StaticCommand.Companion.onExecute
-import com.chattriggers.ctjs.engine.module.ModuleManager
-import com.chattriggers.ctjs.minecraft.libs.ChatLib
-import com.chattriggers.ctjs.minecraft.listeners.ClientListener
-import com.chattriggers.ctjs.minecraft.objects.Message
-import com.chattriggers.ctjs.minecraft.wrappers.Client
-import com.chattriggers.ctjs.utils.Config
+import com.chattriggers.ctjs.compat.Migration
 import com.chattriggers.ctjs.console.ConsoleManager
 import com.chattriggers.ctjs.console.printTraceToConsole
 import com.chattriggers.ctjs.engine.js.JSLoader
+import com.chattriggers.ctjs.engine.module.ModuleManager
 import com.chattriggers.ctjs.engine.module.ModulesGui
+import com.chattriggers.ctjs.minecraft.libs.ChatLib
+import com.chattriggers.ctjs.minecraft.listeners.ClientListener
+import com.chattriggers.ctjs.minecraft.objects.Message
 import com.chattriggers.ctjs.minecraft.objects.TextComponent
+import com.chattriggers.ctjs.minecraft.wrappers.Client
+import com.chattriggers.ctjs.utils.Config
 import com.chattriggers.ctjs.utils.Initializer
 import com.chattriggers.ctjs.utils.toVersion
 import com.mojang.brigadier.CommandDispatcher
+import com.mojang.brigadier.StringReader
+import com.mojang.brigadier.arguments.ArgumentType
 import com.mojang.brigadier.arguments.IntegerArgumentType
 import com.mojang.brigadier.arguments.StringArgumentType
+import com.mojang.brigadier.context.CommandContext
+import com.mojang.brigadier.exceptions.CommandSyntaxException
 import gg.essential.universal.UDesktop
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
@@ -25,7 +30,9 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallba
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import net.minecraft.text.ClickEvent
 import net.minecraft.text.HoverEvent
+import java.io.File
 import java.io.IOException
+import java.nio.file.Files
 import kotlin.concurrent.thread
 
 internal object CTCommand : Initializer {
@@ -91,6 +98,24 @@ internal object CTCommand : Initializer {
                     )
                     .onExecute { dump(DumpType.CHAT) }
             )
+            .then(
+                literal("migrate")
+                    .then(
+                        argument("input", FileArgumentType(File(Reference.MODULES_FOLDER)))
+                            .then(
+                                argument("output", FileArgumentType(File(Reference.MODULES_FOLDER)))
+                                    .onExecute {
+                                        val input = FileArgumentType.getFile(it, "input")
+                                        val output = FileArgumentType.getFile(it, "output")
+                                        Migration.migrate(input, output)
+                                    }
+                            )
+                            .onExecute {
+                                val input = FileArgumentType.getFile(it, "input")
+                                Migration.migrate(input, input)
+                            }
+                    )
+            )
             .onExecute { ChatLib.chat(getUsage()) }
 
         dispatcher.register(command)
@@ -127,14 +152,15 @@ internal object CTCommand : Initializer {
     private fun getUsage() = """
         &b&m${ChatLib.getChatBreak()}
         &c/ct load &7- &oReloads all of the ChatTriggers modules.
-        &c/ct import [module] &7- &oImports a module.
-        &c/ct delete [module] &7- &oDeletes a module.
+        &c/ct import <module> &7- &oImports a module.
+        &c/ct delete <module> &7- &oDeletes a module.
         &c/ct files &7- &oOpens the ChatTriggers folder.
         &c/ct modules &7- &oOpens the modules GUI.
         &c/ct console [language] &7- &oOpens the ChatTriggers console.
-        &c/ct simulate [message] &7- &oSimulates a received chat message.
+        &c/ct simulate <message> &7- &oSimulates a received chat message.
         &c/ct dump &7- &oDumps previous chat messages into chat.
         &c/ct settings &7- &oOpens the ChatTriggers settings.
+        &c/ct migrate <input> [output]&7 - &oMigrate a module from version 2.X to 3.X 
         &c/ct &7- &oDisplays this help dialog.
         &b&m${ChatLib.getChatBreak()}
     """.trimIndent()
@@ -185,6 +211,57 @@ internal object CTCommand : Initializer {
 
         companion object {
             fun fromString(str: String) = DumpType.values().first { it.name.equals(str, ignoreCase = true) }
+        }
+    }
+
+    private class FileArgumentType(private val relativeTo: File) : ArgumentType<File> {
+        override fun parse(reader: StringReader): File {
+            val isquoted = StringReader.isQuotedStringStart(reader.peek())
+            val path = if (isquoted) {
+                reader.readQuotedString()
+            } else reader.readStringUntilOrEof(' ')
+            return File(relativeTo, path)
+        }
+
+        override fun getExamples(): MutableCollection<String> {
+            return mutableListOf(
+                "/foo/bar/baz",
+                "C:\\foo\\bar\\baz",
+                "\"/path/with/spaces in the name\"",
+            )
+        }
+
+        // Copy and pasted from StringReader, but doesn't throw on EOF
+        fun StringReader.readStringUntilOrEof(terminator: Char): String {
+            val result = StringBuilder()
+            var escaped = false
+            while (canRead()) {
+                val c = read()
+                when {
+                    escaped -> {
+                        escaped = if (c == terminator || c == '\\') {
+                            result.append(c)
+                            false
+                        } else {
+                            cursor -= 1
+                            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidEscape()
+                                .createWithContext(this, c.toString())
+                        }
+                    }
+                    c == '\\' -> escaped = true
+                    c == terminator -> {
+                        cursor -= 1
+                        return result.toString()
+                    }
+                    else -> result.append(c)
+                }
+            }
+
+            return result.toString()
+        }
+
+        companion object {
+            fun getFile(ctx: CommandContext<*>, name: String) = ctx.getArgument(name, File::class.java)
         }
     }
 }
