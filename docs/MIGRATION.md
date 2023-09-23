@@ -87,6 +87,8 @@ Here is a list of targeted changes for various different APIs:
   - `renderEntity` no longer takes the entity's position as an argument. Instead, call `Entity.getPos()`
   - `spawnParticle` no longer passes in the particle type (which no longer exists in the MC codebase). Instead, the class can be access from the particle wrapper's underlying MC type
   - `renderOverlay` no longer passes in the event, as it was unused previously
+  - Removed all Trigger classes from the global namespace
+  - Removed `CancellableEvent` from the global scope
 - The `/ct` command
   - Removed `/ct copy`. Replace this with `Client.copy(text: String)`
   - Removed the following aliases: 
@@ -192,6 +194,7 @@ Here is a list of targeted changes for various different APIs:
 - `Client`
   - `getChatGUI` was renamed to `getChatGui` to match the naming of `getTabGui`
 - Removed `Config.modulesFolder`. Use `ChatTriggers.MODULES_FOLDER` or the string `"./config/ChatTriggers/modules"`
+- Renamed `ChatTriggers.loadCT()` and `ChatTriggers.unloadCT()` to `load()` and `unload()`
 - Provided JS API: 
   - Split `print` into `print` and `println`. `print` will no longer emit a trailing newline
 

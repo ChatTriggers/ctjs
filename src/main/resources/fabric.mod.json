@@ -15,9 +15,13 @@
     },
     "environment": "client",
     "entrypoints": {
-        "preLaunch": ["com.chattriggers.ctjs.launch.CTJSPreLaunch"],
+        "preLaunch": [
+            "com.chattriggers.ctjs.internal.launch.CTJSPreLaunch"
+        ],
         "client": ["com.chattriggers.ctjs.CTJS"],
-        "modmenu": ["com.chattriggers.ctjs.compat.ModMenuEntry"]
+        "modmenu": [
+            "com.chattriggers.ctjs.internal.compat.ModMenuEntry"
+        ]
     },
     "mixins": ["chattriggers.mixins.json"],
     "depends": {

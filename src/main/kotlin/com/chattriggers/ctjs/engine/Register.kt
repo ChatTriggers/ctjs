@@ -1,7 +1,7 @@
 package com.chattriggers.ctjs.engine
 
-import com.chattriggers.ctjs.minecraft.listeners.ClientListener
-import com.chattriggers.ctjs.triggers.*
+import com.chattriggers.ctjs.api.triggers.*
+import com.chattriggers.ctjs.internal.listeners.ClientListener
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 object Register {
