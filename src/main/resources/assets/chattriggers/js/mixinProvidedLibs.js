@@ -10,26 +10,26 @@
         }
     }
 
-    const JSLoader = Java.type('com.chattriggers.ctjs.engine.js.JSLoader').INSTANCE;
+    const JSLoader = Java.type('com.chattriggers.ctjs.internal.engine.JSLoader').INSTANCE;
     global.Console = JSLoader.getConsole();
 
     const Condition = Java.type('org.spongepowered.asm.mixin.injection.Constant').Condition;
-    const MixinObj = Java.type('com.chattriggers.ctjs.launch.Mixin');
-    const AtObj = Java.type('com.chattriggers.ctjs.launch.At');
-    const SliceObj = Java.type('com.chattriggers.ctjs.launch.Slice');
-    const LocalObj = Java.type('com.chattriggers.ctjs.launch.Local');
-    const ConstantObj = Java.type('com.chattriggers.ctjs.launch.Constant');
-    const InjectObj = Java.type('com.chattriggers.ctjs.launch.Inject');
-    const RedirectObj = Java.type('com.chattriggers.ctjs.launch.Redirect');
-    const ModifyArgObj = Java.type('com.chattriggers.ctjs.launch.ModifyArg');
-    const ModifyArgsObj = Java.type('com.chattriggers.ctjs.launch.ModifyArgs');
-    const ModifyConstantObj = Java.type('com.chattriggers.ctjs.launch.ModifyConstant');
-    const ModifyExpressionValueObj = Java.type('com.chattriggers.ctjs.launch.ModifyExpressionValue');
-    const ModifyReceiverObj = Java.type('com.chattriggers.ctjs.launch.ModifyReceiver');
-    const ModifyReturnValueObj = Java.type('com.chattriggers.ctjs.launch.ModifyReturnValue');
-    const ModifyVariableObj = Java.type('com.chattriggers.ctjs.launch.ModifyVariable');
-    const WrapOperationObj = Java.type('com.chattriggers.ctjs.launch.WrapOperation');
-    const WrapWithConditionObj = Java.type('com.chattriggers.ctjs.launch.WrapWithCondition');
+    const MixinObj = Java.type('com.chattriggers.ctjs.internal.launch.Mixin');
+    const AtObj = Java.type('com.chattriggers.ctjs.internal.launch.At');
+    const SliceObj = Java.type('com.chattriggers.ctjs.internal.launch.Slice');
+    const LocalObj = Java.type('com.chattriggers.ctjs.internal.launch.Local');
+    const ConstantObj = Java.type('com.chattriggers.ctjs.internal.launch.Constant');
+    const InjectObj = Java.type('com.chattriggers.ctjs.internal.launch.Inject');
+    const RedirectObj = Java.type('com.chattriggers.ctjs.internal.launch.Redirect');
+    const ModifyArgObj = Java.type('com.chattriggers.ctjs.internal.launch.ModifyArg');
+    const ModifyArgsObj = Java.type('com.chattriggers.ctjs.internal.launch.ModifyArgs');
+    const ModifyConstantObj = Java.type('com.chattriggers.ctjs.internal.launch.ModifyConstant');
+    const ModifyExpressionValueObj = Java.type('com.chattriggers.ctjs.internal.launch.ModifyExpressionValue');
+    const ModifyReceiverObj = Java.type('com.chattriggers.ctjs.internal.launch.ModifyReceiver');
+    const ModifyReturnValueObj = Java.type('com.chattriggers.ctjs.internal.launch.ModifyReturnValue');
+    const ModifyVariableObj = Java.type('com.chattriggers.ctjs.internal.launch.ModifyVariable');
+    const WrapOperationObj = Java.type('com.chattriggers.ctjs.internal.launch.WrapOperation');
+    const WrapWithConditionObj = Java.type('com.chattriggers.ctjs.internal.launch.WrapWithCondition');
 
     global.Condition = Condition
     global.Opcodes = Java.type('org.objectweb.asm.Opcodes');

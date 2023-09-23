@@ -1,14 +1,20 @@
 package com.chattriggers.ctjs
 
-import com.chattriggers.ctjs.console.*
-import com.chattriggers.ctjs.engine.module.ModuleManager
-import com.chattriggers.ctjs.minecraft.libs.renderer.Image
-import com.chattriggers.ctjs.minecraft.objects.Sound
-import com.chattriggers.ctjs.minecraft.wrappers.Client
-import com.chattriggers.ctjs.minecraft.wrappers.Player
-import com.chattriggers.ctjs.triggers.TriggerType
-import com.chattriggers.ctjs.utils.Config
-import com.chattriggers.ctjs.utils.Initializer
+import com.chattriggers.ctjs.api.Config
+import com.chattriggers.ctjs.api.client.Client
+import com.chattriggers.ctjs.api.client.KeyBind
+import com.chattriggers.ctjs.api.client.Player
+import com.chattriggers.ctjs.api.client.Sound
+import com.chattriggers.ctjs.api.commands.DynamicCommands
+import com.chattriggers.ctjs.api.message.ChatLib
+import com.chattriggers.ctjs.api.render.Image
+import com.chattriggers.ctjs.api.triggers.TriggerType
+import com.chattriggers.ctjs.api.world.World
+import com.chattriggers.ctjs.engine.Register
+import com.chattriggers.ctjs.internal.commands.StaticCommand
+import com.chattriggers.ctjs.internal.console.ConsoleManager
+import com.chattriggers.ctjs.internal.engine.module.ModuleManager
+import com.chattriggers.ctjs.internal.utils.Initializer
 import com.google.gson.Gson
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.loader.api.FabricLoader
@@ -48,27 +54,88 @@ internal class CTJS : ClientModInitializer {
         val hashedUUID = md.digest(uuid)
         val hash = Base64.getUrlEncoder().encodeToString(hashedUUID)
 
-        val url = "${WEBSITE_ROOT}/api/statistics/track?hash=$hash&version=${Reference.MOD_VERSION}"
+        val url = "$WEBSITE_ROOT/api/statistics/track?hash=$hash&version=$MOD_VERSION"
         val connection = makeWebRequest(url)
         connection.getInputStream()
     }
 
     companion object {
         const val WEBSITE_ROOT = "https://www.chattriggers.com"
-        internal val images = mutableListOf<Image>()
-        internal val sounds = mutableListOf<Sound>()
-        internal val isDevelopment = FabricLoader.getInstance().isDevelopmentEnvironment
+        const val MOD_VERSION = "3.0.0-beta"
+        const val MODULES_FOLDER = "./config/ChatTriggers/modules"
 
         val configLocation = File("./config")
         val assetsDir = File(configLocation, "ChatTriggers/assets/").apply { mkdirs() }
 
+        @JvmStatic
+        var isLoaded = true
+            private set
+
+        internal val images = mutableListOf<Image>()
+        internal val sounds = mutableListOf<Sound>()
+        internal val isDevelopment = FabricLoader.getInstance().isDevelopmentEnvironment
+
         internal val gson = Gson()
 
         @JvmOverloads
-        internal fun makeWebRequest(url: String, userAgent: String? = "Mozilla/5.0 (ChatTriggers)"): URLConnection = URL(url).openConnection().apply {
-            setRequestProperty("User-Agent", userAgent)
-            connectTimeout = 3000
-            readTimeout = 3000
+        internal fun makeWebRequest(url: String, userAgent: String? = "Mozilla/5.0 (ChatTriggers)"): URLConnection =
+            URL(url).openConnection().apply {
+                setRequestProperty("User-Agent", userAgent)
+                connectTimeout = 3000
+                readTimeout = 3000
+            }
+
+        @JvmStatic
+        fun unload(asCommand: Boolean = true) {
+            TriggerType.WORLD_UNLOAD.triggerAll()
+            TriggerType.GAME_UNLOAD.triggerAll()
+
+            isLoaded = false
+
+            ModuleManager.teardown()
+            KeyBind.clearKeyBinds()
+            ConsoleManager.clearConsoles()
+            Register.clearCustomTriggers()
+            StaticCommand.unregisterAll()
+            DynamicCommands.unregisterAll()
+
+            Client.scheduleTask {
+                images.forEach(Image::destroy)
+                sounds.forEach(Sound::destroy)
+
+                images.clear()
+                sounds.clear()
+            }
+
+            if (asCommand)
+                ChatLib.chat("&7Unloaded ChatTriggers")
+        }
+
+        @JvmStatic
+        fun load(asCommand: Boolean = true) {
+            Client.getMinecraft().options.write()
+            unload(asCommand = false)
+
+            if (asCommand)
+                ChatLib.chat("&cReloading ChatTriggers...")
+
+            thread {
+                ModuleManager.setup()
+                Client.getMinecraft().options.load()
+
+                // Need to set isLoaded to true before running modules, otherwise custom triggers
+                // activated at the top level will not work
+                isLoaded = true
+
+                ModuleManager.entryPass()
+
+                if (asCommand)
+                    ChatLib.chat("&aDone reloading!")
+
+                TriggerType.GAME_LOAD.triggerAll()
+                if (World.isLoaded())
+                    TriggerType.WORLD_LOAD.triggerAll()
+            }
         }
     }
 }

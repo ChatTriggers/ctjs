@@ -1,7 +1,7 @@
 {
     "required": true,
     "minVersion": "0.8",
-    "package": "com.chattriggers.ctjs.mixins",
+    "package": "com.chattriggers.ctjs.internal.mixins",
     "compatibilityLevel": "JAVA_17",
     "client": [
         "AbstractSoundInstanceAccessor",
@@ -57,5 +57,5 @@
     "injectors": {
         "defaultRequire": 1
     },
-    "plugin": "com.chattriggers.ctjs.launch.CTMixinPlugin"
+    "plugin": "com.chattriggers.ctjs.internal.launch.CTMixinPlugin"
 }
