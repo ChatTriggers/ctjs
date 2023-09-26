@@ -450,7 +450,7 @@ object Renderer {
 
         doColor(color)
 
-        Renderer3d.begin()
+        begin()
             .pos(pos[0], pos[3], 0f)
             .pos(pos[2], pos[3], 0f)
             .pos(pos[2], pos[1], 0f)
@@ -473,7 +473,7 @@ object Renderer {
 
         doColor(color)
 
-        Renderer3d.begin()
+        begin()
             .pos(x1 + i, y1 + j, 0f)
             .pos(x2 + i, y2 + j, 0f)
             .pos(x2 - i, y2 - j, 0f)
@@ -499,20 +499,19 @@ object Renderer {
 
         doColor(color)
 
-        Renderer3d.begin(DrawMode.TRIANGLE_STRIP)
+        begin(DrawMode.TRIANGLE_STRIP)
 
         for (i in 0..steps) {
-            Renderer3d
-                .pos(x, y, 0f)
-                .pos(circleX * radius + x, circleY * radius + y, 0f)
+            pos(x, y, 0f)
+            pos(circleX * radius + x, circleY * radius + y, 0f)
             xHolder = circleX
             circleX = cos * circleX - sin * circleY
             circleY = sin * xHolder + cos * circleY
 
-            Renderer3d.pos(circleX * radius + x, circleY * radius + y, 0f)
+            pos(circleX * radius + x, circleY * radius + y, 0f)
         }
 
-        Renderer3d.draw()
+        draw()
     }
 
     @JvmStatic
@@ -566,7 +565,7 @@ object Renderer {
 
         RenderSystem.setShaderTexture(0, image.getTexture().glId)
 
-        Renderer3d.begin(DrawMode.QUADS, VertexFormat.POSITION_TEXTURE)
+        begin(DrawMode.QUADS, VertexFormat.POSITION_TEXTURE)
             .pos(x, y + height, 0f).tex(0f, 1f)
             .pos(x + width, y + height, 0f).tex(1f, 1f)
             .pos(x + width, y, 0f).tex(1f, 0f)
