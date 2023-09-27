@@ -15,3 +15,17 @@ preprocess {
 apiValidation {
     ignoredPackages.add("com.chattriggers.ctjs.internal")
 }
+
+tasks.register("generateDokkaDocs") {
+    group = "documentation"
+
+    val mainProjectName = rootProject.file("versions/mainProject").readText().trim()
+    val mainProject = subprojects.first { mainProjectName in it.name }
+    dependsOn(mainProject.tasks["dokkaHtml"])
+
+    doLast {
+        val dest = rootProject.file("build/javadocs/")
+        dest.deleteRecursively()
+        mainProject.file("build/javadocs/").copyRecursively(dest)
+    }
+}

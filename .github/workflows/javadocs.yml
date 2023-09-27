@@ -30,7 +30,7 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: Build Javadocs
-        run: ./gradlew --no-daemon dokkaHtml
+        run: ./gradlew --no-daemon generateDokkaDocs
 
       - name: Publish Javadocs
         uses: appleboy/scp-action@master
