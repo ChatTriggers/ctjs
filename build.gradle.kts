@@ -127,6 +127,11 @@ tasks {
 }
 
 tasks.dokkaHtml {
+    // Just use the module name here since the MC version doesn't affect CT's API
+    // across the same mod version
+    moduleVersion.set(modVersion)
+    moduleName.set("ctjs")
+
     val docVersionsDir = projectDir.resolve("build/javadocs")
     val currentVersion = project.version.toString()
     val currentDocsDir = docVersionsDir.resolve(currentVersion)
@@ -135,11 +140,12 @@ tasks.dokkaHtml {
     outputDirectory.set(file(currentDocsDir))
 
     pluginConfiguration<VersioningPlugin, VersioningConfiguration> {
-        version = currentVersion
+        version = modVersion
         olderVersionsDir = docVersionsDir
         renderVersionsNavigationOnAllPages = true
     }
 
+    suppressObviousFunctions.set(true)
     suppressInheritedMembers.set(true)
 
     val branch = getBranch()
@@ -148,7 +154,7 @@ tasks.dokkaHtml {
             jdkVersion.set(17)
 
             perPackageOption {
-                matchingRegex.set("com\\.chattriggers\\.ctjs\\.internal")
+                matchingRegex.set("com\\.chattriggers\\.ctjs\\.internal(\$|\\.).*")
                 suppress.set(true)
             }
 
@@ -156,6 +162,11 @@ tasks.dokkaHtml {
                 localDirectory.set(file("src/main/kotlin"))
                 remoteUrl.set(URL("https://github.com/ChatTriggers/ctjs/blob/$branch/src/main/kotlin"))
                 remoteLineSuffix.set("#L")
+            }
+
+            externalDocumentationLink {
+                url.set(URL("https://maven.fabricmc.net/docs/yarn-$yarnMappings/"))
+                packageListUrl.set(URL("https://maven.fabricmc.net/docs/yarn-$yarnMappings/element-list"))
             }
         }
     }
