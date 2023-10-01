@@ -86,7 +86,7 @@ object ClientListener : Initializer {
 
         ClientSendMessageEvents.ALLOW_COMMAND.register { message ->
             val event = CancellableEvent()
-            TriggerType.MESSAGE_SENT.triggerAll(message, event)
+            TriggerType.MESSAGE_SENT.triggerAll("/$message", event)
 
             !event.isCancelled()
         }
