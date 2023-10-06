@@ -219,13 +219,13 @@ object DynamicCommands : CommandCollection() {
     /////////////////////////
 
     /**
-     * @see <a href="https://minecraft.fandom.com/wiki/Argument_types#brigadier:bool">Argument Types: bool</a>
+     * @see <a href="https://minecraft.wiki/w/Argument_types#brigadier:bool">Argument Types: bool</a>
      */
     @JvmStatic
     fun bool(): BoolArgumentType = BoolArgumentType.bool()
 
     /**
-     * @see <a href="https://minecraft.fandom.com/wiki/Argument_types#brigadier:double">brigadier:double</a>
+     * @see <a href="https://minecraft.wiki/w/Argument_types#brigadier:double">brigadier:double</a>
      */
     @JvmStatic
     @JvmOverloads
@@ -233,7 +233,7 @@ object DynamicCommands : CommandCollection() {
         DoubleArgumentType.doubleArg(min, max)
 
     /**
-     * @see <a href="https://minecraft.fandom.com/wiki/Argument_types#brigadier:float">brigadier:float</a>
+     * @see <a href="https://minecraft.wiki/w/Argument_types#brigadier:float">brigadier:float</a>
      */
     @JvmStatic
     @JvmOverloads
@@ -241,7 +241,7 @@ object DynamicCommands : CommandCollection() {
         FloatArgumentType.floatArg(min, max)
 
     /**
-     * @see <a href="https://minecraft.fandom.com/wiki/Argument_types#brigadier:integer">brigadier:integer</a>
+     * @see <a href="https://minecraft.wiki/w/Argument_types#brigadier:integer">brigadier:integer</a>
      */
     @JvmStatic
     @JvmOverloads
@@ -249,7 +249,7 @@ object DynamicCommands : CommandCollection() {
         IntegerArgumentType.integer(min, max)
 
     /**
-     * @see <a href="https://minecraft.fandom.com/wiki/Argument_types#brigadier:long">brigadier:long</a>
+     * @see <a href="https://minecraft.wiki/w/Argument_types#brigadier:long">brigadier:long</a>
      */
     @JvmStatic
     @JvmOverloads
@@ -257,19 +257,19 @@ object DynamicCommands : CommandCollection() {
         LongArgumentType.longArg(min, max)
 
     /**
-     * @see <a href="https://minecraft.fandom.com/wiki/Argument_types#brigadier:string">brigadier:string</a>
+     * @see <a href="https://minecraft.wiki/w/Argument_types#brigadier:string">brigadier:string</a>
      */
     @JvmStatic
     fun string(): StringArgumentType = StringArgumentType.string()
 
     /**
-     * @see <a href="https://minecraft.fandom.com/wiki/Argument_types#brigadier:string">brigadier:string</a>
+     * @see <a href="https://minecraft.wiki/w/Argument_types#brigadier:string">brigadier:string</a>
      */
     @JvmStatic
     fun greedyString(): StringArgumentType = StringArgumentType.greedyString()
 
     /**
-     * @see <a href="https://minecraft.fandom.com/wiki/Argument_types#brigadier:string">brigadier:string</a>
+     * @see <a href="https://minecraft.wiki/w/Argument_types#brigadier:string">brigadier:string</a>
      */
     @JvmStatic
     fun word(): StringArgumentType = StringArgumentType.word()
@@ -279,13 +279,13 @@ object DynamicCommands : CommandCollection() {
     //////////////////
 
     /**
-     * @see <a href="https://minecraft.fandom.com/wiki/Argument_types#minecraft:angle">minecraft:angle</a>
+     * @see <a href="https://minecraft.wiki/w/Argument_types#minecraft:angle">minecraft:angle</a>
      */
     @JvmStatic
     fun angle() = wrapArgument(AngleArgumentType.angle(), ::AngleArgumentWrapper)
 
     /**
-     * @see <a href="https://minecraft.fandom.com/wiki/Argument_types#minecraft:block_pos">minecraft:block_pos</a>
+     * @see <a href="https://minecraft.wiki/w/Argument_types#minecraft:block_pos">minecraft:block_pos</a>
      */
     @JvmStatic
     fun blockPos(): ArgumentType<PosArgument> {
@@ -293,7 +293,7 @@ object DynamicCommands : CommandCollection() {
     }
 
     /**
-     * @see <a href="https://minecraft.fandom.com/wiki/Argument_types#minecraft:block_predicate">minecraft:block_predicate</a>
+     * @see <a href="https://minecraft.wiki/w/Argument_types#minecraft:block_predicate">minecraft:block_predicate</a>
      */
     @JvmStatic
     fun blockPredicate(): ArgumentType<BlockPredicateWrapper> {
@@ -303,7 +303,7 @@ object DynamicCommands : CommandCollection() {
     }
 
     /**
-     * @see <a href="https://minecraft.fandom.com/wiki/Argument_types#minecraft:block_state">minecraft:block_state</a>
+     * @see <a href="https://minecraft.wiki/w/Argument_types#minecraft:block_state">minecraft:block_state</a>
      */
     @JvmStatic
     fun blockState(): ArgumentType<BlockStateArgumentWrapper> {
@@ -313,19 +313,19 @@ object DynamicCommands : CommandCollection() {
     }
 
     /**
-     * @see <a href="https://minecraft.fandom.com/wiki/Argument_types#minecraft:color">minecraft:color</a>
+     * @see <a href="https://minecraft.wiki/w/Argument_types#minecraft:color">minecraft:color</a>
      */
     @JvmStatic
     fun color() = ColorArgumentType.color()
 
     /**
-     * @see <a href="https://minecraft.fandom.com/wiki/Argument_types#minecraft:column_pos">minecraft:column_pos</a>
+     * @see <a href="https://minecraft.wiki/w/Argument_types#minecraft:column_pos">minecraft:column_pos</a>
      */
     @JvmStatic
     fun columnPos() = wrapArgument(ColumnPosArgumentType.columnPos(), ::PosArgumentWrapper)
 
     /**
-     * @see <a href="https://minecraft.fandom.com/wiki/Argument_types#minecraft:dimension">minecraft:dimension</a>
+     * @see <a href="https://minecraft.wiki/w/Argument_types#minecraft:dimension">minecraft:dimension</a>
      */
     @JvmStatic
     fun dimension() = wrapArgument(
@@ -340,31 +340,31 @@ object DynamicCommands : CommandCollection() {
     }
 
     /**
-     * @see <a href="https://minecraft.fandom.com/wiki/Argument_types#minecraft:entity">minecraft:entity</a>
+     * @see <a href="https://minecraft.wiki/w/Argument_types#minecraft:entity">minecraft:entity</a>
      */
     @JvmStatic
     fun entity() = wrapArgument(EntityArgumentType.entity()) { EntitySelectorWrapper(it).getEntity() }
 
     /**
-     * @see <a href="https://minecraft.fandom.com/wiki/Argument_types#minecraft:entity">minecraft:entity</a>
+     * @see <a href="https://minecraft.wiki/w/Argument_types#minecraft:entity">minecraft:entity</a>
      */
     @JvmStatic
     fun entities() = wrapArgument(EntityArgumentType.entities()) { EntitySelectorWrapper(it).getEntities() }
 
     /**
-     * @see <a href="https://minecraft.fandom.com/wiki/Argument_types#minecraft:float_range">minecraft:float_range</a>
+     * @see <a href="https://minecraft.wiki/w/Argument_types#minecraft:float_range">minecraft:float_range</a>
      */
     @JvmStatic
     fun floatRange() = NumberRangeArgumentType.floatRange()
 
     /**
-     * @see <a href="https://minecraft.fandom.com/wiki/Argument_types#minecraft:game_profile">minecraft:game_profile</a>
+     * @see <a href="https://minecraft.wiki/w/Argument_types#minecraft:game_profile">minecraft:game_profile</a>
      */
     @JvmStatic
     fun gameProfile() = players()
 
     /**
-     * @see <a href="https://minecraft.fandom.com/wiki/Argument_types#minecraft:game_profile">minecraft:game_profile</a>
+     * @see <a href="https://minecraft.wiki/w/Argument_types#minecraft:game_profile">minecraft:game_profile</a>
      */
     @JvmStatic
     fun player() = wrapArgument(EntityArgumentType.player()) {
@@ -378,25 +378,25 @@ object DynamicCommands : CommandCollection() {
     }
 
     /**
-     * @see <a href="https://minecraft.fandom.com/wiki/Argument_types#minecraft:game_profile">minecraft:game_profile</a>
+     * @see <a href="https://minecraft.wiki/w/Argument_types#minecraft:game_profile">minecraft:game_profile</a>
      */
     @JvmStatic
     fun players() = wrapArgument(EntityArgumentType.players()) { EntitySelectorWrapper(it).getPlayers() }
 
     /**
-     * @see <a href="https://minecraft.fandom.com/wiki/Argument_types#minecraft:gamemode">minecraft:gamemode</a>
+     * @see <a href="https://minecraft.wiki/w/Argument_types#minecraft:gamemode">minecraft:gamemode</a>
      */
     @JvmStatic
     fun gameMode() = GameModeArgumentType.gameMode()
 
     /**
-     * @see <a href="https://minecraft.fandom.com/wiki/Argument_types#minecraft:int_range">minecraft:int_range</a>
+     * @see <a href="https://minecraft.wiki/w/Argument_types#minecraft:int_range">minecraft:int_range</a>
      */
     @JvmStatic
     fun intRange() = NumberRangeArgumentType.intRange()
 
     /**
-     * @see <a href="https://minecraft.fandom.com/wiki/Argument_types#minecraft:item_predicate">minecraft:item_predicate</a>
+     * @see <a href="https://minecraft.wiki/w/Argument_types#minecraft:item_predicate">minecraft:item_predicate</a>
      */
     @JvmStatic
     fun itemPredicate(): ArgumentType<(Item) -> Boolean> {
@@ -406,13 +406,13 @@ object DynamicCommands : CommandCollection() {
     }
 
     /**
-     * @see <a href="https://minecraft.fandom.com/wiki/Argument_types#minecraft:item_slot">minecraft:item_slot</a>
+     * @see <a href="https://minecraft.wiki/w/Argument_types#minecraft:item_slot">minecraft:item_slot</a>
      */
     @JvmStatic
     fun itemSlot() = ItemSlotArgumentType.itemSlot()
 
     /**
-     * @see <a href="https://minecraft.fandom.com/wiki/Argument_types#minecraft:item_stack">minecraft:item_stack</a>
+     * @see <a href="https://minecraft.wiki/w/Argument_types#minecraft:item_stack">minecraft:item_stack</a>
      */
     @JvmStatic
     fun itemStack(): ArgumentType<ItemStackArgumentWrapper> {
@@ -422,62 +422,62 @@ object DynamicCommands : CommandCollection() {
     }
 
     /**
-     * @see <a href="https://minecraft.fandom.com/wiki/Argument_types#minecraft:message">minecraft:message</a>
+     * @see <a href="https://minecraft.wiki/w/Argument_types#minecraft:message">minecraft:message</a>
      */
     @JvmStatic
     fun message() = wrapArgument(MessageArgumentType.message(), ::MessageFormatArgumentWrapper)
 
     /**
-     * @see <a href="https://minecraft.fandom.com/wiki/Argument_types#minecraft:nbt_compound_tag">minecraft:nbt_compound_tag</a>
+     * @see <a href="https://minecraft.wiki/w/Argument_types#minecraft:nbt_compound_tag">minecraft:nbt_compound_tag</a>
      */
     @JvmStatic
     fun nbtCompoundTag() = wrapArgument(NbtCompoundArgumentType.nbtCompound(), ::NBTTagCompound)
 
     /**
-     * @see <a href="https://minecraft.fandom.com/wiki/Argument_types#minecraft:nbt_path">minecraft:nbt_path</a>
+     * @see <a href="https://minecraft.wiki/w/Argument_types#minecraft:nbt_path">minecraft:nbt_path</a>
      */
     @JvmStatic
     fun nbtPath() = wrapArgument(NbtPathArgumentType.nbtPath(), ::NbtPathWrapper)
 
     /**
-     * @see <a href="https://minecraft.fandom.com/wiki/Argument_types#minecraft:nbt_tag">minecraft:nbt_tag</a>
+     * @see <a href="https://minecraft.wiki/w/Argument_types#minecraft:nbt_tag">minecraft:nbt_tag</a>
      */
     @JvmStatic
     fun nbtTag() = wrapArgument(NbtElementArgumentType.nbtElement(), NBTBase::fromMC)
 
     /**
-     * @see <a href="https://minecraft.fandom.com/wiki/Argument_types#minecraft:resource">minecraft:resource</a>
+     * @see <a href="https://minecraft.wiki/w/Argument_types#minecraft:resource">minecraft:resource</a>
      */
     @JvmStatic
     fun resource() = IdentifierArgumentType.identifier()
 
     /**
-     * @see <a href="https://minecraft.fandom.com/wiki/Argument_types#minecraft:rotation">minecraft:rotation</a>
+     * @see <a href="https://minecraft.wiki/w/Argument_types#minecraft:rotation">minecraft:rotation</a>
      */
     @JvmStatic
     fun rotation() = wrapArgument(RotationArgumentType.rotation(), ::PosArgumentWrapper)
 
     /**
-     * @see <a href="https://minecraft.fandom.com/wiki/Argument_types#minecraft:swizzle">minecraft:swizzle</a>
+     * @see <a href="https://minecraft.wiki/w/Argument_types#minecraft:swizzle">minecraft:swizzle</a>
      */
     @JvmStatic
     fun swizzle() = wrapArgument(SwizzleArgumentType.swizzle()) { it.map(BlockFace.Axis::fromMC) }
 
     /**
-     * @see <a href="https://minecraft.fandom.com/wiki/Argument_types#minecraft:time">minecraft:time</a>
+     * @see <a href="https://minecraft.wiki/w/Argument_types#minecraft:time">minecraft:time</a>
      */
     @JvmStatic
     @JvmOverloads
     fun time(minimum: Int = 0) = TimeArgumentType.time(minimum)
 
     /**
-     * @see <a href="https://minecraft.fandom.com/wiki/Argument_types#minecraft:uuid">minecraft:uuid</a>
+     * @see <a href="https://minecraft.wiki/w/Argument_types#minecraft:uuid">minecraft:uuid</a>
      */
     @JvmStatic
     fun uuid() = UuidArgumentType.uuid()
 
     /**
-     * @see <a href="https://minecraft.fandom.com/wiki/Argument_types#minecraft:vec2">minecraft:vec2</a>
+     * @see <a href="https://minecraft.wiki/w/Argument_types#minecraft:vec2">minecraft:vec2</a>
      */
     @JvmStatic
     @JvmOverloads
@@ -485,7 +485,7 @@ object DynamicCommands : CommandCollection() {
         wrapArgument(Vec2ArgumentType.vec2(centerIntegers), ::PosArgumentWrapper)
 
     /**
-     * @see <a href="https://minecraft.fandom.com/wiki/Argument_types#minecraft:vec3">minecraft:vec3</a>
+     * @see <a href="https://minecraft.wiki/w/Argument_types#minecraft:vec3">minecraft:vec3</a>
      */
     @JvmStatic
     @JvmOverloads
