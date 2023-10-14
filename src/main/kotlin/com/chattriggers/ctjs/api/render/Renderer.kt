@@ -525,7 +525,7 @@ object Renderer {
             fr.draw(
                 it,
                 x,
-                y,
+                newY,
                 color.toInt(),
                 shadow,
                 matrixStack.toMC().peek().positionMatrix,
