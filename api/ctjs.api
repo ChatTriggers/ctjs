@@ -1775,6 +1775,7 @@ public final class com/chattriggers/ctjs/api/render/Renderer3d {
 	public static final fun drawString (Ljava/lang/String;FFFJZFZZ)V
 	public static final fun drawString (Lorg/mozilla/javascript/NativeObject;)V
 	public static synthetic fun drawString$default (Ljava/lang/String;FFFJZFZZILjava/lang/Object;)V
+	public static final fun endVertex ()Lcom/chattriggers/ctjs/api/render/Renderer3d;
 	public static final fun light (II)Lcom/chattriggers/ctjs/api/render/Renderer3d;
 	public static final fun normal (FFF)Lcom/chattriggers/ctjs/api/render/Renderer3d;
 	public static final fun overlay (II)Lcom/chattriggers/ctjs/api/render/Renderer3d;

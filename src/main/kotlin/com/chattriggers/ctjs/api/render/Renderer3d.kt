@@ -161,6 +161,16 @@ object Renderer3d {
     }
 
     /**
+     * End the current vertex
+     *
+     * @return [Renderer3d] to allow for method chaining
+     */
+    @JvmStatic
+    fun endVertex() = apply {
+        worldRenderer.endVertex()
+    }
+
+    /**
      * Finalizes vertices and draws the world renderer.
      */
     @JvmStatic
@@ -333,8 +343,8 @@ object Renderer3d {
         val normalVec = Vector3f(x2 - x1, y2 - y1, z2 - z1).normalize()
 
         begin(Renderer.DrawMode.LINES, Renderer.VertexFormat.LINES)
-        normal(normalVec.x, normalVec.y, normalVec.z)
-        normal(normalVec.x, normalVec.y, normalVec.z)
+        pos(x1, y1, z1).color(r, g, b, a).normal(normalVec.x, normalVec.y, normalVec.z).endVertex()
+        pos(x2, y2, z2).color(r, g, b, a).normal(normalVec.x, normalVec.y, normalVec.z).endVertex()
         draw()
 
         RenderSystem.lineWidth(1f)
