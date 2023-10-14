@@ -7,6 +7,7 @@ import com.chattriggers.ctjs.internal.utils.MCEntity
 import com.chattriggers.ctjs.internal.utils.MCLivingEntity
 import net.minecraft.entity.EquipmentSlot
 import net.minecraft.entity.effect.StatusEffect
+import net.minecraft.registry.Registries
 
 open class LivingEntity(override val mcValue: MCLivingEntity) : Entity(mcValue) {
     fun getActivePotionEffects(): List<PotionEffect> {
@@ -38,7 +39,7 @@ open class LivingEntity(override val mcValue: MCLivingEntity) : Entity(mcValue) 
 
     fun getArmorValue() = mcValue.armor
 
-    fun isPotionActive(id: Int) = mcValue.hasStatusEffect(StatusEffect.byRawId(id))
+    fun isPotionActive(id: Int) = mcValue.hasStatusEffect(Registries.STATUS_EFFECT.get(id))
 
     fun isPotionActive(type: PotionEffectType) = mcValue.hasStatusEffect(type.type)
 

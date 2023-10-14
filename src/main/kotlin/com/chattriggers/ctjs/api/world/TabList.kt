@@ -12,6 +12,10 @@ import net.minecraft.client.network.PlayerListEntry
 import net.minecraft.text.Text
 import net.minecraft.world.GameMode
 
+//#if MC==12002
+import net.minecraft.scoreboard.ScoreboardDisplaySlot
+//#endif
+
 object TabList {
     private val playerComparator = Ordering.from(PlayerComparator())
 
@@ -26,7 +30,11 @@ object TabList {
     @JvmStatic
     fun getNamesByObjectives(): List<String> {
         val scoreboard = Scoreboard.toMC() ?: return emptyList()
-        val sidebarObjective = scoreboard.getObjectiveForSlot(0) ?: return emptyList()
+        //#if MC>=12202
+        val sidebarObjective = scoreboard.getObjectiveForSlot(ScoreboardDisplaySlot.LIST) ?: return emptyList()
+        //#else
+        //$$ val sidebarObjective = scoreboard.getObjectiveForSlot(0) ?: return emptyList()
+        //#endif
 
         val scores = scoreboard.getAllPlayerScores(sidebarObjective)
 

@@ -2,13 +2,14 @@ package com.chattriggers.ctjs.api.world
 
 import com.chattriggers.ctjs.api.message.TextComponent
 import net.minecraft.entity.effect.StatusEffect
+import net.minecraft.registry.Registries
 import java.awt.Color
 
 class PotionEffectType(val type: StatusEffect) {
     /**
      * The Int associated with this type
      */
-    val rawId get() = StatusEffect.getRawId(type)
+    val rawId get() = Registries.STATUS_EFFECT.getRawId(type)
 
     /**
      * Whether this effect is instant (e.g. instant health)

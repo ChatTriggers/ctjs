@@ -56,12 +56,12 @@ dependencies {
     // need to exclude this version
     configurations.modApi { exclude("gg.essential", "universalcraft-1.18.1-fabric") }
 
-    include(modImplementation("gg.essential:vigilance-1.18.1-fabric:286")!!)
-    include(modImplementation("gg.essential:universalcraft-$platform:277")!!)
-    include(modImplementation("gg.essential:elementa-1.18.1-fabric:592")!!)
+    include(modImplementation("gg.essential:vigilance-1.18.1-fabric:295")!!)
+    include(modImplementation("gg.essential:universalcraft-$platform:316")!!)
+    include(modImplementation("gg.essential:elementa-1.18.1-fabric:610")!!)
 
     val modMenuVersion = when (mcVersion) {
-        "1.20.1-fabric" -> "7.2.1"
+        "1.20.1-fabric", "1.20.2-fabric" -> "7.2.1"
         "1.19.4-fabric" -> "6.3.1"
         else -> throw Exception("Minecraft version $modVersion is not supported")
     }

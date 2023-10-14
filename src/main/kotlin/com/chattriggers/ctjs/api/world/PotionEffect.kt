@@ -3,6 +3,7 @@ package com.chattriggers.ctjs.api.world
 import com.chattriggers.ctjs.api.message.TextComponent
 import net.minecraft.entity.effect.StatusEffect
 import net.minecraft.entity.effect.StatusEffectInstance
+import net.minecraft.registry.Registries
 
 /**
  * Represents a specific instance of a [PotionEffectType]
@@ -30,7 +31,7 @@ class PotionEffect(val effect: StatusEffectInstance) {
 
     val duration get() = effect.duration
 
-    val id get() = StatusEffect.getRawId(effect.effectType)
+    val id get() = Registries.STATUS_EFFECT.getRawId(effect.effectType)
 
     val ambient get() = effect.isAmbient
 

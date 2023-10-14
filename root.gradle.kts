@@ -8,8 +8,10 @@ plugins {
 preprocess {
     val fabric11904 = createNode("1.19.4-fabric", 11904, "yarn")
     val fabric12001 = createNode("1.20.1-fabric", 12001, "yarn")
+    val fabric12002 = createNode("1.20.2-fabric", 12002, "yarn")
 
     fabric11904.link(fabric12001, file("versions/fabric1.19.4-1.20.1.txt"))
+    fabric12001.link(fabric12002)
 }
 
 apiValidation {

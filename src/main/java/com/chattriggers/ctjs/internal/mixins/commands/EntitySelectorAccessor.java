@@ -27,7 +27,11 @@ public interface EntitySelectorAccessor {
     Predicate<Entity> getBasePredicate();
 
     @Accessor
-    NumberRange.FloatRange getDistance();
+    //#if MC>=12002
+    NumberRange.DoubleRange getDistance();
+    //#else
+    //$$ NumberRange.FloatRange getDistance();
+    //#endif
 
     @Accessor
     Function<Vec3d, Vec3d> getPositionOffset();

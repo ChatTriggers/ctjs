@@ -312,10 +312,19 @@ public final class com/chattriggers/ctjs/api/client/Settings$ChatVisibility : ja
 	public static final field HIDDEN Lcom/chattriggers/ctjs/api/client/Settings$ChatVisibility;
 	public static final field SYSTEM Lcom/chattriggers/ctjs/api/client/Settings$ChatVisibility;
 	public static final fun from (Ljava/lang/Object;)Lcom/chattriggers/ctjs/api/client/Settings$ChatVisibility;
+	@1.20.2-fabric
+	public static final fun fromMC (Lnet/minecraft/network/message/ChatVisibility;)Lcom/chattriggers/ctjs/api/client/Settings$ChatVisibility;
+	@1.19.4-fabric,1.20.1-fabric
 	public static final fun fromMC (Lnet/minecraft/client/option/ChatVisibility;)Lcom/chattriggers/ctjs/api/client/Settings$ChatVisibility;
 	public synthetic fun getMcValue ()Ljava/lang/Object;
+	@1.20.2-fabric
+	public fun getMcValue ()Lnet/minecraft/network/message/ChatVisibility;
+	@1.19.4-fabric,1.20.1-fabric
 	public fun getMcValue ()Lnet/minecraft/client/option/ChatVisibility;
 	public synthetic fun toMC ()Ljava/lang/Object;
+	@1.20.2-fabric
+	public fun toMC ()Lnet/minecraft/network/message/ChatVisibility;
+	@1.19.4-fabric,1.20.1-fabric
 	public fun toMC ()Lnet/minecraft/client/option/ChatVisibility;
 	public static fun valueOf (Ljava/lang/String;)Lcom/chattriggers/ctjs/api/client/Settings$ChatVisibility;
 	public static fun values ()[Lcom/chattriggers/ctjs/api/client/Settings$ChatVisibility;
@@ -323,6 +332,9 @@ public final class com/chattriggers/ctjs/api/client/Settings$ChatVisibility : ja
 
 public final class com/chattriggers/ctjs/api/client/Settings$ChatVisibility$Companion {
 	public final fun from (Ljava/lang/Object;)Lcom/chattriggers/ctjs/api/client/Settings$ChatVisibility;
+	@1.20.2-fabric
+	public final fun fromMC (Lnet/minecraft/network/message/ChatVisibility;)Lcom/chattriggers/ctjs/api/client/Settings$ChatVisibility;
+	@1.19.4-fabric,1.20.1-fabric
 	public final fun fromMC (Lnet/minecraft/client/option/ChatVisibility;)Lcom/chattriggers/ctjs/api/client/Settings$ChatVisibility;
 }
 
