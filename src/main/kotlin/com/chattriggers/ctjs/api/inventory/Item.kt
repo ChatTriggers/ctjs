@@ -164,6 +164,7 @@ class Item(override val mcValue: ItemStack) : CTWrapper<ItemStack> {
         }
         //#else
         //$$ itemRenderer.renderInGui(Renderer.matrixStack.toMC(), mcValue, 0, 0)
+        //$$ Renderer.popMatrix()
         //#endif
     }
 
