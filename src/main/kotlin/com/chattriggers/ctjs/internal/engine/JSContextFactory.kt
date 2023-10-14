@@ -23,7 +23,7 @@ object JSContextFactory : ContextFactory() {
         cx.applicationClassLoader = classLoader
         cx.optimizationLevel = if (optimize) 9 else 0
         cx.languageVersion = Context.VERSION_ES6
-        cx.errorReporter = JSErrorReporter(JSLoader.console)
+        cx.errorReporter = JSErrorReporter
 
         if (!CTJS.isDevelopment)
             cx.javaObjectMappingProvider = CTJavaObjectMappingProvider

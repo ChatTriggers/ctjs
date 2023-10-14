@@ -13,9 +13,9 @@ import java.util.concurrent.CompletableFuture
  * Note that this should not reference any MC classes or CT classes outside of
  * this package.
  *
- * @see RemoteConsoleHost
+ * @see Console
  */
-class RemoteConsoleClient(private val port: Int, private val hostPid: Long) {
+class ConsoleClientProcess(private val port: Int, private val hostPid: Long) {
     private var frame: ConsoleFrame? = null
     private val pendingEvalFutures = mutableMapOf<Int, CompletableFuture<String>>()
     private var nextEvalId = 0
@@ -148,7 +148,7 @@ class RemoteConsoleClient(private val port: Int, private val hostPid: Long) {
 
             // Give the host process time to start the socket
             Thread.sleep(100)
-            RemoteConsoleClient(port, hostPid).start()
+            ConsoleClientProcess(port, hostPid).start()
         }
     }
 }

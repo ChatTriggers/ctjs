@@ -36,7 +36,6 @@ class ConfigUpdateMessage(
 @Serializable
 class InitMessage(
     val modVersion: String,
-    val isGeneral: Boolean,
     val config: ConfigUpdateMessage,
     val firaFontBytes: ByteArray?,
 ) : H2CMessage()

@@ -3,11 +3,16 @@ package com.chattriggers.ctjs.internal.console
 import com.chattriggers.ctjs.CTJS
 import com.chattriggers.ctjs.api.Config
 import com.chattriggers.ctjs.api.client.Client
-import com.chattriggers.ctjs.engine.Console
+import com.chattriggers.ctjs.api.client.KeyBind
+import com.chattriggers.ctjs.internal.engine.CTEvents
 import com.chattriggers.ctjs.internal.engine.JSLoader
+import com.chattriggers.ctjs.internal.utils.Initializer
 import gg.essential.universal.UDesktop
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import net.minecraft.client.option.KeyBinding
+import net.minecraft.client.util.InputUtil
+import org.lwjgl.glfw.GLFW
 import java.awt.Color
 import java.io.BufferedReader
 import java.io.File
@@ -36,8 +41,8 @@ import kotlin.io.path.Path
  * Each console gets its own Host/Client pair running on their own port, so there will be
  * `<number of loaders> + 1` sockets (the extra 1 is for the generic console).
  */
-class RemoteConsoleHost(private val loader: JSLoader?) : Console {
-    private val port = NEXT_PORT++
+object ConsoleHostProcess : Initializer {
+    private var PORT = 9002
     private var running = true
     private lateinit var socketOut: PrintWriter
     private lateinit var process: Process
@@ -50,6 +55,22 @@ class RemoteConsoleHost(private val loader: JSLoader?) : Console {
 
     init {
         thread { hostMain() }
+    }
+
+    override fun init() {
+        val keybind = KeyBind.addKeyBinding(
+            KeyBinding(
+                "chattriggers.key.binding.console.js",
+                InputUtil.Type.KEYSYM,
+                GLFW.GLFW_KEY_GRAVE_ACCENT,
+                "chattriggers.key.category.console",
+            )
+        )
+
+        CTEvents.RENDER_GAME.register {
+            if (keybind.wasPressed())
+                this.show()
+        }
     }
 
     private fun hostMain() {
@@ -69,21 +90,20 @@ class RemoteConsoleHost(private val loader: JSLoader?) : Console {
                 Path(System.getProperty("java.home"), "bin", "java").toString(),
                 "-cp",
                 urls,
-                RemoteConsoleClient::class.qualifiedName,
-                port.toString(),
+                ConsoleClientProcess::class.qualifiedName,
+                PORT.toString(),
                 ProcessHandle.current().pid().toString(),
             )
             .start()
 
         while (running) {
-            ServerSocket(port).accept().use { socket ->
+            ServerSocket(PORT).accept().use { socket ->
                 socketOut = PrintWriter(socket.outputStream, true, Charsets.UTF_8)
                 val socketIn = BufferedReader(InputStreamReader(socket.inputStream, Charsets.UTF_8))
                 connected = true
 
                 val initMessage = InitMessage(
                     CTJS.MOD_VERSION,
-                    loader == null,
                     ConfigUpdateMessage.constructFromConfig(Config.ConsoleSettings.make()),
                     this::class.java.getResourceAsStream("/assets/chattriggers/FiraCode-Regular.otf")?.readAllBytes(),
                 )
@@ -110,7 +130,7 @@ class RemoteConsoleHost(private val loader: JSLoader?) : Console {
                         is EvalTextMessage -> {
                             // If this is the general console, we effectively just ignore this message
                             try {
-                                val result = loader?.eval(message.string) ?: continue
+                                val result = JSLoader.eval(message.string) ?: continue
                                 synchronized(socketOut) {
                                     socketOut.println(
                                         Json.encodeToString<H2CMessage>(
@@ -134,28 +154,28 @@ class RemoteConsoleHost(private val loader: JSLoader?) : Console {
         }
     }
 
-    override fun clear() = trySendMessage(ClearConsoleMessage)
+    fun clear() = trySendMessage(ClearConsoleMessage)
 
-    override fun println(obj: Any, logType: LogType, end: String, customColor: Color?) {
+    fun println(obj: Any, logType: LogType, end: String, customColor: Color?) {
         trySendMessage(PrintMessage(obj.toString(), logType, end, customColor?.rgb))
         print(obj.toString() + end)
     }
 
-    override fun printStackTrace(error: Throwable) {
+    fun printStackTrace(error: Throwable) {
         val trace = error.stackTrace.map {
             StackTrace(it.fileName, it.className, it.methodName, it.lineNumber)
         }
         trySendMessage(PrintStackTraceMessage(error.message.orEmpty(), trace))
     }
 
-    override fun show() = trySendMessage(OpenMessage)
+    fun show() = trySendMessage(OpenMessage)
 
-    override fun close() {
+    fun close() {
         trySendMessage(TerminateMessage)
         process.destroy()
     }
 
-    override fun onConsoleSettingsChanged(settings: Config.ConsoleSettings) =
+    fun onConsoleSettingsChanged(settings: Config.ConsoleSettings) =
         trySendMessage(ConfigUpdateMessage.constructFromConfig(settings))
 
     private fun trySendMessage(message: H2CMessage) {
@@ -166,9 +186,5 @@ class RemoteConsoleHost(private val loader: JSLoader?) : Console {
         } else {
             pendingMessages.add(message)
         }
-    }
-
-    companion object {
-        private var NEXT_PORT = 9002
     }
 }

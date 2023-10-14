@@ -1,7 +1,7 @@
 package com.chattriggers.ctjs.internal.commands
 
-import com.chattriggers.ctjs.engine.printToConsole
 import com.chattriggers.ctjs.internal.console.LogType
+import com.chattriggers.ctjs.engine.printToConsole
 import com.chattriggers.ctjs.internal.engine.CTEvents
 import com.chattriggers.ctjs.internal.engine.JSLoader
 import com.chattriggers.ctjs.internal.utils.Initializer
@@ -38,7 +38,7 @@ abstract class CommandCollection : Initializer {
     fun register(command: Command) {
         allCommands.add(command)
         if (clientDispatcher.hasConflict(command) || networkDispatcher.hasConflict(command)) {
-            existingCommandWarning(command.name).printToConsole(JSLoader.console, LogType.WARN)
+            existingCommandWarning(command.name).printToConsole(LogType.WARN)
         } else {
             clientDispatcher?.let { command.registerImpl(it) }
             networkDispatcher?.let { command.registerImpl(it) }

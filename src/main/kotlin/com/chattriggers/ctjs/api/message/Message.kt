@@ -133,7 +133,7 @@ class Message {
     }
 
     fun chat() = apply {
-        if (!ChatLib.checkPlayerExists("[CHAT]: ${chatMessage.formattedText}"))
+        if (Player.toMC() == null)
             return@apply
 
         if (chatLineId != -1) {
@@ -151,7 +151,7 @@ class Message {
     }
 
     fun actionBar() = apply {
-        if (!ChatLib.checkPlayerExists("[ACTION BAR]: ${chatMessage.formattedText}"))
+        if (Player.toMC() == null)
             return@apply
 
         if (isRecursive) {

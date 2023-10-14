@@ -11,7 +11,7 @@
     }
 
     const JSLoader = Java.type('com.chattriggers.ctjs.internal.engine.JSLoader').INSTANCE;
-    global.Console = JSLoader.getConsole();
+    global.Console = Java.type('com.chattriggers.ctjs.engine.Console').INSTANCE;
 
     const Condition = Java.type('org.spongepowered.asm.mixin.injection.Constant').Condition;
     const MixinObj = Java.type('com.chattriggers.ctjs.internal.launch.Mixin');

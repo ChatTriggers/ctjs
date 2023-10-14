@@ -22,7 +22,6 @@ public final class com/chattriggers/ctjs/api/Config : gg/essential/vigilance/Vig
 	public static final fun getModuleChangelog ()Z
 	public static final fun getModuleImportHelp ()Z
 	public static final fun getOpenConsoleOnError ()Z
-	public static final fun getPrintChatToConsole ()Z
 	public static final fun getShowUpdatesInChat ()Z
 	public static final fun setAutoUpdateModules (Z)V
 	public static final fun setClearConsoleOnLoad (Z)V
@@ -37,7 +36,6 @@ public final class com/chattriggers/ctjs/api/Config : gg/essential/vigilance/Vig
 	public static final fun setModuleChangelog (Z)V
 	public static final fun setModuleImportHelp (Z)V
 	public static final fun setOpenConsoleOnError (Z)V
-	public static final fun setPrintChatToConsole (Z)V
 	public static final fun setShowUpdatesInChat (Z)V
 }
 
@@ -1327,7 +1325,6 @@ public final class com/chattriggers/ctjs/api/message/ChatLib {
 	public static final fun addToSentMessageHistory (Ljava/lang/String;)V
 	public static synthetic fun addToSentMessageHistory$default (ILjava/lang/String;ILjava/lang/Object;)V
 	public static final fun chat (Ljava/lang/Object;)V
-	public static final fun checkPlayerExists (Ljava/lang/String;)Z
 	public static final fun clearChat ()V
 	public static final fun command (Ljava/lang/String;)V
 	public static final fun command (Ljava/lang/String;Z)V
@@ -2545,29 +2542,24 @@ public final class com/chattriggers/ctjs/api/world/block/BlockType : com/chattri
 	public final fun withBlockPos (Lcom/chattriggers/ctjs/api/world/block/BlockPos;)Lcom/chattriggers/ctjs/api/world/block/Block;
 }
 
-public abstract interface class com/chattriggers/ctjs/engine/Console {
-	public abstract fun clear ()V
-	public abstract fun close ()V
-	public abstract fun onConsoleSettingsChanged (Lcom/chattriggers/ctjs/api/Config$ConsoleSettings;)V
-	public abstract fun printStackTrace (Ljava/lang/Throwable;)V
-	public abstract fun println (Ljava/lang/Object;)V
-	public abstract fun println (Ljava/lang/Object;Lcom/chattriggers/ctjs/internal/console/LogType;)V
-	public abstract fun println (Ljava/lang/Object;Lcom/chattriggers/ctjs/internal/console/LogType;Ljava/lang/String;)V
-	public abstract fun println (Ljava/lang/Object;Lcom/chattriggers/ctjs/internal/console/LogType;Ljava/lang/String;Ljava/awt/Color;)V
-	public abstract fun show ()V
-}
-
-public final class com/chattriggers/ctjs/engine/Console$DefaultImpls {
-	public static fun println (Lcom/chattriggers/ctjs/engine/Console;Ljava/lang/Object;)V
-	public static fun println (Lcom/chattriggers/ctjs/engine/Console;Ljava/lang/Object;Lcom/chattriggers/ctjs/internal/console/LogType;)V
-	public static fun println (Lcom/chattriggers/ctjs/engine/Console;Ljava/lang/Object;Lcom/chattriggers/ctjs/internal/console/LogType;Ljava/lang/String;)V
+public final class com/chattriggers/ctjs/engine/Console : com/chattriggers/ctjs/internal/utils/Initializer {
+	public static final field INSTANCE Lcom/chattriggers/ctjs/engine/Console;
+	public final fun clear ()V
+	public final fun close ()V
+	public fun init ()V
+	public final fun onConsoleSettingsChanged (Lcom/chattriggers/ctjs/api/Config$ConsoleSettings;)V
+	public final fun printStackTrace (Ljava/lang/Throwable;)V
+	public final fun println (Ljava/lang/Object;)V
+	public final fun println (Ljava/lang/Object;Lcom/chattriggers/ctjs/internal/console/LogType;)V
+	public final fun println (Ljava/lang/Object;Lcom/chattriggers/ctjs/internal/console/LogType;Ljava/lang/String;)V
+	public final fun println (Ljava/lang/Object;Lcom/chattriggers/ctjs/internal/console/LogType;Ljava/lang/String;Ljava/awt/Color;)V
+	public final fun show ()V
 }
 
 public final class com/chattriggers/ctjs/engine/ConsoleKt {
-	public static final fun printToConsole (Ljava/lang/Object;Lcom/chattriggers/ctjs/engine/Console;Lcom/chattriggers/ctjs/internal/console/LogType;)V
-	public static synthetic fun printToConsole$default (Ljava/lang/Object;Lcom/chattriggers/ctjs/engine/Console;Lcom/chattriggers/ctjs/internal/console/LogType;ILjava/lang/Object;)V
-	public static final fun printTraceToConsole (Ljava/lang/Throwable;Lcom/chattriggers/ctjs/engine/Console;)V
-	public static synthetic fun printTraceToConsole$default (Ljava/lang/Throwable;Lcom/chattriggers/ctjs/engine/Console;ILjava/lang/Object;)V
+	public static final fun printToConsole (Ljava/lang/Object;Lcom/chattriggers/ctjs/internal/console/LogType;)V
+	public static synthetic fun printToConsole$default (Ljava/lang/Object;Lcom/chattriggers/ctjs/internal/console/LogType;ILjava/lang/Object;)V
+	public static final fun printTraceToConsole (Ljava/lang/Throwable;)V
 }
 
 public final class com/chattriggers/ctjs/engine/MixinCallback {

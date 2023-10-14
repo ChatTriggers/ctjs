@@ -12,7 +12,7 @@ import com.chattriggers.ctjs.api.triggers.TriggerType
 import com.chattriggers.ctjs.api.world.World
 import com.chattriggers.ctjs.engine.Register
 import com.chattriggers.ctjs.internal.commands.StaticCommand
-import com.chattriggers.ctjs.internal.console.ConsoleManager
+import com.chattriggers.ctjs.engine.Console
 import com.chattriggers.ctjs.internal.engine.module.ModuleManager
 import com.chattriggers.ctjs.internal.utils.Initializer
 import com.google.gson.Gson
@@ -41,7 +41,7 @@ internal class CTJS : ClientModInitializer {
 
             Runtime.getRuntime().addShutdownHook(Thread {
                 TriggerType.GAME_UNLOAD.triggerAll()
-                ConsoleManager.closeConsoles()
+                Console.close()
             })
         }
     }
@@ -94,7 +94,7 @@ internal class CTJS : ClientModInitializer {
 
             ModuleManager.teardown()
             KeyBind.clearKeyBinds()
-            ConsoleManager.clearConsoles()
+            Console.clear()
             Register.clearCustomTriggers()
             StaticCommand.unregisterAll()
             DynamicCommands.unregisterAll()

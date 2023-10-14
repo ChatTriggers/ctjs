@@ -2,12 +2,10 @@ package com.chattriggers.ctjs.internal.engine
 
 import com.chattriggers.ctjs.api.triggers.ITriggerType
 import com.chattriggers.ctjs.api.triggers.Trigger
-import com.chattriggers.ctjs.engine.Console
 import com.chattriggers.ctjs.engine.MixinCallback
+import com.chattriggers.ctjs.internal.console.LogType
 import com.chattriggers.ctjs.engine.printToConsole
 import com.chattriggers.ctjs.engine.printTraceToConsole
-import com.chattriggers.ctjs.internal.console.ConsoleManager
-import com.chattriggers.ctjs.internal.console.LogType
 import com.chattriggers.ctjs.internal.engine.module.Module
 import com.chattriggers.ctjs.internal.engine.module.ModuleManager.modulesFolder
 import com.chattriggers.ctjs.internal.launch.IInjector
@@ -53,9 +51,6 @@ object JSLoader {
         MethodType.methodType(Any::class.java, Callable::class.java, Array<Any?>::class.java),
     )
 
-    val console: Console
-        get() = ConsoleManager.jsConsole
-
     fun setup(jars: List<URL>) {
         // Ensure all active mixins are invalidated
         // TODO: It would be nice to do this, but it's possible to have a @Redirect or similar
@@ -91,7 +86,7 @@ object JSLoader {
                     val uri = File(module.folder, module.metadata.mixinEntry!!).normalize().toURI()
                     require.loadCTModule(uri.toString(), uri)
                 } catch (e: Throwable) {
-                    e.printTraceToConsole(console)
+                    e.printTraceToConsole()
                 }
             }
         }
@@ -119,7 +114,7 @@ object JSLoader {
                 1, null
             )
         } catch (e: Throwable) {
-            e.printTraceToConsole(console)
+            e.printTraceToConsole()
         }
     }
 
@@ -128,8 +123,8 @@ object JSLoader {
             require.loadCTModule(module.name, entryURI)
         } catch (e: Throwable) {
             println("Error loading module ${module.name}")
-            "Error loading module ${module.name}".printToConsole(console, LogType.ERROR)
-            e.printTraceToConsole(console)
+            "Error loading module ${module.name}".printToConsole(LogType.ERROR)
+            e.printTraceToConsole()
         }
     }
 
@@ -187,7 +182,7 @@ object JSLoader {
             require(method is Callable) { "Need to pass actual function to the register function, not the name!" }
             invoke(method, args)
         } catch (e: Throwable) {
-            e.printTraceToConsole(console)
+            e.printTraceToConsole()
             removeTrigger(trigger)
         }
     }
@@ -225,8 +220,8 @@ object JSLoader {
             } catch (e: Throwable) {
                 // This is a pretty vague error, but the trace should make the issue clear
                 // since it will include the stack trace from the Mixed-into class
-                "Error loading mixin callback".printToConsole(console)
-                e.printTraceToConsole(console)
+                "Error loading mixin callback".printToConsole()
+                e.printTraceToConsole()
 
                 MethodHandles.dropArguments(
                     MethodHandles.constant(Any::class.java, null),
@@ -257,7 +252,7 @@ object JSLoader {
                 existing
             } else {
                 ("A new injector mixin was registered at runtime. This will require a restart, and will " +
-                    "have no effect until then!").printToConsole(console)
+                    "have no effect until then!").printToConsole()
                 null
             }
         } else {
@@ -273,7 +268,7 @@ object JSLoader {
         if (mixinsFinalized) {
             if (mixins[mixin]?.fieldWideners?.contains(fieldName) != null) {
                 ("A new field widener was registered at runtime. This will require a restart, and will " +
-                    "have no effect until then!").printToConsole(console)
+                    "have no effect until then!").printToConsole()
             }
         } else {
             mixins.getOrPut(mixin, ::MixinDetails).fieldWideners[fieldName] = isMutable
@@ -284,7 +279,7 @@ object JSLoader {
         if (mixinsFinalized) {
             if (mixins[mixin]?.methodWideners?.contains(methodName) != null) {
                 ("A new method widener was registered at runtime. This will require a restart, and will " +
-                    "have no effect until then!").printToConsole(console)
+                    "have no effect until then!").printToConsole()
             }
         } else {
             mixins.getOrPut(mixin, ::MixinDetails).methodWideners[methodName] = isMutable

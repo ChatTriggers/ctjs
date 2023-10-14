@@ -6,9 +6,9 @@ import com.chattriggers.ctjs.api.client.Client
 import com.chattriggers.ctjs.api.message.ChatLib
 import com.chattriggers.ctjs.api.message.Message
 import com.chattriggers.ctjs.api.message.TextComponent
-import com.chattriggers.ctjs.engine.printTraceToConsole
 import com.chattriggers.ctjs.internal.commands.StaticCommand.Companion.onExecute
-import com.chattriggers.ctjs.internal.console.ConsoleManager
+import com.chattriggers.ctjs.engine.Console
+import com.chattriggers.ctjs.engine.printTraceToConsole
 import com.chattriggers.ctjs.internal.engine.JSLoader
 import com.chattriggers.ctjs.internal.engine.module.ModuleManager
 import com.chattriggers.ctjs.internal.engine.module.ModulesGui
@@ -64,12 +64,7 @@ internal object CTCommand : Initializer {
                         })
             )
             .then(literal("modules").onExecute { Client.currentGui.set(ModulesGui) })
-            .then(
-                literal("console")
-                    .then(literal("js").onExecute { JSLoader.console.show() })
-                    .then(literal("general").onExecute { ConsoleManager.generalConsole.show() })
-                    .onExecute { JSLoader.console.show() }
-            )
+            .then(literal("console").onExecute { Console.show() })
             .then(literal("config").onExecute { Client.currentGui.set(Config.gui()!!) })
             .then(
                 literal("simulate")

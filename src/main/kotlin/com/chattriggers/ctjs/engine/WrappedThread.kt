@@ -1,5 +1,6 @@
 package com.chattriggers.ctjs.engine
 
+import com.chattriggers.ctjs.engine.printTraceToConsole
 import com.chattriggers.ctjs.internal.engine.JSContextFactory
 import com.chattriggers.ctjs.internal.engine.JSLoader
 import org.mozilla.javascript.Context
@@ -14,7 +15,7 @@ class WrappedThread(private val task: Runnable) {
                 task.run()
                 Context.exit()
             } catch (e: Throwable) {
-                e.printTraceToConsole(JSLoader.console)
+                e.printTraceToConsole()
             }
         }
     }

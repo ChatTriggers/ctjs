@@ -256,10 +256,6 @@ object ClientListener : Initializer {
 
             TriggerType.CHAT.triggerAll(event)
 
-            // print to console
-            if (Config.printChatToConsole)
-                "[CHAT] ${ChatLib.replaceFormatting(textComponent.formattedText)}".printToConsole()
-
             !event.isCancelled()
         }
     }

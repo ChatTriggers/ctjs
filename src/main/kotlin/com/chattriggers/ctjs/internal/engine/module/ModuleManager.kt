@@ -99,7 +99,7 @@ object ModuleManager {
                 val text = metadataFile.readText().replace("\"author\"", "\"creator\"")
                 metadata = Json.decodeFromString(text)
             } catch (e: Exception) {
-                "Module $directory has invalid metadata.json".printToConsole(logType = LogType.ERROR)
+                "Module $directory has invalid metadata.json".printToConsole(LogType.ERROR)
             }
         }
 

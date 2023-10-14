@@ -383,17 +383,6 @@ object ChatLib {
         }
     }
 
-    // helper method to make sure player exists before putting something in chat
-    @JvmStatic
-    fun checkPlayerExists(out: String): Boolean {
-        if (Player.toMC() == null) {
-            out.printToConsole()
-            return false
-        }
-
-        return true
-    }
-
     internal fun sendMessageWithId(message: Message) {
         require(message.getChatLineId() != -1)
 

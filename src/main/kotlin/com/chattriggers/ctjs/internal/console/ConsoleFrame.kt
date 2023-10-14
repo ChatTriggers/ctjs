@@ -16,7 +16,7 @@ import javax.swing.SwingUtilities
 import javax.swing.text.DefaultCaret
 
 class ConsoleFrame(
-    private val client: RemoteConsoleClient,
+    private val client: ConsoleClientProcess,
     private val init: InitMessage,
     var onEval: (String) -> CompletableFuture<String>,
     var onReload: () -> Unit,
@@ -29,14 +29,12 @@ class ConsoleFrame(
     }
 
     private val frame = JFrame(
-        "ChatTriggers ${init.modVersion} ${if (init.isGeneral) "Default" else "JS"} Console"
+        "ChatTriggers ${init.modVersion} JS Console"
     )
 
     private val textArea = JTextPane()
     private val inputField = RSyntaxTextArea(5, 1).apply {
-        syntaxEditingStyle = if (init.isGeneral) {
-            SyntaxConstants.SYNTAX_STYLE_NONE
-        } else SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT
+        syntaxEditingStyle = SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT
         Theme.load(javaClass.getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/dark.xml")).apply(this)
         margin = Insets(5, 5, 5, 5)
         isCodeFoldingEnabled = true

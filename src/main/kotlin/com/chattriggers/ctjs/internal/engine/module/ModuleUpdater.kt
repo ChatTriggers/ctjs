@@ -3,9 +3,9 @@ package com.chattriggers.ctjs.internal.engine.module
 import com.chattriggers.ctjs.CTJS
 import com.chattriggers.ctjs.api.Config
 import com.chattriggers.ctjs.api.message.ChatLib
+import com.chattriggers.ctjs.internal.console.LogType
 import com.chattriggers.ctjs.engine.printToConsole
 import com.chattriggers.ctjs.engine.printTraceToConsole
-import com.chattriggers.ctjs.internal.console.LogType
 import com.chattriggers.ctjs.internal.engine.CTEvents
 import com.chattriggers.ctjs.internal.engine.module.ModuleManager.cachedModules
 import com.chattriggers.ctjs.internal.engine.module.ModuleManager.modulesFolder
@@ -65,7 +65,7 @@ object ModuleUpdater : Initializer {
 
             if (newMetadata.version == null) {
                 ("Remote version of module ${metadata.name} has no version numbers, so it will " +
-                    "not be updated!").printToConsole(logType = LogType.WARN)
+                    "not be updated!").printToConsole(LogType.WARN)
                 return
             } else if (metadata.version != null && metadata.version.toVersion() >= newMetadata.version.toVersion()) {
                 return
@@ -82,7 +82,7 @@ object ModuleUpdater : Initializer {
                 tryReportChangelog(module.metadata)
             }
         } catch (e: Exception) {
-            "Can't find page for ${metadata.name}".printToConsole(logType = LogType.WARN)
+            "Can't find page for ${metadata.name}".printToConsole(LogType.WARN)
         }
     }
 

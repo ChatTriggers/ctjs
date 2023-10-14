@@ -9,7 +9,7 @@ class CTJSPreLaunch : PreLaunchEntrypoint {
     override fun onPreLaunch() {
         val prevHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler { thread, exception ->
-            "Uncaught exception in thread \"${thread.name}\"".printToConsole(logType = LogType.ERROR)
+            "Uncaught exception in thread \"${thread.name}\"".printToConsole(LogType.ERROR)
             exception.printTraceToConsole()
             prevHandler.uncaughtException(thread, exception)
         }

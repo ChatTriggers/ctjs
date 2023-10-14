@@ -1,7 +1,7 @@
 package com.chattriggers.ctjs.api
 
 import com.chattriggers.ctjs.CTJS
-import com.chattriggers.ctjs.internal.console.ConsoleManager
+import com.chattriggers.ctjs.engine.Console
 import com.chattriggers.ctjs.internal.utils.CategorySorting
 import gg.essential.vigilance.Vigilant
 import gg.essential.vigilance.data.Property
@@ -28,15 +28,6 @@ object Config : Vigilant(File(CTJS.configLocation, "ChatTriggers.toml"), sorting
         description = "If a module is updated and it has a changelog, display it in chat"
     )
     var moduleChangelog = true
-
-    @JvmStatic
-    @Property(
-        PropertyType.SWITCH,
-        name = "Print chat to console",
-        category = "Console",
-        description = "Prints the user's chat messages (with explicit color codes) to the general console for easy copy-pasting",
-    )
-    var printChatToConsole = true
 
     @JvmStatic
     @Property(
@@ -182,7 +173,7 @@ object Config : Vigilant(File(CTJS.configLocation, "ChatTriggers.toml"), sorting
         registerListener<T>(property.name) {
             val settings = ConsoleSettings.make()
             field.set(settings, it)
-            ConsoleManager.onConsoleSettingsChanged(settings)
+            Console.onConsoleSettingsChanged(settings)
         }
     }
 

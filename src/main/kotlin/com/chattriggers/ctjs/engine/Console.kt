@@ -1,34 +1,35 @@
 package com.chattriggers.ctjs.engine
 
 import com.chattriggers.ctjs.api.Config
-import com.chattriggers.ctjs.internal.console.ConsoleManager
+import com.chattriggers.ctjs.internal.console.ConsoleHostProcess
 import com.chattriggers.ctjs.internal.console.LogType
+import com.chattriggers.ctjs.internal.utils.Initializer
 import java.awt.Color
 
-interface Console {
-    fun clear()
+// A wrapper object so that we can hide away the implementation in the
+// internal package
+object Console : Initializer {
+    override fun init() = ConsoleHostProcess.init()
+    fun clear() = ConsoleHostProcess.clear()
 
-    fun println(obj: Any, logType: LogType, end: String, customColor: Color?)
-
-    fun println(obj: Any, logType: LogType, end: String) = println(obj, logType, end, null)
+    fun println(obj: Any, logType: LogType, end: String, customColor: Color?) =
+        ConsoleHostProcess.println(obj, logType, end, customColor)
+    fun println(obj: Any, logType: LogType, end: String) = ConsoleHostProcess.println(obj, logType, end, null)
     fun println(obj: Any, logType: LogType) = println(obj, logType, "\n")
     fun println(obj: Any) = println(obj, LogType.INFO)
 
-    fun printStackTrace(error: Throwable)
-
-    fun show()
-
-    fun close()
-
-    // Invoked when the user changes any Console-related settings in the Config
-    fun onConsoleSettingsChanged(settings: Config.ConsoleSettings)
+    fun printStackTrace(error: Throwable) = ConsoleHostProcess.printStackTrace(error)
+    fun show() = ConsoleHostProcess.show()
+    fun close() = ConsoleHostProcess.close()
+    fun onConsoleSettingsChanged(settings: Config.ConsoleSettings) =
+        ConsoleHostProcess.onConsoleSettingsChanged(settings)
 }
 
-fun Any.printToConsole(console: Console = ConsoleManager.generalConsole, logType: LogType = LogType.INFO) {
-    console.println(this, logType)
+fun Any.printToConsole(logType: LogType = LogType.INFO) {
+    Console.println(this, logType)
 }
 
-fun Throwable.printTraceToConsole(console: Console = ConsoleManager.generalConsole) {
+fun Throwable.printTraceToConsole() {
     this.printStackTrace()
-    console.printStackTrace(this)
+    Console.printStackTrace(this)
 }

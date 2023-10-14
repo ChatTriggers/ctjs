@@ -4,7 +4,9 @@ import com.chattriggers.ctjs.engine.Console
 import org.mozilla.javascript.ErrorReporter
 import org.mozilla.javascript.EvaluatorException
 
-class JSErrorReporter(private val console: Console) : ErrorReporter {
+object JSErrorReporter : ErrorReporter {
+    private const val MESSAGE_PREFIX = "js: "
+
     override fun warning(message: String?, sourceName: String?, line: Int, lineSource: String?, lineOffset: Int) {
         reportErrorMessage(message, sourceName, line, lineSource, lineOffset, isWarning = true)
     }
@@ -30,10 +32,10 @@ class JSErrorReporter(private val console: Console) : ErrorReporter {
         if (isWarning)
             message = "warning: $message"
 
-        console.println(MESSAGE_PREFIX + message)
+        Console.println(MESSAGE_PREFIX + message)
         if (lineSource != null) {
-            console.println(MESSAGE_PREFIX + lineSource)
-            console.println(MESSAGE_PREFIX + buildIndicator(lineOffset))
+            Console.println(MESSAGE_PREFIX + lineSource)
+            Console.println(MESSAGE_PREFIX + buildIndicator(lineOffset))
         }
     }
 
@@ -50,9 +52,5 @@ class JSErrorReporter(private val console: Console) : ErrorReporter {
         lineOffset: Int
     ): EvaluatorException {
         return EvaluatorException(message, sourceName, line, lineSource, lineOffset)
-    }
-
-    companion object {
-        const val MESSAGE_PREFIX = "js: "
     }
 }
