@@ -33,7 +33,11 @@ import org.mozilla.javascript.NativeObject
 import java.awt.Color
 import java.util.*
 import kotlin.collections.ArrayDeque
-import kotlin.math.*
+import kotlin.math.PI
+import kotlin.math.atan
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
 
 object Renderer {
     private val NEWLINE_REGEX = """\n|\r\n?""".toRegex()
@@ -145,9 +149,9 @@ object Renderer {
     @JvmOverloads
     fun getColor(red: Int, green: Int, blue: Int, alpha: Int = 255): Long {
         return ((alpha.coerceIn(0, 255) shl 24) or
-            (red.coerceIn(0, 255) shl 16) or
-            (green.coerceIn(0, 255) shl 8) or
-            blue.coerceIn(0, 255)).toLong()
+                (red.coerceIn(0, 255) shl 16) or
+                (green.coerceIn(0, 255) shl 8) or
+                blue.coerceIn(0, 255)).toLong()
     }
 
     @JvmStatic
@@ -169,28 +173,22 @@ object Renderer {
     }
 
     @JvmStatic
-    fun disableAlpha() = apply { UGraphics.disableAlpha() }
-
-    @JvmStatic
-    fun enableAlpha() = apply { UGraphics.enableAlpha() }
-
-    @JvmStatic
     fun disableCull() = apply { RenderSystem.disableCull() }
 
     @JvmStatic
-    fun enableCull() = apply { RenderSystem.disableCull() }
-
-    @JvmStatic
-    fun enableLighting() = apply { UGraphics.enableLighting() }
+    fun enableCull() = apply { RenderSystem.enableCull() }
 
     @JvmStatic
     fun disableLighting() = apply { UGraphics.disableLighting() }
 
     @JvmStatic
-    fun enableDepth() = apply { UGraphics.enableDepth() }
+    fun enableLighting() = apply { UGraphics.enableLighting() }
 
     @JvmStatic
     fun disableDepth() = apply { UGraphics.disableDepth() }
+
+    @JvmStatic
+    fun enableDepth() = apply { UGraphics.enableDepth() }
 
     @JvmStatic
     fun depthFunc(func: Int) = apply { UGraphics.depthFunc(func) }
@@ -208,7 +206,12 @@ object Renderer {
     fun blendFunc(func: Int) = apply { UGraphics.blendEquation(func) }
 
     @JvmStatic
-    fun tryBlendFuncSeparate(sourceFactor: Int, destFactor: Int, sourceFactorAlpha: Int, destFactorAlpha: Int) = apply {
+    fun tryBlendFuncSeparate(
+        sourceFactor: Int,
+        destFactor: Int,
+        sourceFactorAlpha: Int,
+        destFactorAlpha: Int,
+    ) = apply {
         UGraphics.tryBlendFuncSeparate(sourceFactor, destFactor, sourceFactorAlpha, destFactorAlpha)
     }
 
@@ -246,7 +249,11 @@ object Renderer {
 
     @JvmStatic
     fun translateToPlayer() = apply {
-        translate(-Client.camera.getX().toFloat(), -Client.camera.getY().toFloat(), -Client.camera.getZ().toFloat())
+        translate(
+            -Client.camera.getX().toFloat(),
+            -Client.camera.getY().toFloat(),
+            -Client.camera.getZ().toFloat()
+        )
     }
 
     @JvmStatic
@@ -273,20 +280,27 @@ object Renderer {
 
     @JvmStatic
     @JvmOverloads
-    fun colorize(red: Float, green: Float, blue: Float, alpha: Float = 1f) = apply {
-        colorized = fixAlpha(getColor(red.toInt(), green.toInt(), blue.toInt(), alpha.toInt()))
-        RenderSystem.setShaderColor(
-            red.coerceIn(0f, 1f),
-            green.coerceIn(0f, 1f),
-            blue.coerceIn(0f, 1f),
-            alpha.coerceIn(0f, 1f)
+    fun colorize(red: Float, green: Float, blue: Float, alpha: Float = 1f) =
+        colorize(
+            (red * 255).toInt(),
+            (green * 255).toInt(),
+            (blue * 255).toInt(),
+            (alpha * 255).toInt()
         )
-    }
 
     @JvmStatic
     @JvmOverloads
-    fun colorize(red: Int, green: Int, blue: Int, alpha: Int = 255) =
-        colorize(red / 255f, green / 255f, blue / 255f, alpha / 255f)
+    fun colorize(red: Int, green: Int, blue: Int, alpha: Int = 255) = apply {
+        colorized = fixAlpha(getColor(red, green, blue, alpha))
+        val color = Color(colorized!!.toInt(), true)
+
+        RenderSystem.setShaderColor(
+            color.red / 255f,
+            color.green / 255f,
+            color.blue / 255f,
+            color.alpha / 255f
+        )
+    }
 
     @JvmStatic
     fun fixAlpha(color: Long): Long {
@@ -377,7 +391,7 @@ object Renderer {
      */
     @JvmStatic
     fun color(color: Long) = apply {
-        val (r, g, b, a) = Color(color.toInt())
+        val (r, g, b, a) = Color(color.toInt(), true)
         Renderer3d.color(r, g, b, a)
     }
 
@@ -448,14 +462,12 @@ object Renderer {
         if (pos[1] > pos[3])
             Collections.swap(pos, 1, 3)
 
-        doColor(color)
-
-        begin()
-            .pos(pos[0], pos[3], 0f)
-            .pos(pos[2], pos[3], 0f)
-            .pos(pos[2], pos[1], 0f)
-            .pos(pos[0], pos[1], 0f)
-            .draw()
+        begin(vertexFormat = VertexFormat.POSITION_COLOR)
+        pos(pos[0], pos[3], 0f).color(color)
+        pos(pos[2], pos[3], 0f).color(color)
+        pos(pos[2], pos[1], 0f).color(color)
+        pos(pos[0], pos[1], 0f).color(color)
+        draw()
     }
 
     @JvmStatic
@@ -471,14 +483,12 @@ object Renderer {
         val i = sin(theta) * (thickness / 2)
         val j = cos(theta) * (thickness / 2)
 
-        doColor(color)
-
-        begin()
-            .pos(x1 + i, y1 + j, 0f)
-            .pos(x2 + i, y2 + j, 0f)
-            .pos(x2 - i, y2 - j, 0f)
-            .pos(x1 - i, y1 - j, 0f)
-            .draw()
+        begin(vertexFormat = VertexFormat.POSITION_COLOR)
+        pos(x1 + i, y1 + j, 0f).color(color)
+        pos(x2 + i, y2 + j, 0f).color(color)
+        pos(x2 - i, y2 - j, 0f).color(color)
+        pos(x1 - i, y1 - j, 0f).color(color)
+        draw()
     }
 
     @JvmStatic
@@ -497,18 +507,16 @@ object Renderer {
         var circleX = 1f
         var circleY = 0f
 
-        doColor(color)
-
-        begin(DrawMode.TRIANGLE_STRIP)
+        begin(DrawMode.TRIANGLE_STRIP, VertexFormat.POSITION_COLOR)
 
         for (i in 0..steps) {
             pos(x, y, 0f)
-            pos(circleX * radius + x, circleY * radius + y, 0f)
+            pos(circleX * radius + x, circleY * radius + y, 0f).color(color)
             xHolder = circleX
             circleX = cos * circleX - sin * circleY
             circleY = sin * xHolder + cos * circleY
 
-            pos(circleX * radius + x, circleY * radius + y, 0f)
+            pos(circleX * radius + x, circleY * radius + y, 0f).color(color)
         }
 
         draw()
@@ -516,7 +524,13 @@ object Renderer {
 
     @JvmStatic
     @JvmOverloads
-    fun drawString(text: String, x: Float, y: Float, color: Long = colorized ?: WHITE, shadow: Boolean = false) {
+    fun drawString(
+        text: String,
+        x: Float,
+        y: Float,
+        color: Long = colorized ?: WHITE,
+        shadow: Boolean = false,
+    ) {
         val fr = getFontRenderer()
         var newY = y
 
@@ -566,12 +580,11 @@ object Renderer {
         RenderSystem.setShaderTexture(0, image.getTexture().glId)
 
         begin(DrawMode.QUADS, VertexFormat.POSITION_TEXTURE)
-            .pos(x, y + height, 0f).tex(0f, 1f)
-            .pos(x + width, y + height, 0f).tex(1f, 1f)
-            .pos(x + width, y, 0f).tex(1f, 0f)
-            .pos(x, y, 0f).tex(0f, 0f)
-
-            .draw()
+        pos(x, y + height, 0f).tex(0f, 1f)
+        pos(x + width, y + height, 0f).tex(1f, 1f)
+        pos(x + width, y, 0f).tex(1f, 0f)
+        pos(x, y, 0f).tex(0f, 0f)
+        draw()
     }
 
     /**
@@ -634,7 +647,8 @@ object Renderer {
         }
 
         val flipModelRotation = Quaternionf().rotateZ(Math.PI.toFloat())
-        val pitchModelRotation = Quaternionf().rotateX(entityPitch * 20.0f * (Math.PI / 180.0).toFloat())
+        val pitchModelRotation =
+            Quaternionf().rotateX(entityPitch * 20.0f * (Math.PI / 180.0).toFloat())
         flipModelRotation.mul(pitchModelRotation)
 
         val oldBodyYaw = entity.bodyYaw
@@ -655,7 +669,13 @@ object Renderer {
         matrixStack.translate(x.toDouble(), y.toDouble(), -950.0)
 
         // UC's version of multiplyPositionMatrix
-        matrixStack.peek().model.mul(Matrix4f().scaling(size.toFloat(), size.toFloat(), (-size).toFloat()))
+        matrixStack.peek().model.mul(
+            Matrix4f().scaling(
+                size.toFloat(),
+                size.toFloat(),
+                (-size).toFloat()
+            )
+        )
 
         matrixStack.multiply(flipModelRotation)
         DiffuseLighting.method_34742()
@@ -713,13 +733,6 @@ object Renderer {
         entity.headYaw = oldHeadYaw
 
         matrixStack.pop()
-    }
-
-    internal fun doColor(color: Long) {
-        if (colorized == null) {
-            val (r, g, b, a) = Color(color.toInt(), true)
-            colorize(r, g, b, a)
-        }
     }
 
     enum class DrawMode(private val ucValue: UGraphics.DrawMode) {

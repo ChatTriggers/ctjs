@@ -180,6 +180,7 @@ Here is a list of targeted changes for various different APIs:
   - Removed `retainTransforms()`
   - `Renderer3d`'s `drawString()` should be placed in the `preRenderWorld` trigger
     - Most other rendering should be in `postRenderWorld`
+  - Removed `enableAlpha()` and `disableAlpha()` as they do nothing on modern versions
 - `Gui`/`GuiHandler`
   - `GuiHandler` has been removed. It only had one relevant method (`openGui()`), which can be replaced by `Client.currentGui.set()`
   - Removed `isControlDown()`, `isAltDown()`, and `isShiftDown()`. Instead, use the method that already exist on `Screen`: `hasControlDown()`, `hasAltDown()`, and `hasShiftDown()`
