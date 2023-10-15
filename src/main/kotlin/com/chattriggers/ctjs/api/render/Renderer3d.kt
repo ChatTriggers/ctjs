@@ -16,6 +16,7 @@ import net.minecraft.client.font.TextRenderer
 import net.minecraft.client.render.Tessellator
 import net.minecraft.client.render.VertexFormat
 import org.joml.Vector3f
+import org.lwjgl.opengl.GL11
 import org.mozilla.javascript.NativeObject
 import java.awt.Color
 import kotlin.math.sqrt
@@ -199,6 +200,7 @@ object Renderer3d {
      * @param renderBlackBox render a pretty black border behind the text
      * @param scale the scale of the text
      * @param increase whether to scale the text up as the player moves away
+     * @param renderThroughBlocks whether to render the text through blocks
      */
     @JvmStatic
     @JvmOverloads
@@ -212,6 +214,7 @@ object Renderer3d {
         scale: Float = 1f,
         increase: Boolean = false,
         centered: Boolean = true,
+        renderThroughBlocks: Boolean = true,
     ) {
         val (lines, width, height) = Renderer.splitText(text)
 
@@ -237,6 +240,12 @@ object Renderer3d {
         Renderer.translate(renderPos.x, renderPos.y, renderPos.z)
         Renderer.multiply(camera.rotation)
         Renderer.scale(-lScale, -lScale, lScale)
+
+        if (renderThroughBlocks) {
+            Renderer.depthMask(true)
+            Renderer.depthFunc(GL11.GL_ALWAYS)
+            RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC)
+        }
 
         val opacity = (Settings.toMC().getTextBackgroundOpacity(0.25f) * 255).toInt() shl 24
 
@@ -287,6 +296,10 @@ object Renderer3d {
             yOffset += fontRenderer.fontHeight + 1
         }
 
+        if (renderThroughBlocks) {
+            Renderer.depthFunc(GL11.GL_LEQUAL)
+        }
+        Renderer.colorize(1f, 1f, 1f, 1f)
         Renderer.popMatrix()
     }
 
@@ -305,6 +318,7 @@ object Renderer3d {
             obj.get<Number>("scale")?.toFloat() ?: 1f,
             obj.get<Boolean>("increase") ?: false,
             obj.get<Boolean>("centered") ?: true,
+            obj.get<Boolean>("renderThroughBlocks") ?: true,
         )
     }
 
