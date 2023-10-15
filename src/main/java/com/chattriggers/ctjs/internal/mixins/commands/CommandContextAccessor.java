@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 import java.util.Map;
 
-@Mixin(CommandContext.class)
+@Mixin(value = CommandContext.class, remap = false)
 public interface CommandContextAccessor {
     @Accessor
     Map<String, ParsedArgument<?, ?>> getArguments();
