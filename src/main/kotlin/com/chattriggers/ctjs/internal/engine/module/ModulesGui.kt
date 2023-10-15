@@ -9,8 +9,8 @@ import gg.essential.universal.UScreen
 
 object ModulesGui : UScreen(unlocalizedName = "Modules") {
     private val window = object {
-        var title = Text("Modules").setScale(2f).setShadow(true)
-        var exit = Text(ChatLib.addColor("&cx")).setScale(2f)
+        val title = Text("Modules").setScale(2f).setShadow(true)
+        val exit = Text(ChatLib.addColor("&cx")).setScale(2f)
         var height = 0f
         var scroll = 0f
     }
@@ -21,8 +21,7 @@ object ModulesGui : UScreen(unlocalizedName = "Modules") {
         Renderer.pushMatrix()
 
         val middle = Renderer.screen.getWidth() / 2f
-        var width = Renderer.screen.getWidth() - 100f
-        if (width > 500) width = 500f
+        val width = (Renderer.screen.getWidth() - 100f).coerceAtMost(500f)
 
         Renderer.drawRect(
             0x50000000,
@@ -45,7 +44,7 @@ object ModulesGui : UScreen(unlocalizedName = "Modules") {
 
         Renderer.drawRect(0xaa000000, middle - width / 2f, window.scroll + 95f, width, 25f)
         window.title.draw((middle - width / 2f + 5) / 2f, (window.scroll + 100f) / 2f)
-        window.exit.setString(ChatLib.addColor("&cx")).draw((middle + width / 2f - 17) / 2f, (window.scroll + 99f) / 2f)
+        window.exit.draw((middle + width / 2f - 17) / 2f, (window.scroll + 99f) / 2f)
 
         window.height = 125f
         ModuleManager.cachedModules.forEach {

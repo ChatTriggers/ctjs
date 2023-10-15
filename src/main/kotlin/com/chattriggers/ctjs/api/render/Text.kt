@@ -152,6 +152,7 @@ class Text {
 
     internal fun draw(x: Float? = null, y: Float? = null, backgroundX: Float? = null, backgroundWidth: Float? = null) =
         apply {
+            Renderer.pushMatrix()
             Renderer.enableBlend()
             Renderer.scale(scale, scale, scale)
 
@@ -183,6 +184,7 @@ class Text {
                 yHolder += scale * 10
             }
             Renderer.disableBlend()
+            Renderer.popMatrix()
         }
     private fun updateFormatting() {
         string =
