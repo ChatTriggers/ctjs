@@ -21,6 +21,7 @@ class Module(val name: String, var metadata: ModuleMetadata, val folder: File) {
         gui.x = x
         gui.y = y
 
+        Renderer.pushMatrix()
         Renderer.drawRect(
             0xaa000000,
             x, y, width, 13f
@@ -35,6 +36,7 @@ class Module(val name: String, var metadata: ModuleMetadata, val folder: File) {
             Renderer.rotate(180f)
             Renderer.drawString("^", 0f, 0f)
 
+            Renderer.popMatrix()
             15f
         } else {
             gui.description.setMaxWidth(width.toInt() - 5)
@@ -46,8 +48,8 @@ class Module(val name: String, var metadata: ModuleMetadata, val folder: File) {
 
             if (metadata.version != null) {
                 Renderer.drawStringWithShadow(
-                    ChatLib.addColor("&8v" + (metadata.version)),
-                    x + width - Renderer.getStringWidth(ChatLib.addColor("&8v" + metadata.version)),
+                    ChatLib.addColor("&8v${metadata.version}"),
+                    x + width - Renderer.getStringWidth(ChatLib.addColor("&8v${metadata.version}")),
                     y + gui.description.getHeight() + 15
                 )
             }
@@ -63,6 +65,7 @@ class Module(val name: String, var metadata: ModuleMetadata, val folder: File) {
                 x + 3, y + gui.description.getHeight() + 15
             )
 
+            Renderer.popMatrix()
             gui.description.getHeight() + 27
         }
     }

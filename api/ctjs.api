@@ -1652,7 +1652,6 @@ public final class com/chattriggers/ctjs/api/render/Renderer {
 	public static final fun deleteTexture (Lcom/chattriggers/ctjs/api/render/Image;)Lcom/chattriggers/ctjs/api/render/Renderer;
 	public static final fun depthFunc (I)Lcom/chattriggers/ctjs/api/render/Renderer;
 	public static final fun depthMask (Z)Lcom/chattriggers/ctjs/api/render/Renderer;
-	public static final fun disableAlpha ()Lcom/chattriggers/ctjs/api/render/Renderer;
 	public static final fun disableBlend ()Lcom/chattriggers/ctjs/api/render/Renderer;
 	public static final fun disableCull ()Lcom/chattriggers/ctjs/api/render/Renderer;
 	public static final fun disableDepth ()Lcom/chattriggers/ctjs/api/render/Renderer;
@@ -1670,7 +1669,6 @@ public final class com/chattriggers/ctjs/api/render/Renderer {
 	public static final fun drawStringWithShadow (Ljava/lang/String;FF)V
 	public static final fun drawStringWithShadow (Ljava/lang/String;FFJ)V
 	public static synthetic fun drawStringWithShadow$default (Ljava/lang/String;FFJILjava/lang/Object;)V
-	public static final fun enableAlpha ()Lcom/chattriggers/ctjs/api/render/Renderer;
 	public static final fun enableBlend ()Lcom/chattriggers/ctjs/api/render/Renderer;
 	public static final fun enableCull ()Lcom/chattriggers/ctjs/api/render/Renderer;
 	public static final fun enableDepth ()Lcom/chattriggers/ctjs/api/render/Renderer;
