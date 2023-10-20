@@ -6,6 +6,7 @@ import org.mozilla.javascript.Context
 import org.mozilla.javascript.Context.EMIT_DEBUG_OUTPUT
 import org.mozilla.javascript.Context.FEATURE_LOCATION_INFORMATION_IN_ERROR
 import org.mozilla.javascript.ContextFactory
+import org.mozilla.javascript.WrapFactory
 import java.io.File
 import java.net.URL
 import java.net.URLClassLoader
@@ -24,6 +25,10 @@ object JSContextFactory : ContextFactory() {
         cx.optimizationLevel = if (optimize) 9 else 0
         cx.languageVersion = Context.VERSION_ES6
         cx.errorReporter = JSErrorReporter
+
+        cx.wrapFactory = WrapFactory().apply {
+            isJavaPrimitiveWrap = false
+        }
 
         if (!CTJS.isDevelopment)
             cx.javaObjectMappingProvider = CTJavaObjectMappingProvider
