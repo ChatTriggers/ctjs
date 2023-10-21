@@ -189,7 +189,7 @@
         return easeColor(this, to, speed, jump);
     };
 
-    const LogType = com.chattriggers.ctjs.console.LogType;
+    const LogType = com.chattriggers.ctjs.internal.console.LogType;
 
     global.print = function (toPrint, color = null) {
         println(toPrint, color, "");
