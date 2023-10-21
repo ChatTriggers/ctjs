@@ -67,11 +67,11 @@ object FileLib {
 
     /**
      * Reads a file from folder in modules.
-     * Returns an empty string if file is not found.
+     * Returns null if file is not found.
      *
      * @param importName name of the import
      * @param fileName name of the file
-     * @return the string in the file
+     * @return the string in the file, or null if not found
      */
     @JvmStatic
     fun read(importName: String, fileName: String): String? {
@@ -81,10 +81,10 @@ object FileLib {
     /**
      * Reads a file from anywhere on the system.
      * Use "./" for the ".minecraft" folder.
-     * Returns an empty string if file is not found.
+     * Returns null if file is not found.
      *
      * @param fileLocation the location and file name
-     * @return the string in the file
+     * @return the string in the file, or null if not found
      */
     @JvmStatic
     fun read(fileLocation: String): String? {
@@ -95,7 +95,7 @@ object FileLib {
      * Reads a file from anywhere on the system using java.io.File.
      *
      * @param file the java.io.File to read
-     * @return the string in the file
+     * @return the string in the file, or null if not found
      */
     @JvmStatic
     fun read(file: File): String? {
