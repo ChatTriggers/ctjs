@@ -1,10 +1,8 @@
 package com.chattriggers.ctjs.internal.listeners
 
-import com.chattriggers.ctjs.api.Config
 import com.chattriggers.ctjs.api.entity.BlockEntity
 import com.chattriggers.ctjs.api.entity.Entity
 import com.chattriggers.ctjs.api.inventory.Item
-import com.chattriggers.ctjs.api.message.ChatLib
 import com.chattriggers.ctjs.api.message.TextComponent
 import com.chattriggers.ctjs.api.render.Renderer
 import com.chattriggers.ctjs.api.triggers.CancellableEvent
@@ -14,11 +12,9 @@ import com.chattriggers.ctjs.api.world.Scoreboard
 import com.chattriggers.ctjs.api.world.World
 import com.chattriggers.ctjs.api.world.block.BlockFace
 import com.chattriggers.ctjs.api.world.block.BlockPos
-import com.chattriggers.ctjs.engine.printToConsole
 import com.chattriggers.ctjs.internal.engine.CTEvents
 import com.chattriggers.ctjs.internal.engine.JSContextFactory
 import com.chattriggers.ctjs.internal.engine.JSLoader
-import com.chattriggers.ctjs.internal.engine.module.ModuleManager
 import com.chattriggers.ctjs.internal.utils.Initializer
 import com.chattriggers.ctjs.internal.utils.toMatrixStack
 import gg.essential.universal.UMatrixStack
@@ -26,7 +22,6 @@ import gg.essential.universal.UMinecraft
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
 import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents
 import net.fabricmc.fabric.api.client.screen.v1.ScreenKeyboardEvents
 import net.fabricmc.fabric.api.event.player.*
@@ -117,15 +112,6 @@ object ClientListener : Initializer {
             ScreenEvents.remove(screen).register {
                 TriggerType.GUI_CLOSED.triggerAll(screen)
             }
-        }
-
-        ClientPlayConnectionEvents.JOIN.register { _, _, _ ->
-            TriggerType.WORLD_LOAD.triggerAll()
-            ModuleManager.reportOldVersions()
-        }
-
-        ClientPlayConnectionEvents.DISCONNECT.register { _, _ ->
-            TriggerType.WORLD_UNLOAD.triggerAll()
         }
 
         CTEvents.PACKET_RECEIVED.register { packet, ctx ->
