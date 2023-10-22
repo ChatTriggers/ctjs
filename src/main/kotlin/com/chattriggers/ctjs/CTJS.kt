@@ -13,11 +13,17 @@ import com.chattriggers.ctjs.api.world.World
 import com.chattriggers.ctjs.engine.Register
 import com.chattriggers.ctjs.internal.commands.StaticCommand
 import com.chattriggers.ctjs.engine.Console
+import com.chattriggers.ctjs.internal.console.ConsoleHostProcess
+import com.chattriggers.ctjs.internal.engine.CTEvents
 import com.chattriggers.ctjs.internal.engine.module.ModuleManager
 import com.chattriggers.ctjs.internal.utils.Initializer
 import com.google.gson.Gson
 import net.fabricmc.api.ClientModInitializer
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper
 import net.fabricmc.loader.api.FabricLoader
+import net.minecraft.client.option.KeyBinding
+import net.minecraft.client.util.InputUtil
+import org.lwjgl.glfw.GLFW
 import java.io.File
 import java.net.URL
 import java.net.URLConnection
@@ -27,6 +33,22 @@ import kotlin.concurrent.thread
 
 internal class CTJS : ClientModInitializer {
     override fun onInitializeClient() {
+        // Need to initialize the keybind here, as putting it inside the MinecraftClient::send
+        // runs it too late
+        val keybind = KeyBindingHelper.registerKeyBinding(
+            KeyBinding(
+                "chattriggers.key.binding.console",
+                InputUtil.Type.KEYSYM,
+                GLFW.GLFW_KEY_GRAVE_ACCENT,
+                "chattriggers.key.category",
+            )
+        )
+
+        CTEvents.RENDER_GAME.register {
+            if (keybind.wasPressed())
+                ConsoleHostProcess.show()
+        }
+
         Client.getMinecraft().send {
             Client.referenceSystemTime = System.nanoTime()
 

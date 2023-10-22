@@ -3,16 +3,10 @@ package com.chattriggers.ctjs.internal.console
 import com.chattriggers.ctjs.CTJS
 import com.chattriggers.ctjs.api.Config
 import com.chattriggers.ctjs.api.client.Client
-import com.chattriggers.ctjs.api.client.KeyBind
-import com.chattriggers.ctjs.internal.engine.CTEvents
 import com.chattriggers.ctjs.internal.engine.JSLoader
-import com.chattriggers.ctjs.internal.utils.Initializer
 import gg.essential.universal.UDesktop
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import net.minecraft.client.option.KeyBinding
-import net.minecraft.client.util.InputUtil
-import org.lwjgl.glfw.GLFW
 import java.awt.Color
 import java.io.BufferedReader
 import java.io.File
@@ -41,7 +35,7 @@ import kotlin.io.path.Path
  * Each console gets its own Host/Client pair running on their own port, so there will be
  * `<number of loaders> + 1` sockets (the extra 1 is for the generic console).
  */
-object ConsoleHostProcess : Initializer {
+object ConsoleHostProcess {
     private var PORT = 9002
     private var running = true
     private lateinit var socketOut: PrintWriter
@@ -55,22 +49,6 @@ object ConsoleHostProcess : Initializer {
 
     init {
         thread { hostMain() }
-    }
-
-    override fun init() {
-        val keybind = KeyBind.addKeyBinding(
-            KeyBinding(
-                "chattriggers.key.binding.console.js",
-                InputUtil.Type.KEYSYM,
-                GLFW.GLFW_KEY_GRAVE_ACCENT,
-                "chattriggers.key.category.console",
-            )
-        )
-
-        CTEvents.RENDER_GAME.register {
-            if (keybind.wasPressed())
-                this.show()
-        }
     }
 
     private fun hostMain() {

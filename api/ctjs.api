@@ -2541,11 +2541,10 @@ public final class com/chattriggers/ctjs/api/world/block/BlockType : com/chattri
 	public final fun withBlockPos (Lcom/chattriggers/ctjs/api/world/block/BlockPos;)Lcom/chattriggers/ctjs/api/world/block/Block;
 }
 
-public final class com/chattriggers/ctjs/engine/Console : com/chattriggers/ctjs/internal/utils/Initializer {
+public final class com/chattriggers/ctjs/engine/Console {
 	public static final field INSTANCE Lcom/chattriggers/ctjs/engine/Console;
 	public final fun clear ()V
 	public final fun close ()V
-	public fun init ()V
 	public final fun onConsoleSettingsChanged (Lcom/chattriggers/ctjs/api/Config$ConsoleSettings;)V
 	public final fun printStackTrace (Ljava/lang/Throwable;)V
 	public final fun println (Ljava/lang/Object;)V

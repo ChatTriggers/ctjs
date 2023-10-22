@@ -216,7 +216,7 @@ class KeyBind {
             keyBinds.remove(keyBind)
         }
 
-        internal fun addKeyBinding(keyBinding: KeyBinding): KeyBinding {
+        private fun addKeyBinding(keyBinding: KeyBinding): KeyBinding {
             Client.getMinecraft().options.asMixin<GameOptionsAccessor>().setAllKeys(
                 ArrayUtils.add(
                     Client.getMinecraft().options.allKeys,

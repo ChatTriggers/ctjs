@@ -5,7 +5,6 @@ import com.chattriggers.ctjs.api.client.KeyBind
 import com.chattriggers.ctjs.api.commands.DynamicCommands
 import com.chattriggers.ctjs.internal.commands.CTCommand
 import com.chattriggers.ctjs.internal.commands.StaticCommand
-import com.chattriggers.ctjs.engine.Console
 import com.chattriggers.ctjs.internal.engine.module.ModuleUpdater
 import com.chattriggers.ctjs.internal.listeners.ClientListener
 import com.chattriggers.ctjs.internal.listeners.MouseListener
@@ -17,7 +16,6 @@ internal interface Initializer {
     companion object {
         internal val initializers = listOf(
             ClientListener,
-            Console,
             CPS,
             CTCommand,
             DynamicCommands,
