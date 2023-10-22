@@ -1,5 +1,4 @@
 {
-    "chattriggers.key.binding.console.general": "General Console",
-    "chattriggers.key.binding.console.js": "JS Console",
-    "chattriggers.key.category.console": "CT Consoles"
+    "chattriggers.key.binding.console": "Console",
+    "chattriggers.key.category": "ChatTriggers"
 }
