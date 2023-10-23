@@ -12,6 +12,8 @@ import com.chattriggers.ctjs.api.world.Scoreboard
 import com.chattriggers.ctjs.api.world.World
 import com.chattriggers.ctjs.api.world.block.BlockFace
 import com.chattriggers.ctjs.api.world.block.BlockPos
+import com.chattriggers.ctjs.engine.printToConsole
+import com.chattriggers.ctjs.internal.console.LogType
 import com.chattriggers.ctjs.internal.engine.CTEvents
 import com.chattriggers.ctjs.internal.engine.JSContextFactory
 import com.chattriggers.ctjs.internal.engine.JSLoader
@@ -248,9 +250,16 @@ object ClientListener : Initializer {
 
     internal fun renderTrigger(stack: MatrixStack, partialTicks: Float, block: () -> Unit) {
         Renderer.partialTicks = partialTicks
+        Renderer.matrixPushCounter = 0
         Renderer.pushMatrix(UMatrixStack(stack))
         block()
         Renderer.popMatrix()
+
+        if (Renderer.matrixPushCounter > 0) {
+            "Warning: Render trigger missing a call to Renderer.popMatrix()".printToConsole(LogType.WARN)
+        } else if (Renderer.matrixPushCounter < 0) {
+            "Warning: Render trigger has too many calls to Renderer.popMatrix()".printToConsole(LogType.WARN)
+        }
     }
 
     sealed class PlayerInteraction(val name: String, val mainHand: Boolean) {

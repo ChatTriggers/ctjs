@@ -52,6 +52,8 @@ object Renderer {
     private lateinit var slimCTRenderPlayer: CTPlayerRenderer
     private lateinit var normalCTRenderPlayer: CTPlayerRenderer
 
+    internal var matrixPushCounter = 0
+
     @JvmField
     val screen = ScreenWrapper()
 
@@ -229,6 +231,7 @@ object Renderer {
     @JvmStatic
     @JvmOverloads
     fun pushMatrix(stack: UMatrixStack = matrixStack) = apply {
+        matrixPushCounter++
         matrixStackStack.addLast(stack)
         matrixStack = stack
         stack.push()
@@ -236,6 +239,7 @@ object Renderer {
 
     @JvmStatic
     fun popMatrix() = apply {
+        matrixPushCounter--
         matrixStackStack.removeLast()
         matrixStack.pop()
     }
