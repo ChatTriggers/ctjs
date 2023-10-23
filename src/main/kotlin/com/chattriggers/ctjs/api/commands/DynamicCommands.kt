@@ -555,7 +555,7 @@ object DynamicCommands : CommandCollection() {
      * const TAILS = 1;
      *
      * const coinFlipArgType = Commands.custom({
-     *     parser(reader) {
+     *     parse(reader) {
      *         // `reader` is a com.mojang.brigadier.StringReader
      *
      *         const savedCursor = reader.getCursor();

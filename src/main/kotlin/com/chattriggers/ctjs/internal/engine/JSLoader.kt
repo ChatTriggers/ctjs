@@ -173,7 +173,7 @@ object JSLoader {
 
     fun invoke(method: Callable, args: Array<out Any?>): Any? {
         return wrapInContext {
-            method.call(Context.getCurrentContext(), scope, scope, args)
+            Context.jsToJava(method.call(Context.getCurrentContext(), scope, scope, args), Any::class.java)
         }
     }
 
