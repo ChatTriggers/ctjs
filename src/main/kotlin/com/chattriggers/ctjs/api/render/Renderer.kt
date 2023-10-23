@@ -510,7 +510,7 @@ object Renderer {
         begin(DrawMode.TRIANGLE_STRIP, VertexFormat.POSITION_COLOR)
 
         for (i in 0..steps) {
-            pos(x, y, 0f)
+            pos(x, y, 0f).color(color)
             pos(circleX * radius + x, circleY * radius + y, 0f).color(color)
             xHolder = circleX
             circleX = cos * circleX - sin * circleY
