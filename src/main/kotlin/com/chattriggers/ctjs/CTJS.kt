@@ -116,10 +116,12 @@ internal class CTJS : ClientModInitializer {
 
             ModuleManager.teardown()
             KeyBind.clearKeyBinds()
-            Console.clear()
             Register.clearCustomTriggers()
             StaticCommand.unregisterAll()
             DynamicCommands.unregisterAll()
+
+            if (Config.clearConsoleOnLoad)
+                Console.clear()
 
             Client.scheduleTask {
                 images.forEach(Image::destroy)
