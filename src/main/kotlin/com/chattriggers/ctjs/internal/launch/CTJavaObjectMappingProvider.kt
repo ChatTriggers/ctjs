@@ -23,13 +23,11 @@ object CTJavaObjectMappingProvider : JavaObjectMappingProvider {
             )
 
             val superClass = current.superclass
-            if (superClass != null && Mappings.getMappedClass(superClass.name) != null)
+            if (superClass != null)
                 queue.add(superClass)
 
-            for (itf in current.interfaces) {
-                if (Mappings.getMappedClass(itf.name) != null)
-                    queue.add(itf)
-            }
+            for (itf in current.interfaces)
+                queue.add(itf)
 
             current = queue.removeFirstOrNull()
         }
