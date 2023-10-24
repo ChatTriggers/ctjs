@@ -11,6 +11,7 @@ import gg.essential.universal.UMatrixStack
 import gg.essential.universal.UScreen
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents
 import net.minecraft.client.gui.widget.ButtonWidget
+import net.minecraft.client.gui.tooltip.Tooltip
 
 //#if MC>=12000
 import net.minecraft.client.gui.DrawContext
@@ -451,6 +452,42 @@ class Gui @JvmOverloads constructor(
             this.y = y
         }
     }
+
+    /**
+     * Sets the button's text
+     *
+     * @param buttonId id of the button
+     * @param text the new text
+     */
+    fun setButtonText(buttonId: Int, text: TextComponent) = apply {
+        buttons[buttonId]?.message = text
+    }
+
+    /**
+     * Sets the button's text
+     *
+     * @param buttonId id of the button
+     * @param text the new text
+     */
+    fun setButtonText(buttonId: Int, text: String) = setButtonText(buttonId, TextComponent(text))
+
+    /**
+     * Sets the gui's tooltip, this will be visible on top of the cursor
+     * when the gui is open.
+     *
+     * @param text the contents of the tooltip
+     */
+    fun setTooltip(text: TextComponent) = apply {
+        setTooltip(Tooltip.wrapLines(Client.getMinecraft(), text))
+    }
+
+    /**
+     * Sets the gui's tooltip, this will be visible on top of the cursor
+     * when the gui is open.
+     *
+     * @param text the contents of the tooltip
+     */
+    fun setTooltip(text: String) = setTooltip(TextComponent(text))
 
     companion object {
         //#if MC>=12000

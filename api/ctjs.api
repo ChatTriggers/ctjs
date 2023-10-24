@@ -1525,11 +1525,15 @@ public final class com/chattriggers/ctjs/api/render/Gui : gg/essential/universal
 	public final fun setButtonEnabled (IZ)Lcom/chattriggers/ctjs/api/render/Gui;
 	public final fun setButtonHeight (II)Lcom/chattriggers/ctjs/api/render/Gui;
 	public final fun setButtonLoc (III)Lcom/chattriggers/ctjs/api/render/Gui;
+	public final fun setButtonText (ILcom/chattriggers/ctjs/api/message/TextComponent;)Lcom/chattriggers/ctjs/api/render/Gui;
+	public final fun setButtonText (ILjava/lang/String;)Lcom/chattriggers/ctjs/api/render/Gui;
 	public final fun setButtonVisibility (IZ)Lcom/chattriggers/ctjs/api/render/Gui;
 	public final fun setButtonWidth (II)Lcom/chattriggers/ctjs/api/render/Gui;
 	public final fun setButtonX (II)Lcom/chattriggers/ctjs/api/render/Gui;
 	public final fun setButtonY (II)Lcom/chattriggers/ctjs/api/render/Gui;
 	public final fun setDoesPauseGame (Z)Lcom/chattriggers/ctjs/api/render/Gui;
+	public final fun setTooltip (Lcom/chattriggers/ctjs/api/message/TextComponent;)Lcom/chattriggers/ctjs/api/render/Gui;
+	public final fun setTooltip (Ljava/lang/String;)Lcom/chattriggers/ctjs/api/render/Gui;
 	public fun shouldPause ()Z
 	public final fun unregisterActionPerformed ()Lcom/chattriggers/ctjs/api/render/Gui;
 	public final fun unregisterClicked ()Lcom/chattriggers/ctjs/api/render/Gui;
