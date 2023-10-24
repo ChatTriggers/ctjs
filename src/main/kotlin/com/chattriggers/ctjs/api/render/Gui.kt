@@ -223,7 +223,7 @@ class Gui @JvmOverloads constructor(
             onScroll?.trigger(arrayOf(x, y, dy))
         }
 
-        buttons.values.forEach(::addDrawable)
+        buttons.values.forEach(::addDrawableChild)
         onOpened?.trigger(arrayOf(this))
     }
 
@@ -315,7 +315,7 @@ class Gui @JvmOverloads constructor(
     fun addButton(button: ButtonWidget): Int {
         val id = nextButtonId++
         buttons[id] = button
-        addDrawable(button)
+        addDrawableChild(button)
         return id
     }
 
@@ -336,7 +336,7 @@ class Gui @JvmOverloads constructor(
             onActionPerformed?.trigger(arrayOf(id))
         }.dimensions(x, y, width, height).build()
         buttons[id] = button
-        addDrawable(button)
+        addDrawableChild(button)
         return id
     }
 
