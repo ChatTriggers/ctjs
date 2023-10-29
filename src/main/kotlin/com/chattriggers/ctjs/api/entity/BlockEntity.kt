@@ -22,7 +22,6 @@ class BlockEntity(override val mcValue: MCBlockEntity) : CTWrapper<MCBlockEntity
     fun getBlock(): Block = Block(getBlockType(), getBlockPos())
 
     override fun toString(): String {
-        val coordStrings = listOf(getX(), getY(), getZ()).map { "%.3f".format(it) }
-        return "BlockEntity(type=${getBlockType()}, pos=[${coordStrings.joinToString()}])"
+        return "BlockEntity(type=${getBlockType()}, pos=[${getX()}, ${getY()}, ${getZ()}])"
     }
 }
