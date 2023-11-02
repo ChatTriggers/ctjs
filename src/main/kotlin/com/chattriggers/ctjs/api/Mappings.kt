@@ -168,8 +168,18 @@ object Mappings {
             if (classInfo == null)
                 return null
 
-            val unmappedSuperClass = mappedToUnmappedClassNames[classInfo.superName] ?: return null
-            return unmappedClasses[unmappedSuperClass]?.findMethods(name, classInfo.superClass)
+            val unmappedSuperClass = mappedToUnmappedClassNames[classInfo.superName]
+            if (unmappedSuperClass != null) {
+                return unmappedClasses[unmappedSuperClass]?.findMethods(name, classInfo.superClass)
+            }
+
+            val methods = mutableListOf<MappedMethod>()
+            for (itf in classInfo.interfaces) {
+                val unmappedInterface = mappedToUnmappedClassNames[itf] ?: continue
+                unmappedClasses[unmappedInterface]?.findMethods(name, null)?.let { methods += it }
+            }
+
+            return if (methods.isEmpty()) null else methods
         }
     }
 
