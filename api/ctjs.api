@@ -1751,6 +1751,7 @@ public final class com/chattriggers/ctjs/api/render/Renderer {
 	public static final fun getRenderPos (FFF)Lcom/chattriggers/ctjs/api/vec/Vec3f;
 	public static final fun getStringWidth (Ljava/lang/String;)I
 	public static final fun light (II)Lcom/chattriggers/ctjs/api/render/Renderer;
+	public static final fun lineWidth (F)Lcom/chattriggers/ctjs/api/render/Renderer;
 	public static final fun multiply (Lorg/joml/Quaternionf;)Lcom/chattriggers/ctjs/api/render/Renderer;
 	public static final fun normal (FFF)Lcom/chattriggers/ctjs/api/render/Renderer;
 	public static final fun overlay (II)Lcom/chattriggers/ctjs/api/render/Renderer;
@@ -1762,7 +1763,10 @@ public final class com/chattriggers/ctjs/api/render/Renderer {
 	public static final fun pushMatrix (Lgg/essential/universal/UMatrixStack;)Lcom/chattriggers/ctjs/api/render/Renderer;
 	public static synthetic fun pushMatrix$default (Lgg/essential/universal/UMatrixStack;ILjava/lang/Object;)Lcom/chattriggers/ctjs/api/render/Renderer;
 	public static final fun rotate (F)Lcom/chattriggers/ctjs/api/render/Renderer;
-	public static final fun rotateToCamera ()Lcom/chattriggers/ctjs/api/render/Renderer;
+	public static final fun rotate (FF)Lcom/chattriggers/ctjs/api/render/Renderer;
+	public static final fun rotate (FFF)Lcom/chattriggers/ctjs/api/render/Renderer;
+	public static final fun rotate (FFFF)Lcom/chattriggers/ctjs/api/render/Renderer;
+	public static synthetic fun rotate$default (FFFFILjava/lang/Object;)Lcom/chattriggers/ctjs/api/render/Renderer;
 	public static final fun scale (F)Lcom/chattriggers/ctjs/api/render/Renderer;
 	public static final fun scale (FF)Lcom/chattriggers/ctjs/api/render/Renderer;
 	public static final fun scale (FFF)Lcom/chattriggers/ctjs/api/render/Renderer;
@@ -1771,7 +1775,6 @@ public final class com/chattriggers/ctjs/api/render/Renderer {
 	public static final fun translate (FF)Lcom/chattriggers/ctjs/api/render/Renderer;
 	public static final fun translate (FFF)Lcom/chattriggers/ctjs/api/render/Renderer;
 	public static synthetic fun translate$default (FFFILjava/lang/Object;)Lcom/chattriggers/ctjs/api/render/Renderer;
-	public static final fun translateToPlayer ()Lcom/chattriggers/ctjs/api/render/Renderer;
 	public static final fun tryBlendFuncSeparate (IIII)Lcom/chattriggers/ctjs/api/render/Renderer;
 }
 
@@ -1845,8 +1848,8 @@ public final class com/chattriggers/ctjs/api/render/Renderer3d {
 	public static final fun drawString (Ljava/lang/String;FFFJZFZZZ)V
 	public static final fun drawString (Lorg/mozilla/javascript/NativeObject;)V
 	public static synthetic fun drawString$default (Ljava/lang/String;FFFJZFZZZILjava/lang/Object;)V
-	public static final fun endVertex ()Lcom/chattriggers/ctjs/api/render/Renderer3d;
 	public static final fun light (II)Lcom/chattriggers/ctjs/api/render/Renderer3d;
+	public static final fun lineWidth (F)Lcom/chattriggers/ctjs/api/render/Renderer3d;
 	public static final fun normal (FFF)Lcom/chattriggers/ctjs/api/render/Renderer3d;
 	public static final fun overlay (II)Lcom/chattriggers/ctjs/api/render/Renderer3d;
 	public static final fun pos (FFF)Lcom/chattriggers/ctjs/api/render/Renderer3d;
