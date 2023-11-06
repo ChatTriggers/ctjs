@@ -245,22 +245,6 @@ object Renderer {
     }
 
     @JvmStatic
-    fun rotateToCamera() = apply {
-        val camera = Client.getMinecraft().gameRenderer.camera
-        multiply(RotationAxis.POSITIVE_X.rotationDegrees(camera.pitch))
-        multiply(RotationAxis.POSITIVE_Y.rotationDegrees(camera.yaw + 180f))
-    }
-
-    @JvmStatic
-    fun translateToPlayer() = apply {
-        translate(
-            -Client.camera.getX().toFloat(),
-            -Client.camera.getY().toFloat(),
-            -Client.camera.getZ().toFloat()
-        )
-    }
-
-    @JvmStatic
     @JvmOverloads
     fun translate(x: Float, y: Float, z: Float = 0.0F) = apply {
         matrixStack.translate(x, y, z)
@@ -273,8 +257,9 @@ object Renderer {
     }
 
     @JvmStatic
-    fun rotate(angle: Float) = apply {
-        matrixStack.rotate(angle, 0f, 0f, 1f)
+    @JvmOverloads
+    fun rotate(angle: Float, x: Float = 0f, y: Float = 0f, z: Float = 1f) = apply {
+        matrixStack.rotate(angle, x, y, z)
     }
 
     @JvmStatic
@@ -342,7 +327,8 @@ object Renderer {
     @JvmStatic
     @JvmOverloads
     fun pos(x: Float, y: Float, z: Float = 0f) = apply {
-        Renderer3d.pos(x, y, z)
+        val camera = Client.getMinecraft().gameRenderer.camera.pos
+        Renderer3d.pos(x + camera.x.toFloat(), y + camera.y.toFloat(), z + camera.z.toFloat())
     }
 
     /**
@@ -434,6 +420,17 @@ object Renderer {
     @JvmStatic
     fun light(u: Int, v: Int) = apply {
         Renderer3d.light(u, v)
+    }
+
+    /**
+     * Sets the line width when rendering [DrawMode.LINES]
+     *
+     * @param width the width of the line
+     * @return [Renderer] to allow for method chaining
+     */
+    @JvmStatic
+    fun lineWidth(width: Float) = apply {
+        Renderer3d.lineWidth(width)
     }
 
     /**

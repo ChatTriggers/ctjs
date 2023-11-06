@@ -10,7 +10,6 @@ import gg.essential.elementa.dsl.component2
 import gg.essential.elementa.dsl.component3
 import gg.essential.elementa.dsl.component4
 import gg.essential.universal.UGraphics
-import gg.essential.universal.UMatrixStack
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.font.TextRenderer
 import net.minecraft.client.render.Tessellator
@@ -43,7 +42,8 @@ object Renderer3d {
         vertexFormat: Renderer.VertexFormat = Renderer.VertexFormat.POSITION,
     ) = apply {
         Renderer.pushMatrix()
-        Renderer.enableBlend()
+            .enableBlend()
+            .disableCull()
         Renderer.tryBlendFuncSeparate(770, 771, 1, 0)
 
         worldRenderer.beginWithDefaultShader(drawMode.toUC(), vertexFormat.toMC())
@@ -66,7 +66,8 @@ object Renderer3d {
             begin()
         if (!firstVertex)
             worldRenderer.endVertex()
-        worldRenderer.pos(Renderer.matrixStack, x.toDouble(), y.toDouble(), z.toDouble())
+        val camera = Client.getMinecraft().gameRenderer.camera.pos
+        worldRenderer.pos(Renderer.matrixStack, x.toDouble() - camera.x, y.toDouble() - camera.y, z.toDouble() - camera.z)
         firstVertex = false
     }
 
@@ -162,13 +163,14 @@ object Renderer3d {
     }
 
     /**
-     * End the current vertex
+     * Sets the line width when rendering [Renderer.DrawMode.LINES]
      *
+     * @param width the width of the line
      * @return [Renderer3d] to allow for method chaining
      */
     @JvmStatic
-    fun endVertex() = apply {
-        worldRenderer.endVertex()
+    fun lineWidth(width: Float) = apply {
+        RenderSystem.lineWidth(width)
     }
 
     /**
@@ -185,6 +187,7 @@ object Renderer3d {
         worldRenderer.drawDirect()
         Renderer.colorize(1f, 1f, 1f, 1f)
             .disableBlend()
+            .enableCull()
             .popMatrix()
     }
 
@@ -345,10 +348,8 @@ object Renderer3d {
         z2: Float,
         thickness: Float,
     ) {
-        Renderer.pushMatrix(UMatrixStack())
+        Renderer.pushMatrix()
             .disableDepth()
-            .rotateToCamera()
-            .translateToPlayer()
             .disableCull()
         RenderSystem.lineWidth(thickness)
 
@@ -357,8 +358,8 @@ object Renderer3d {
         val normalVec = Vector3f(x2 - x1, y2 - y1, z2 - z1).normalize()
 
         begin(Renderer.DrawMode.LINES, Renderer.VertexFormat.LINES)
-        pos(x1, y1, z1).color(r, g, b, a).normal(normalVec.x, normalVec.y, normalVec.z).endVertex()
-        pos(x2, y2, z2).color(r, g, b, a).normal(normalVec.x, normalVec.y, normalVec.z).endVertex()
+        pos(x1, y1, z1).color(r, g, b, a).normal(normalVec.x, normalVec.y, normalVec.z)
+        pos(x2, y2, z2).color(r, g, b, a).normal(normalVec.x, normalVec.y, normalVec.z)
         draw()
 
         RenderSystem.lineWidth(1f)
