@@ -20,4 +20,7 @@ public interface KeyBindingAccessor {
 
     @Accessor
     InputUtil.Key getBoundKey();
+
+    @Accessor
+    int getTimesPressed();
 }
