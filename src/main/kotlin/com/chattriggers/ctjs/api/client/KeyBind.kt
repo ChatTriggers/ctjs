@@ -125,7 +125,7 @@ class KeyBind {
      *
      * @return whether the key has just been pressed
      */
-    fun isPressed(): Boolean = keyBinding.wasPressed()
+    fun isPressed(): Boolean = keyBinding.asMixin<KeyBindingAccessor>().timesPressed > 0
 
     /**
      * Gets the description of the key.
