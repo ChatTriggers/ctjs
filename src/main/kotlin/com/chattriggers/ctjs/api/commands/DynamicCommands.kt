@@ -199,10 +199,10 @@ object DynamicCommands : CommandCollection() {
     }
 
     @JvmStatic
-    fun redirect(node: DynamicCommand.Node.Root) {
+    fun redirect(node: RootCommand) {
         requireNotNull(currentNode) { "Call to Commands.redirect() outside of Commands.buildCommand()" }
         require(!currentNode!!.hasRedirect) { "Duplicate call to Commands.redirect()" }
-        currentNode!!.children.add(DynamicCommand.Node.Redirect(currentNode, node))
+        currentNode!!.children.add(DynamicCommand.Node.Redirect(currentNode, node as DynamicCommand.Node.Root))
         currentNode!!.hasRedirect = true
     }
 

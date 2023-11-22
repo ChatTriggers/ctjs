@@ -642,7 +642,7 @@ public final class com/chattriggers/ctjs/api/commands/DynamicCommands : com/chat
 	public static final fun nbtTag ()Lcom/mojang/brigadier/arguments/ArgumentType;
 	public static final fun player ()Lcom/mojang/brigadier/arguments/ArgumentType;
 	public static final fun players ()Lcom/mojang/brigadier/arguments/ArgumentType;
-	public static final fun redirect (Lcom/chattriggers/ctjs/internal/commands/DynamicCommand$Node$Root;)V
+	public static final fun redirect (Lcom/chattriggers/ctjs/api/commands/RootCommand;)V
 	public static final fun registerCommand (Ljava/lang/String;)Lcom/chattriggers/ctjs/api/commands/RootCommand;
 	public static final fun registerCommand (Ljava/lang/String;Lorg/mozilla/javascript/Function;)Lcom/chattriggers/ctjs/api/commands/RootCommand;
 	public static synthetic fun registerCommand$default (Ljava/lang/String;Lorg/mozilla/javascript/Function;ILjava/lang/Object;)Lcom/chattriggers/ctjs/api/commands/RootCommand;
@@ -2552,16 +2552,29 @@ public final class com/chattriggers/ctjs/engine/Console {
 	public final fun onConsoleSettingsChanged (Lcom/chattriggers/ctjs/api/Config$ConsoleSettings;)V
 	public final fun printStackTrace (Ljava/lang/Throwable;)V
 	public final fun println (Ljava/lang/Object;)V
-	public final fun println (Ljava/lang/Object;Lcom/chattriggers/ctjs/internal/console/LogType;)V
-	public final fun println (Ljava/lang/Object;Lcom/chattriggers/ctjs/internal/console/LogType;Ljava/lang/String;)V
-	public final fun println (Ljava/lang/Object;Lcom/chattriggers/ctjs/internal/console/LogType;Ljava/lang/String;Ljava/awt/Color;)V
+	public final fun println (Ljava/lang/Object;Lcom/chattriggers/ctjs/engine/LogType;)V
+	public final fun println (Ljava/lang/Object;Lcom/chattriggers/ctjs/engine/LogType;Ljava/lang/String;)V
+	public final fun println (Ljava/lang/Object;Lcom/chattriggers/ctjs/engine/LogType;Ljava/lang/String;Ljava/awt/Color;)V
 	public final fun show ()V
 }
 
 public final class com/chattriggers/ctjs/engine/ConsoleKt {
-	public static final fun printToConsole (Ljava/lang/Object;Lcom/chattriggers/ctjs/internal/console/LogType;)V
-	public static synthetic fun printToConsole$default (Ljava/lang/Object;Lcom/chattriggers/ctjs/internal/console/LogType;ILjava/lang/Object;)V
+	public static final fun printToConsole (Ljava/lang/Object;Lcom/chattriggers/ctjs/engine/LogType;)V
+	public static synthetic fun printToConsole$default (Ljava/lang/Object;Lcom/chattriggers/ctjs/engine/LogType;ILjava/lang/Object;)V
 	public static final fun printTraceToConsole (Ljava/lang/Throwable;)V
+}
+
+public final class com/chattriggers/ctjs/engine/LogType : java/lang/Enum {
+	public static final field Companion Lcom/chattriggers/ctjs/engine/LogType$Companion;
+	public static final field ERROR Lcom/chattriggers/ctjs/engine/LogType;
+	public static final field INFO Lcom/chattriggers/ctjs/engine/LogType;
+	public static final field WARN Lcom/chattriggers/ctjs/engine/LogType;
+	public static fun valueOf (Ljava/lang/String;)Lcom/chattriggers/ctjs/engine/LogType;
+	public static fun values ()[Lcom/chattriggers/ctjs/engine/LogType;
+}
+
+public final class com/chattriggers/ctjs/engine/LogType$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
 public final class com/chattriggers/ctjs/engine/MixinCallback {
