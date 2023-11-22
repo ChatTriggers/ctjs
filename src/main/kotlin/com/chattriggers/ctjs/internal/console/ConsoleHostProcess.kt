@@ -3,6 +3,7 @@ package com.chattriggers.ctjs.internal.console
 import com.chattriggers.ctjs.CTJS
 import com.chattriggers.ctjs.api.Config
 import com.chattriggers.ctjs.api.client.Client
+import com.chattriggers.ctjs.engine.LogType
 import com.chattriggers.ctjs.internal.engine.JSLoader
 import gg.essential.universal.UDesktop
 import kotlinx.serialization.encodeToString

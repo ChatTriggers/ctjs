@@ -3,8 +3,8 @@ package com.chattriggers.ctjs.internal.engine.module
 import com.chattriggers.ctjs.CTJS
 import com.chattriggers.ctjs.api.message.ChatLib
 import com.chattriggers.ctjs.api.world.World
+import com.chattriggers.ctjs.engine.LogType
 import com.chattriggers.ctjs.engine.printToConsole
-import com.chattriggers.ctjs.internal.console.LogType
 import com.chattriggers.ctjs.internal.engine.JSContextFactory
 import com.chattriggers.ctjs.internal.engine.JSLoader
 import kotlinx.serialization.json.Json

@@ -1,9 +1,8 @@
 package com.chattriggers.ctjs.internal.commands
 
-import com.chattriggers.ctjs.internal.console.LogType
+import com.chattriggers.ctjs.engine.LogType
 import com.chattriggers.ctjs.engine.printToConsole
 import com.chattriggers.ctjs.internal.engine.CTEvents
-import com.chattriggers.ctjs.internal.engine.JSLoader
 import com.chattriggers.ctjs.internal.utils.Initializer
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.builder.ArgumentBuilder

@@ -1,5 +1,6 @@
 package com.chattriggers.ctjs.internal.console
 
+import com.chattriggers.ctjs.engine.LogType
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants
 import org.fife.ui.rsyntaxtextarea.Theme

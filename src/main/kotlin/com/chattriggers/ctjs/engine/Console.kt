@@ -2,7 +2,7 @@ package com.chattriggers.ctjs.engine
 
 import com.chattriggers.ctjs.api.Config
 import com.chattriggers.ctjs.internal.console.ConsoleHostProcess
-import com.chattriggers.ctjs.internal.console.LogType
+import kotlinx.serialization.Serializable
 import java.awt.Color
 
 // A wrapper object so that we can hide away the implementation in the
@@ -20,6 +20,13 @@ object Console {
     fun close() = ConsoleHostProcess.close()
     fun onConsoleSettingsChanged(settings: Config.ConsoleSettings) =
         ConsoleHostProcess.onConsoleSettingsChanged(settings)
+}
+
+@Serializable
+enum class LogType {
+    INFO,
+    WARN,
+    ERROR,
 }
 
 fun Any.printToConsole(logType: LogType = LogType.INFO) {

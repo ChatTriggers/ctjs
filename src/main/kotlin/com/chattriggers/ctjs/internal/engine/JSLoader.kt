@@ -2,8 +2,8 @@ package com.chattriggers.ctjs.internal.engine
 
 import com.chattriggers.ctjs.api.triggers.ITriggerType
 import com.chattriggers.ctjs.api.triggers.Trigger
+import com.chattriggers.ctjs.engine.LogType
 import com.chattriggers.ctjs.engine.MixinCallback
-import com.chattriggers.ctjs.internal.console.LogType
 import com.chattriggers.ctjs.engine.printToConsole
 import com.chattriggers.ctjs.engine.printTraceToConsole
 import com.chattriggers.ctjs.internal.engine.module.Module

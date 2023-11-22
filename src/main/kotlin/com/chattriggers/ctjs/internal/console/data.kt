@@ -1,6 +1,7 @@
 package com.chattriggers.ctjs.internal.console
 
 import com.chattriggers.ctjs.api.Config
+import com.chattriggers.ctjs.engine.LogType
 import kotlinx.serialization.Serializable
 
 @Serializable
