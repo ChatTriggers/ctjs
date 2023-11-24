@@ -118,7 +118,6 @@ class Item(override val mcValue: ItemStack) : CTWrapper<ItemStack> {
         Renderer.pushMatrix()
             .scale(scale, scale, 1f)
             .translate(x / scale, y / scale, z)
-            .colorize(1f, 1f, 1f, 1f)
 
         // The item draw method moved to DrawContext in 1.20, which we don't have access
         // to here, so its drawItem method has been copy-pasted here instead
