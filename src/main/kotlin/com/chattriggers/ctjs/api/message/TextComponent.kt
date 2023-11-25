@@ -1,5 +1,6 @@
 package com.chattriggers.ctjs.api.message
 
+import com.chattriggers.ctjs.api.render.Renderer
 import gg.essential.universal.UChat
 import net.minecraft.text.*
 import net.minecraft.util.Formatting
@@ -216,6 +217,26 @@ class TextComponent : Text {
     fun setHover(action: String, value: Any?) = apply {
         setHover(HoverEvent.Action.byName(action) as HoverEvent.Action<*>, value)
     }
+
+    /**
+     * Sets the color of this [TextComponent]
+     * This won't override your color codes unless &r is explicitly used.
+     *
+     * @param color RGB value acquired using [Renderer.getColor]. Alpha values will be ignored
+     */
+    fun setColor(color: Long) = apply {
+        component.setStyle(component.style.withColor(color.toInt()));
+    }
+
+    /**
+     * Sets the color of this [TextComponent]
+     * This won't override your color codes unless &r is explicitly used.
+     *
+     * @param red value between 0 and 255
+     * @param green value between 0 and 255
+     * @param blue value between 0 and 255
+     */
+    fun setColor(red: Int, green: Int, blue: Int) = setColor(Renderer.getColor(red, green, blue))
 
     /**
      * Shows the component in chat as a new [Message]

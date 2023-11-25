@@ -1404,6 +1404,8 @@ public final class com/chattriggers/ctjs/api/message/TextComponent : net/minecra
 	public final fun setClick (Lnet/minecraft/text/ClickEvent$Action;Ljava/lang/String;)Lcom/chattriggers/ctjs/api/message/TextComponent;
 	public final fun setClickAction (Ljava/lang/Object;)Lcom/chattriggers/ctjs/api/message/TextComponent;
 	public final fun setClickValue (Ljava/lang/String;)Lcom/chattriggers/ctjs/api/message/TextComponent;
+	public final fun setColor (III)Lcom/chattriggers/ctjs/api/message/TextComponent;
+	public final fun setColor (J)Lcom/chattriggers/ctjs/api/message/TextComponent;
 	public final fun setFormatted (Z)Lcom/chattriggers/ctjs/api/message/TextComponent;
 	public final fun setHover (Ljava/lang/String;Ljava/lang/Object;)Lcom/chattriggers/ctjs/api/message/TextComponent;
 	public final fun setHover (Lnet/minecraft/text/HoverEvent$Action;Ljava/lang/Object;)Lcom/chattriggers/ctjs/api/message/TextComponent;
