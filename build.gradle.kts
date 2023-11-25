@@ -17,6 +17,7 @@ plugins {
     alias(libs.plugins.loom)
     alias(libs.plugins.dokka)
     alias(libs.plugins.validator)
+    alias(libs.plugins.ksp)
 }
 
 version = property("mod_version").toString()
@@ -43,6 +44,10 @@ dependencies {
     modApi(libs.modmenu)
     modRuntimeOnly(libs.devauth)
     dokkaPlugin(libs.versioning)
+
+    implementation(kotlin("stdlib-jdk8"))
+    implementation(project(":typing-generator"))
+    ksp(project(":typing-generator"))
 }
 
 loom {
