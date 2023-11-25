@@ -4,9 +4,9 @@ import com.chattriggers.ctjs.api.CTWrapper
 import com.chattriggers.ctjs.api.entity.BlockEntity
 import com.chattriggers.ctjs.api.entity.Entity
 import com.chattriggers.ctjs.internal.mixins.ChunkAccessor
-import com.chattriggers.ctjs.internal.utils.MCBlockPos
-import com.chattriggers.ctjs.internal.utils.MCChunk
-import com.chattriggers.ctjs.internal.utils.MCEntity
+import com.chattriggers.ctjs.MCBlockPos
+import com.chattriggers.ctjs.MCChunk
+import com.chattriggers.ctjs.MCEntity
 import com.chattriggers.ctjs.internal.utils.asMixin
 import net.minecraft.util.math.Box
 

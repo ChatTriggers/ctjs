@@ -13,8 +13,8 @@ import com.chattriggers.ctjs.api.world.block.BlockType
 import com.chattriggers.ctjs.internal.mixins.ClientChunkManagerAccessor
 import com.chattriggers.ctjs.internal.mixins.ClientChunkMapAccessor
 import com.chattriggers.ctjs.internal.mixins.ClientWorldAccessor
-import com.chattriggers.ctjs.internal.utils.MCBlockPos
-import com.chattriggers.ctjs.internal.utils.MCParticle
+import com.chattriggers.ctjs.MCBlockPos
+import com.chattriggers.ctjs.MCParticle
 import com.chattriggers.ctjs.internal.utils.asMixin
 import com.chattriggers.ctjs.internal.utils.toIdentifier
 import com.mojang.brigadier.StringReader

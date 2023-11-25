@@ -4,7 +4,7 @@ import com.chattriggers.ctjs.api.CTWrapper
 import com.chattriggers.ctjs.api.world.block.Block
 import com.chattriggers.ctjs.api.world.block.BlockPos
 import com.chattriggers.ctjs.api.world.block.BlockType
-import com.chattriggers.ctjs.internal.utils.MCBlockEntity
+import com.chattriggers.ctjs.MCBlockEntity
 import net.minecraft.block.entity.BlockEntityType
 
 class BlockEntity(override val mcValue: MCBlockEntity) : CTWrapper<MCBlockEntity> {

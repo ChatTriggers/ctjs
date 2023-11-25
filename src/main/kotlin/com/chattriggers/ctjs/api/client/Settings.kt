@@ -1,8 +1,8 @@
 package com.chattriggers.ctjs.api.client
 
+import com.chattriggers.ctjs.*
 import com.chattriggers.ctjs.api.CTWrapper
 import com.chattriggers.ctjs.api.world.World
-import com.chattriggers.ctjs.internal.utils.*
 import gg.essential.universal.UMinecraft
 import net.minecraft.client.render.entity.PlayerModelPart
 import net.minecraft.sound.SoundCategory

@@ -12,7 +12,7 @@ import com.chattriggers.ctjs.api.world.block.Block
 import com.chattriggers.ctjs.api.world.block.BlockPos
 import com.chattriggers.ctjs.internal.Skippable
 import com.chattriggers.ctjs.internal.TooltipOverridable
-import com.chattriggers.ctjs.internal.utils.MCNbtCompound
+import com.chattriggers.ctjs.MCNbtCompound
 import com.chattriggers.ctjs.internal.utils.asMixin
 import net.minecraft.block.pattern.CachedBlockPosition
 import net.minecraft.client.item.TooltipContext

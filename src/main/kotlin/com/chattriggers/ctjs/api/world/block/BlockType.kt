@@ -4,8 +4,8 @@ import com.chattriggers.ctjs.api.CTWrapper
 import com.chattriggers.ctjs.api.inventory.Item
 import com.chattriggers.ctjs.api.inventory.ItemType
 import com.chattriggers.ctjs.api.message.TextComponent
-import com.chattriggers.ctjs.internal.utils.MCBlock
-import com.chattriggers.ctjs.internal.utils.MCItem
+import com.chattriggers.ctjs.MCBlock
+import com.chattriggers.ctjs.MCItem
 import com.chattriggers.ctjs.internal.utils.toIdentifier
 import net.minecraft.registry.Registries
 

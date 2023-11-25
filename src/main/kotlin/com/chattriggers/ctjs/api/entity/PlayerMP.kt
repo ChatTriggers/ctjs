@@ -4,7 +4,7 @@ import com.chattriggers.ctjs.api.client.Client
 import com.chattriggers.ctjs.api.message.TextComponent
 import com.chattriggers.ctjs.api.render.Renderer
 import com.chattriggers.ctjs.internal.NameTagOverridable
-import com.chattriggers.ctjs.internal.utils.MCTeam
+import com.chattriggers.ctjs.MCTeam
 import com.chattriggers.ctjs.internal.utils.asMixin
 import net.minecraft.client.network.PlayerListEntry
 import net.minecraft.entity.player.PlayerEntity

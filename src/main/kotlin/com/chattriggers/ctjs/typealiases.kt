@@ -1,4 +1,4 @@
-package com.chattriggers.ctjs.internal.utils
+package com.chattriggers.ctjs
 
 typealias MCSound = net.minecraft.client.sound.Sound
 typealias MCBlockPos = net.minecraft.util.math.BlockPos
@@ -13,7 +13,6 @@ typealias MCItem = net.minecraft.item.Item
 typealias MCNbtBase = net.minecraft.nbt.NbtElement
 typealias MCNbtCompound = net.minecraft.nbt.NbtCompound
 typealias MCNbtList = net.minecraft.nbt.NbtList
-typealias MCScoreboard = net.minecraft.scoreboard.Scoreboard
 typealias MCBlockEntity = net.minecraft.block.entity.BlockEntity
 typealias MCDifficulty = net.minecraft.world.Difficulty
 typealias MCGraphicsMode = net.minecraft.client.option.GraphicsMode

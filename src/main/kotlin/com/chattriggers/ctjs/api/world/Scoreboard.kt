@@ -1,7 +1,7 @@
 package com.chattriggers.ctjs.api.world
 
 import com.chattriggers.ctjs.api.message.TextComponent
-import com.chattriggers.ctjs.internal.utils.MCTeam
+import com.chattriggers.ctjs.MCTeam
 import net.minecraft.scoreboard.ScoreboardObjective
 import net.minecraft.scoreboard.ScoreboardPlayerScore
 

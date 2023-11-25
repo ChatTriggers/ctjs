@@ -1,7 +1,7 @@
 package com.chattriggers.ctjs.api.inventory.nbt
 
-import com.chattriggers.ctjs.internal.utils.MCNbtBase
-import com.chattriggers.ctjs.internal.utils.MCNbtList
+import com.chattriggers.ctjs.MCNbtBase
+import com.chattriggers.ctjs.MCNbtList
 import net.minecraft.nbt.NbtElement
 import org.mozilla.javascript.NativeArray
 

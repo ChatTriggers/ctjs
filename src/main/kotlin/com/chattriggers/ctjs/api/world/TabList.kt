@@ -4,7 +4,7 @@ import com.chattriggers.ctjs.api.client.Client
 import com.chattriggers.ctjs.api.client.Player
 import com.chattriggers.ctjs.api.message.TextComponent
 import com.chattriggers.ctjs.internal.mixins.PlayerListHudAccessor
-import com.chattriggers.ctjs.internal.utils.MCTeam
+import com.chattriggers.ctjs.MCTeam
 import com.chattriggers.ctjs.internal.utils.asMixin
 import com.google.common.collect.ComparisonChain
 import com.google.common.collect.Ordering

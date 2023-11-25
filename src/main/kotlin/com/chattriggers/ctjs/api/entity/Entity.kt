@@ -6,9 +6,9 @@ import com.chattriggers.ctjs.api.render.Renderer
 import com.chattriggers.ctjs.api.world.Chunk
 import com.chattriggers.ctjs.api.world.World
 import com.chattriggers.ctjs.api.world.block.BlockPos
-import com.chattriggers.ctjs.internal.utils.MCDimensionType
-import com.chattriggers.ctjs.internal.utils.MCEntity
-import com.chattriggers.ctjs.internal.utils.MCLivingEntity
+import com.chattriggers.ctjs.MCDimensionType
+import com.chattriggers.ctjs.MCEntity
+import com.chattriggers.ctjs.MCLivingEntity
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.registry.RegistryKey
 import net.minecraft.util.math.MathHelper

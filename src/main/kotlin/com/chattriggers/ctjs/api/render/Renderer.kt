@@ -6,7 +6,7 @@ import com.chattriggers.ctjs.api.entity.PlayerMP
 import com.chattriggers.ctjs.api.message.ChatLib
 import com.chattriggers.ctjs.api.vec.Vec3f
 import com.chattriggers.ctjs.internal.mixins.EntityRenderDispatcherAccessor
-import com.chattriggers.ctjs.internal.utils.MCVertexFormat
+import com.chattriggers.ctjs.MCVertexFormat
 import com.chattriggers.ctjs.internal.utils.asMixin
 import com.chattriggers.ctjs.internal.utils.getOrDefault
 import com.chattriggers.ctjs.internal.utils.toRadians

@@ -3,10 +3,9 @@ package com.chattriggers.ctjs.api.entity
 import com.chattriggers.ctjs.api.inventory.Item
 import com.chattriggers.ctjs.api.world.PotionEffect
 import com.chattriggers.ctjs.api.world.PotionEffectType
-import com.chattriggers.ctjs.internal.utils.MCEntity
-import com.chattriggers.ctjs.internal.utils.MCLivingEntity
+import com.chattriggers.ctjs.MCEntity
+import com.chattriggers.ctjs.MCLivingEntity
 import net.minecraft.entity.EquipmentSlot
-import net.minecraft.entity.effect.StatusEffect
 import net.minecraft.registry.Registries
 
 open class LivingEntity(override val mcValue: MCLivingEntity) : Entity(mcValue) {

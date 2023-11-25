@@ -2,8 +2,8 @@ package com.chattriggers.ctjs.api.triggers
 
 import com.chattriggers.ctjs.api.entity.BlockEntity
 import com.chattriggers.ctjs.api.entity.Entity
-import com.chattriggers.ctjs.internal.utils.MCBlockEntity
-import com.chattriggers.ctjs.internal.utils.MCEntity
+import com.chattriggers.ctjs.MCBlockEntity
+import com.chattriggers.ctjs.MCEntity
 import net.minecraft.network.packet.Packet
 
 sealed class ClassFilterTrigger<Wrapped, Unwrapped>(

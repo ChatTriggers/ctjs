@@ -4,7 +4,7 @@ import com.chattriggers.ctjs.api.inventory.action.ClickAction
 import com.chattriggers.ctjs.api.inventory.action.DragAction
 import com.chattriggers.ctjs.api.inventory.action.DropAction
 import com.chattriggers.ctjs.api.message.TextComponent
-import com.chattriggers.ctjs.internal.utils.MCInventory
+import com.chattriggers.ctjs.MCInventory
 import net.minecraft.client.gui.screen.ingame.HandledScreen
 import net.minecraft.util.Nameable
 

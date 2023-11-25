@@ -3,7 +3,7 @@ package com.chattriggers.ctjs.api.entity
 import com.chattriggers.ctjs.api.CTWrapper
 import com.chattriggers.ctjs.api.render.Renderer
 import com.chattriggers.ctjs.internal.mixins.ParticleAccessor
-import com.chattriggers.ctjs.internal.utils.MCParticle
+import com.chattriggers.ctjs.MCParticle
 import com.chattriggers.ctjs.internal.utils.asMixin
 import java.awt.Color
 

@@ -12,9 +12,9 @@ import com.chattriggers.ctjs.internal.engine.CTEvents.RenderEntityCallback
 import com.chattriggers.ctjs.internal.engine.CTEvents.RenderOverlayCallback
 import com.chattriggers.ctjs.internal.engine.CTEvents.RenderWorldCallback
 import com.chattriggers.ctjs.internal.engine.CTEvents.VoidCallback
-import com.chattriggers.ctjs.internal.utils.MCBlockEntity
-import com.chattriggers.ctjs.internal.utils.MCBlockPos
-import com.chattriggers.ctjs.internal.utils.MCEntity
+import com.chattriggers.ctjs.MCBlockEntity
+import com.chattriggers.ctjs.MCBlockPos
+import com.chattriggers.ctjs.MCEntity
 import com.mojang.brigadier.CommandDispatcher
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import net.fabricmc.fabric.api.event.Event

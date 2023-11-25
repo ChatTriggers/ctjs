@@ -1,8 +1,8 @@
 package com.chattriggers.ctjs.api.inventory.nbt
 
 import com.chattriggers.ctjs.internal.mixins.NbtCompoundAccessor
-import com.chattriggers.ctjs.internal.utils.MCNbtBase
-import com.chattriggers.ctjs.internal.utils.MCNbtCompound
+import com.chattriggers.ctjs.MCNbtBase
+import com.chattriggers.ctjs.MCNbtCompound
 import com.chattriggers.ctjs.internal.utils.asMixin
 import net.minecraft.nbt.NbtByteArray
 import net.minecraft.nbt.NbtElement

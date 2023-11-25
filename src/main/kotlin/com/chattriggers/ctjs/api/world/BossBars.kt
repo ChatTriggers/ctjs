@@ -5,8 +5,8 @@ import com.chattriggers.ctjs.api.client.Client
 import com.chattriggers.ctjs.api.message.ChatLib
 import com.chattriggers.ctjs.api.message.TextComponent
 import com.chattriggers.ctjs.internal.mixins.BossBarHudAccessor
-import com.chattriggers.ctjs.internal.utils.MCBossBarColor
-import com.chattriggers.ctjs.internal.utils.MCBossBarStyle
+import com.chattriggers.ctjs.MCBossBarColor
+import com.chattriggers.ctjs.MCBossBarStyle
 import com.chattriggers.ctjs.internal.utils.asMixin
 import com.chattriggers.ctjs.internal.utils.getOption
 import net.minecraft.client.gui.hud.ClientBossBar

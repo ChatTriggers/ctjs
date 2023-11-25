@@ -1,7 +1,7 @@
 package com.chattriggers.ctjs.api.inventory
 
 import com.chattriggers.ctjs.api.CTWrapper
-import com.chattriggers.ctjs.internal.utils.MCSlot
+import com.chattriggers.ctjs.MCSlot
 
 class Slot(override val mcValue: MCSlot) : CTWrapper<MCSlot> {
     val index by mcValue::index

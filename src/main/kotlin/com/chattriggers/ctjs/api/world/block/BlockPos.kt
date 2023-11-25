@@ -3,7 +3,7 @@ package com.chattriggers.ctjs.api.world.block
 import com.chattriggers.ctjs.api.CTWrapper
 import com.chattriggers.ctjs.api.entity.Entity
 import com.chattriggers.ctjs.api.vec.Vec3i
-import com.chattriggers.ctjs.internal.utils.MCBlockPos
+import com.chattriggers.ctjs.MCBlockPos
 import net.minecraft.util.math.Vec3d
 import kotlin.math.floor
 import kotlin.math.sqrt

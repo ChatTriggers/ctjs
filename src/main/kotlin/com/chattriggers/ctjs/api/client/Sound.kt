@@ -7,8 +7,8 @@ import com.chattriggers.ctjs.internal.mixins.AbstractSoundInstanceAccessor
 import com.chattriggers.ctjs.internal.mixins.sound.SoundAccessor
 import com.chattriggers.ctjs.internal.mixins.sound.SoundManagerAccessor
 import com.chattriggers.ctjs.internal.mixins.sound.SoundSystemAccessor
-import com.chattriggers.ctjs.internal.utils.MCAttenuationType
-import com.chattriggers.ctjs.internal.utils.MCSound
+import com.chattriggers.ctjs.MCAttenuationType
+import com.chattriggers.ctjs.MCSound
 import com.chattriggers.ctjs.internal.utils.asMixin
 import gg.essential.universal.UMinecraft
 import net.minecraft.client.sound.MovingSoundInstance

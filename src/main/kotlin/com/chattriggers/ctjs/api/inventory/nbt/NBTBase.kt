@@ -1,9 +1,9 @@
 package com.chattriggers.ctjs.api.inventory.nbt
 
 import com.chattriggers.ctjs.api.CTWrapper
-import com.chattriggers.ctjs.internal.utils.MCNbtBase
-import com.chattriggers.ctjs.internal.utils.MCNbtCompound
-import com.chattriggers.ctjs.internal.utils.MCNbtList
+import com.chattriggers.ctjs.MCNbtBase
+import com.chattriggers.ctjs.MCNbtCompound
+import com.chattriggers.ctjs.MCNbtList
 import net.minecraft.nbt.*
 import org.mozilla.javascript.NativeArray
 import org.mozilla.javascript.NativeObject

@@ -21,8 +21,8 @@ import com.chattriggers.ctjs.internal.commands.CommandCollection
 import com.chattriggers.ctjs.internal.commands.DynamicCommand
 import com.chattriggers.ctjs.internal.engine.JSLoader
 import com.chattriggers.ctjs.internal.mixins.commands.EntitySelectorAccessor
-import com.chattriggers.ctjs.internal.utils.MCEntity
-import com.chattriggers.ctjs.internal.utils.MCNbtCompound
+import com.chattriggers.ctjs.MCEntity
+import com.chattriggers.ctjs.MCNbtCompound
 import com.chattriggers.ctjs.internal.utils.asMixin
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.ImmutableStringReader
