@@ -966,6 +966,37 @@ public final class com/chattriggers/ctjs/api/entity/Particle : com/chattriggers/
 	public fun toString ()Ljava/lang/String;
 }
 
+public abstract class com/chattriggers/ctjs/api/entity/PlayerInteraction {
+	public synthetic fun <init> (Ljava/lang/String;ZLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getMainHand ()Z
+	public final fun getName ()Ljava/lang/String;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/chattriggers/ctjs/api/entity/PlayerInteraction$AttackBlock : com/chattriggers/ctjs/api/entity/PlayerInteraction {
+	public static final field INSTANCE Lcom/chattriggers/ctjs/api/entity/PlayerInteraction$AttackBlock;
+}
+
+public final class com/chattriggers/ctjs/api/entity/PlayerInteraction$AttackEntity : com/chattriggers/ctjs/api/entity/PlayerInteraction {
+	public static final field INSTANCE Lcom/chattriggers/ctjs/api/entity/PlayerInteraction$AttackEntity;
+}
+
+public final class com/chattriggers/ctjs/api/entity/PlayerInteraction$BreakBlock : com/chattriggers/ctjs/api/entity/PlayerInteraction {
+	public static final field INSTANCE Lcom/chattriggers/ctjs/api/entity/PlayerInteraction$BreakBlock;
+}
+
+public final class com/chattriggers/ctjs/api/entity/PlayerInteraction$UseBlock : com/chattriggers/ctjs/api/entity/PlayerInteraction {
+	public fun <init> (Lnet/minecraft/util/Hand;)V
+}
+
+public final class com/chattriggers/ctjs/api/entity/PlayerInteraction$UseEntity : com/chattriggers/ctjs/api/entity/PlayerInteraction {
+	public fun <init> (Lnet/minecraft/util/Hand;)V
+}
+
+public final class com/chattriggers/ctjs/api/entity/PlayerInteraction$UseItem : com/chattriggers/ctjs/api/entity/PlayerInteraction {
+	public fun <init> (Lnet/minecraft/util/Hand;)V
+}
+
 public final class com/chattriggers/ctjs/api/entity/PlayerMP : com/chattriggers/ctjs/api/entity/LivingEntity {
 	public fun <init> (Lnet/minecraft/entity/player/PlayerEntity;)V
 	public final fun draw (Lorg/mozilla/javascript/NativeObject;)Lcom/chattriggers/ctjs/api/entity/PlayerMP;

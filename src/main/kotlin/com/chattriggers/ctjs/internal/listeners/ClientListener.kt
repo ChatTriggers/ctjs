@@ -2,6 +2,7 @@ package com.chattriggers.ctjs.internal.listeners
 
 import com.chattriggers.ctjs.api.entity.BlockEntity
 import com.chattriggers.ctjs.api.entity.Entity
+import com.chattriggers.ctjs.api.entity.PlayerInteraction
 import com.chattriggers.ctjs.api.inventory.Item
 import com.chattriggers.ctjs.api.message.TextComponent
 import com.chattriggers.ctjs.api.render.Renderer
@@ -30,7 +31,6 @@ import net.fabricmc.fabric.api.event.player.*
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.text.Text
 import net.minecraft.util.ActionResult
-import net.minecraft.util.Hand
 import net.minecraft.util.TypedActionResult
 import org.lwjgl.glfw.GLFW
 import org.mozilla.javascript.Context
@@ -262,14 +262,4 @@ object ClientListener : Initializer {
         }
     }
 
-    sealed class PlayerInteraction(val name: String, val mainHand: Boolean) {
-        object AttackBlock : PlayerInteraction("AttackBlock", true)
-        object AttackEntity : PlayerInteraction("AttackEntity", true)
-        object BreakBlock : PlayerInteraction("BreakBlock", true)
-        class UseBlock(hand: Hand) : PlayerInteraction("UseBlock", hand == Hand.MAIN_HAND)
-        class UseEntity(hand: Hand) : PlayerInteraction("UseEntity", hand == Hand.MAIN_HAND)
-        class UseItem(hand: Hand) : PlayerInteraction("UseItem", hand == Hand.MAIN_HAND)
-
-        override fun toString(): String = name
-    }
 }
