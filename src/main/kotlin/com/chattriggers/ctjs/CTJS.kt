@@ -31,7 +31,7 @@ import java.security.MessageDigest
 import java.util.*
 import kotlin.concurrent.thread
 
-internal class CTJS : ClientModInitializer {
+class CTJS : ClientModInitializer {
     override fun onInitializeClient() {
         // Need to initialize the keybind here, as putting it inside the MinecraftClient::send
         // runs it too late

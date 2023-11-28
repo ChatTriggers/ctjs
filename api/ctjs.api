@@ -1,3 +1,26 @@
+public final class com/chattriggers/ctjs/CTJS : net/fabricmc/api/ClientModInitializer {
+	public static final field Companion Lcom/chattriggers/ctjs/CTJS$Companion;
+	public static final field MODULES_FOLDER Ljava/lang/String;
+	public static final field MOD_VERSION Ljava/lang/String;
+	public static final field WEBSITE_ROOT Ljava/lang/String;
+	public fun <init> ()V
+	public static final fun isLoaded ()Z
+	public static final fun load (Z)V
+	public fun onInitializeClient ()V
+	public static final fun unload (Z)V
+}
+
+public final class com/chattriggers/ctjs/CTJS$Companion {
+	public final fun getAssetsDir ()Ljava/io/File;
+	public final fun getConfigLocation ()Ljava/io/File;
+	public final fun isLoaded ()Z
+	public final fun load (Z)V
+	public static synthetic fun load$default (Lcom/chattriggers/ctjs/CTJS$Companion;ZILjava/lang/Object;)V
+	public final fun makeWebRequest$ctjs (Ljava/lang/String;)Ljava/net/URLConnection;
+	public final fun unload (Z)V
+	public static synthetic fun unload$default (Lcom/chattriggers/ctjs/CTJS$Companion;ZILjava/lang/Object;)V
+}
+
 public abstract interface class com/chattriggers/ctjs/api/CTWrapper {
 	public abstract fun getMcValue ()Ljava/lang/Object;
 	public abstract fun toMC ()Ljava/lang/Object;
