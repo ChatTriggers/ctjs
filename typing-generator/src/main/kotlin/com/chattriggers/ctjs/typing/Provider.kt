@@ -189,17 +189,26 @@ class Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
                 }
             }
 
-            val properties = clazz.getDeclaredProperties().filter { it.isPublic() || it.isProtected() }.toList()
-            val functions = clazz.getDeclaredFunctions().filter { it.isPublic() || it.isProtected() }.toList()
+            val functions = clazz.getDeclaredFunctions().filter {
+                it.isPublic() || it.isProtected()
+            }.filterNot {
+                it.findOverridee() != null || it.simpleName.asString().let { name ->
+                    name in excludedMethods || name in typescriptReservedWords
+                }
+            }.toList()
 
             // Unlike Java, JS does not allow properties and functions to have the same name,
             // so in the case that a pair does share the same name, we prefer the function
             val functionNames = functions.map { it.simpleName.asString() }
 
-            for (property in properties) {
-                if (property.simpleName.asString() in functionNames)
-                    continue
+            val properties = clazz.getDeclaredProperties().filter {
+                it.isPublic() || it.isProtected()
+            }.filterNot {
+                it.simpleName.asString() in functionNames || it.findOverridee() != null
+            }.toList()
 
+
+            for (property in properties) {
                 val isStatic = Modifier.JAVA_STATIC in property.modifiers ||
                     property.isAnnotationPresent(JvmStatic::class) ||
                     property.isAnnotationPresent(JvmField::class)
@@ -265,13 +274,11 @@ class Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
                     }
                 } else listOf(function.parameters)
 
+                val functionName = function.simpleName.asString()
+
                 for (parameters in parameterSets) {
                     if (function.docString != null)
                         append(formatDocString(function.docString!!))
-
-                    val functionName = function.simpleName.asString()
-                    if (functionName in excludedMethods || functionName in typescriptReservedWords)
-                        continue
 
                     appendLine(buildString {
                         if (Modifier.JAVA_STATIC in function.modifiers || function.isAnnotationPresent(JvmStatic::class))
