@@ -209,8 +209,10 @@ class Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
             } else superInterfaces
 
             if (superMembers.isNotEmpty()) {
-                val clause = superMembers.map {
-                    buildType(it.first, resolver)
+                val clause = superMembers.map { (ref, _) ->
+                    buildType(ref, resolver).let {
+                        if (it == "number") "kotlin.Number" else it
+                    }
                 }.filter { it != "unknown" }.joinToString()
                 if (clause.isNotBlank()) {
                     append(" extends ")
