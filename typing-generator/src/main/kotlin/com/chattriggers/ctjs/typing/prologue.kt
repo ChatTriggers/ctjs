@@ -223,7 +223,7 @@ val prologue = """
       /**
        * Cancels the given event
        */
-      function cancel(event: CancellableEvent | org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+      function cancel(event: CancellableEvent | org.spongepowered.asm.mixin.injection.callback.CallbackInfo): void;
 
       /**
        * Creates a custom trigger. `name` can be used as the first argument of a
@@ -235,26 +235,26 @@ val prologue = """
       function easeOut(start: number, finish: number, speed: number, jump?: number): number;
       function easeColor(start: number, finish: number, speed: number, jump?: number): java.awt.Color;
 
-      function print(message: string, color?: java.awt.Color);
-      function println(message: string, color?: java.awt.Color, end?: string);
+      function print(message: string, color?: java.awt.Color): void;
+      function println(message: string, color?: java.awt.Color, end?: string): void;
 
       const console: {
-        assert(condition: boolean, message: string);
-        clear();
-        count(label?: string);
-        debug(args: unknown[]);
-        dir(obj: object);
-        dirxml(obj: object);
-        error(...args: unknown[]);
-        group(...args: unknown[]);
-        groupCollapsed(...args: unknown[]);
-        groupEnd(...args: unknown[]);
-        info(...args: unknown[]);
-        log(...args: unknown[]);
-        table(data: object, columns?: string[]);
-        time(label?: string);
-        timeEnd(label?: string);
-        trace(...args: unknown[]);
-        warn(...args: unknown[]);
+        assert(condition: boolean, message: string): void;
+        clear(): void;
+        count(label?: string): void;
+        debug(args: unknown[]): void;
+        dir(obj: object): void;
+        dirxml(obj: object): void;
+        error(...args: unknown[]): void;
+        group(...args: unknown[]): void;
+        groupCollapsed(...args: unknown[]): void;
+        groupEnd(...args: unknown[]): void;
+        info(...args: unknown[]): void;
+        log(...args: unknown[]): void;
+        table(data: object, columns?: string[]): void;
+        time(label?: string): void;
+        timeEnd(label?: string): void;
+        trace(...args: unknown[]): void;
+        warn(...args: unknown[]): void;
       };
 """.trimIndent()
