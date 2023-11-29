@@ -257,14 +257,4 @@ val prologue = """
         trace(...args: unknown[]);
         warn(...args: unknown[]);
       };
-
 """.trimIndent()
-
-fun wrapInPrologue(types: String): String {
-    return buildString {
-        append(prologue)
-        append('\n')
-        append(types.prependIndent("  "))
-        append("\n}\n")
-    }
-}

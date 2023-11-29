@@ -15,7 +15,7 @@ class Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
     private val builder = StringBuilder()
     private val dependentFiles = mutableListOf<KSFile>()
     private val classNames = mutableSetOf<String>()
-    private var indent = 0
+    private var indent = 1
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
         // 1. Get all root classes
@@ -127,6 +127,7 @@ class Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
     private fun build(rootPackage: Package, resolver: Resolver) {
         append(prologue)
         buildPackage(rootPackage, resolver)
+        indent -= 1
         appendLine('}')
     }
 
