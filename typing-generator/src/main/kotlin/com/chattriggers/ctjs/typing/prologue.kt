@@ -192,7 +192,7 @@ ${providedTypes.entries.joinToString("") { (name, type) ->
         drawBlockHighlight(position: BlockPos, event: CancellableEvent): com.chattriggers.ctjs.api.triggers.EventTrigger;
         gameLoad(): com.chattriggers.ctjs.api.triggers.Trigger;
         gameUnload(): com.chattriggers.ctjs.api.triggers.Trigger;
-        command(...args: string[]): com.chattriggers.ctjs.api.triggers.Trigger;
+        command(...args: string[]): com.chattriggers.ctjs.api.triggers.CommandTrigger;
         guiOpened(screen: net.minecraft.client.gui.screen.Screen, event: org.spongepowered.asm.mixin.injection.callback.CallbackInfo): com.chattriggers.ctjs.api.triggers.EventTrigger;
         guiClosed(screen: net.minecraft.client.gui.screen.Screen): com.chattriggers.ctjs.api.triggers.Trigger;
         dropItem(item: Item, entireStack: boolean, event: org.spongepowered.asm.mixin.injection.callback.CallbackInfo): com.chattriggers.ctjs.api.triggers.EventTrigger;
