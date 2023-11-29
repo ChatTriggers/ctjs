@@ -178,7 +178,7 @@ class Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
                 staticProperties.forEach { buildProperty(it, resolver) }
                 if (staticProperties.isNotEmpty() && staticFunctions.isNotEmpty())
                     append('\n')
-                staticFunctions.forEach { buildFunction(it, resolver) }
+                staticFunctions.forEach { buildFunction(it, resolver, omitName = false) }
             }
             appendLine("}")
         }
@@ -226,7 +226,18 @@ class Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
             instanceProperties.forEach { buildProperty(it, resolver) }
             if (instanceProperties.isNotEmpty() && instanceFunctions.isNotEmpty())
                 append('\n')
-            instanceFunctions.forEach { buildFunction(it, resolver) }
+            instanceFunctions.forEach { buildFunction(it, resolver, omitName = false) }
+
+            // If this is a functional interface, output a call method
+            if (clazz.isAnnotationPresent(FunctionalInterface::class)) {
+                val functionalMethod = getFunctionalInterfaceMethod(clazz)
+                if (functionalMethod != null) {
+                    buildFunction(functionalMethod, resolver, omitName = true)
+                }
+            } else if (clazz.path.startsWith("kotlin.Function") && clazz.path != "kotlin.Function") {
+                val functionalMethod = clazz.getDeclaredFunctions().single()
+                buildFunction(functionalMethod, resolver, omitName = true)
+            }
         }
 
         appendLine("}")
@@ -276,7 +287,7 @@ class Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
         }
     }
 
-    private fun buildFunction(function: KSFunctionDeclaration, resolver: Resolver) {
+    private fun buildFunction(function: KSFunctionDeclaration, resolver: Resolver, omitName: Boolean) {
         val parameterSets = if (function.isAnnotationPresent(JvmOverloads::class)) {
             // Append Int.MAX_VALUE to ensure we get an overload that contains all default parameters
             val defaultIndicesToStopAt = function.parameters.mapIndexedNotNull { index, parameter ->
@@ -290,7 +301,7 @@ class Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
             }
         } else listOf(function.parameters)
 
-        val functionName = function.simpleName.asString()
+        val functionName = if (omitName) "" else function.simpleName.asString()
 
         for (parameters in parameterSets) {
             if (function.docString != null)
@@ -351,24 +362,8 @@ class Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
 
             when {
                 builtinType != null -> append(builtinType)
-                type.declaration.qualifiedName?.asString()
-                    ?.startsWith("kotlin.Function") == true && type.declaration is KSClassDeclaration -> {
-                    var i = 0
-                    append(reference.element!!.typeArguments.dropLast(1).joinToString(", ", "(", ")") { arg ->
-                        // TODO: "unknown" instead of "any"?
-                        val typeString = arg.type?.let { buildType(it, resolver) } ?: "any"
-                        "p${i++}: $typeString"
-                    })
-                    append(" => ")
-                    val returnType = reference.element?.typeArguments?.last()?.type?.let { buildType(it, resolver) }
-                    append(returnType ?: "any")
-                }
-                type.declaration.isAnnotationPresent(java.lang.FunctionalInterface::class) -> {
-                    append(buildFunctionalInterfaceType(reference, type, resolver))
-                }
-                type == resolver.getClassDeclarationByName(resolver.getKSNameFromString("org.mozilla.javascript.NativeObject")) -> {
+                type == resolver.getClassDeclarationByName(resolver.getKSNameFromString("org.mozilla.javascript.NativeObject")) ->
                     append("object")
-                }
                 else -> {
                     val path = when (val path = type.declaration.path) {
                         "kotlin.Any" -> "any"
@@ -447,64 +442,6 @@ class Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
         codeGenerator
             .createNewFileByPath(Dependencies(true, *dependentFiles.toTypedArray()), "typings", "d.ts")
             .write(builder.toString().toByteArray())
-    }
-
-    private fun buildFunctionalInterfaceType(reference: KSTypeReference, type: KSType, resolver: Resolver): String {
-        val genericTypes = mutableMapOf<String, String>()
-        var typeArguments = reference.element?.typeArguments ?: type.arguments
-        var typeParameters = type.declaration.typeParameters
-
-        require(typeArguments.size == typeParameters.size)
-        for (i in typeArguments.indices)
-            genericTypes[typeParameters[i].toString()] = buildType(typeArguments[i].type!!, resolver)
-
-        var method = getFunctionalInterfaceMethod(type.declaration as KSClassDeclaration)
-
-        if (method == null) {
-            for (superClass in (type.declaration as KSClassDeclaration).superTypes) {
-                val declaration = superClass.resolve().declaration as KSClassDeclaration
-                typeArguments = superClass.element?.typeArguments ?: type.arguments
-                typeParameters = declaration.typeParameters
-
-                require(typeArguments.size == typeParameters.size)
-                for (i in typeArguments.indices)
-                    genericTypes[typeParameters[i].toString()] =
-                        buildType(typeArguments[i].type!!, resolver).let { genericTypes[it] ?: it }
-
-                method = getFunctionalInterfaceMethod(declaration)
-                if (method != null)
-                    break
-            }
-        }
-
-        if (method == null) {
-            logger.error("Failed to find functional interface method for \"${type.declaration.qualifiedName!!.asString()}\"")
-            return "(...args: Array<unknown>) => unknown"
-        }
-
-        return buildString {
-            append('(')
-
-            for ((index, parameter) in method.parameters.withIndex()) {
-                if (index != 0)
-                    append(", ")
-
-                append("${parameter.name!!.asString().safeName()}: ")
-                val typeStr = genericTypes[parameter.type.toString()]
-                when {
-                    typeStr != null -> append(typeStr)
-                    else -> append(buildType(parameter.type, resolver))
-                }
-            }
-
-            append(") => ")
-            val typeStr = genericTypes[method.returnType.toString()]
-            when {
-                typeStr != null -> append(typeStr)
-                method.returnType != null -> append(buildType(method.returnType!!, resolver))
-                else -> append("void")
-            }
-        }
     }
 
     private fun getFunctionalInterfaceMethod(clazz: KSClassDeclaration): KSFunctionDeclaration? {
