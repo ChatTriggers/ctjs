@@ -26,6 +26,101 @@ val manualRoots = setOf(
     "org.spongepowered.asm.mixin.injection.callback.CallbackInfo",
 )
 
+private val providedTypes = mutableMapOf(
+    "Keyboard" to "gg.essential.universal.UKeyboard",
+    "Hand" to "net.minecraft.util.Hand",
+
+    "Client" to "com.chattriggers.ctjs.api.client.Client",
+    "CPS" to "com.chattriggers.ctjs.api.client.CPS",
+    "FileLib" to "com.chattriggers.ctjs.api.client.FileLib",
+    "KeyBind" to "com.chattriggers.ctjs.api.client.KeyBind",
+    "MathLib" to "com.chattriggers.ctjs.api.client.MathLib",
+    "Player" to "com.chattriggers.ctjs.api.client.Player",
+    "Settings" to "com.chattriggers.ctjs.api.client.Settings",
+    "Sound" to "com.chattriggers.ctjs.api.client.Sound",
+
+    "Commands" to "com.chattriggers.ctjs.api.commands.DynamicCommands",
+
+    "BlockEntity" to "com.chattriggers.ctjs.api.entity.BlockEntity",
+    "Entity" to "com.chattriggers.ctjs.api.entity.Entity",
+    "LivingEntity" to "com.chattriggers.ctjs.api.entity.LivingEntity",
+    "Particle" to "com.chattriggers.ctjs.api.entity.Particle",
+    "PlayerMP" to "com.chattriggers.ctjs.api.entity.PlayerMP",
+    "Team" to "com.chattriggers.ctjs.api.entity.Team",
+
+    "Action" to "com.chattriggers.ctjs.api.inventory.action.Action",
+    "ClickAction" to "com.chattriggers.ctjs.api.inventory.action.ClickAction",
+    "DragAction" to "com.chattriggers.ctjs.api.inventory.action.DragAction",
+    "DropAction" to "com.chattriggers.ctjs.api.inventory.action.DropAction",
+    "KeyAction" to "com.chattriggers.ctjs.api.inventory.action.KeyAction",
+    "NBT" to "com.chattriggers.ctjs.api.inventory.nbt.NBT",
+    "NBTBase" to "com.chattriggers.ctjs.api.inventory.nbt.NBTBase",
+    "NBTTagCompound" to "com.chattriggers.ctjs.api.inventory.nbt.NBTTagCompound",
+    "NBTTagList" to "com.chattriggers.ctjs.api.inventory.nbt.NBTTagList",
+    "Inventory" to "com.chattriggers.ctjs.api.inventory.Inventory",
+    "Item" to "com.chattriggers.ctjs.api.inventory.Item",
+    "ItemType" to "com.chattriggers.ctjs.api.inventory.ItemType",
+    "Slot" to "com.chattriggers.ctjs.api.inventory.Slot",
+
+    "ChatLib" to "com.chattriggers.ctjs.api.message.ChatLib",
+    "Message" to "com.chattriggers.ctjs.api.message.Message",
+    "TextComponent" to "com.chattriggers.ctjs.api.message.TextComponent",
+
+    "Book" to "com.chattriggers.ctjs.api.render.Book",
+    "Display" to "com.chattriggers.ctjs.api.render.Display",
+    "Gui" to "com.chattriggers.ctjs.api.render.Gui",
+    "Image" to "com.chattriggers.ctjs.api.render.Image",
+    "Rectangle" to "com.chattriggers.ctjs.api.render.Rectangle",
+    "Renderer" to "com.chattriggers.ctjs.api.render.Renderer",
+    "Renderer3d" to "com.chattriggers.ctjs.api.render.Renderer3d",
+    "Shape" to "com.chattriggers.ctjs.api.render.Shape",
+    "Text" to "com.chattriggers.ctjs.api.render.Text",
+    "CancellableEvent" to "com.chattriggers.ctjs.api.triggers.CancellableEvent",
+
+    "Vec2f" to "com.chattriggers.ctjs.api.vec.Vec2f",
+    "Vec3f" to "com.chattriggers.ctjs.api.vec.Vec3f",
+    "Vec3i" to "com.chattriggers.ctjs.api.vec.Vec3i",
+
+    "Block" to "com.chattriggers.ctjs.api.world.block.Block",
+    "BlockFace" to "com.chattriggers.ctjs.api.world.block.BlockFace",
+    "BlockPos" to "com.chattriggers.ctjs.api.world.block.BlockPos",
+    "BlockType" to "com.chattriggers.ctjs.api.world.block.BlockType",
+    "BossBars" to "com.chattriggers.ctjs.api.world.BossBars",
+    "Chunk" to "com.chattriggers.ctjs.api.world.Chunk",
+    "PotionEffect" to "com.chattriggers.ctjs.api.world.PotionEffect",
+    "PotionEffectType" to "com.chattriggers.ctjs.api.world.PotionEffectType",
+    "Scoreboard" to "com.chattriggers.ctjs.api.world.Scoreboard",
+    "Server" to "com.chattriggers.ctjs.api.world.Server",
+    "TabList" to "com.chattriggers.ctjs.api.world.TabList",
+    "World" to "com.chattriggers.ctjs.api.world.World",
+
+    "Config" to "com.chattriggers.ctjs.api.Config",
+
+    "TriggerRegister" to "com.chattriggers.ctjs.engine.Register",
+    "Thread" to "com.chattriggers.ctjs.engine.WrappedThread",
+    "Priority" to "com.chattriggers.ctjs.api.triggers.Trigger\$Priority",
+    "ChatTriggers" to "com.chattriggers.ctjs.CTJS",
+    "Console" to "com.chattriggers.ctjs.engine.Console",
+
+    "GL11" to "org.lwjgl.opengl.GL11",
+    "GL12" to "org.lwjgl.opengl.GL12",
+    "GL13" to "org.lwjgl.opengl.GL13",
+    "GL14" to "org.lwjgl.opengl.GL14",
+    "GL15" to "org.lwjgl.opengl.GL15",
+    "GL20" to "org.lwjgl.opengl.GL20",
+    "GL21" to "org.lwjgl.opengl.GL21",
+    "GL30" to "org.lwjgl.opengl.GL30",
+    "GL31" to "org.lwjgl.opengl.GL31",
+    "GL32" to "org.lwjgl.opengl.GL32",
+    "GL33" to "org.lwjgl.opengl.GL33",
+    "GL40" to "org.lwjgl.opengl.GL40",
+    "GL41" to "org.lwjgl.opengl.GL41",
+    "GL42" to "org.lwjgl.opengl.GL42",
+    "GL43" to "org.lwjgl.opengl.GL43",
+    "GL44" to "org.lwjgl.opengl.GL44",
+    "GL45" to "org.lwjgl.opengl.GL45",
+)
+
 val prologue = """
     /// <reference no-default-lib="true" />
     /// <reference lib="es2015" />
@@ -61,115 +156,23 @@ val prologue = """
       /**
        * Runs `func` in a Java synchronized() block with `lock` as the synchronizer
        */
-      function sync(func: () => void, lock: unknown);
+      function sync(func: () => void, lock: unknown): void;
   
       /**
        * Runs `func` after `delayInMs` milliseconds. A new thread is spawned to accomplish
        * this, which means this function is asynchronous. If you want to avoid the Thread
        * instantiation, use `Client.scheduleTask(delayInTicks, func)`.
        */
-      function setTimeout(func: () => void, delayInMs: number);
+      function setTimeout(func: () => void, delayInMs: number): void;
 
-      type ArrayList<T> = java.util.ArrayList<T>;
-      type HashMap<K, V> = java.util.HashMap<K, V>;
-      type Keyboard = gg.essential.universal.UKeyboard;
-      type Hand = net.minecraft.util.Hand;
-
-      type Client = com.chattriggers.ctjs.api.client.Client;
-      type CPS = com.chattriggers.ctjs.api.client.CPS;
-      type FileLib = com.chattriggers.ctjs.api.client.FileLib;
-      type KeyBind = com.chattriggers.ctjs.api.client.KeyBind;
-      type MathLib = com.chattriggers.ctjs.api.client.MathLib;
-      type Player = com.chattriggers.ctjs.api.client.Player;
-      type Settings = com.chattriggers.ctjs.api.client.Settings;
-      type Sound = com.chattriggers.ctjs.api.client.Sound;
-
-      type Commands = com.chattriggers.ctjs.api.commands.DynamicCommands;
-
-      type BlockEntity = com.chattriggers.ctjs.api.entity.BlockEntity;
-      type Entity = com.chattriggers.ctjs.api.entity.Entity;
-      type LivingEntity = com.chattriggers.ctjs.api.entity.LivingEntity;
-      type Particle = com.chattriggers.ctjs.api.entity.Particle;
-      type PlayerMP = com.chattriggers.ctjs.api.entity.PlayerMP;
-      type Team = com.chattriggers.ctjs.api.entity.Team;
-
-      type Action = com.chattriggers.ctjs.api.inventory.action.Action;
-      type ClickAction = com.chattriggers.ctjs.api.inventory.action.ClickAction;
-      type DragAction = com.chattriggers.ctjs.api.inventory.action.DragAction;
-      type DropAction = com.chattriggers.ctjs.api.inventory.action.DropAction;
-      type KeyAction = com.chattriggers.ctjs.api.inventory.action.KeyAction;
-      type NBT = com.chattriggers.ctjs.api.inventory.nbt.NBT;
-      type NBTBase = com.chattriggers.ctjs.api.inventory.nbt.NBTBase;
-      type NBTTagCompound = com.chattriggers.ctjs.api.inventory.nbt.NBTTagCompound;
-      type NBTTagList = com.chattriggers.ctjs.api.inventory.nbt.NBTTagList;
-      type Inventory = com.chattriggers.ctjs.api.inventory.Inventory;
-      type Item = com.chattriggers.ctjs.api.inventory.Item;
-      type ItemType = com.chattriggers.ctjs.api.inventory.ItemType;
-      type Slot = com.chattriggers.ctjs.api.inventory.Slot;
-
-      type ChatLib = com.chattriggers.ctjs.api.message.ChatLib;
-      type Message = com.chattriggers.ctjs.api.message.Message;
-      type TextComponent = com.chattriggers.ctjs.api.message.TextComponent;
-
-      type Book = com.chattriggers.ctjs.api.render.Book;
-      type Display = com.chattriggers.ctjs.api.render.Display;
-      type Gui = com.chattriggers.ctjs.api.render.Gui;
-      type Image = com.chattriggers.ctjs.api.render.Image;
-      type Rectangle = com.chattriggers.ctjs.api.render.Rectangle;
-      type Renderer = com.chattriggers.ctjs.api.render.Renderer;
-      type Renderer3d = com.chattriggers.ctjs.api.render.Renderer3d;
-      type Shape = com.chattriggers.ctjs.api.render.Shape;
-      type Text = com.chattriggers.ctjs.api.render.Text;
-
-      // For module authors to use with custom triggers
-      type CancellableEvent = com.chattriggers.ctjs.api.triggers.CancellableEvent;
-
-      type Vec2f = com.chattriggers.ctjs.api.vec.Vec2f;
-      type Vec3f = com.chattriggers.ctjs.api.vec.Vec3f;
-      type Vec3i = com.chattriggers.ctjs.api.vec.Vec3i;
-
-      type Block = com.chattriggers.ctjs.api.world.block.Block;
-      type BlockFace = com.chattriggers.ctjs.api.world.block.BlockFace;
-      type BlockPos = com.chattriggers.ctjs.api.world.block.BlockPos;
-      type BlockType = com.chattriggers.ctjs.api.world.block.BlockType;
-      type BossBars = com.chattriggers.ctjs.api.world.BossBars;
-      type Chunk = com.chattriggers.ctjs.api.world.Chunk;
-      type PotionEffect = com.chattriggers.ctjs.api.world.PotionEffect;
-      type PotionEffectType = com.chattriggers.ctjs.api.world.PotionEffectType;
-      type Scoreboard = com.chattriggers.ctjs.api.world.Scoreboard;
-      type Server = com.chattriggers.ctjs.api.world.Server;
-      type TabList = com.chattriggers.ctjs.api.world.TabList;
-      type World = com.chattriggers.ctjs.api.world.World;
-
-      type Config = com.chattriggers.ctjs.api.Config;
-
-      // Misc
-
-      type TriggerRegister = com.chattriggers.ctjs.engine.Register;
-      type Thread = com.chattriggers.ctjs.engine.WrappedThread;
-      type Priority = com.chattriggers.ctjs.api.triggers.Trigger${'$'}Priority;
-      type ChatTriggers = com.chattriggers.ctjs.CTJS;
-      type Console = com.chattriggers.ctjs.engine.Console;
-
-      // GL
-      type GL11 = org.lwjgl.opengl.GL11;
-      type GL12 = org.lwjgl.opengl.GL12;
-      type GL13 = org.lwjgl.opengl.GL13;
-      type GL14 = org.lwjgl.opengl.GL14;
-      type GL15 = org.lwjgl.opengl.GL15;
-      type GL20 = org.lwjgl.opengl.GL20;
-      type GL21 = org.lwjgl.opengl.GL21;
-      type GL30 = org.lwjgl.opengl.GL30;
-      type GL31 = org.lwjgl.opengl.GL31;
-      type GL32 = org.lwjgl.opengl.GL32;
-      type GL33 = org.lwjgl.opengl.GL33;
-      type GL40 = org.lwjgl.opengl.GL40;
-      type GL41 = org.lwjgl.opengl.GL41;
-      type GL42 = org.lwjgl.opengl.GL42;
-      type GL43 = org.lwjgl.opengl.GL43;
-      type GL44 = org.lwjgl.opengl.GL44;
-      type GL45 = org.lwjgl.opengl.GL45;
-  
+      const ArrayList: typeof java.util.ArrayList;
+      interface ArrayList<T> extends java.util.ArrayList<T> {}
+      const HashMap: typeof java.util.HashMap;
+      interface HashMap<K, V> extends java.util.HashMap<K, V> {}
+      
+${providedTypes.entries.joinToString("") { (name, type) ->
+"const $name: typeof $type;\ninterface $name extends $type {}\n"
+}.prependIndent("      ")}
       interface RegisterTypes {
         chat(...args: (string | unknown)[]): com.chattriggers.ctjs.api.triggers.ChatTrigger;
         actionBar(...args: (string | unknown)[]): com.chattriggers.ctjs.api.triggers.ChatTrigger;

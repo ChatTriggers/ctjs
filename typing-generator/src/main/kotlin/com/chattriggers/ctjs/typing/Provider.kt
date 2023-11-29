@@ -177,8 +177,6 @@ class Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
             appendLine("const $name: {")
             indented {
                 staticProperties.forEach { buildProperty(it, resolver) }
-                if (staticProperties.isNotEmpty() && staticFunctions.isNotEmpty())
-                    append('\n')
                 staticFunctions.forEach { buildFunction(it, resolver, omitName = false) }
             }
             appendLine("}")
@@ -225,8 +223,6 @@ class Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
 
         indented {
             instanceProperties.forEach { buildProperty(it, resolver) }
-            if (instanceProperties.isNotEmpty() && instanceFunctions.isNotEmpty())
-                append('\n')
             instanceFunctions.forEach { buildFunction(it, resolver, omitName = false) }
 
             // If this is a functional interface, output a call method
