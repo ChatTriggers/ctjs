@@ -152,7 +152,7 @@ class Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
         // Note: We take a name parameter so that we can override the name of clazz. This is done for nested classes
 
         val functions = clazz.getDeclaredFunctions().filter {
-            it.isPublic() || (!it.isStatic() && it.isProtected())
+            it.isPublic()
         }.filterNot {
             it.findOverridee() != null || it.simpleName.asString().let { name ->
                 name in excludedMethods || name in typescriptReservedWords
@@ -164,7 +164,7 @@ class Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
         val functionNames = functions.map { it.simpleName.asString() }
 
         val properties = clazz.getDeclaredProperties().filter {
-            it.isPublic() || (!it.isStatic() && it.isProtected())
+            it.isPublic()
         }.filterNot {
             it.simpleName.asString() in functionNames || it.findOverridee() != null
         }.toList()
@@ -245,14 +245,11 @@ class Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
     }
 
     private fun buildProperty(property: KSPropertyDeclaration, resolver: Resolver) {
-        val modifiers = if (property.isProtected()) "protected " else ""
-
         if (property.docString != null)
             append(formatDocString(property.docString!!))
 
         if (property.isAnnotationPresent(JvmField::class) || (property.getter == null && property.setter == null)) {
             appendLine(buildString {
-                append(modifiers)
                 append(property.simpleName.asString())
                 append(": ")
                 append(buildType(property.type, resolver))
@@ -264,7 +261,6 @@ class Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
 
             if (getter != null) {
                 appendLine(buildString {
-                    append(modifiers)
                     append(resolver.getJvmName(getter)!!)
                     if (getter.returnType != null) {
                         append("(): ")
@@ -278,7 +274,6 @@ class Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
 
             if (setter != null) {
                 appendLine(buildString {
-                    append(modifiers)
                     append(resolver.getJvmName(setter)!!)
                     append("(value: ")
                     append(buildType(setter.parameter.type, resolver))
@@ -309,9 +304,6 @@ class Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
                 append(formatDocString(function.docString!!))
 
             appendLine(buildString {
-                if (function.isProtected())
-                    append("protected ")
-
                 append(if (functionName == "<init>") "new" else functionName)
 
                 if (function.typeParameters.isNotEmpty())
