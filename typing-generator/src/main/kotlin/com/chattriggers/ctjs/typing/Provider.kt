@@ -313,8 +313,7 @@ class Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
 
                 append(if (functionName == "<init>") "new" else functionName)
 
-                // Constructor functions will have the same type parameters as the class
-                if (functionName != "<init>" && function.typeParameters.isNotEmpty())
+                if (function.typeParameters.isNotEmpty())
                     append(function.typeParameters.joinToString(", ", "<", ">") { it.name.asString() })
 
                 append('(')
@@ -323,7 +322,7 @@ class Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
                 })
                 append(')')
 
-                if (functionName != "<init>" && function.returnType != null) {
+                if (function.returnType != null) {
                     append(": ")
                     append(buildType(function.returnType!!, resolver))
                 }
