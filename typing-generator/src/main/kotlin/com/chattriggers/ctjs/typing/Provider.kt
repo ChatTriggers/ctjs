@@ -150,10 +150,43 @@ class Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
     private fun buildClass(name: String, clazz: KSClassDeclaration, resolver: Resolver) {
         // Note: We take a name parameter so that we can override the name of clazz. This is done for nested classes
 
+        val functions = clazz.getDeclaredFunctions().filter {
+            it.isPublic() || (!it.isStatic() && it.isProtected())
+        }.filterNot {
+            it.findOverridee() != null || it.simpleName.asString().let { name ->
+                name in excludedMethods || name in typescriptReservedWords
+            }
+        }.toList()
+
+        // Unlike Java, JS does not allow properties and functions to have the same name,
+        // so in the case that a pair does share the same name, we prefer the function
+        val functionNames = functions.map { it.simpleName.asString() }
+
+        val properties = clazz.getDeclaredProperties().filter {
+            it.isPublic() || (!it.isStatic() && it.isProtected())
+        }.filterNot {
+            it.simpleName.asString() in functionNames || it.findOverridee() != null
+        }.toList()
+
+        val (staticFunctions, instanceFunctions) = functions.partition { it.isStatic() }
+        val (staticProperties, instanceProperties) = properties.partition { it.isStatic() }
+
+        // Output static object first, if necessary
+        if (staticProperties.isNotEmpty() || staticFunctions.isNotEmpty()) {
+            appendLine("const $name: {")
+            indented {
+                staticProperties.forEach { buildProperty(it, resolver) }
+                if (staticProperties.isNotEmpty() && staticFunctions.isNotEmpty())
+                    append('\n')
+                staticFunctions.forEach { buildFunction(it, resolver) }
+            }
+            appendLine("}")
+        }
+
+        // Then output the instance interface
         appendLine(buildString {
-            if (clazz.classKind == ClassKind.INTERFACE || Modifier.ABSTRACT in clazz.modifiers)
-                append("abstract ")
-            append("class $name")
+            append("interface ")
+            append(name)
 
             if (clazz.typeParameters.isNotEmpty()) {
                 append(clazz.typeParameters.joinToString(", ", "<", ">") {
@@ -161,156 +194,135 @@ class Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
                 })
             }
 
+            val (superInterfaces, superClasses) = clazz.superTypes
+                .map {
+                    var decl = it.resolve().declaration
+                    while (decl is KSTypeAlias)
+                        decl = decl.type.resolve().declaration
+                    it to decl as KSClassDeclaration
+                }
+                .filter { it.first.resolve() !== resolver.builtIns.anyType }
+                .partition { it.second.classKind == ClassKind.INTERFACE }
+
+            val superMembers = if (superClasses.isNotEmpty()) {
+                require(superClasses.size == 1)
+                listOf(superClasses.single()) + superInterfaces
+            } else superInterfaces
+
+            if (superMembers.isNotEmpty()) {
+                val clause = superMembers.map {
+                    buildType(it.first, resolver)
+                }.filter { it != "unknown" }.joinToString()
+                if (clause.isNotBlank()) {
+                    append(" extends ")
+                    append(clause.trim())
+                }
+            }
+
             append(" { ")
         })
 
         indented {
-            val (enumEntries, innerClasses) = clazz.declarations
-                .filterIsInstance<KSClassDeclaration>()
-                .partition { it.classKind == ClassKind.ENUM_ENTRY }
-
-            enumEntries.forEach {
-                if (it.docString != null)
-                    append(formatDocString(it.docString!!))
-                appendLine("static ${it.simpleName.asString()}: ${clazz.path};")
-            }
-
-            innerClasses.forEach {
-                if (it.isPrivate() || it.isJavaPackagePrivate())
-                    return@forEach
-
-                if (it.docString != null)
-                    append(formatDocString(it.docString!!))
-                val path = it.path
-                if (path in classNames) {
-                    appendLine("static ${it.simpleName.asString()}: typeof $path;")
-                } else {
-                    appendLine("static ${it.simpleName.asString()}: unknown;")
-                }
-            }
-
-            val functions = clazz.getDeclaredFunctions().filter {
-                it.isPublic() || it.isProtected()
-            }.filterNot {
-                it.findOverridee() != null || it.simpleName.asString().let { name ->
-                    name in excludedMethods || name in typescriptReservedWords
-                }
-            }.toList()
-
-            // Unlike Java, JS does not allow properties and functions to have the same name,
-            // so in the case that a pair does share the same name, we prefer the function
-            val functionNames = functions.map { it.simpleName.asString() }
-
-            val properties = clazz.getDeclaredProperties().filter {
-                it.isPublic() || it.isProtected()
-            }.filterNot {
-                it.simpleName.asString() in functionNames || it.findOverridee() != null
-            }.toList()
-
-
-            for (property in properties) {
-                val isStatic = Modifier.JAVA_STATIC in property.modifiers ||
-                    property.isAnnotationPresent(JvmStatic::class) ||
-                    property.isAnnotationPresent(JvmField::class)
-
-                if (property.docString != null)
-                    append(formatDocString(property.docString!!))
-
-                if (property.isAnnotationPresent(JvmField::class)) {
-                    appendLine(buildString {
-                        if (isStatic)
-                            append("static ")
-                        append(property.simpleName.asString())
-                        append(": ")
-                        append(buildType(property.type, resolver))
-                        append(';')
-                    })
-                } else {
-                    val getter = property.getter
-                    val setter = property.setter
-
-                    if (getter != null) {
-                        appendLine(buildString {
-                            if (isStatic)
-                                append("static ")
-                            append(resolver.getJvmName(getter)!!)
-                            if (getter.returnType != null) {
-                                append("(): ")
-                                append(buildType(getter.returnType!!, resolver))
-                                append(';')
-                            } else {
-                                append("();")
-                            }
-                        })
-                    }
-
-                    if (setter != null) {
-                        appendLine(buildString {
-                            if (isStatic)
-                                append("static ")
-                            append(resolver.getJvmName(setter)!!)
-                            append("(value: ")
-                            append(buildType(setter.parameter.type, resolver))
-                            append(");")
-                        })
-                    }
-                }
-            }
-
-            if (properties.isNotEmpty() && functions.isNotEmpty())
+            instanceProperties.forEach { buildProperty(it, resolver) }
+            if (instanceProperties.isNotEmpty() && instanceFunctions.isNotEmpty())
                 append('\n')
-
-            for (function in functions) {
-                val parameterSets = if (function.isAnnotationPresent(JvmOverloads::class)) {
-                    // Append Int.MAX_VALUE to ensure we get an overload that contains all default parameters
-                    val defaultIndicesToStopAt = function.parameters.mapIndexedNotNull { index, parameter ->
-                        if (parameter.hasDefault) index else null
-                    } + Int.MAX_VALUE
-
-                    defaultIndicesToStopAt.map { defaultIndexToStopAt ->
-                        function.parameters.filterIndexed { index, parameter ->
-                            !parameter.hasDefault || index < defaultIndexToStopAt
-                        }
-                    }
-                } else listOf(function.parameters)
-
-                val functionName = function.simpleName.asString()
-
-                for (parameters in parameterSets) {
-                    if (function.docString != null)
-                        append(formatDocString(function.docString!!))
-
-                    appendLine(buildString {
-                        if (Modifier.JAVA_STATIC in function.modifiers || function.isAnnotationPresent(JvmStatic::class))
-                            append("static ")
-
-                        append(if (functionName == "<init>") "constructor" else functionName)
-
-                        // Constructor functions will have the same type parameters as the class
-                        if (functionName != "<init>" && function.typeParameters.isNotEmpty())
-                            append(function.typeParameters.joinToString(", ", "<", ">") { it.name.asString() })
-
-                        append('(')
-                        append(parameters.joinToString {
-                            "${it.name!!.asString().safeName()}: ${buildType(it.type, resolver)}"
-                        })
-                        append(')')
-
-                        if (functionName != "<init>" && function.returnType != null) {
-                            append(": ")
-                            append(buildType(function.returnType!!, resolver))
-                        }
-
-                        append(';')
-                    })
-                }
-            }
+            instanceFunctions.forEach { buildFunction(it, resolver) }
         }
 
         appendLine("}")
     }
 
-    fun buildType(reference: KSTypeReference, resolver: Resolver): String {
+    private fun buildProperty(property: KSPropertyDeclaration, resolver: Resolver) {
+        val modifiers = if (property.isProtected()) "protected " else ""
+
+        if (property.docString != null)
+            append(formatDocString(property.docString!!))
+
+        if (property.isAnnotationPresent(JvmField::class) || (property.getter == null && property.setter == null)) {
+            appendLine(buildString {
+                append(modifiers)
+                append(property.simpleName.asString())
+                append(": ")
+                append(buildType(property.type, resolver))
+                append(';')
+            })
+        } else {
+            val getter = property.getter
+            val setter = property.setter
+
+            if (getter != null) {
+                appendLine(buildString {
+                    append(modifiers)
+                    append(resolver.getJvmName(getter)!!)
+                    if (getter.returnType != null) {
+                        append("(): ")
+                        append(buildType(getter.returnType!!, resolver))
+                        append(';')
+                    } else {
+                        append("();")
+                    }
+                })
+            }
+
+            if (setter != null) {
+                appendLine(buildString {
+                    append(modifiers)
+                    append(resolver.getJvmName(setter)!!)
+                    append("(value: ")
+                    append(buildType(setter.parameter.type, resolver))
+                    append(");")
+                })
+            }
+        }
+    }
+
+    private fun buildFunction(function: KSFunctionDeclaration, resolver: Resolver) {
+        val parameterSets = if (function.isAnnotationPresent(JvmOverloads::class)) {
+            // Append Int.MAX_VALUE to ensure we get an overload that contains all default parameters
+            val defaultIndicesToStopAt = function.parameters.mapIndexedNotNull { index, parameter ->
+                if (parameter.hasDefault) index else null
+            } + Int.MAX_VALUE
+
+            defaultIndicesToStopAt.map { defaultIndexToStopAt ->
+                function.parameters.filterIndexed { index, parameter ->
+                    !parameter.hasDefault || index < defaultIndexToStopAt
+                }
+            }
+        } else listOf(function.parameters)
+
+        val functionName = function.simpleName.asString()
+
+        for (parameters in parameterSets) {
+            if (function.docString != null)
+                append(formatDocString(function.docString!!))
+
+            appendLine(buildString {
+                if (function.isProtected())
+                    append("protected ")
+
+                append(if (functionName == "<init>") "new" else functionName)
+
+                // Constructor functions will have the same type parameters as the class
+                if (functionName != "<init>" && function.typeParameters.isNotEmpty())
+                    append(function.typeParameters.joinToString(", ", "<", ">") { it.name.asString() })
+
+                append('(')
+                append(parameters.joinToString {
+                    "${it.name!!.asString().safeName()}: ${buildType(it.type, resolver)}"
+                })
+                append(')')
+
+                if (functionName != "<init>" && function.returnType != null) {
+                    append(": ")
+                    append(buildType(function.returnType!!, resolver))
+                }
+
+                append(';')
+            })
+        }
+    }
+
+    private fun buildType(reference: KSTypeReference, resolver: Resolver): String {
         val type = reference.resolve()
         (type.declaration as? KSTypeParameter)?.let {
             return it.name.asString()
@@ -521,6 +533,14 @@ class Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
 
             qualifiedName!!.asString()
         }
+
+    fun KSPropertyDeclaration.isStatic() = Modifier.JAVA_STATIC in modifiers ||
+        isAnnotationPresent(JvmStatic::class) ||
+        isAnnotationPresent(JvmField::class)
+
+    fun KSFunctionDeclaration.isStatic() = Modifier.JAVA_STATIC in modifiers ||
+        isAnnotationPresent(JvmStatic::class) ||
+        isConstructor()
 
     private class Package(val parent: Package?, val name: String) {
         val subpackages = mutableMapOf<String, Package>()
