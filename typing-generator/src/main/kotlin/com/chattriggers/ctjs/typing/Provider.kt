@@ -267,7 +267,7 @@ class Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
                         append(buildType(getter.returnType!!, resolver))
                         append(';')
                     } else {
-                        append("();")
+                        append("(): void;")
                     }
                 })
             }
@@ -277,7 +277,7 @@ class Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
                     append(resolver.getJvmName(setter)!!)
                     append("(value: ")
                     append(buildType(setter.parameter.type, resolver))
-                    append(");")
+                    append("): void;")
                 })
             }
         }
