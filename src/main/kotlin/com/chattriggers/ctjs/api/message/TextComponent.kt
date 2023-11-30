@@ -1,7 +1,12 @@
 package com.chattriggers.ctjs.api.message
 
+import com.chattriggers.ctjs.MCEntity
+import com.chattriggers.ctjs.api.entity.Entity
+import com.chattriggers.ctjs.api.inventory.Item
+import com.chattriggers.ctjs.api.inventory.ItemType
 import com.chattriggers.ctjs.api.render.Renderer
 import gg.essential.universal.UChat
+import net.minecraft.item.ItemStack
 import net.minecraft.text.*
 import net.minecraft.util.Formatting
 import java.util.*
@@ -190,9 +195,14 @@ class TextComponent : Text {
      * Sets the value to be used by the hover action. The value is interpreted according to [hoverAction]
      */
     fun setHoverValue(value: Any?) = apply {
-        hoverValue = if (hoverAction == HoverEvent.Action.SHOW_TEXT && value != null) {
-            from(value)
-        } else value
+        hoverValue = value?.let {
+            when (hoverAction) {
+                HoverEvent.Action.SHOW_TEXT -> from(it)
+                HoverEvent.Action.SHOW_ITEM -> parseItemContent(it)
+                HoverEvent.Action.SHOW_ENTITY -> parseEntityContent(it)
+                else -> value
+            }
+        }
 
         reInstanceHover()
     }
@@ -250,6 +260,26 @@ class TextComponent : Text {
      */
     fun actionBar() = apply {
         Message(this).actionBar()
+    }
+
+    private fun parseItemContent(obj: Any): HoverEvent.ItemStackContent {
+        return when (obj) {
+            is ItemStack -> obj
+            is Item -> obj.toMC()
+            is String -> ItemType(obj).asItem().toMC()
+            is HoverEvent.ItemStackContent -> return obj
+            else -> error("${obj::class} cannot be parsed as an item HoverEvent")
+        }.let(HoverEvent::ItemStackContent)
+    }
+
+    private fun parseEntityContent(obj: Any): HoverEvent.EntityContent? {
+        return when (obj) {
+            is MCEntity -> obj
+            is Entity -> obj.toMC()
+            is String -> return HoverEvent.EntityContent.parse(from(obj))
+            is HoverEvent.EntityContent -> return obj
+            else -> error("${obj::class} cannot be parsed as an entity HoverEvent")
+        }.let { HoverEvent.EntityContent(it.type, it.uuid, it.name) }
     }
 
     private fun reInstance() {
