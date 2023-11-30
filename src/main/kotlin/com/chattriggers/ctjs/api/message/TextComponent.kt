@@ -109,7 +109,7 @@ class TextComponent : Text {
     fun setClickAction(value: Any?) = apply {
         clickAction = when (value) {
             is ClickEvent.Action -> value
-            is String -> ClickEvent.Action.byName(value)
+            is String -> ClickEvent.Action.byName(value.lowercase())
             null -> null
             else -> error(
                 "TextComponent.setClickAction() expects a String, ClickEvent.Action, or null, but got " +
@@ -154,7 +154,7 @@ class TextComponent : Text {
      * @param value the click value
      */
     fun setClick(action: String, value: String?) = apply {
-        setClick(ClickEvent.Action.byName(action), value)
+        setClick(ClickEvent.Action.byName(action.lowercase()), value)
     }
 
     /**
@@ -174,7 +174,7 @@ class TextComponent : Text {
     fun setHoverAction(value: Any?) = apply {
         hoverAction = when (value) {
             is HoverEvent.Action<*> -> value
-            is String -> HoverEvent.Action.byName(value)
+            is String -> HoverEvent.Action.byName(value.lowercase())
             null -> null
             else -> error(
                 "TextComponent.setHoverAction() expects a String, HoverEvent.Action, or null, but got " +
@@ -225,7 +225,7 @@ class TextComponent : Text {
      * @param value the hover value
      */
     fun setHover(action: String, value: Any?) = apply {
-        setHover(HoverEvent.Action.byName(action) as HoverEvent.Action<*>, value)
+        setHover(HoverEvent.Action.byName(action.lowercase()) as HoverEvent.Action<*>, value)
     }
 
     /**
