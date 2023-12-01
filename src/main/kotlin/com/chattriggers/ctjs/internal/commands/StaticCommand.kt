@@ -5,9 +5,7 @@ import com.chattriggers.ctjs.internal.mixins.commands.CommandNodeAccessor
 import com.chattriggers.ctjs.internal.utils.asMixin
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.arguments.StringArgumentType
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
-import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
+import net.minecraft.command.CommandSource
 
 internal class StaticCommand(
     val trigger: CommandTrigger,
@@ -17,7 +15,7 @@ internal class StaticCommand(
     private val staticSuggestions: List<String>,
     private val dynamicSuggestions: ((List<String>) -> List<String>)?,
 ) : Command {
-    override fun registerImpl(dispatcher: CommandDispatcher<FabricClientCommandSource>) {
+    override fun registerImpl(dispatcher: CommandDispatcher<CommandSource>) {
         val builder = literal(name)
             .then(argument("args", StringArgumentType.greedyString())
                 .suggests { ctx, builder ->
@@ -58,7 +56,7 @@ internal class StaticCommand(
         }
     }
 
-    override fun unregisterImpl(dispatcher: CommandDispatcher<FabricClientCommandSource>) {
+    override fun unregisterImpl(dispatcher: CommandDispatcher<CommandSource>) {
         super.unregisterImpl(dispatcher)
         dispatcher.root.asMixin<CommandNodeAccessor>().apply {
             for (alias in aliases) {

@@ -666,6 +666,7 @@ public final class com/chattriggers/ctjs/api/commands/DynamicCommands : com/chat
 	public static final fun player ()Lcom/mojang/brigadier/arguments/ArgumentType;
 	public static final fun players ()Lcom/mojang/brigadier/arguments/ArgumentType;
 	public static final fun redirect (Lcom/chattriggers/ctjs/api/commands/RootCommand;)V
+	public static final fun redirect (Lcom/mojang/brigadier/tree/CommandNode;)V
 	public static final fun registerCommand (Ljava/lang/String;)Lcom/chattriggers/ctjs/api/commands/RootCommand;
 	public static final fun registerCommand (Ljava/lang/String;Lorg/mozilla/javascript/Function;)Lcom/chattriggers/ctjs/api/commands/RootCommand;
 	public static synthetic fun registerCommand$default (Ljava/lang/String;Lorg/mozilla/javascript/Function;ILjava/lang/Object;)Lcom/chattriggers/ctjs/api/commands/RootCommand;

@@ -8,23 +8,24 @@ import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
-import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents
+import net.minecraft.command.CommandSource
 
 abstract class CommandCollection : Initializer {
     private val allCommands = mutableSetOf<Command>()
 
-    private var clientDispatcher: CommandDispatcher<FabricClientCommandSource>? = null
-    private var networkDispatcher: CommandDispatcher<FabricClientCommandSource>? = null
+    private var clientDispatcher: CommandDispatcher<CommandSource>? = null
+    private var networkDispatcher: CommandDispatcher<CommandSource>? = null
 
+    @Suppress("UNCHECKED_CAST")
     override fun init() {
         ClientCommandRegistrationCallback.EVENT.register { dispatcher, _ ->
-            clientDispatcher = dispatcher
+            clientDispatcher = dispatcher as CommandDispatcher<CommandSource>
             allCommands.forEach { it.registerImpl(dispatcher) }
         }
 
         CTEvents.NETWORK_COMMAND_DISPATCHER_REGISTER.register { dispatcher ->
-            networkDispatcher = dispatcher
+            networkDispatcher = dispatcher as CommandDispatcher<CommandSource>
             allCommands.forEach { it.registerImpl(dispatcher) }
         }
 

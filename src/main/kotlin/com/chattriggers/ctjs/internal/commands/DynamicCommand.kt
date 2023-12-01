@@ -10,9 +10,10 @@ import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.arguments.ArgumentType
 import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
+import com.mojang.brigadier.tree.CommandNode
 import com.mojang.brigadier.tree.LiteralCommandNode
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager
-import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
+import net.minecraft.command.CommandSource
 import org.mozilla.javascript.Function
 import org.mozilla.javascript.NativeObject
 import org.mozilla.javascript.ScriptableObject
@@ -22,12 +23,12 @@ object DynamicCommand {
         var method: Function? = null
         var hasRedirect = false
         val children = mutableListOf<Node>()
-        var builder: ArgumentBuilder<FabricClientCommandSource, *>? = null
+        var builder: ArgumentBuilder<CommandSource, *>? = null
 
         open class Literal(parent: Node?, val name: String) : Node(parent)
 
         class Root(name: String) : Literal(null, name), RootCommand {
-            var commandNode: LiteralCommandNode<FabricClientCommandSource>? = null
+            var commandNode: LiteralCommandNode<CommandSource>? = null
 
             override fun register() {
                 DynamicCommands.register(CommandImpl(this))
@@ -38,7 +39,9 @@ object DynamicCommand {
 
         class Redirect(parent: Node?, val target: Root) : Node(parent)
 
-        fun initialize(dispatcher: CommandDispatcher<FabricClientCommandSource>) {
+        class RedirectToCommandNode(parent: Node?, val target: CommandNode<CommandSource>) : Node(parent)
+
+        fun initialize(dispatcher: CommandDispatcher<CommandSource>) {
             if (this is Redirect) {
                 check(method == null)
                 check(children.isEmpty())
@@ -53,9 +56,22 @@ object DynamicCommand {
                 return
             }
 
+            if (this is RedirectToCommandNode) {
+                check(method == null)
+                check(children.isEmpty())
+
+                parent!!.builder!!.redirect(target) {
+                    for ((name, arg) in it.asMixin<CommandContextAccessor>().arguments)
+                        it.source.asMixin<CTClientCommandSource>().setContextValue(name, arg.result)
+                    it.source
+                }
+
+                return
+            }
+
             builder = when (this) {
-                is Literal -> ClientCommandManager.literal(name)
-                is Argument -> ClientCommandManager.argument(name, type)
+                is Literal -> literal(name)
+                is Argument -> argument(name, type)
                 else -> throw IllegalStateException("unreachable")
             }
 
@@ -88,9 +104,9 @@ object DynamicCommand {
         override val overrideExisting = true
         override val name = node.name
 
-        override fun registerImpl(dispatcher: CommandDispatcher<FabricClientCommandSource>) {
+        override fun registerImpl(dispatcher: CommandDispatcher<CommandSource>) {
             node.initialize(dispatcher)
-            val builder = node.builder!! as LiteralArgumentBuilder<FabricClientCommandSource>
+            val builder = node.builder!! as LiteralArgumentBuilder<CommandSource>
             node.commandNode = dispatcher.register(builder)
         }
     }

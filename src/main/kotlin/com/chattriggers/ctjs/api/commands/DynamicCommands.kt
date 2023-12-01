@@ -23,6 +23,7 @@ import com.chattriggers.ctjs.internal.engine.JSLoader
 import com.chattriggers.ctjs.internal.mixins.commands.EntitySelectorAccessor
 import com.chattriggers.ctjs.MCEntity
 import com.chattriggers.ctjs.MCNbtCompound
+import com.chattriggers.ctjs.api.client.Client
 import com.chattriggers.ctjs.internal.utils.asMixin
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.ImmutableStringReader
@@ -32,7 +33,9 @@ import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType
 import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
+import com.mojang.brigadier.tree.CommandNode
 import net.minecraft.block.pattern.CachedBlockPosition
+import net.minecraft.command.CommandSource
 import net.minecraft.command.EntitySelector
 import net.minecraft.command.argument.*
 import net.minecraft.command.argument.AngleArgumentType.Angle
@@ -204,6 +207,13 @@ object DynamicCommands : CommandCollection() {
         require(!currentNode!!.hasRedirect) { "Duplicate call to Commands.redirect()" }
         currentNode!!.children.add(DynamicCommand.Node.Redirect(currentNode, node as DynamicCommand.Node.Root))
         currentNode!!.hasRedirect = true
+    }
+
+    @JvmStatic
+    fun redirect(node: CommandNode<CommandSource>) {
+        requireNotNull(currentNode) { "Call to Commands.redirect() outside of Commands.buildCommand()" }
+        require(!currentNode!!.hasRedirect) { "Duplicate call to Commands.redirect()" }
+        currentNode!!.children.add(DynamicCommand.Node.RedirectToCommandNode(currentNode, node))
     }
 
     @JvmStatic
