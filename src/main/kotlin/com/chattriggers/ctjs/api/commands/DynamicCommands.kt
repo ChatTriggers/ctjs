@@ -214,6 +214,7 @@ object DynamicCommands : CommandCollection() {
         requireNotNull(currentNode) { "Call to Commands.redirect() outside of Commands.buildCommand()" }
         require(!currentNode!!.hasRedirect) { "Duplicate call to Commands.redirect()" }
         currentNode!!.children.add(DynamicCommand.Node.RedirectToCommandNode(currentNode, node))
+        currentNode!!.hasRedirect = true
     }
 
     @JvmStatic
