@@ -29,6 +29,7 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallba
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import net.minecraft.text.ClickEvent
 import net.minecraft.text.HoverEvent
+import net.minecraft.util.Util
 import java.io.File
 import java.io.IOException
 import kotlin.concurrent.thread
@@ -160,7 +161,11 @@ internal object CTCommand : Initializer {
 
     private fun openFileLocation() {
         try {
-            UDesktop.browse(ModuleManager.modulesFolder.toURI())
+            if (UDesktop.isMac) {
+                Util.getOperatingSystem().open(ModuleManager.modulesFolder.toURI())
+            } else {
+                UDesktop.browse(ModuleManager.modulesFolder.toURI())
+            }
         } catch (exception: IOException) {
             exception.printTraceToConsole()
             ChatLib.chat("&cCould not open file location")
