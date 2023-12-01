@@ -22,10 +22,6 @@ class KeyBind {
 
     private var down: Boolean = false
 
-    init {
-        keyBinds.add(this)
-    }
-
     /**
      * Creates a new keybind, editable in the user's controls.
      *
@@ -63,10 +59,13 @@ class KeyBind {
             addKeyBinding(keyBinding)
             customKeyBindings.add(keyBinding)
         }
+
+        keyBinds.add(this)
     }
 
     constructor(keyBinding: KeyBinding) {
         this.keyBinding = keyBinding
+        keyBinds.add(this)
     }
 
     fun registerKeyPress(method: Any) = apply {
