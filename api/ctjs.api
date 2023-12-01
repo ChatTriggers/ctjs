@@ -645,6 +645,7 @@ public final class com/chattriggers/ctjs/api/commands/DynamicCommands : com/chat
 	public static final fun floatRange ()Lnet/minecraft/command/argument/NumberRangeArgumentType$FloatRangeArgumentType;
 	public static final fun gameMode ()Lnet/minecraft/command/argument/GameModeArgumentType;
 	public static final fun gameProfile ()Lcom/mojang/brigadier/arguments/ArgumentType;
+	public static final fun getDispatcherRoot ()Lcom/mojang/brigadier/tree/RootCommandNode;
 	public static final fun greedyString ()Lcom/mojang/brigadier/arguments/StringArgumentType;
 	public static final fun intRange ()Lnet/minecraft/command/argument/NumberRangeArgumentType$IntRangeArgumentType;
 	public static final fun integer ()Lcom/mojang/brigadier/arguments/IntegerArgumentType;

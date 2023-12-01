@@ -224,6 +224,16 @@ object DynamicCommands : CommandCollection() {
         currentNode!!.method = method
     }
 
+    /**
+     * A helper method for getting Fabric's client CommandDispatcher root node. This allows user
+     * commands to be redirected to the root node in the same way that "/execute run ..." does.
+     *
+     * As the result is a CommandNode, `.getChild(name)` can be used to access sub-command nodes
+     * to, for example, redirect to just `/advancement` instead of `/`.
+     */
+    @JvmStatic
+    fun getDispatcherRoot() = Client.getConnection()?.commandDispatcher?.root
+
     /////////////////////////
     // Brigadier Arg Types //
     /////////////////////////
