@@ -146,7 +146,7 @@ class Message {
                 Client.getMinecraft().networkHandler?.onGameMessage(GameMessageS2CPacket(chatMessage, false))
             }
         } else {
-            Player.toMC()?.sendMessage(chatMessage, false)
+            Player.toMC()?.sendMessage(chatMessage)
         }
     }
 
