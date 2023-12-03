@@ -171,11 +171,21 @@ class Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
 
         val (staticFunctions, instanceFunctions) = functions.partition { it.isStatic() }
         val (staticProperties, instanceProperties) = properties.partition { it.isStatic() }
+        val isEnum = clazz.classKind == ClassKind.ENUM_CLASS
 
         // Output static object first, if necessary
-        if (staticProperties.isNotEmpty() || staticFunctions.isNotEmpty()) {
+        if (staticProperties.isNotEmpty() || staticFunctions.isNotEmpty() || isEnum) {
             appendLine("const $name: {")
             indented {
+                if (isEnum) {
+                    clazz.declarations
+                        .filterIsInstance<KSClassDeclaration>()
+                        .filter { it.classKind == ClassKind.ENUM_ENTRY }
+                        .forEach {
+                            appendLine("${it.simpleName.asString()}: ${clazz.path};")
+                        }
+                }
+
                 staticProperties.forEach { buildProperty(it, resolver) }
                 staticFunctions.forEach { buildFunction(it, resolver, omitName = false) }
             }
@@ -408,7 +418,7 @@ class Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
     private fun append(s: Any) = builder.append(s)
 
     private fun appendLine(s: Any) {
-        repeat(indent) { builder.append("\t") }
+        repeat(indent) { builder.append("  ") }
         builder.append(s)
         builder.append('\n')
     }
