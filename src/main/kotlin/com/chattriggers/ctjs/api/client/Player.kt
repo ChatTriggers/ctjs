@@ -12,7 +12,6 @@ import com.chattriggers.ctjs.api.world.Scoreboard
 import com.chattriggers.ctjs.api.world.World
 import com.chattriggers.ctjs.api.world.block.BlockFace
 import com.chattriggers.ctjs.api.world.block.BlockPos
-import com.chattriggers.ctjs.typing.annotations.CTApi
 import gg.essential.universal.UMath
 import gg.essential.universal.UMinecraft
 import net.minecraft.client.gui.screen.ingame.HandledScreen
@@ -24,7 +23,6 @@ import net.minecraft.util.math.Vec2f
 import org.mozilla.javascript.NativeObject
 import java.util.*
 
-@CTApi
 object Player {
     @JvmStatic
     fun toMC() = UMinecraft.getMinecraft().player
