@@ -4,6 +4,7 @@ import com.chattriggers.ctjs.CTJS
 import com.chattriggers.ctjs.api.Config
 import com.chattriggers.ctjs.api.client.Client
 import com.chattriggers.ctjs.engine.LogType
+import com.chattriggers.ctjs.engine.printTraceToConsole
 import com.chattriggers.ctjs.internal.engine.JSLoader
 import gg.essential.universal.UDesktop
 import kotlinx.serialization.encodeToString
@@ -121,7 +122,7 @@ object ConsoleHostProcess {
                                     )
                                 }
                             } catch (e: Throwable) {
-                                printStackTrace(e)
+                                e.printTraceToConsole()
                             }
                         }
                         ReloadCTMessage -> Client.scheduleTask { CTJS.load() }

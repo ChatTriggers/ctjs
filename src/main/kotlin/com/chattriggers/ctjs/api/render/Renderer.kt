@@ -715,7 +715,11 @@ object Renderer {
             entityRenderer.render(entity, 0.0f, 1.0f, matrixStack.toMC(), vertexConsumers, light)
             if (entity.doesRenderOnFire()) {
                 entityRenderDispatcher.asMixin<EntityRenderDispatcherAccessor>()
-                    .invokeRenderFire(matrixStack.toMC(), vertexConsumers, entity)
+                    //#if MC>=12004
+                    .invokeRenderFire(matrixStack.toMC(), vertexConsumers, entity, Quaternionf())
+                    //#else
+                    //$$ .invokeRenderFire(matrixStack.toMC(), vertexConsumers, entity)
+                    //#endif
             }
         }
 

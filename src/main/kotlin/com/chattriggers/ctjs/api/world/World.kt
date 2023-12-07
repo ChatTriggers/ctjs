@@ -25,6 +25,7 @@ import net.minecraft.particle.ParticleEffect
 import net.minecraft.particle.ParticleType
 import net.minecraft.registry.Registries
 import net.minecraft.world.LightType
+import kotlin.math.roundToInt
 
 object World {
     fun toMC() = UMinecraft.getMinecraft().world
@@ -203,6 +204,22 @@ object World {
         return getAllBlockEntities().filter {
             clazz.isInstance(it.toMC())
         }
+    }
+
+    /**
+     * Returns the TPS of the current world.
+     *
+     * On modern version (1.20.3+), this is variable. On earlier versions,
+     * it is always 20.
+     */
+    @JvmStatic
+    fun getTicksPerSecond(): Int {
+        //#if MC>=12004
+        val mpt = toMC()?.tickManager?.millisPerTick ?: return 20
+        return (1000.0 / mpt).roundToInt()
+        //#else
+        //$$ return 20
+        //#endif
     }
 
     /**

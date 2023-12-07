@@ -2,8 +2,12 @@ package com.chattriggers.ctjs.api.world
 
 import com.chattriggers.ctjs.api.message.TextComponent
 import com.chattriggers.ctjs.MCTeam
+import net.minecraft.scoreboard.ScoreboardEntry
 import net.minecraft.scoreboard.ScoreboardObjective
-import net.minecraft.scoreboard.ScoreboardPlayerScore
+
+//#if MC>=12004
+import net.minecraft.scoreboard.ScoreboardScore
+//#endif
 
 object Scoreboard {
     private var needsUpdate = true
@@ -99,27 +103,40 @@ object Scoreboard {
      * @param override whether to remove old lines with the same score
      */
     @JvmStatic
-    fun setLine(score: Int, line: String, override: Boolean) {
+    @JvmOverloads
+    fun setLine(score: Int, line: TextComponent, override: Boolean = false) {
         val scoreboard = toMC() ?: return
         val sidebarObjective = getSidebar() ?: return
 
-        val scores = scoreboard.getAllPlayerScores(sidebarObjective)
-
         if (override) {
-            scores.filter {
-                it.score == score
+            //#if MC>=12004
+            scoreboard.getScoreboardEntries(sidebarObjective).filter {
+                it.value == score
             }.forEach {
-                scoreboard.resetPlayerScore(it.playerName, sidebarObjective)
+                scoreboard.removeScore({ it.owner }, sidebarObjective)
             }
+            //#else
+            //$$ scoreboard.getAllPlayerScores(sidebarObjective).filter {
+            //$$     it.score == score
+            //$$ }.forEach {
+            //$$     scoreboard.resetPlayerScore(it.playerName, sidebarObjective)
+            //$$ }
+            //#endif
         }
 
-        scoreboard.getPlayerScore(line, sidebarObjective).score = score
+        //#if MC>=12004
+        scoreboard.knownScoreHolders.forEach {
+            val scoreboardScore = scoreboard.getScore({ it.nameForScoreboard }, sidebarObjective) as? ScoreboardScore
+            if (scoreboardScore?.score == score)
+                scoreboardScore.displayText = line
+        }
+        //#else
+        //$$ scoreboard.getPlayerScore(line.formattedText, sidebarObjective).score = score
+        //#endif
     }
 
     @JvmStatic
-    fun setLine(score: Int, line: TextComponent, override: Boolean) {
-        setLine(score, line.formattedText, override)
-    }
+    fun setLine(score: Int, line: String, override: Boolean) = setLine(score, TextComponent(line), override)
 
     @JvmStatic
     fun setShouldRender(shouldRender: Boolean) {
@@ -137,16 +154,20 @@ object Scoreboard {
         val objective = scoreboard.objectives.singleOrNull() ?: return
 
         scoreboardTitle = TextComponent(objective.displayName)
-        scoreboardNames = scoreboard.getAllPlayerScores(objective).filter {
-            it.playerName != null && !it.playerName.startsWith("#")
-        }.map(::Score).toMutableList()
+        scoreboardNames = scoreboard.getScoreboardEntries(objective).filter {
+            //#if MC>=12004
+            it.owner != null && !it.owner.startsWith("#")
+            //#else
+            //$$ it.playerName != null && !it.playerName.startsWith("#")
+            //#endif
+        }.map(::Score).sortedBy { it.getPoints() }.toMutableList()
     }
 
     internal fun resetCache() {
         needsUpdate = true
     }
 
-    class Score(private val mcValue: ScoreboardPlayerScore) {
+    class Score(private val mcValue: ScoreboardEntry) {
         fun toMC() = mcValue
 
         /**
@@ -155,7 +176,11 @@ object Scoreboard {
          *
          * @return the actual point value
          */
-        fun getPoints(): Int = mcValue.score
+        //#if MC>=12004
+        fun getPoints(): Int = mcValue.value
+        //#else
+        //$$ fun getPoints(): Int = mcValue.score
+        //#endif
 
         /**
          * Gets the display string of this score
@@ -164,8 +189,13 @@ object Scoreboard {
          */
         fun getName() = TextComponent(
             MCTeam.decorateName(
-                Scoreboard.toMC()!!.getPlayerTeam(mcValue.playerName),
-                TextComponent(mcValue.playerName),
+                //#if MC>=12004
+                Scoreboard.toMC()!!.getScoreHolderTeam(mcValue.owner),
+                TextComponent(mcValue.owner),
+                //#else
+                //$$ Scoreboard.toMC()!!.getPlayerTeam(mcValue.playerName),
+                //$$ TextComponent(mcValue.playerName),
+                //#endif
             )
         )
 

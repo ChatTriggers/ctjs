@@ -30,17 +30,22 @@ object TabList {
     @JvmStatic
     fun getNamesByObjectives(): List<String> {
         val scoreboard = Scoreboard.toMC() ?: return emptyList()
-        //#if MC>=12202
+        //#if MC>=12004
         val sidebarObjective = scoreboard.getObjectiveForSlot(ScoreboardDisplaySlot.LIST) ?: return emptyList()
         //#else
         //$$ val sidebarObjective = scoreboard.getObjectiveForSlot(0) ?: return emptyList()
         //#endif
 
-        val scores = scoreboard.getAllPlayerScores(sidebarObjective)
+        val scores = scoreboard.getScoreboardEntries(sidebarObjective)
 
         return scores.map {
-            val team = scoreboard.getTeam(it.playerName)
-            TextComponent(MCTeam.decorateName(team, TextComponent(it.playerName))).formattedText
+            //#if MC>=12004
+            val team = scoreboard.getTeam(it.owner)
+            TextComponent(MCTeam.decorateName(team, TextComponent(it.owner))).formattedText
+            //#else
+            //$$ val team = scoreboard.getTeam(it.playerName)
+            //$$ TextComponent(MCTeam.decorateName(team, TextComponent(it.playerName))).formattedText
+            //#endif
         }
     }
 
