@@ -333,19 +333,19 @@ public final class com/chattriggers/ctjs/api/client/Settings$ChatVisibility : ja
 	public static final field HIDDEN Lcom/chattriggers/ctjs/api/client/Settings$ChatVisibility;
 	public static final field SYSTEM Lcom/chattriggers/ctjs/api/client/Settings$ChatVisibility;
 	public static final fun from (Ljava/lang/Object;)Lcom/chattriggers/ctjs/api/client/Settings$ChatVisibility;
-	@1.20.2-fabric
+	@1.20.4-fabric
 	public static final fun fromMC (Lnet/minecraft/network/message/ChatVisibility;)Lcom/chattriggers/ctjs/api/client/Settings$ChatVisibility;
-	@1.19.4-fabric,1.20.1-fabric
+	@1.19.4-fabric
 	public static final fun fromMC (Lnet/minecraft/client/option/ChatVisibility;)Lcom/chattriggers/ctjs/api/client/Settings$ChatVisibility;
 	public synthetic fun getMcValue ()Ljava/lang/Object;
-	@1.20.2-fabric
+	@1.20.4-fabric
 	public fun getMcValue ()Lnet/minecraft/network/message/ChatVisibility;
-	@1.19.4-fabric,1.20.1-fabric
+	@1.19.4-fabric
 	public fun getMcValue ()Lnet/minecraft/client/option/ChatVisibility;
 	public synthetic fun toMC ()Ljava/lang/Object;
-	@1.20.2-fabric
+	@1.20.4-fabric
 	public fun toMC ()Lnet/minecraft/network/message/ChatVisibility;
-	@1.19.4-fabric,1.20.1-fabric
+	@1.19.4-fabric
 	public fun toMC ()Lnet/minecraft/client/option/ChatVisibility;
 	public static fun valueOf (Ljava/lang/String;)Lcom/chattriggers/ctjs/api/client/Settings$ChatVisibility;
 	public static fun values ()[Lcom/chattriggers/ctjs/api/client/Settings$ChatVisibility;
@@ -353,9 +353,9 @@ public final class com/chattriggers/ctjs/api/client/Settings$ChatVisibility : ja
 
 public final class com/chattriggers/ctjs/api/client/Settings$ChatVisibility$Companion {
 	public final fun from (Ljava/lang/Object;)Lcom/chattriggers/ctjs/api/client/Settings$ChatVisibility;
-	@1.20.2-fabric
+	@1.20.4-fabric
 	public final fun fromMC (Lnet/minecraft/network/message/ChatVisibility;)Lcom/chattriggers/ctjs/api/client/Settings$ChatVisibility;
-	@1.19.4-fabric,1.20.1-fabric
+	@1.19.4-fabric
 	public final fun fromMC (Lnet/minecraft/client/option/ChatVisibility;)Lcom/chattriggers/ctjs/api/client/Settings$ChatVisibility;
 }
 
@@ -1468,6 +1468,7 @@ public final class com/chattriggers/ctjs/api/message/TextComponent : net/minecra
 	public final fun setHoverAction (Ljava/lang/Object;)Lcom/chattriggers/ctjs/api/message/TextComponent;
 	public final fun setHoverValue (Ljava/lang/Object;)Lcom/chattriggers/ctjs/api/message/TextComponent;
 	public final fun setText (Ljava/lang/String;)Lcom/chattriggers/ctjs/api/message/TextComponent;
+	public fun toString ()Ljava/lang/String;
 	public fun visit (Lnet/minecraft/text/StringVisitable$StyledVisitor;Lnet/minecraft/text/Style;)Ljava/util/Optional;
 	public fun visit (Lnet/minecraft/text/StringVisitable$Visitor;)Ljava/util/Optional;
 	public fun withoutStyle ()Ljava/util/List;
@@ -2328,8 +2329,10 @@ public final class com/chattriggers/ctjs/api/world/Scoreboard {
 	public static final fun getShouldRender ()Z
 	public static final fun getSidebar ()Lnet/minecraft/scoreboard/ScoreboardObjective;
 	public static final fun getTitle ()Lcom/chattriggers/ctjs/api/message/TextComponent;
+	public static final fun setLine (ILcom/chattriggers/ctjs/api/message/TextComponent;)V
 	public static final fun setLine (ILcom/chattriggers/ctjs/api/message/TextComponent;Z)V
 	public static final fun setLine (ILjava/lang/String;Z)V
+	public static synthetic fun setLine$default (ILcom/chattriggers/ctjs/api/message/TextComponent;ZILjava/lang/Object;)V
 	public static final fun setShouldRender (Z)V
 	public static final fun setTitle (Lcom/chattriggers/ctjs/api/message/TextComponent;)V
 	public static final fun setTitle (Ljava/lang/String;)V
@@ -2337,9 +2340,15 @@ public final class com/chattriggers/ctjs/api/world/Scoreboard {
 }
 
 public final class com/chattriggers/ctjs/api/world/Scoreboard$Score {
+	@1.20.4-fabric
+	public fun <init> (Lnet/minecraft/scoreboard/ScoreboardEntry;)V
+	@1.19.4-fabric
 	public fun <init> (Lnet/minecraft/scoreboard/ScoreboardPlayerScore;)V
 	public final fun getName ()Lcom/chattriggers/ctjs/api/message/TextComponent;
 	public final fun getPoints ()I
+	@1.20.4-fabric
+	public final fun toMC ()Lnet/minecraft/scoreboard/ScoreboardEntry;
+	@1.19.4-fabric
 	public final fun toMC ()Lnet/minecraft/scoreboard/ScoreboardPlayerScore;
 	public fun toString ()Ljava/lang/String;
 }
@@ -2392,6 +2401,7 @@ public final class com/chattriggers/ctjs/api/world/World {
 	public static final fun getRainingStrength ()F
 	public static final fun getSkyLightLevel (III)I
 	public static final fun getSkyLightLevel (Lcom/chattriggers/ctjs/api/world/block/BlockPos;)I
+	public static final fun getTicksPerSecond ()I
 	public static final fun getTime ()J
 	public static final fun getWorld ()Lnet/minecraft/client/world/ClientWorld;
 	public static final fun hasPlayer (Ljava/lang/String;)Z

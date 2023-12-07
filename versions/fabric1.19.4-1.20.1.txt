@@ -1,2 +1,0 @@
-net.minecraft.inventory.CraftingInventory net.minecraft.inventory.RecipeInputInventory
-net.minecraft.screen.PlayerScreenHandler.craftingResult net.minecraft.screen.PlayerScreenHandler.craftingInput

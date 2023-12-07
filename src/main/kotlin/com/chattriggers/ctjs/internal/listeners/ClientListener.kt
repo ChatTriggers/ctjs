@@ -66,7 +66,11 @@ object ClientListener : Initializer {
                 }
             }
 
-            if (World.isLoaded()) {
+            //#if MC>=12004
+            if (World.isLoaded() && World.toMC()?.tickManager?.shouldTick() == true) {
+            //#else
+            //$$ if (World.isLoaded()) {
+            //#endif
                 TriggerType.TICK.triggerAll(ticksPassed)
                 ticksPassed++
 

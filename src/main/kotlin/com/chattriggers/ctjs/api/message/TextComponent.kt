@@ -5,6 +5,7 @@ import com.chattriggers.ctjs.api.entity.Entity
 import com.chattriggers.ctjs.api.inventory.Item
 import com.chattriggers.ctjs.api.inventory.ItemType
 import com.chattriggers.ctjs.api.render.Renderer
+import com.chattriggers.ctjs.internal.utils.hoverEventActionByName
 import gg.essential.universal.UChat
 import net.minecraft.item.ItemStack
 import net.minecraft.text.*
@@ -109,7 +110,7 @@ class TextComponent : Text {
     fun setClickAction(value: Any?) = apply {
         clickAction = when (value) {
             is ClickEvent.Action -> value
-            is String -> ClickEvent.Action.byName(value.lowercase())
+            is String -> ClickEvent.Action.valueOf(value.uppercase())
             null -> null
             else -> error(
                 "TextComponent.setClickAction() expects a String, ClickEvent.Action, or null, but got " +
@@ -154,7 +155,7 @@ class TextComponent : Text {
      * @param value the click value
      */
     fun setClick(action: String, value: String?) = apply {
-        setClick(ClickEvent.Action.byName(action.lowercase()), value)
+        setClick(ClickEvent.Action.valueOf(action.uppercase()), value)
     }
 
     /**
@@ -174,7 +175,7 @@ class TextComponent : Text {
     fun setHoverAction(value: Any?) = apply {
         hoverAction = when (value) {
             is HoverEvent.Action<*> -> value
-            is String -> HoverEvent.Action.byName(value.lowercase())
+            is String -> hoverEventActionByName(value.lowercase())
             null -> null
             else -> error(
                 "TextComponent.setHoverAction() expects a String, HoverEvent.Action, or null, but got " +
@@ -225,7 +226,7 @@ class TextComponent : Text {
      * @param value the hover value
      */
     fun setHover(action: String, value: Any?) = apply {
-        setHover(HoverEvent.Action.byName(action.lowercase()) as HoverEvent.Action<*>, value)
+        setHover(hoverEventActionByName(action.lowercase()), value)
     }
 
     /**
@@ -262,6 +263,8 @@ class TextComponent : Text {
         Message(this).actionBar()
     }
 
+    override fun toString() = "TextComponent(${if (formatted) formattedText else unformattedText})"
+
     private fun parseItemContent(obj: Any): HoverEvent.ItemStackContent {
         return when (obj) {
             is ItemStack -> obj
@@ -276,7 +279,11 @@ class TextComponent : Text {
         return when (obj) {
             is MCEntity -> obj
             is Entity -> obj.toMC()
-            is String -> return HoverEvent.EntityContent.parse(from(obj))
+            //#if MC>=12004
+            is String -> return HoverEvent.EntityContent.legacySerializer(from(obj)).getOrThrow(false) {}
+            //#else
+            //$$ is String -> return HoverEvent.EntityContent.parse(from(obj))
+            //#endif
             is HoverEvent.EntityContent -> return obj
             else -> error("${obj::class} cannot be parsed as an entity HoverEvent")
         }.let { HoverEvent.EntityContent(it.type, it.uuid, it.name) }

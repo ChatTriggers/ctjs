@@ -14,7 +14,7 @@ public class ClientPlayerInteractionManagerMixin {
         method = "breakBlock",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/block/Block;onBreak(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;Lnet/minecraft/entity/player/PlayerEntity;)V"
+            target = "Lnet/minecraft/block/Block;onBroken(Lnet/minecraft/world/WorldAccess;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)V"
         )
     )
     private void injectBreakBlock(BlockPos pos, CallbackInfoReturnable<Boolean> cir) {

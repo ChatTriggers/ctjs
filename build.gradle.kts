@@ -50,22 +50,24 @@ dependencies {
     include(modImplementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")!!)
     include(modImplementation("com.github.char:Koffee:3a78d8a437")!!)
 
-    include(implementation(annotationProcessor("com.github.llamalad7.mixinextras:mixinextras-fabric:0.2.0-beta.8")!!)!!)
+    include(implementation(annotationProcessor("com.github.llamalad7.mixinextras:mixinextras-fabric:0.2.0")!!)!!)
 
     // 1.18 versions are good enough for Elementa and Vigilance, but not UC, so we
     // need to exclude this version
     configurations.modApi { exclude("gg.essential", "universalcraft-1.18.1-fabric") }
 
     include(modImplementation("gg.essential:vigilance-1.18.1-fabric:295")!!)
-    include(modImplementation("gg.essential:universalcraft-$platform:316")!!)
+    val ucArtifact = if (mcVersion == "1.19.4-fabric") mcVersion else "1.20.3-fabric"
+    include(modImplementation("gg.essential:universalcraft-$ucArtifact:320")!!)
     include(modImplementation("gg.essential:elementa-1.18.1-fabric:610")!!)
 
     val modMenuVersion = when (mcVersion) {
-        "1.20.1-fabric", "1.20.2-fabric" -> "7.2.1"
+        "1.20.4-fabric" -> "9.0.0-pre.1"
         "1.19.4-fabric" -> "6.3.1"
-        else -> throw Exception("Minecraft version $modVersion is not supported")
+        else -> throw Exception("Minecraft version $mcVersion is not supported")
     }
     modApi("com.terraformersmc:modmenu:$modMenuVersion")
+
 
     modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:1.1.2")
 

@@ -41,7 +41,7 @@ object Player {
     fun getPlayer() = toMC()
 
     @JvmStatic
-    fun getTeam(): Team? = Scoreboard.toMC()?.getPlayerTeam(getName())?.let(::Team)
+    fun getTeam(): Team? = Scoreboard.toMC()?.getTeam(getName())?.let(::Team)
 
     @JvmStatic
     fun asPlayerMP(): PlayerMP? = toMC()?.let(::PlayerMP)

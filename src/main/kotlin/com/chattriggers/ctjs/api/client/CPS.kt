@@ -1,5 +1,6 @@
 package com.chattriggers.ctjs.api.client
 
+import com.chattriggers.ctjs.api.world.World
 import com.chattriggers.ctjs.internal.engine.CTEvents
 import com.chattriggers.ctjs.internal.utils.Initializer
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
@@ -63,7 +64,7 @@ object CPS : Initializer {
         private val runningAverages = LinkedList<Int>()
 
         fun click() {
-            clicks.add(20)
+            clicks.add(World.getTicksPerSecond())
         }
 
         fun tick() {
