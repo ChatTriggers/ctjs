@@ -3,9 +3,11 @@ package com.chattriggers.ctjs.api
 import com.chattriggers.ctjs.CTJS
 import com.chattriggers.ctjs.internal.utils.urlEncode
 import net.fabricmc.loader.api.FabricLoader
-import net.fabricmc.mapping.tree.Descriptored
-import net.fabricmc.mapping.tree.Mapped
-import net.fabricmc.mapping.tree.TinyMappingFactory
+import net.fabricmc.mappingio.MappingReader
+import net.fabricmc.mappingio.tree.MappingTree.ElementMapping
+import net.fabricmc.mappingio.tree.MappingTree.MethodArgMapping
+import net.fabricmc.mappingio.tree.MappingTreeView
+import net.fabricmc.mappingio.tree.MemoryMappingTree
 import org.objectweb.asm.Type
 import org.spongepowered.asm.mixin.transformer.ClassInfo
 import java.io.ByteArrayInputStream
@@ -38,7 +40,8 @@ object Mappings {
             file.getInputStream(file.getEntry("mappings/mappings.tiny")).readAllBytes()
         }
 
-        val tree = TinyMappingFactory.load(ByteArrayInputStream(mappingBytes).bufferedReader())
+        val tree = MemoryMappingTree()
+        MappingReader.read(ByteArrayInputStream(mappingBytes).bufferedReader(), tree)
 
         tree.classes.forEach { clazz ->
             val fields = mutableMapOf<String, MappedField>()
@@ -59,14 +62,14 @@ object Mappings {
                 methods.getOrPut(method.unmappedName, ::mutableListOf).add(
                     MappedMethod(
                         name = Mapping.fromMapped(method),
-                        parameters = method.parameters.sortedBy { it.localVariableIndex }.mapIndexed { index, param ->
+                        parameters = method.args.sortedBy { it.lvIndex }.mapIndexed { index, param ->
                             MappedParameter(
                                 Mapping(param.unmappedName, param.mappedName),
                                 Mapping(
                                     unmappedType.argumentTypes[index].descriptor,
                                     mappedType.argumentTypes[index].descriptor,
                                 ),
-                                param.localVariableIndex,
+                                param.lvIndex,
                             )
                         },
                         returnType = Mapping(unmappedType.returnType.descriptor, mappedType.returnType.descriptor)
@@ -128,7 +131,7 @@ object Mappings {
             get() = if (CTJS.isDevelopment) original else mapped
 
         companion object {
-            fun fromMapped(mapped: Mapped) = Mapping(mapped.unmappedName, mapped.mappedName)
+            fun fromMapped(mapped: ElementMapping) = Mapping(mapped.unmappedName, mapped.mappedName)
         }
     }
 
@@ -183,15 +186,19 @@ object Mappings {
         }
     }
 
-    private val Mapped.unmappedName: String
-        get() = getName("named")
+    private val ElementMapping.unmappedName: String
+        get() = getName("named")!!
 
-    private val Mapped.mappedName: String
-        get() = getName("intermediary")
+    private val ElementMapping.mappedName: String
+        get() = getName("intermediary")!!
 
-    private val Descriptored.unmappedType: Type
-        get() = Type.getType(getDescriptor("named"))
+    // Parameters do not have "intermediary" mappings
+    private val MethodArgMapping.mappedName: String
+        get() = unmappedName
 
-    private val Descriptored.mappedType: Type
-        get() = Type.getType(getDescriptor("intermediary"))
+    private val MappingTreeView.MemberMappingView.unmappedType: Type
+        get() = Type.getType(getDesc("named"))
+
+    private val MappingTreeView.MemberMappingView.mappedType: Type
+        get() = Type.getType(getDesc("intermediary"))
 }
