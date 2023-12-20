@@ -136,7 +136,8 @@ object Scoreboard {
     }
 
     @JvmStatic
-    fun setLine(score: Int, line: String, override: Boolean) = setLine(score, TextComponent(line), override)
+    @JvmOverloads
+    fun setLine(score: Int, line: String, override: Boolean = false) = setLine(score, TextComponent(line), override)
 
     @JvmStatic
     fun setShouldRender(shouldRender: Boolean) {

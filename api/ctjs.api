@@ -2331,8 +2331,10 @@ public final class com/chattriggers/ctjs/api/world/Scoreboard {
 	public static final fun getTitle ()Lcom/chattriggers/ctjs/api/message/TextComponent;
 	public static final fun setLine (ILcom/chattriggers/ctjs/api/message/TextComponent;)V
 	public static final fun setLine (ILcom/chattriggers/ctjs/api/message/TextComponent;Z)V
+	public static final fun setLine (ILjava/lang/String;)V
 	public static final fun setLine (ILjava/lang/String;Z)V
 	public static synthetic fun setLine$default (ILcom/chattriggers/ctjs/api/message/TextComponent;ZILjava/lang/Object;)V
+	public static synthetic fun setLine$default (ILjava/lang/String;ZILjava/lang/Object;)V
 	public static final fun setShouldRender (Z)V
 	public static final fun setTitle (Lcom/chattriggers/ctjs/api/message/TextComponent;)V
 	public static final fun setTitle (Ljava/lang/String;)V
