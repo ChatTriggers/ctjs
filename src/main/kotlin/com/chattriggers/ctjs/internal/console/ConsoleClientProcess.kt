@@ -107,8 +107,8 @@ class ConsoleClientProcess(private val port: Int, private val hostPid: Long) {
                         frame?.println(message.text, message.logType, message.end, message.color?.let(::Color))
                             ?: error("Received PrintMessage before InitMessage")
                     }
-                    is PrintStackTraceMessage -> {
-                        frame?.printStackTrace(message.message, message.trace)
+                    is PrintErrorMessage -> {
+                        frame?.printError(message.error)
                             ?: error("Received PrintStackTraceMessage before InitMessage")
                     }
                 }

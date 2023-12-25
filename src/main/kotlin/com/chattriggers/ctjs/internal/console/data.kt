@@ -59,7 +59,10 @@ class PrintMessage(
 ) : H2CMessage()
 
 @Serializable
-class PrintStackTraceMessage(val message: String, val trace: List<StackTrace>) : H2CMessage()
+class PrintErrorMessage(val error: Error) : H2CMessage() {
+    @Serializable
+    data class Error(val message: String, val trace: List<StackTrace>, val cause: Error?)
+}
 
 @Serializable
 data class StackTrace(

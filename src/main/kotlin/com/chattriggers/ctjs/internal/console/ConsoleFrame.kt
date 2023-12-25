@@ -143,43 +143,50 @@ class ConsoleFrame(
         }
     }
 
-    fun printStackTrace(message: String, trace: List<StackTrace>) {
-        invokeLater {
-            if (currentConfig.openConsoleOnError)
-                showConsole()
-
-            val index = trace.indexOfFirst {
+    fun printError(error: PrintErrorMessage.Error) {
+        fun StringBuilder.appendError(err: PrintErrorMessage.Error) {
+            val index = err.trace.indexOfFirst {
                 it.fileName?.lowercase()?.contains("jsloader") ?: false
             }
 
-            val trimmedTrace = trace.dropLast(trace.size - index - 1).map {
-                val fileNameIndex = it.fileName?.indexOf("ChatTriggers/modules/") ?: return@map it
-                val classNameIndex = it.className.indexOf("ChatTriggers_modules_")
+            val trimmedTrace = if (index != -1) {
+                err.trace.dropLast(err.trace.size - index - 1).map {
+                    val fileNameIndex = it.fileName?.indexOf("ChatTriggers/modules/") ?: return@map it
+                    val classNameIndex = it.className.indexOf("ChatTriggers_modules_")
 
-                if (fileNameIndex != -1) {
-                    StackTrace(
-                        it.className.substring(classNameIndex + 21),
-                        it.methodName,
-                        it.fileName.substring(fileNameIndex + 21),
-                        it.lineNumber
-                    )
-                } else it
-            }
+                    if (fileNameIndex != -1) {
+                        StackTrace(
+                            it.className.substring(classNameIndex + 21),
+                            it.methodName,
+                            it.fileName.substring(fileNameIndex + 21),
+                            it.lineNumber
+                        )
+                    } else it
+                }
+            } else err.trace
 
-            printErrorWithColor(message, trimmedTrace)
-        }
-    }
-
-    private fun printErrorWithColor(message: String, traces: List<StackTrace>) {
-        writer.println(buildString {
-            appendLine(message)
-            for (trace in traces) {
+            appendLine(err.message)
+            for (trace in trimmedTrace) {
                 append("\tat ${trace.className}.${trace.methodName} (${trace.fileName}")
                 if (trace.lineNumber != -1)
                     append(":${trace.lineNumber}")
                 appendLine(")")
             }
-        }, LogType.ERROR)
+
+            if (err.cause != null) {
+                append("Caused by: ")
+                appendError(err.cause)
+            }
+        }
+
+        invokeLater {
+            if (currentConfig.openConsoleOnError)
+                showConsole()
+
+            writer.println(buildString {
+                appendError(error)
+            }, LogType.ERROR)
+        }
     }
 
     fun setConfig(config: ConfigUpdateMessage) {

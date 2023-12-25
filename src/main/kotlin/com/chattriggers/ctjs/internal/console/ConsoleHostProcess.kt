@@ -142,10 +142,14 @@ object ConsoleHostProcess {
     }
 
     fun printStackTrace(error: Throwable) {
-        val trace = error.stackTrace.map {
-            StackTrace(it.fileName, it.className, it.methodName, it.lineNumber)
-        }
-        trySendMessage(PrintStackTraceMessage(error.message.orEmpty(), trace))
+        fun makeError(err: Throwable): PrintErrorMessage.Error = PrintErrorMessage.Error(
+            error::class.qualifiedName?.let { "$it: " } + err.message.orEmpty(),
+            err.stackTrace.map {
+                StackTrace(it.fileName, it.className, it.methodName, it.lineNumber)
+            },
+            err.cause?.let(::makeError),
+        )
+        trySendMessage(PrintErrorMessage(makeError(error)))
     }
 
     fun show() = trySendMessage(OpenMessage)
