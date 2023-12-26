@@ -143,7 +143,7 @@ object ConsoleHostProcess {
 
     fun printStackTrace(error: Throwable) {
         fun makeError(err: Throwable): PrintErrorMessage.Error = PrintErrorMessage.Error(
-            error::class.qualifiedName?.let { "$it: " } + err.message.orEmpty(),
+            err::class.qualifiedName?.let { "$it: " } + err.message.orEmpty(),
             err.stackTrace.map {
                 StackTrace(it.fileName, it.className, it.methodName, it.lineNumber)
             },
