@@ -97,6 +97,12 @@ class KeyBind {
 
     internal fun onTick() {
         if (isPressed()) {
+            if (keyBinding in customKeyBindings) {
+                while (keyBinding.wasPressed()) {
+                    // consume the key press if not built-in keybinding
+                }
+            }
+
             onKeyPress?.trigger(arrayOf())
             down = true
         }
