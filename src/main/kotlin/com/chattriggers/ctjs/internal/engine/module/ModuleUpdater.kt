@@ -61,7 +61,7 @@ object ModuleUpdater : Initializer {
             val connection = CTJS.makeWebRequest(url)
 
             val newMetadataText = connection.getInputStream().bufferedReader().readText()
-            val newMetadata = CTJS.gson.fromJson(newMetadataText, ModuleMetadata::class.java)
+            val newMetadata = CTJS.json.decodeFromString<ModuleMetadata>(newMetadataText)
 
             if (newMetadata.version == null) {
                 ("Remote version of module ${metadata.name} has no version numbers, so it will " +
@@ -75,7 +75,7 @@ object ModuleUpdater : Initializer {
             "Updated module ${metadata.name}".printToConsole()
 
             module.metadata = File(module.folder, "metadata.json").let {
-                CTJS.gson.fromJson(it.readText(), ModuleMetadata::class.java)
+                CTJS.json.decodeFromString<ModuleMetadata>(it.readText())
             }
 
             if (Config.moduleChangelog && module.metadata.changelog != null) {

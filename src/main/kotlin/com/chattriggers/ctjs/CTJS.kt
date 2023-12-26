@@ -17,7 +17,7 @@ import com.chattriggers.ctjs.internal.console.ConsoleHostProcess
 import com.chattriggers.ctjs.internal.engine.CTEvents
 import com.chattriggers.ctjs.internal.engine.module.ModuleManager
 import com.chattriggers.ctjs.internal.utils.Initializer
-import com.google.gson.Gson
+import kotlinx.serialization.json.Json
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper
 import net.fabricmc.loader.api.FabricLoader
@@ -97,7 +97,7 @@ class CTJS : ClientModInitializer {
         internal val sounds = mutableListOf<Sound>()
         internal val isDevelopment = FabricLoader.getInstance().isDevelopmentEnvironment
 
-        internal val gson = Gson()
+        internal val json = Json { useAlternativeNames = true }
 
         @JvmOverloads
         internal fun makeWebRequest(url: String, userAgent: String? = "Mozilla/5.0 (ChatTriggers)"): URLConnection =

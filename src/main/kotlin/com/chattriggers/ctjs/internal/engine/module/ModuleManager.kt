@@ -7,7 +7,6 @@ import com.chattriggers.ctjs.engine.LogType
 import com.chattriggers.ctjs.engine.printToConsole
 import com.chattriggers.ctjs.internal.engine.JSContextFactory
 import com.chattriggers.ctjs.internal.engine.JSLoader
-import kotlinx.serialization.json.Json
 import org.apache.commons.io.FileUtils
 import org.mozilla.javascript.Context
 import java.io.File
@@ -94,10 +93,7 @@ object ModuleManager {
 
         if (metadataFile.exists()) {
             try {
-                // A lot of older modules have "author" instead of "creator", and it's easy enough to
-                // support that here
-                val text = metadataFile.readText().replace("\"author\"", "\"creator\"")
-                metadata = Json.decodeFromString(text)
+                metadata = CTJS.json.decodeFromString(metadataFile.readText())
             } catch (e: Exception) {
                 "Module $directory has invalid metadata.json".printToConsole(LogType.ERROR)
             }
