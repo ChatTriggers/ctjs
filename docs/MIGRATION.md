@@ -89,6 +89,10 @@ Here is a list of targeted changes for various different APIs:
   - `renderOverlay` no longer passes in the event, as it was unused previously
   - Removed all Trigger classes from the global namespace
   - Removed `CancellableEvent` from the global scope
+- `Message`/`TextComponent`
+  - `Message` has been removed, and its primary functionality (i.e. `chat()`/`actionBar()`) has been added to `TextComponent`
+  - `TextComponent` has been heavily changed such that it can be easily introspected. It now implements `List<NativeObject>`, and each object is of the form `{ text: '...', bold: true, underline: true, ... }`. This form can also be used to construct and create new `TextComponent`s
+  - `TextComponent` is now immutable. Methods such as `withText()` can be used to return a modified `TextComponent` based on the original
 - The `/ct` command
   - Removed `/ct copy`. Replace this with `Client.copy(text: String)`
   - Removed the following aliases: 

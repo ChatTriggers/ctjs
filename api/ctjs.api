@@ -1387,12 +1387,14 @@ public final class com/chattriggers/ctjs/api/message/ChatLib {
 	public static synthetic fun command$default (Ljava/lang/String;ZILjava/lang/Object;)V
 	public static final fun copyToClipboard (Ljava/lang/String;)V
 	public static final fun deleteChat (I)V
-	public static final fun deleteChat (Lcom/chattriggers/ctjs/api/message/Message;)V
+	public static final fun deleteChat (Lcom/chattriggers/ctjs/api/message/TextComponent;)V
 	public static final fun deleteChat (Ljava/lang/String;)V
+	public static final fun deleteChat (Lkotlin/jvm/functions/Function1;)V
 	public static final fun deleteChat (Lorg/mozilla/javascript/regexp/NativeRegExp;)V
 	public static final fun editChat (I[Ljava/lang/Object;)V
-	public static final fun editChat (Lcom/chattriggers/ctjs/api/message/Message;[Ljava/lang/Object;)V
+	public static final fun editChat (Lcom/chattriggers/ctjs/api/message/TextComponent;[Ljava/lang/Object;)V
 	public static final fun editChat (Ljava/lang/String;[Ljava/lang/Object;)V
+	public static final fun editChat (Lkotlin/jvm/functions/Function1;[Ljava/lang/Object;)V
 	public static final fun editChat (Lorg/mozilla/javascript/regexp/NativeRegExp;[Ljava/lang/Object;)V
 	public static final fun getCenteredText (Ljava/lang/String;)Ljava/lang/String;
 	public static final fun getChatBreak ()Ljava/lang/String;
@@ -1406,77 +1408,72 @@ public final class com/chattriggers/ctjs/api/message/ChatLib {
 	public static final fun simulateChat (Ljava/lang/Object;)V
 }
 
-public final class com/chattriggers/ctjs/api/message/Message {
-	public fun <init> (Lcom/chattriggers/ctjs/api/message/TextComponent;)V
-	public fun <init> ([Ljava/lang/Object;)V
-	public final fun actionBar ()Lcom/chattriggers/ctjs/api/message/Message;
-	public final fun addTextComponent (ILjava/lang/Object;)Lcom/chattriggers/ctjs/api/message/Message;
-	public final fun addTextComponent (Ljava/lang/Object;)Lcom/chattriggers/ctjs/api/message/Message;
-	public final fun chat ()Lcom/chattriggers/ctjs/api/message/Message;
-	public final fun edit ([Ljava/lang/Object;)Lcom/chattriggers/ctjs/api/message/Message;
-	public final fun getChatLineId ()I
-	public final fun getChatMessage ()Lcom/chattriggers/ctjs/api/message/TextComponent;
-	public final fun getFormattedText ()Ljava/lang/String;
-	public final fun getMessageParts ()Ljava/util/List;
-	public final fun getUnformattedText ()Ljava/lang/String;
-	public final fun isFormatted ()Z
-	public final fun isRecursive ()Z
-	public final fun mutable ()Lcom/chattriggers/ctjs/api/message/Message;
-	public final fun setChatLineId (I)Lcom/chattriggers/ctjs/api/message/Message;
-	public final fun setFormatted (Z)Lcom/chattriggers/ctjs/api/message/Message;
-	public final fun setRecursive (Z)Lcom/chattriggers/ctjs/api/message/Message;
-	public final fun setTextComponent (ILjava/lang/Object;)Lcom/chattriggers/ctjs/api/message/Message;
-}
-
-public final class com/chattriggers/ctjs/api/message/TextComponent : net/minecraft/text/Text {
+public final class com/chattriggers/ctjs/api/message/TextComponent : java/util/List, kotlin/jvm/internal/markers/KMappedMarker, net/minecraft/text/Text {
 	public static final field Companion Lcom/chattriggers/ctjs/api/message/TextComponent$Companion;
-	public fun <init> (Ljava/lang/String;)V
-	public fun <init> (Lnet/minecraft/text/MutableText;)V
-	public fun <init> (Lnet/minecraft/text/Text;)V
+	public fun <init> ()V
+	public fun <init> ([Ljava/lang/Object;)V
 	public final fun actionBar ()Lcom/chattriggers/ctjs/api/message/TextComponent;
-	public final fun append (Lnet/minecraft/text/Text;)Lnet/minecraft/text/MutableText;
-	public final fun appendSibling (Lnet/minecraft/text/Text;)Lnet/minecraft/text/MutableText;
+	public synthetic fun add (ILjava/lang/Object;)V
+	public fun add (ILorg/mozilla/javascript/NativeObject;)V
+	public synthetic fun add (Ljava/lang/Object;)Z
+	public fun add (Lorg/mozilla/javascript/NativeObject;)Z
+	public fun addAll (ILjava/util/Collection;)Z
+	public fun addAll (Ljava/util/Collection;)Z
 	public fun asOrderedText ()Lnet/minecraft/text/OrderedText;
-	public fun asTruncatedString (I)Ljava/lang/String;
 	public final fun chat ()Lcom/chattriggers/ctjs/api/message/TextComponent;
-	public fun contains (Lnet/minecraft/text/Text;)Z
-	public fun copy ()Lnet/minecraft/text/MutableText;
-	public fun copyContentOnly ()Lnet/minecraft/text/MutableText;
-	public final fun getClickAction ()Lnet/minecraft/text/ClickEvent$Action;
-	public final fun getClickValue ()Ljava/lang/String;
-	public final fun getComponent ()Lnet/minecraft/text/MutableText;
+	public fun clear ()V
+	public final fun contains (Ljava/lang/Object;)Z
+	public fun contains (Lorg/mozilla/javascript/NativeObject;)Z
+	public fun containsAll (Ljava/util/Collection;)Z
+	public final fun delete ()Lcom/chattriggers/ctjs/api/message/TextComponent;
+	public final fun edit (Lcom/chattriggers/ctjs/api/message/TextComponent;)Lcom/chattriggers/ctjs/api/message/TextComponent;
+	public final fun edit ([Ljava/lang/Object;)Lcom/chattriggers/ctjs/api/message/TextComponent;
+	public synthetic fun get (I)Ljava/lang/Object;
+	public fun get (I)Lorg/mozilla/javascript/NativeObject;
+	public final fun getChatLineId ()I
 	public fun getContent ()Lnet/minecraft/text/TextContent;
 	public final fun getFormattedText ()Ljava/lang/String;
-	public final fun getHoverAction ()Lnet/minecraft/text/HoverEvent$Action;
-	public final fun getHoverValue ()Ljava/lang/Object;
 	public fun getSiblings ()Ljava/util/List;
+	public fun getSize ()I
 	public fun getString ()Ljava/lang/String;
 	public fun getStyle ()Lnet/minecraft/text/Style;
-	public final fun getText ()Ljava/lang/String;
 	public final fun getUnformattedText ()Ljava/lang/String;
-	public fun getWithStyle (Lnet/minecraft/text/Style;)Ljava/util/List;
-	public final fun isFormatted ()Z
-	public final fun setClick (Ljava/lang/String;Ljava/lang/String;)Lcom/chattriggers/ctjs/api/message/TextComponent;
-	public final fun setClick (Lnet/minecraft/text/ClickEvent$Action;Ljava/lang/String;)Lcom/chattriggers/ctjs/api/message/TextComponent;
-	public final fun setClickAction (Ljava/lang/Object;)Lcom/chattriggers/ctjs/api/message/TextComponent;
-	public final fun setClickValue (Ljava/lang/String;)Lcom/chattriggers/ctjs/api/message/TextComponent;
-	public final fun setColor (III)Lcom/chattriggers/ctjs/api/message/TextComponent;
-	public final fun setColor (J)Lcom/chattriggers/ctjs/api/message/TextComponent;
-	public final fun setFormatted (Z)Lcom/chattriggers/ctjs/api/message/TextComponent;
-	public final fun setHover (Ljava/lang/String;Ljava/lang/Object;)Lcom/chattriggers/ctjs/api/message/TextComponent;
-	public final fun setHover (Lnet/minecraft/text/HoverEvent$Action;Ljava/lang/Object;)Lcom/chattriggers/ctjs/api/message/TextComponent;
-	public final fun setHoverAction (Ljava/lang/Object;)Lcom/chattriggers/ctjs/api/message/TextComponent;
-	public final fun setHoverValue (Ljava/lang/Object;)Lcom/chattriggers/ctjs/api/message/TextComponent;
-	public final fun setText (Ljava/lang/String;)Lcom/chattriggers/ctjs/api/message/TextComponent;
+	public final fun indexOf (Ljava/lang/Object;)I
+	public fun indexOf (Lorg/mozilla/javascript/NativeObject;)I
+	public fun isEmpty ()Z
+	public final fun isRecursive ()Z
+	public fun iterator ()Ljava/util/Iterator;
+	public final fun lastIndexOf (Ljava/lang/Object;)I
+	public fun lastIndexOf (Lorg/mozilla/javascript/NativeObject;)I
+	public fun listIterator ()Ljava/util/ListIterator;
+	public fun listIterator (I)Ljava/util/ListIterator;
+	public synthetic fun remove (I)Ljava/lang/Object;
+	public fun remove (I)Lorg/mozilla/javascript/NativeObject;
+	public fun remove (Ljava/lang/Object;)Z
+	public fun removeAll (Ljava/util/Collection;)Z
+	public fun replaceAll (Ljava/util/function/UnaryOperator;)V
+	public fun retainAll (Ljava/util/Collection;)Z
+	public synthetic fun set (ILjava/lang/Object;)Ljava/lang/Object;
+	public fun set (ILorg/mozilla/javascript/NativeObject;)Lorg/mozilla/javascript/NativeObject;
+	public final fun size ()I
+	public fun sort (Ljava/util/Comparator;)V
+	public fun spliterator ()Ljava/util/Spliterator;
+	public fun subList (II)Ljava/util/List;
+	public fun toArray ()[Ljava/lang/Object;
+	public fun toArray ([Ljava/lang/Object;)[Ljava/lang/Object;
 	public fun toString ()Ljava/lang/String;
-	public fun visit (Lnet/minecraft/text/StringVisitable$StyledVisitor;Lnet/minecraft/text/Style;)Ljava/util/Optional;
-	public fun visit (Lnet/minecraft/text/StringVisitable$Visitor;)Ljava/util/Optional;
-	public fun withoutStyle ()Ljava/util/List;
+	public final fun withChatLineId ()Lcom/chattriggers/ctjs/api/message/TextComponent;
+	public final fun withChatLineId (I)Lcom/chattriggers/ctjs/api/message/TextComponent;
+	public static synthetic fun withChatLineId$default (Lcom/chattriggers/ctjs/api/message/TextComponent;IILjava/lang/Object;)Lcom/chattriggers/ctjs/api/message/TextComponent;
+	public final fun withRecursive ()Lcom/chattriggers/ctjs/api/message/TextComponent;
+	public final fun withRecursive (Z)Lcom/chattriggers/ctjs/api/message/TextComponent;
+	public static synthetic fun withRecursive$default (Lcom/chattriggers/ctjs/api/message/TextComponent;ZILjava/lang/Object;)Lcom/chattriggers/ctjs/api/message/TextComponent;
+	public final fun withText (Ljava/lang/Object;)Lcom/chattriggers/ctjs/api/message/TextComponent;
+	public final fun withTextAt (ILjava/lang/Object;)Lcom/chattriggers/ctjs/api/message/TextComponent;
+	public final fun withoutTextAt (I)Lcom/chattriggers/ctjs/api/message/TextComponent;
 }
 
 public final class com/chattriggers/ctjs/api/message/TextComponent$Companion {
-	public final fun from (Ljava/lang/Object;)Lcom/chattriggers/ctjs/api/message/TextComponent;
-	public final fun stripFormatting (Ljava/lang/String;)Ljava/lang/String;
 }
 
 public final class com/chattriggers/ctjs/api/render/Book {

@@ -1,420 +1,550 @@
 package com.chattriggers.ctjs.api.message
 
+import com.chattriggers.ctjs.CTJS
 import com.chattriggers.ctjs.MCEntity
+import com.chattriggers.ctjs.api.client.Client
+import com.chattriggers.ctjs.api.client.Player
 import com.chattriggers.ctjs.api.entity.Entity
 import com.chattriggers.ctjs.api.inventory.Item
 import com.chattriggers.ctjs.api.inventory.ItemType
-import com.chattriggers.ctjs.api.render.Renderer
 import com.chattriggers.ctjs.internal.utils.hoverEventActionByName
+import com.chattriggers.ctjs.internal.utils.toIdentifier
+import com.mojang.serialization.Codec
+import com.mojang.serialization.MapCodec
+import com.mojang.serialization.codecs.RecordCodecBuilder
 import gg.essential.universal.UChat
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.buildJsonArray
+import kotlinx.serialization.json.buildJsonObject
 import net.minecraft.item.ItemStack
+import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket
 import net.minecraft.text.*
 import net.minecraft.util.Formatting
+import net.minecraft.util.Identifier
+import org.mozilla.javascript.Context
+import org.mozilla.javascript.NativeObject
+import org.mozilla.javascript.ScriptRuntime
 import java.util.*
+import java.util.concurrent.ThreadLocalRandom
+import kotlin.streams.toList
 
-@Suppress("MemberVisibilityCanBePrivate")
-class TextComponent : Text {
-    lateinit var component: MutableText
-        private set
-
-    private var text: String
-    private var formatted = true
-    private var clickAction: ClickEvent.Action? = null
-    private var clickValue: String? = null
-    private var hoverAction: HoverEvent.Action<*>? = null
-    private var hoverValue: Any? = null
+/**
+ * A wrapper around the Minecraft Text class and it's various inheritors.
+ *
+ * This class acts as a container for "pairs". A pair is a string of text
+ * that is associated with a particular [Style]. Unlike Minecraft's Text
+ * class, this container is a list, not a tree, which makes them much easier
+ * to work with. It implements [List]<[NativeObject]>, so it can be iterated
+ * over.
+ *
+ * Importantly, instances of [TextComponent] are immutable. Methods for
+ * "mutation" exist, but they return new instances of [TextComponent]. See
+ * [withText] for an example.
+ *
+ * @see Text
+ */
+// Note: For the sake of the Text implementations, parts[0] is the "self" part,
+//       and parts[1..] are the siblings, but the exposed CT API treats this as
+//       a container of individual parts
+class TextComponent private constructor(
+    private val parts: MutableList<Part>,
+    private val chatLineId: Int = -1,
+    private val isRecursive: Boolean = false,
+) : Text, List<NativeObject> {
+    /**
+     * Creates an empty [TextComponent] with a single, unstyled, empty part.
+     */
+    constructor() : this(listOf(Part("", Style.EMPTY)))
 
     /**
-     * Creates a [TextComponent] from a string.
+     * Creates a [TextComponent] from a variable number of objects. These
+     * objects can be:
+     * - A plain string possibly containing formatting codes. If the string has
+     *   formatting codes, it will be split into different parts accordingly
+     * - A [TextComponent], whose parts will be appended in sequence to this
+     *   [TextComponent]'s list of parts
+     * - A [Text] object, which acts as a single part
+     * - A JS object, which must contain a "text" key, and can optionally contain
+     *   any of the [Style] keys
      *
-     * @param text the text string in the component.
+     * @see Style
      */
-    constructor(text: String) {
-        this.text = text
-        reInstance()
+    constructor(vararg parts: Any) : this(parts.flatMap(Part::of).toMutableList())
+
+    /**
+     * Returns the text of all parts concatenated without formatting codes.
+     */
+    val unformattedText by lazy {
+        parts.fold("") { prev, curr -> prev + curr.text }
     }
 
     /**
-     * Creates a [TextComponent] from an existing [Text] instance.
+     * Returns the text of all parts concatenated with formatting codes.
+     */
+    val formattedText by lazy {
+        parts.fold("") { prev, curr -> prev + curr.style_.formatCodes() + curr.text }
+    }
+
+    /**
+     * Get the chat line ID of this message, if it exists. The chat line can be used
+     * to easily edit or delete a message later via [ChatLib.editChat] and
+     * [ChatLib.deleteChat].
      *
-     * @param component the [Text] to convert
+     * @return the chat line ID of the message, or -1 if this [TextComponent] does
+     *         not have an associated chat line ID.
      */
-    constructor(component: Text) : this(component.copy())
+    fun getChatLineId() = chatLineId
 
     /**
-     * Creates a [TextComponent] from an existing [Text] instance.
+     * @return a new [TextComponent] with the given chat line id
+     */
+    @JvmOverloads
+    fun withChatLineId(id: Int = ThreadLocalRandom.current().nextInt()) = copy(chatLineId = id)
+
+    /**
+     * If this [TextComponent] is recursive, sending this instance (via [chat] or
+     * [actionBar]) may trigger other `chat` triggers as if it had been received by
+     * the server. [TextComponent]s are non-recursive by default.
      *
-     * @param component the [Text] to convert
+     * @return true if the message can trigger other triggers.
      */
-    constructor(component: MutableText) {
-        this.component = component
-        text = formattedText
-
-        val clickEvent = component.style.clickEvent
-        if (clickEvent != null) {
-            clickAction = clickEvent.action
-            clickValue = clickEvent.value
-        }
-
-        val hoverEvent = component.style.hoverEvent
-        if (hoverEvent != null) {
-            hoverAction = hoverEvent.action
-            hoverValue = hoverEvent.getValue(hoverAction)
-        }
-    }
+    fun isRecursive(): Boolean = isRecursive
 
     /**
-     * Gets the component text
-     */
-    fun getText() = text
-
-    /**
-     * Sets the component text
-     */
-    fun setText(value: String) = apply {
-        text = value
-        reInstance()
-    }
-
-    /**
-     * Whether this component is formatted. A formatted component interprets
-     * color codes (using both & and §) and applies them as style.
-     */
-    fun isFormatted() = formatted
-
-    /**
-     * Sets whether this component is formatted. A formatted component interprets
-     * color codes (using both & and §) and applies them as style.
-     */
-    fun setFormatted(value: Boolean) = apply {
-        formatted = value
-        reInstance()
-    }
-
-    /**
-     * Gets the action to be performed when the component is clicked on. See [setClickAction]
-     * for possible values.
-     */
-    fun getClickAction() = clickAction
-
-    /**
-     * Sets the action to be performed when the component is clicked on. Possible actions include:
-     * - open_url
-     * - open_file
-     * - run_command
-     * - suggest_command
-     * - change_page
+     * Sets whether the message can trigger other triggers.
      *
-     * @param value The new click action, can be a [ClickEvent.Action], [String], or null
+     * @param recursive true if message can trigger other triggers.
      */
-    fun setClickAction(value: Any?) = apply {
-        clickAction = when (value) {
-            is ClickEvent.Action -> value
-            is String -> ClickEvent.Action.valueOf(value.uppercase())
-            null -> null
-            else -> error(
-                "TextComponent.setClickAction() expects a String, ClickEvent.Action, or null, but got " +
-                    value::class
-            )
-        }
+    @JvmOverloads
+    fun withRecursive(recursive: Boolean = true) = copy(isRecursive = recursive)
 
-        reInstanceClick()
+    /**
+     * @return a new [TextComponent] with the specified [value] appended to the end.
+     *         This accepts all types of objects that the vararg constructor does.
+     */
+    fun withText(value: Any) = copy(parts = (parts + Part.of(value)).toMutableList())
+
+    /**
+     * @return a new [TextComponent] with the specified [value] inserted at [index].
+     *         This accepts all types of objects that the vararg constructor does.
+     */
+    fun withTextAt(index: Int, value: Any) =
+        copy(parts = (parts.take(index) + Part.of(value) + parts.drop(index)).toMutableList())
+
+    /**
+     * @return a new [TextComponent] without the part at [index]
+     */
+    fun withoutTextAt(index: Int) =
+        copy(parts = (parts.take(index) + parts.drop(index + 1)).toMutableList())
+
+    /**
+     * Edits this text component, replacing it with the given [newText]. Note that
+     * this compares [TextComponent]s based on [formattedText]; if an exact match
+     * is needed, use [ChatLib.editChat] in conjunction with a chat line ID.
+     */
+    fun edit(newText: TextComponent) = apply {
+        ChatLib.editChat(this, newText)
     }
 
     /**
-     * The value to be used by the click action. The value is interpreted according to [clickAction]
+     * Edits this text component, replacing it with a new [TextComponent] from the
+     * given [parts]. Note that this compares [TextComponent]s based on
+     * [formattedText]; if an exact match is needed, use [ChatLib.editChat] in
+     * conjunction with a chat line ID.
      */
-    fun getClickValue() = clickValue
+    fun edit(vararg parts: Any) = edit(TextComponent(*parts))
 
     /**
-     * Sets the value to be used by the click action. The value is interpreted according to [clickAction].
+     * Deletes this text component. Note that this compares [TextComponent]s based on
+     * [formattedText]; if an exact match is needed, use [ChatLib.editChat] in conjunction
+     * with a chat line ID.
      */
-    fun setClickValue(value: String?) = apply {
-        clickValue = value
-        reInstanceClick()
+    fun delete() = apply {
+        ChatLib.deleteChat(this)
     }
 
     /**
-     * Sets the click action and value of the component.See [clickAction] for
-     * possible click actions.
+     * Sends this [TextComponent] to the players chat.
      *
-     * @param action the click action
-     * @param value the click value
-     */
-    fun setClick(action: ClickEvent.Action?, value: String?) = apply {
-        clickAction = action
-        clickValue = value
-        reInstanceClick()
-    }
-
-    /**
-     * Sets the click action and value of the component.See [clickAction] for
-     * possible click actions.
+     * Note that this is purely client-side, and will not be sent to the server. If [isRecursive],
+     * will trigger any matching `chat` triggers
      *
-     * @param action the click action as a [String]
-     * @param value the click value
-     */
-    fun setClick(action: String, value: String?) = apply {
-        setClick(ClickEvent.Action.valueOf(action.uppercase()), value)
-    }
-
-    /**
-     * Gets the action to be performed when the component is hovered. See [setHoverAction]
-     * for possible values
-     */
-    fun getHoverAction() = hoverAction
-
-    /**
-     * Sets the action to be performed when the component is hovered. Possible actions include:
-     * - show_text
-     * - show_item
-     * - show_entity
-     *
-     * @param value The new hover action, can be a [HoverEvent.Action], [String], or null
-     */
-    fun setHoverAction(value: Any?) = apply {
-        hoverAction = when (value) {
-            is HoverEvent.Action<*> -> value
-            is String -> hoverEventActionByName(value.lowercase())
-            null -> null
-            else -> error(
-                "TextComponent.setHoverAction() expects a String, HoverEvent.Action, or null, but got " +
-                    value::class
-            )
-        }
-
-        // Trigger re-wrapping if necessary
-        setHoverValue(hoverValue)
-    }
-
-    /**
-     * Gets the value to be used by the hover action. The value is interpreted according to [hoverAction]
-     */
-    fun getHoverValue() = hoverValue
-
-    /**
-     * Sets the value to be used by the hover action. The value is interpreted according to [hoverAction]
-     */
-    fun setHoverValue(value: Any?) = apply {
-        hoverValue = value?.let {
-            when (hoverAction) {
-                HoverEvent.Action.SHOW_TEXT -> from(it)
-                HoverEvent.Action.SHOW_ITEM -> parseItemContent(it)
-                HoverEvent.Action.SHOW_ENTITY -> parseEntityContent(it)
-                else -> value
-            }
-        }
-
-        reInstanceHover()
-    }
-
-    /**
-     * Sets the hover action and value of the component. See [hoverAction] for possible hover actions.
-     *
-     * @param action the hover action
-     * @param value the hover value
-     */
-    fun setHover(action: HoverEvent.Action<*>?, value: Any?) = apply {
-        hoverAction = action
-        setHoverValue(value)
-    }
-
-    /**
-     * Sets the hover action and value of the component. See [hoverAction] for possible hover actions.
-     *
-     * @param action the hover action as a [String]
-     * @param value the hover value
-     */
-    fun setHover(action: String, value: Any?) = apply {
-        setHover(hoverEventActionByName(action.lowercase()), value)
-    }
-
-    /**
-     * Sets the color of this [TextComponent]
-     * This won't override your color codes unless &r is explicitly used.
-     *
-     * @param color RGB value acquired using [Renderer.getColor]. Alpha values will be ignored
-     */
-    fun setColor(color: Long) = apply {
-        component.setStyle(component.style.withColor(color.toInt()));
-    }
-
-    /**
-     * Sets the color of this [TextComponent]
-     * This won't override your color codes unless &r is explicitly used.
-     *
-     * @param red value between 0 and 255
-     * @param green value between 0 and 255
-     * @param blue value between 0 and 255
-     */
-    fun setColor(red: Int, green: Int, blue: Int) = setColor(Renderer.getColor(red, green, blue))
-
-    /**
-     * Shows the component in chat as a new [Message]
+     * @see ChatLib.chat
+     * @see ChatLib.say
      */
     fun chat() = apply {
-        Message(this).chat()
+        if (Player.toMC() == null)
+            return@apply
+
+        if (chatLineId != -1) {
+            ChatLib.sendMessageWithId(this)
+            return@apply
+        }
+
+        if (isRecursive) {
+            Client.scheduleTask {
+                Client.getMinecraft().networkHandler?.onGameMessage(GameMessageS2CPacket(this, false))
+            }
+        } else {
+            Player.toMC()?.sendMessage(this)
+        }
     }
 
     /**
-     * Shows the component on the actionbar as a new [Message]
+     * Sends this [TextComponent] to the players action bar.
+     *
+     * If [isRecursive], will trigger any matching `actionBar` triggers
+     *
+     * @see ChatLib.actionBar
      */
     fun actionBar() = apply {
-        Message(this).actionBar()
-    }
+        if (Player.toMC() == null)
+            return@apply
 
-    override fun toString() = "TextComponent(${if (formatted) formattedText else unformattedText})"
-
-    private fun parseItemContent(obj: Any): HoverEvent.ItemStackContent {
-        return when (obj) {
-            is ItemStack -> obj
-            is Item -> obj.toMC()
-            is String -> ItemType(obj).asItem().toMC()
-            is HoverEvent.ItemStackContent -> return obj
-            else -> error("${obj::class} cannot be parsed as an item HoverEvent")
-        }.let(HoverEvent::ItemStackContent)
-    }
-
-    private fun parseEntityContent(obj: Any): HoverEvent.EntityContent? {
-        return when (obj) {
-            is MCEntity -> obj
-            is Entity -> obj.toMC()
-            //#if MC>=12004
-            is String -> return HoverEvent.EntityContent.legacySerializer(from(obj)).getOrThrow(false) {}
-            //#else
-            //$$ is String -> return HoverEvent.EntityContent.parse(from(obj))
-            //#endif
-            is HoverEvent.EntityContent -> return obj
-            else -> error("${obj::class} cannot be parsed as an entity HoverEvent")
-        }.let { HoverEvent.EntityContent(it.type, it.uuid, it.name) }
-    }
-
-    private fun reInstance() {
-        component = Text.literal(text.formatIf(formatted))
-
-        reInstanceClick()
-        reInstanceHover()
-    }
-
-    private fun reInstanceClick() {
-        if (clickAction == null || clickValue == null)
-            return
-
-        val event = ClickEvent(clickAction, clickValue!!.formatIf(formatted))
-        component.style = component.style.withClickEvent(event)
-    }
-
-    private fun reInstanceHover() {
-        if (hoverAction == null || hoverValue == null)
-            return
-
-        @Suppress("UNCHECKED_CAST")
-        val event = HoverEvent(hoverAction as HoverEvent.Action<Any>, hoverValue!!)
-        component.style = component.style.withHoverEvent(event)
-    }
-
-    private fun String.formatIf(predicate: Boolean) = if (predicate) UChat.addColor(this) else this
-
-    private class TextBuilder(private val isFormatted: Boolean) : CharacterVisitor {
-        private val builder = StringBuilder()
-        private var cachedStyle: Style? = null
-
-        override fun accept(index: Int, style: Style, codePoint: Int): Boolean {
-            if (isFormatted && style != cachedStyle) {
-                cachedStyle = style
-                builder.append(formatString(style))
+        if (isRecursive) {
+            Client.scheduleTask {
+                Client.getMinecraft().networkHandler?.onGameMessage(GameMessageS2CPacket(this, true))
             }
+        } else {
+            Player.toMC()?.sendMessage(this, true)
+        }
+    }
 
-            builder.append(codePoint.toChar())
-            return true
+    override fun toString() = formattedText
+
+    internal fun toMutableText() = Text.empty().apply {
+        parts.forEach(::append)
+    }
+
+    // Make this method manually to avoid exposing it as a public API
+    private fun copy(
+        parts: MutableList<Part> = this.parts,
+        chatLineId: Int = this.chatLineId,
+        isRecursive: Boolean = this.isRecursive
+    ) = TextComponent(parts, chatLineId, isRecursive)
+
+    //////////
+    // Text //
+    //////////
+
+    override fun getContent(): TextContent = parts[0].content
+
+    override fun getString(): String = parts[0].text
+
+    override fun getStyle(): Style = parts[0].style_
+
+    override fun getSiblings(): MutableList<Text> = parts.drop(1).toMutableList()
+
+    override fun asOrderedText(): OrderedText = OrderedText { visitor ->
+        var i = 0
+        parts.all {
+            it.text.codePoints().toList().all { cp ->
+                visitor.accept(i++, style, cp)
+            }
+        }
+    }
+
+    /////////////
+    // List<T> //
+    /////////////
+
+    override val size by parts::size
+
+    override fun contains(element: NativeObject) = parts.any { ScriptRuntime.eq(element, it.nativeObject) }
+
+    override fun containsAll(elements: Collection<NativeObject>) = elements.all(::contains)
+
+    override fun get(index: Int) = parts[index].nativeObject
+
+    override fun indexOf(element: NativeObject) = parts.indexOfFirst { it.nativeObject == element }
+
+    override fun isEmpty() = parts.isEmpty()
+
+    override fun iterator() = parts.map(Part::nativeObject).iterator()
+
+    override fun listIterator() = parts.map(Part::nativeObject).listIterator()
+
+    override fun listIterator(index: Int) = parts.map(Part::nativeObject).listIterator(index)
+
+    override fun lastIndexOf(element: NativeObject) = parts.indexOfLast { it.nativeObject == element }
+
+    override fun spliterator() = parts.map(Part::nativeObject).spliterator()
+
+    override fun subList(fromIndex: Int, toIndex: Int): List<NativeObject> =
+        parts.subList(fromIndex, toIndex).map(Part::nativeObject)
+
+    private class Part(val content: PartContent) : Text {
+        val text by content::text
+        val style_ by content::style_
+
+        val nativeObject: NativeObject by lazy {
+            val cx = Context.getContext()
+            cx.newObject(cx.topCallScope).also {
+                it.put("text", it, text)
+                if (style_.color != null)
+                    it.put("color", it, style_.color)
+                if (style_.isBold)
+                    it.put("bold", it, true)
+                if (style_.isItalic)
+                    it.put("italic", it, true)
+                if (style_.isUnderlined)
+                    it.put("underline", it, true)
+                if (style_.isStrikethrough)
+                    it.put("strikethrough", it, true)
+                if (style_.isObfuscated)
+                    it.put("obfuscated", it, true)
+                style_.clickEvent?.let { event ->
+                    if (event.action != null) {
+                        //#if MC>=12004
+                        it.put("clickAction", it, event.action.asString())
+                        //#else
+                        //$$ it.put("clickAction", it, event.action.name)
+                        //#endif
+                        if (event.value != null)
+                            it.put("clickValue", it, event.value)
+                    }
+                }
+                style_.hoverEvent?.let { event ->
+                    if (event.action != null) {
+                        //#if MC>=12004
+                        it.put("hoverAction", it, event.action.asString())
+                        //#else
+                        //$$ it.put("hoverAction", it, event.action.name)
+                        //#endif
+                        event.getValue(event.action!!)?.let { value ->
+                            it.put("hoverValue", it, value)
+                        }
+                    }
+                }
+                if (style_.insertion != null)
+                    it.put("insertion", it, style_.insertion)
+                if (style_.font != null && style_.font.toString() != "minecraft:default")
+                    it.put("font", it, style_.font)
+            }
         }
 
-        fun getString() = builder.toString()
+        constructor(text: String, style: Style) : this(PartContent(text, style))
 
-        private fun formatString(style: Style): String {
-            val builder = StringBuilder("§r")
+        override fun getContent(): TextContent = content
 
-            when {
-                style.isBold -> builder.append("§l")
-                style.isItalic -> builder.append("§o")
-                style.isUnderlined -> builder.append("§n")
-                style.isStrikethrough -> builder.append("§m")
-                style.isObfuscated -> builder.append("§k")
+        override fun getString(): String = text
+
+        override fun getStyle(): Style = style_
+
+        override fun getSiblings(): MutableList<Text> = mutableListOf()
+
+        override fun asTruncatedString(length: Int): String = text.take(length)
+
+        override fun asOrderedText(): OrderedText = OrderedText { visitor ->
+            text.codePoints().toList().withIndex().all { (index, cp) ->
+                visitor.accept(index, style_, cp)
             }
-
-            style.color?.let(colorToFormatChar::get)?.run(builder::append)
-
-            return builder.toString()
         }
 
         companion object {
-            private val colorToFormatChar = Formatting.values().mapNotNull { format ->
-                TextColor.fromFormatting(format)?.let { it to format }
-            }.toMap()
+            fun of(obj: Any) = when (obj) {
+                is NativeObject -> {
+                    val text = obj["text"]
+                        ?: throw IllegalArgumentException("Expected TextComponent part to have a \"text\" key")
+                    require(text is String) { "TextComponent part's \"text\" key must be a string" }
+                    listOf(Part(UChat.addColor(text), jsObjectToStyle(obj)))
+                }
+                is Part -> listOf(obj)
+                is TextComponent -> obj.parts
+                is Text -> listOf(Part(obj.string, obj.style))
+                is String -> {
+                    val parts = mutableListOf<Part>()
+                    val builder = StringBuilder()
+                    var lastStyle = Style.EMPTY
+
+                    TextVisitFactory.visitFormatted(UChat.addColor(obj), 0, Style.EMPTY) { _, style, cp ->
+                        if (style != lastStyle) {
+                            parts.add(Part(builder.toString(), lastStyle))
+                            lastStyle = style
+                            builder.clear()
+                        }
+                        builder.appendCodePoint(cp)
+                        true
+                    }
+
+                    if (builder.isNotEmpty())
+                        parts.add(Part(builder.toString(), lastStyle))
+
+                    parts
+                }
+                else -> throw IllegalArgumentException("Cannot convert ${obj::class.simpleName} to TextComponent part")
+            }
         }
     }
 
-    // **********************
-    // * METHOD DELEGATIONS *
-    // **********************
+    // Must be a separate class since Text and TextContent have an identical "visit" method which fails loom remapping
+    private class PartContent(val text: String, val style_: Style) : TextContent {
+        override fun <T : Any?> visit(visitor: StringVisitable.Visitor<T>): Optional<T> = visitor.accept(text)
 
-    override fun getContent(): TextContent = component.content
-
-    val unformattedText: String
-        get() {
-            val builder = TextBuilder(false)
-            component.asOrderedText().accept(builder)
-            return builder.getString()
+        override fun <T> visit(visitor: StringVisitable.StyledVisitor<T>, style: Style): Optional<T> {
+            return visitor.accept(this.style_, text)
         }
 
-    val formattedText: String
-        get() {
-            val builder = TextBuilder(true)
-            component.asOrderedText().accept(builder)
-            return builder.getString()
+        //#if MC>=12004
+        override fun getType(): TextContent.Type<*> = TextContent.Type(CODEC, "ctjs_part")
+        //#endif
+
+        companion object {
+            //#if MC>=12004
+            private val CODEC: MapCodec<PartContent> = RecordCodecBuilder.mapCodec { builder ->
+                builder.group(
+                    Codec.STRING.fieldOf("text").forGetter(PartContent::text),
+                    net.minecraft.text.Style.Codecs.CODEC.fieldOf("style").forGetter(PartContent::style_),
+                ).apply(builder) { text, style -> PartContent(text, style) }
+            }
+            //#endif
         }
-
-    fun appendSibling(text: Text): MutableText = component.append(text)
-
-    fun append(text: Text) = appendSibling(text)
-
-    override fun getString(): String = component.string
-
-    override fun getStyle(): Style = component.style
-
-    override fun getSiblings(): MutableList<Text> = component.siblings
-
-    override fun <T : Any?> visit(styledVisitor: StringVisitable.StyledVisitor<T>?, style: Style?): Optional<T> =
-        component.visit(styledVisitor, style)
-
-    override fun <T : Any?> visit(visitor: StringVisitable.Visitor<T>?): Optional<T> = component.visit(visitor)
-
-    override fun asTruncatedString(length: Int): String = component.asTruncatedString(length)
-
-    override fun copyContentOnly(): MutableText = component.copyContentOnly()
-
-    override fun copy(): MutableText = component.copy()
-
-    override fun asOrderedText(): OrderedText = component.asOrderedText()
-
-    override fun withoutStyle(): MutableList<Text> = component.withoutStyle()
-
-    override fun getWithStyle(style: Style?): MutableList<Text> = component.getWithStyle(style)
-
-    override fun contains(text: Text?): Boolean = component.contains(text)
+    }
 
     companion object {
-        fun from(obj: Any): TextComponent? {
-            return when (obj) {
-                is TextComponent -> obj
-                is String -> TextComponent(obj)
-                is Text -> TextComponent(obj)
-                else -> null
-            }
+        private val colorToFormatChar = Formatting.values().mapNotNull { format ->
+            TextColor.fromFormatting(format)?.let { it to format }
+        }.toMap()
+
+        private fun jsObjectToStyle(obj: NativeObject): Style {
+            return Style.EMPTY
+                .withColor(obj["color"]?.let { color ->
+                    when (color) {
+                        is TextColor -> color
+                        is Formatting -> TextColor.fromFormatting(color)
+                        is Int -> TextColor.fromRgb(color)
+                        //#if MC>=12004
+                        is String -> TextColor.parse(color).result().orElseThrow {
+                            IllegalArgumentException("Could not parse \"$color\" as a text color")
+                        }
+                        //#else
+                        //$$ is String -> TextColor.parse(color) ?: throw IllegalArgumentException("Could not parse \"$color\" as a text color")
+                        //#endif
+                        else -> throw IllegalArgumentException("Could not convert type ${color::class.simpleName} to a text color")
+                    }
+                })
+                .withBold(
+                    obj.getOrDefault("bold", false) as? Boolean
+                        ?: error("Expected \"bold\" key to be a boolean")
+                )
+                .withItalic(
+                    obj.getOrDefault("italic", false) as? Boolean
+                        ?: error("Expected \"italic\" key to be a boolean")
+                )
+                .withUnderline(
+                    obj.getOrDefault("underline", false) as? Boolean
+                        ?: error("Expected \"underline\" key to be a boolean")
+                )
+                .withStrikethrough(
+                    obj.getOrDefault("strikethrough", false) as? Boolean
+                        ?: error("Expected \"strikethrough\" key to be a boolean")
+                )
+                .withObfuscated(
+                    obj.getOrDefault("obfuscated", false) as? Boolean
+                        ?: error("Expected \"obfuscated\" key to be a boolean")
+                )
+                .withClickEvent(
+                    makeClickEvent(
+                        obj["clickAction"],
+                        when (val clickValue = obj["clickValue"]) {
+                            null -> null
+                            is String -> clickValue
+                            else -> error("Expected \"clickValue\" key to be a string")
+                        }
+                    )
+                )
+                .withHoverEvent(makeHoverEvent(obj["hoverAction"], obj["hoverValue"]))
+                .withInsertion(
+                    when (val insertion = obj["insertion"]) {
+                        null -> null
+                        is String -> insertion
+                        else -> error("Expected \"insertion\" key to be a String")
+                    }
+                )
+                .withFont(
+                    when (val font = obj["font"]) {
+                        null -> null
+                        is String -> font.toIdentifier()
+                        else -> error("Expected \"font\" key to be a String")
+                    }
+                )
         }
 
-        fun stripFormatting(string: String): String {
-            return Formatting.strip(string)!!
+        private fun Style.formatCodes() = buildString {
+            append("§r")
+
+            when {
+                isBold -> append("§l")
+                isItalic -> append("§o")
+                isUnderlined -> append("§n")
+                isStrikethrough -> append("§m")
+                isObfuscated -> append("§k")
+            }
+
+            color?.let(colorToFormatChar::get)?.run(::append)
+        }
+
+        private fun makeClickEvent(action: Any?, value: String?): ClickEvent? {
+            val clickAction = when (action) {
+                is ClickEvent.Action -> action
+                is String -> ClickEvent.Action.valueOf(action.uppercase())
+                null -> if (value != null) {
+                    error("Cannot set Style's click value without a click action")
+                } else return null
+                else -> error("Style.withClickAction() expects a String, ClickEvent.Action, or null, but got ${action::class.simpleName}")
+            }
+
+            return ClickEvent(clickAction, value.orEmpty())
+        }
+
+        private fun makeHoverEvent(action: Any?, value: Any?): HoverEvent? {
+            val hoverAction = when (action) {
+                is HoverEvent.Action<*> -> action
+                is String -> hoverEventActionByName(action)
+                null -> if (value != null) {
+                    error("Cannot set Style's hover value without a hover action")
+                } else return null
+                else -> error("Style.withHoverAction() expects a String, HoverEvent.Action, or null, but got ${action::class.simpleName}")
+            }
+
+            if (value == null)
+                return HoverEvent(hoverAction, null)
+
+            val hoverValue: Any? = when (hoverAction) {
+                HoverEvent.Action.SHOW_TEXT -> TextComponent(value)
+                HoverEvent.Action.SHOW_ITEM -> parseItemContent(value)
+                HoverEvent.Action.SHOW_ENTITY -> parseEntityContent(value)
+                else -> error("unreachable")
+            }
+
+            @Suppress("UNCHECKED_CAST")
+            return HoverEvent(hoverAction as HoverEvent.Action<Any>, hoverValue)
+        }
+
+        private fun parseItemContent(obj: Any): HoverEvent.ItemStackContent {
+            return when (obj) {
+                is ItemStack -> obj
+                is Item -> obj.toMC()
+                is String -> ItemType(obj).asItem().toMC()
+                is HoverEvent.ItemStackContent -> return obj
+                else -> error("${obj::class} cannot be parsed as an item HoverEvent")
+            }.let(HoverEvent::ItemStackContent)
+        }
+
+        private fun parseEntityContent(obj: Any): HoverEvent.EntityContent? {
+            return when (obj) {
+                is MCEntity -> obj
+                is Entity -> obj.toMC()
+                //#if MC>=12004
+                is String -> return HoverEvent.EntityContent.legacySerializer(TextComponent(obj))
+                    .getOrThrow(false) {}
+                //#else
+                //$$ is String -> return HoverEvent.EntityContent.parse(TextComponent(obj))
+                //#endif
+                is HoverEvent.EntityContent -> return obj
+                else -> error("${obj::class} cannot be parsed as an entity HoverEvent")
+            }.let { HoverEvent.EntityContent(it.type, it.uuid, it.name) }
         }
     }
 }

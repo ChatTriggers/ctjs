@@ -84,7 +84,7 @@ class Item(override val mcValue: ItemStack) : CTWrapper<ItemStack> {
     fun getLore(advanced: Boolean = false): List<TextComponent> {
         mcValue.asMixin<Skippable>().ctjs_setShouldSkip(true)
         val tooltip = mcValue.getTooltip(Player.toMC(), if (advanced) TooltipContext.ADVANCED else TooltipContext.BASIC)
-            .map(::TextComponent)
+            .map { TextComponent(it) }
         mcValue.asMixin<Skippable>().ctjs_setShouldSkip(false)
 
         return tooltip

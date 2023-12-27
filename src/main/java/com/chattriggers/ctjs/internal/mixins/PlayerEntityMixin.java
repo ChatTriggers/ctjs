@@ -18,7 +18,7 @@ public class PlayerEntityMixin implements NameTagOverridable {
     @ModifyVariable(method = "getDisplayName", at = @At(value = "STORE", ordinal = 0))
     private MutableText injectGetName(MutableText original) {
         if (overriddenNametagName != null)
-            return overriddenNametagName.getComponent();
+            return overriddenNametagName.toMutableText$ctjs();
         return original;
     }
 

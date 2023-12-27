@@ -50,7 +50,7 @@ object Server {
         if (isSingleplayer())
             return "SinglePlayer"
 
-        return toMC()?.label?.let(::TextComponent)?.formattedText ?: ""
+        return toMC()?.label?.let { TextComponent(it) }?.formattedText ?: ""
     }
 
     // TODO(breaking): Return -1 if not in a world

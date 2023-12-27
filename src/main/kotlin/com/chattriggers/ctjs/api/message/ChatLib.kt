@@ -1,9 +1,7 @@
 package com.chattriggers.ctjs.api.message
 
 import com.chattriggers.ctjs.api.client.Client
-import com.chattriggers.ctjs.api.client.Player
 import com.chattriggers.ctjs.api.render.Renderer
-import com.chattriggers.ctjs.engine.printToConsole
 import com.chattriggers.ctjs.internal.listeners.ClientListener
 import com.chattriggers.ctjs.internal.mixins.ChatHudAccessor
 import com.chattriggers.ctjs.internal.utils.asMixin
@@ -22,50 +20,47 @@ object ChatLib {
 
     /**
      * Prints text in the chat.
-     * The text can be a String, a [Message] or a [TextComponent]
+     * The text can be a String or a [TextComponent]
      *
      * @param text the text to be printed
      */
     @JvmStatic
     fun chat(text: Any?) {
         when (text) {
-            is String -> Message(text).chat()
-            is Message -> text.chat()
-            is TextComponent -> text.chat()
-            else -> Message(text.toString()).chat()
-        }
+            is TextComponent -> text
+            is String -> TextComponent(text)
+            else -> TextComponent(text.toString())
+        }.chat()
     }
 
     /**
      * Shows text in the action bar.
-     * The text can be a String, a [Message] or a [TextComponent]
+     * The text can be a String or a [TextComponent]
      *
      * @param text the text to show
      */
     @JvmStatic
     fun actionBar(text: Any?) {
         when (text) {
-            is String -> Message(text).actionBar()
-            is Message -> text.actionBar()
-            is TextComponent -> text.actionBar()
-            else -> Message(text.toString()).actionBar()
-        }
+            is TextComponent -> text
+            is String -> TextComponent(text)
+            else -> TextComponent(text.toString())
+        }.actionBar()
     }
 
     /**
      * Simulates a chat message to be caught by other triggers for testing.
-     * The text can be a String, a [Message] or a [TextComponent]
+     * The text can be a String or a [TextComponent]
      *
      * @param text The message to simulate
      */
     @JvmStatic
     fun simulateChat(text: Any?) {
         when (text) {
-            is String -> Message(text).setRecursive(true).chat()
-            is Message -> text.setRecursive(true).chat()
-            is TextComponent -> Message(text).setRecursive(true).chat()
-            else -> Message(text.toString()).setRecursive(true).chat()
-        }
+            is TextComponent -> text
+            is String -> TextComponent(text)
+            else -> TextComponent(text.toString())
+        }.withRecursive().chat()
     }
 
 
@@ -229,15 +224,15 @@ object ChatLib {
     }
 
     /**
-     * Edits an already sent chat message by the [Message]
+     * Edits an already sent chat message by the [TextComponent]
      *
      * @param toReplace the message to be replaced
      * @param replacements the new message(s) to be put in place of the old one
      */
     @JvmStatic
-    fun editChat(toReplace: Message, vararg replacements: Any) {
+    fun editChat(toReplace: TextComponent, vararg replacements: Any) {
         editLines(replacements) {
-            toReplace.chatMessage.formattedText == TextComponent(it.content).formattedText
+            toReplace.formattedText == TextComponent(it.content).formattedText
         }
     }
 
@@ -254,6 +249,18 @@ object ChatLib {
         }
     }
 
+    /**
+     * Edits an already sent chat message by given a callback that receives
+     * [TextComponent] instances
+     *
+     * @param matcher a function that accepts a [TextComponent] and returns a boolean
+     * @param replacements the new message(s) to be put in place of the old one
+     */
+    @JvmStatic
+    fun editChat(matcher: (TextComponent) -> Boolean, vararg replacements: Any) {
+        editLines(replacements) { matcher(TextComponent(it.content)) }
+    }
+
     private fun editLines(replacements: Array<out Any>, matcher: (ChatHudLine) -> Boolean) {
         val mc = Client.getMinecraft()
         val indicator = if (mc.isConnectedToLocalServer) MessageIndicator.singlePlayer() else MessageIndicator.system()
@@ -267,11 +274,8 @@ object ChatLib {
                 it.remove()
                 chatLineIds.remove(next)
                 for (replacement in replacements) {
-                    val message = if (replacement !is Message) {
-                        TextComponent.from(replacement)?.let(::Message) ?: continue
-                    } else replacement
-
-                    val line = ChatHudLine(next.creationTick, message.chatMessage, null, indicator)
+                    val message = replacement as? TextComponent ?: TextComponent(replacement)
+                    val line = ChatHudLine(next.creationTick, message, null, indicator)
                     if (message.getChatLineId() != -1)
                         chatLineIds[line] = message.getChatLineId()
 
@@ -317,14 +321,14 @@ object ChatLib {
     }
 
     /**
-     * Deletes an already sent chat message by the [Message]
+     * Deletes an already sent chat message by the [TextComponent]
      *
      * @param toDelete the message to be deleted
      */
     @JvmStatic
-    fun deleteChat(toDelete: Message) {
+    fun deleteChat(toDelete: TextComponent) {
         removeLines {
-            toDelete.chatMessage.formattedText == TextComponent(it.content).formattedText
+            toDelete.formattedText == TextComponent(it.content).formattedText
         }
     }
 
@@ -336,6 +340,17 @@ object ChatLib {
     @JvmStatic
     fun deleteChat(chatLineId: Int) {
         removeLines { chatLineIds[it] == chatLineId }
+    }
+
+    /**
+     * Deletes an already sent chat message given a callback that receives
+     * [TextComponent] instances
+     *
+     * @param matcher a function that accepts a [TextComponent] and returns a boolean
+     */
+    @JvmStatic
+    fun deleteChat(matcher: (TextComponent) -> Boolean) {
+        removeLines { matcher(TextComponent(it.content)) }
     }
 
     private fun removeLines(matcher: (ChatHudLine) -> Boolean) {
@@ -383,15 +398,14 @@ object ChatLib {
         }
     }
 
-    internal fun sendMessageWithId(message: Message) {
+    internal fun sendMessageWithId(message: TextComponent) {
         require(message.getChatLineId() != -1)
 
         val chatGui = Client.getChatGui() ?: return
-        val chatMessage = message.chatMessage
-        chatGui.addMessage(chatMessage)
-        val newChatLine: ChatHudLine = chatHudAccessor!!.messages[0]
+        chatGui.addMessage(message)
+        val newChatLine = chatHudAccessor!!.messages[0]
 
-        check(chatMessage == newChatLine.content()) {
+        check(message == newChatLine.content()) {
             "Expected new chat message to be at index 0"
         }
 
