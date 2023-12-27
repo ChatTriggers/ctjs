@@ -55,7 +55,7 @@ dependencies {
 
     // 1.18 versions are good enough for Elementa and Vigilance, but not UC, so we
     // need to exclude this version
-    configurations.modApi { exclude("gg.essential", "universalcraft-1.18.1-fabric") }
+    configurations.modImplementation { exclude("gg.essential", "universalcraft-1.18.1-fabric") }
 
     include(modImplementation("gg.essential:vigilance-1.18.1-fabric:295")!!)
     val ucArtifact = if (mcVersion == "1.19.4-fabric") mcVersion else "1.20.3-fabric"

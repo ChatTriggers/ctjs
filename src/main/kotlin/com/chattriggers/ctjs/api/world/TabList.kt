@@ -75,7 +75,7 @@ object TabList {
     }
 
     @JvmStatic
-    fun getHeaderComponent() = toMC()?.asMixin<PlayerListHudAccessor>()?.header?.let(::TextComponent)
+    fun getHeaderComponent() = toMC()?.asMixin<PlayerListHudAccessor>()?.header?.let { TextComponent(it) }
 
     @JvmStatic
     fun getHeader() = getHeaderComponent()?.formattedText
@@ -100,7 +100,7 @@ object TabList {
     fun clearHeader() = setHeader(null)
 
     @JvmStatic
-    fun getFooterComponent() = toMC()?.asMixin<PlayerListHudAccessor>()?.footer?.let(::TextComponent)
+    fun getFooterComponent() = toMC()?.asMixin<PlayerListHudAccessor>()?.footer?.let { TextComponent(it) }
 
     @JvmStatic
     fun getFooter() = getFooterComponent()?.formattedText

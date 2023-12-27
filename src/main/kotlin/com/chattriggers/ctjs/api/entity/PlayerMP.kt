@@ -55,7 +55,7 @@ class PlayerMP(override val mcValue: PlayerEntity) : LivingEntity(mcValue) {
     }
 
     private fun getPlayerName(playerListEntry: PlayerListEntry?): TextComponent {
-        return playerListEntry?.displayName?.let(::TextComponent)
+        return playerListEntry?.displayName?.let { TextComponent(it) }
             ?: TextComponent(
                 MCTeam.decorateName(
                     playerListEntry?.scoreboardTeam,

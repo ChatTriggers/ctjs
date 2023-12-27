@@ -4,12 +4,10 @@ import com.chattriggers.ctjs.CTJS
 import com.chattriggers.ctjs.api.Config
 import com.chattriggers.ctjs.api.client.Client
 import com.chattriggers.ctjs.api.message.ChatLib
-import com.chattriggers.ctjs.api.message.Message
 import com.chattriggers.ctjs.api.message.TextComponent
 import com.chattriggers.ctjs.internal.commands.StaticCommand.Companion.onExecute
 import com.chattriggers.ctjs.engine.Console
 import com.chattriggers.ctjs.engine.printTraceToConsole
-import com.chattriggers.ctjs.internal.engine.JSLoader
 import com.chattriggers.ctjs.internal.engine.module.ModuleManager
 import com.chattriggers.ctjs.internal.engine.module.ModulesGui
 import com.chattriggers.ctjs.internal.listeners.ClientListener
@@ -29,9 +27,11 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallba
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import net.minecraft.text.ClickEvent
 import net.minecraft.text.HoverEvent
+import net.minecraft.text.Text
 import net.minecraft.util.Util
 import java.io.File
 import java.io.IOException
+import java.lang.IllegalArgumentException
 import kotlin.concurrent.thread
 
 internal object CTCommand : Initializer {
@@ -177,21 +177,19 @@ internal object CTCommand : Initializer {
 
         val messages = type.messageList()
         val toDump = lines.coerceAtMost(messages.size)
-        Message("&6&m${ChatLib.getChatBreak()}").setChatLineId(idFixed).chat()
+        TextComponent("&6&m${ChatLib.getChatBreak()}").withChatLineId(idFixed).chat()
 
         for (i in 0 until toDump) {
             val msg = ChatLib.replaceFormatting(messages[messages.size - toDump + i].formattedText)
-            Message(
-                TextComponent(msg)
-                    .setClick(ClickEvent.Action.COPY_TO_CLIPBOARD, msg)
-                    .setHover(HoverEvent.Action.SHOW_TEXT, TextComponent("&eClick here to copy this message."))
-                    .setFormatted(true)
-            ).setFormatted(false)
-                .setChatLineId(idFixed + i + 1)
+            TextComponent(Text.literal(msg).styled {
+                it.withClickEvent(ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, msg))
+                    .withHoverEvent(HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent("&eClick here to copy this message.")))
+            })
+                .withChatLineId(idFixed + i + 1)
                 .chat()
         }
 
-        Message("&6&m${ChatLib.getChatBreak()}").setChatLineId(idFixed + lines + 1).chat()
+        TextComponent("&6&m${ChatLib.getChatBreak()}").withChatLineId(idFixed + lines + 1).chat()
 
         idFixedOffset = idFixed + lines + 1
     }

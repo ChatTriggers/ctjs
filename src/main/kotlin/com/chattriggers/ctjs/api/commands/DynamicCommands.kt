@@ -853,23 +853,23 @@ object DynamicCommands : CommandCollection() {
             if (impl.selectors.isEmpty())
                 return TextComponent(text)
 
-            val component = TextComponent(text.substring(0, impl.selectors[0].start))
+            var component = TextComponent(text.substring(0, impl.selectors[0].start))
             var i = impl.selectors[0].start
 
             for (selector in impl.selectors) {
                 val entities = EntitySelectorWrapper(selector.selector).getEntities()
                 val nameComponent = EntitySelector.getNames(entities.map(Entity::toMC))
                 if (i < selector.start)
-                    component.append(TextComponent(text.substring(i, selector.start)))
+                    component = component.withText(text.substring(i, selector.start))
 
                 if (nameComponent != null)
-                    component.append(nameComponent)
+                    component = component.withText(nameComponent)
 
                 i = selector.end
             }
 
             if (i < text.length)
-                component.append(TextComponent(text.drop(i)))
+                component = component.withText(text.drop(i))
 
             return component
         }
