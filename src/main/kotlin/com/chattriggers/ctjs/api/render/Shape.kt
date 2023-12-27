@@ -101,15 +101,15 @@ class Shape(private var color: Long) {
 
     fun draw() = apply {
         Renderer.apply {
-            Renderer3d.begin(drawMode, Renderer.VertexFormat.POSITION_COLOR)
+            begin(drawMode, Renderer.VertexFormat.POSITION_COLOR)
 
             if (area < 0) {
-                vertexes.forEach { Renderer3d.pos(it.x, it.y, 0f).color(color) }
+                vertexes.forEach { pos(it.x, it.y).color(color) }
             } else {
-                reversedVertexes.forEach { Renderer3d.pos(it.x, it.y, 0f).color(color) }
+                reversedVertexes.forEach { pos(it.x, it.y).color(color) }
             }
 
-            Renderer3d.draw()
+            draw()
         }
     }
 
