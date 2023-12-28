@@ -2,6 +2,7 @@ package com.chattriggers.ctjs.internal.mixins;
 
 import com.chattriggers.ctjs.internal.engine.CTEvents;
 import com.chattriggers.ctjs.api.triggers.TriggerType;
+import com.chattriggers.ctjs.internal.engine.module.ModuleManager;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ServerInfo;
@@ -56,7 +57,10 @@ public abstract class MinecraftClientMixin {
 
     @Inject(method = "run", at = @At("HEAD"))
     private void injectRun(CallbackInfo ci) {
-        TriggerType.GAME_LOAD.triggerAll();
+        new Thread(() -> {
+            ModuleManager.INSTANCE.entryPass();
+            TriggerType.GAME_LOAD.triggerAll();
+        }).start();
     }
 
     @Inject(method = "render", at = @At("HEAD"))

@@ -63,6 +63,7 @@ object ModuleManager {
         JSLoader.setup(jars)
     }
 
+    @JvmOverloads
     fun entryPass(modules: List<Module> = cachedModules, completionListener: (percentComplete: Float) -> Unit = {}) {
         JSLoader.entrySetup()
 
