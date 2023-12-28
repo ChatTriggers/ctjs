@@ -96,7 +96,7 @@ class KeyBind {
     }
 
     internal fun onTick() {
-        if (isPressed()) {
+        if (isPressed() && !down) {
             if (keyBinding in customKeyBindings) {
                 while (keyBinding.wasPressed()) {
                     // consume the key press if not built-in keybinding
@@ -113,6 +113,10 @@ class KeyBind {
         }
 
         if (down && !isKeyDown()) {
+            while (keyBinding.wasPressed()) {
+                // consume the rest of the key presses
+            }
+
             onKeyRelease?.trigger(arrayOf())
             down = false
         }
