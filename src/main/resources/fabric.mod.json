@@ -25,7 +25,9 @@
     },
     "mixins": ["chattriggers.mixins.json"],
     "depends": {
-        "fabric-language-kotlin": ">=1.9.4+kotlin.1.8.21"
+        "fabricloader": ">=$loader_version",
+        "fabric-api": ">=$fabric_api_version",
+        "fabric-language-kotlin": ">=$fabric_kotlin_version"
     },
     "custom": {
         "ctjs:yarn-mappings": "$yarn_mappings",

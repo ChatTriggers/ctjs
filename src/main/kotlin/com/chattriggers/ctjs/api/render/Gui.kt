@@ -10,15 +10,12 @@ import gg.essential.universal.UKeyboard
 import gg.essential.universal.UMatrixStack
 import gg.essential.universal.UScreen
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents
-import net.minecraft.client.gui.widget.ButtonWidget
-import net.minecraft.client.gui.tooltip.Tooltip
-
-//#if MC>=12000
 import net.minecraft.client.gui.DrawContext
-//#endif
+import net.minecraft.client.gui.tooltip.Tooltip
+import net.minecraft.client.gui.widget.ButtonWidget
 
 class Gui @JvmOverloads constructor(
-    title: TextComponent = TextComponent("")
+    title: TextComponent = TextComponent(""),
 ) : UScreen(unlocalizedName = title.formattedText) {
     private var onDraw: RegularTrigger? = null
     private var onClick: RegularTrigger? = null
@@ -257,7 +254,12 @@ class Gui @JvmOverloads constructor(
     /**
      * Internal method to run trigger. Not meant for public use
      */
-    override fun onMouseDragged(x: Double, y: Double, clickedButton: Int, timeSinceLastClick: Long) {
+    override fun onMouseDragged(
+        x: Double,
+        y: Double,
+        clickedButton: Int,
+        timeSinceLastClick: Long,
+    ) {
         super.onMouseDragged(x, y, clickedButton, timeSinceLastClick)
         onMouseDragged?.trigger(arrayOf(mouseX, mouseY, clickedButton))
     }
@@ -265,16 +267,17 @@ class Gui @JvmOverloads constructor(
     /**
      * Internal method to run trigger. Not meant for public use
      */
-    override fun onDrawScreen(matrixStack: UMatrixStack, mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun onDrawScreen(
+        matrixStack: UMatrixStack,
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         super.onDrawScreen(matrixStack, mouseX, mouseY, partialTicks)
 
-        //#if MC>=12000
         @Suppress("UNCHECKED_CAST")
         val drawContexts = drawContextsField.get(this) as List<DrawContext>
         Renderer.pushMatrix(UMatrixStack(drawContexts.last().matrices))
-        //#else
-        //$$ Renderer.pushMatrix(matrixStack)
-        //#endif
 
         Renderer.partialTicks = partialTicks
 
@@ -331,7 +334,13 @@ class Gui @JvmOverloads constructor(
      * @return the button ID for use in actionPerformed
      */
     @JvmOverloads
-    fun addButton(x: Int, y: Int, width: Int = 200, height: Int = 20, buttonText: TextComponent): Int {
+    fun addButton(
+        x: Int,
+        y: Int,
+        width: Int = 200,
+        height: Int = 20,
+        buttonText: TextComponent,
+    ): Int {
         val id = nextButtonId++
         val button = ButtonWidget.builder(buttonText) {
             onActionPerformed?.trigger(arrayOf(id))
@@ -489,11 +498,9 @@ class Gui @JvmOverloads constructor(
      */
     fun setTooltip(text: String) = setTooltip(TextComponent(text))
 
-    companion object {
-        //#if MC>=12000
+    private companion object {
         private val drawContextsField = UScreen::class.java.getDeclaredField("drawContexts").also {
             it.isAccessible = true
         }
-        //#endif
     }
 }

@@ -1,20 +1,17 @@
 package com.chattriggers.ctjs.api.world
 
+import com.chattriggers.ctjs.MCTeam
 import com.chattriggers.ctjs.api.client.Client
 import com.chattriggers.ctjs.api.client.Player
 import com.chattriggers.ctjs.api.message.TextComponent
 import com.chattriggers.ctjs.internal.mixins.PlayerListHudAccessor
-import com.chattriggers.ctjs.MCTeam
 import com.chattriggers.ctjs.internal.utils.asMixin
 import com.google.common.collect.ComparisonChain
 import com.google.common.collect.Ordering
 import net.minecraft.client.network.PlayerListEntry
+import net.minecraft.scoreboard.ScoreboardDisplaySlot
 import net.minecraft.text.Text
 import net.minecraft.world.GameMode
-
-//#if MC==12002
-import net.minecraft.scoreboard.ScoreboardDisplaySlot
-//#endif
 
 object TabList {
     private val playerComparator = Ordering.from(PlayerComparator())
@@ -30,22 +27,14 @@ object TabList {
     @JvmStatic
     fun getNamesByObjectives(): List<String> {
         val scoreboard = Scoreboard.toMC() ?: return emptyList()
-        //#if MC>=12004
-        val sidebarObjective = scoreboard.getObjectiveForSlot(ScoreboardDisplaySlot.LIST) ?: return emptyList()
-        //#else
-        //$$ val sidebarObjective = scoreboard.getObjectiveForSlot(0) ?: return emptyList()
-        //#endif
+        val sidebarObjective =
+            scoreboard.getObjectiveForSlot(ScoreboardDisplaySlot.LIST) ?: return emptyList()
 
         val scores = scoreboard.getScoreboardEntries(sidebarObjective)
 
         return scores.map {
-            //#if MC>=12004
             val team = scoreboard.getTeam(it.owner)
             TextComponent(MCTeam.decorateName(team, TextComponent(it.owner))).formattedText
-            //#else
-            //$$ val team = scoreboard.getTeam(it.playerName)
-            //$$ TextComponent(MCTeam.decorateName(team, TextComponent(it.playerName))).formattedText
-            //#endif
         }
     }
 
@@ -131,7 +120,10 @@ object TabList {
 
             return ComparisonChain
                 .start()
-                .compareTrueFirst(playerOne.gameMode != GameMode.SPECTATOR, playerTwo.gameMode != GameMode.SPECTATOR)
+                .compareTrueFirst(
+                    playerOne.gameMode != GameMode.SPECTATOR,
+                    playerTwo.gameMode != GameMode.SPECTATOR
+                )
                 .compare(teamOne?.name ?: "", teamTwo?.name ?: "")
                 .compare(playerOne.profile.name, playerTwo.profile.name)
                 .result()

@@ -1,5 +1,0 @@
-net.minecraft.inventory.CraftingInventory net.minecraft.inventory.RecipeInputInventory
-net.minecraft.screen.PlayerScreenHandler.craftingResult net.minecraft.screen.PlayerScreenHandler.craftingInput
-net.minecraft.client.gui.screen.ConnectScreen net.minecraft.client.gui.screen.multiplayer.ConnectScreen
-net.minecraft.scoreboard.Scoreboard.getPlayerTeam net.minecraft.scoreboard.Scoreboard.getTeam
-net.minecraft.scoreboard.ScoreboardPlayerScore net.minecraft.scoreboard.ScoreboardEntry

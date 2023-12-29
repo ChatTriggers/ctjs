@@ -247,7 +247,7 @@ object BossBars {
 
         companion object {
             @JvmStatic
-            fun fromMC(mcValue: MCBossBarColor) = values().first { it.mcValue == mcValue }
+            fun fromMC(mcValue: MCBossBarColor) = entries.first { it.mcValue == mcValue }
 
             @JvmStatic
             fun from(value: Any) = when (value) {
@@ -268,14 +268,14 @@ object BossBars {
 
         companion object {
             @JvmStatic
-            fun fromMC(mcValue: MCBossBarStyle) = values().first { it.mcValue == mcValue }
+            fun fromMC(mcValue: MCBossBarStyle) = entries.first { it.mcValue == mcValue }
 
             @JvmStatic
             fun from(value: Any) = when (value) {
                 is CharSequence -> valueOf(value.toString())
                 is MCBossBarStyle -> fromMC(value)
                 is Style -> value
-                is Number -> values().first { it.sections == value }
+                is Number -> entries.first { it.sections == value }
                 else -> throw IllegalArgumentException("Cannot create BossBars.Style from $value")
             }
         }

@@ -214,12 +214,8 @@ object World {
      */
     @JvmStatic
     fun getTicksPerSecond(): Int {
-        //#if MC>=12004
         val mpt = toMC()?.tickManager?.millisPerTick ?: return 20
         return (1000.0 / mpt).roundToInt()
-        //#else
-        //$$ return 20
-        //#endif
     }
 
     /**

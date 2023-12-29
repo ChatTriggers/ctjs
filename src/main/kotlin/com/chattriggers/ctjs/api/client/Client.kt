@@ -81,11 +81,7 @@ object Client {
             getMinecraft().setScreen(
                 when {
                     getMinecraft().isInSingleplayer -> TitleScreen()
-                    //#if MC==12002
                     getMinecraft().currentServerEntry?.isRealm == true -> RealmsMainScreen(TitleScreen())
-                    //#else
-                    //$$ getMinecraft().isConnectedToRealms -> RealmsMainScreen(TitleScreen())
-                    //#endif
                     else -> MultiplayerScreen(TitleScreen())
                 }
             )
@@ -104,14 +100,8 @@ object Client {
                 MultiplayerScreen(TitleScreen()),
                 getMinecraft(),
                 ServerAddress(ip, port),
-                //#if MC==11202
                 ServerInfo("Server", ip, ServerInfo.ServerType.OTHER),
-                //#else
-                //$$ ServerInfo("Server", ip, false),
-                //#endif
-                //#if MC>=12000
                 false,
-                //#endif
             )
         }
     }

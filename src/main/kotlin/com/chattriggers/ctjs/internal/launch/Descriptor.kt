@@ -32,7 +32,7 @@ sealed interface Descriptor {
         override fun toString() = originalDescriptor()
 
         companion object {
-            val IDENTIFIERS = values().map { it.toString() }
+            val IDENTIFIERS = entries.map { it.toString() }
         }
     }
 
@@ -279,7 +279,7 @@ sealed interface Descriptor {
                 cursor += objectType.length
                 Object(objectType)
             } else if (ch in "VZCBSIFJD") {
-                val primitive = Primitive.values().first { it.toString() == ch.toString() }
+                val primitive = Primitive.entries.first { it.toString() == ch.toString() }
                 cursor++
                 primitive
             } else if (ch == '[') {

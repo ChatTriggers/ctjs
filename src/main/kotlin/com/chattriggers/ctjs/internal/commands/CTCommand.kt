@@ -206,7 +206,7 @@ internal object CTCommand : Initializer {
         ACTION_BAR(ClientListener::actionBarHistory);
 
         companion object {
-            fun fromString(str: String) = DumpType.values().first { it.name.equals(str, ignoreCase = true) }
+            fun fromString(str: String) = DumpType.entries.first { it.name.equals(str, ignoreCase = true) }
         }
     }
 

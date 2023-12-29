@@ -357,7 +357,7 @@ object DynamicCommands : CommandCollection() {
             "minecraft:overworld_caves",
         )
     ) { name ->
-        Entity.DimensionType.values().first { it.toMC().value.toString() == name }
+        Entity.DimensionType.entries.first { it.toMC().value.toString() == name }
     }
 
     /**

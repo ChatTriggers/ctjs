@@ -6,15 +6,12 @@ import com.chattriggers.ctjs.engine.printTraceToConsole
 import com.chattriggers.ctjs.internal.engine.JSLoader
 import com.chattriggers.ctjs.internal.utils.getOrNull
 import com.chattriggers.ctjs.internal.utils.toIdentifier
-import com.chattriggers.ctjs.internal.utils.toMatrixStack
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.gui.DrawContext
-import net.minecraft.client.render.GameRenderer
 import net.minecraft.client.toast.ToastManager
 import net.minecraft.util.Identifier
 import org.mozilla.javascript.*
 import net.minecraft.client.toast.Toast
-import net.minecraft.client.util.math.MatrixStack
 
 // https://github.com/Edgeburn/Toasts
 /**
@@ -27,6 +24,7 @@ import net.minecraft.client.util.math.MatrixStack
  * - icon: An Image or a String/Identifier that points to a texture
  * - width: The width of the toast, defaults to 160
  * - height: The height of the toast, defaults to 32
+ * - displayTime: The time in ms the toast will be displayed, defaults to 5000
  * - render: An optional function that will be called to render the toast. By default, it renders the same
  *           way that advancement toasts do. If this function is called, it will not render anything by default.
  *           It takes no parameters and is called with the Toast object as its receiver.
@@ -78,7 +76,7 @@ class Toast(config: NativeObject) : Toast {
     init {
         title = config.getOrNull("title")
         description = config.getOrNull("description")
-        background = config.getOrNull("background")
+        background = config.getOrDefault("background", backgroundBacker)
         icon = config.getOrNull("icon")
     }
 
@@ -89,10 +87,9 @@ class Toast(config: NativeObject) : Toast {
         Client.getMinecraft().toastManager.add(this)
     }
 
-    //#if MC>=12004
     override fun draw(context: DrawContext, manager: ToastManager, startTime: Long): Toast.Visibility {
         if (customRenderFunction != null) {
-            Renderer.withMatrix(context.toMatrixStack()) {
+            Renderer.withMatrix(context.matrices) {
                 try {
                     JSLoader.invoke(customRenderFunction!!, emptyArray(), thisObj = jsReceiver!!)
                 } catch (e: Throwable) {
@@ -130,54 +127,8 @@ class Toast(config: NativeObject) : Toast {
 
         return if (startTime > displayTime) Toast.Visibility.HIDE else Toast.Visibility.SHOW
     }
-    //#else
-    //$$ override fun draw(matrices: MatrixStack, manager: ToastManager, startTime: Long): Toast.Visibility {
-    //$$     if (customRenderFunction != null) {
-    //$$         Renderer.withMatrix(matrices) {
-    //$$             try {
-    //$$                 JSLoader.invoke(customRenderFunction!!, emptyArray(), thisObj = jsReceiver!!)
-    //$$             } catch (e: Throwable) {
-    //$$                 e.printTraceToConsole()
-    //$$
-    //$$                 // If the method threw, don't invoke it again
-    //$$                 customRenderFunction = Callable { _, _, _, _ -> Undefined.instance }
-    //$$             }
-    //$$         }
-    //$$     } else {
-    //$$         backgroundBacker?.let {
-    //$$             RenderSystem.setShader(GameRenderer::getPositionTexProgram)
-    //$$             RenderSystem.setShaderTexture(0, it)
-    //$$             RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f)
-    //$$             DrawableHelper.drawTexture(matrices, 0, 0, 0.0f, 0.0f, width, height, width, height)
-    //$$         }
-    //$$
-    //$$         iconBacker?.let {
-    //$$             RenderSystem.setShader(GameRenderer::getPositionTexProgram)
-    //$$             RenderSystem.setShaderTexture(0, it)
-    //$$             RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f)
-    //$$             val iconSize = height - ICON_PADDING * 2
-    //$$             DrawableHelper.drawTexture(matrices, ICON_PADDING, ICON_PADDING, 0.0f, 0.0f, iconSize, iconSize, iconSize, iconSize)
-    //$$         }
-    //$$
-    //$$         val textX = if (icon == null) ICON_PADDING else height
-    //$$         var textY = ICON_PADDING
-    //$$         val textRenderer = Client.getMinecraft().textRenderer
-    //$$
-    //$$         titleBacker?.let {
-    //$$             textRenderer.draw(matrices, it, textX.toFloat(), textY.toFloat(), 0xffffff)
-    //$$             textY += textRenderer.fontHeight + 1
-    //$$         }
-    //$$
-    //$$         descriptionBacker?.let {
-    //$$             textRenderer.draw(matrices, it, textX.toFloat(), textY.toFloat(), 0xffffff)
-    //$$         }
-    //$$     }
-    //$$
-    //$$     return if (startTime > displayTime) Toast.Visibility.HIDE else Toast.Visibility.SHOW
-    //$$ }
-    //#endif
 
-    companion object {
+    private companion object {
         private const val ICON_PADDING = 7
 
         private fun toIdentifier(value: Any?): Identifier? = when (value) {

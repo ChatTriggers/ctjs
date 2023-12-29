@@ -121,7 +121,6 @@ class Item(override val mcValue: ItemStack) : CTWrapper<ItemStack> {
 
         // The item draw method moved to DrawContext in 1.20, which we don't have access
         // to here, so its drawItem method has been copy-pasted here instead
-        //#if MC>=12000
         if (mcValue.isEmpty)
             return
         val bakedModel = itemRenderer.getModel(mcValue, World.toMC(), null, 0)
@@ -161,10 +160,6 @@ class Item(override val mcValue: ItemStack) : CTWrapper<ItemStack> {
             Renderer.popMatrix()
             Renderer.popMatrix()
         }
-        //#else
-        //$$ itemRenderer.renderInGui(Renderer.matrixStack.toMC(), mcValue, 0, 0)
-        //$$ Renderer.popMatrix()
-        //#endif
     }
 
     override fun toString(): String = "Item{name=${getName()}, type=${type.getRegistryName()}, size=${getStackSize()}}"
