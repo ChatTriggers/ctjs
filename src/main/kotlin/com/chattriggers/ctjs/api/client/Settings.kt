@@ -287,7 +287,7 @@ object Settings {
 
         companion object {
             @JvmStatic
-            fun fromMC(mcValue: MCCloudRenderMode) = values().first { it.mcValue == mcValue }
+            fun fromMC(mcValue: MCCloudRenderMode) = entries.first { it.mcValue == mcValue }
 
             @JvmStatic
             fun from(value: Any) = when (value) {
@@ -306,7 +306,7 @@ object Settings {
 
         companion object {
             @JvmStatic
-            fun fromMC(mcValue: MCParticlesMode) = values().first { it.mcValue == mcValue }
+            fun fromMC(mcValue: MCParticlesMode) = entries.first { it.mcValue == mcValue }
 
             @JvmStatic
             fun from(value: Any) = when (value) {
@@ -325,7 +325,7 @@ object Settings {
 
         companion object {
             @JvmStatic
-            fun fromMC(mcValue: MCChatVisibility) = values().first { it.mcValue == mcValue }
+            fun fromMC(mcValue: MCChatVisibility) = entries.first { it.mcValue == mcValue }
 
             @JvmStatic
             fun from(value: Any) = when (value) {
@@ -345,7 +345,7 @@ object Settings {
 
         companion object {
             @JvmStatic
-            fun fromMC(mcValue: MCDifficulty) = values().first { it.mcValue == mcValue }
+            fun fromMC(mcValue: MCDifficulty) = entries.first { it.mcValue == mcValue }
         }
     }
 
@@ -356,7 +356,7 @@ object Settings {
 
         companion object {
             @JvmStatic
-            fun fromMC(mcValue: MCGraphicsMode) = values().first { it.mcValue == mcValue }
+            fun fromMC(mcValue: MCGraphicsMode) = entries.first { it.mcValue == mcValue }
         }
     }
 }

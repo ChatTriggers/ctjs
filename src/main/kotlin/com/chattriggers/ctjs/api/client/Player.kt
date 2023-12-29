@@ -137,13 +137,7 @@ object Player {
      * @return the player's uuid
      */
     @JvmStatic
-    fun getUUID(): UUID  {
-        //#if MC>=12002
-        return UMinecraft.getMinecraft().gameProfile.id
-        //#else
-        //$$ return UMinecraft.getMinecraft().session.profile.id
-        //#endif
-    }
+    fun getUUID(): UUID = UMinecraft.getMinecraft().gameProfile.id
 
     @JvmStatic
     fun getHP(): Float = toMC()?.health ?: 0f

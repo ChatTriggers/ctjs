@@ -717,11 +717,7 @@ object Renderer {
             entityRenderer.render(entity, 0.0f, 1.0f, matrixStack.toMC(), vertexConsumers, light)
             if (entity.doesRenderOnFire()) {
                 entityRenderDispatcher.asMixin<EntityRenderDispatcherAccessor>()
-                    //#if MC>=12004
                     .invokeRenderFire(matrixStack.toMC(), vertexConsumers, entity, Quaternionf())
-                    //#else
-                    //$$ .invokeRenderFire(matrixStack.toMC(), vertexConsumers, entity)
-                    //#endif
             }
         }
 
@@ -768,7 +764,7 @@ object Renderer {
 
         companion object {
             @JvmStatic
-            fun fromUC(ucValue: UGraphics.DrawMode) = values().first { it.ucValue == ucValue }
+            fun fromUC(ucValue: UGraphics.DrawMode) = entries.first { it.ucValue == ucValue }
         }
     }
 
@@ -787,7 +783,7 @@ object Renderer {
 
         companion object {
             @JvmStatic
-            fun fromMC(ucValue: MCVertexFormat) = values().first { it.mcValue == ucValue }
+            fun fromMC(ucValue: MCVertexFormat) = entries.first { it.mcValue == ucValue }
         }
     }
 

@@ -460,7 +460,7 @@ class Sound(private val config: NativeObject) {
 
         companion object {
             @JvmStatic
-            fun fromMC(mcValue: SoundCategory) = values().first { it.mcValue == mcValue }
+            fun fromMC(mcValue: SoundCategory) = entries.first { it.mcValue == mcValue }
 
             @JvmStatic
             fun from(value: Any) = when (value) {
@@ -478,7 +478,7 @@ class Sound(private val config: NativeObject) {
 
         companion object {
             @JvmStatic
-            fun fromMC(mcValue: MCAttenuationType) = values().first { it.mcValue == mcValue }
+            fun fromMC(mcValue: MCAttenuationType) = entries.first { it.mcValue == mcValue }
 
             @JvmStatic
             fun from(value: Any) = when (value) {
@@ -528,7 +528,7 @@ class Sound(private val config: NativeObject) {
         }
     }
 
-    companion object {
+    private companion object {
         private val soundSystem by lazy {
             Client.getMinecraft().soundManager.asMixin<SoundManagerAccessor>().soundSystem
         }

@@ -6,7 +6,6 @@ import com.chattriggers.ctjs.api.client.Player
 import com.chattriggers.ctjs.api.entity.Entity
 import com.chattriggers.ctjs.api.inventory.Item
 import com.chattriggers.ctjs.api.inventory.ItemType
-import com.chattriggers.ctjs.internal.utils.hoverEventActionByName
 import com.chattriggers.ctjs.internal.utils.toIdentifier
 import com.mojang.serialization.Codec
 import com.mojang.serialization.MapCodec
@@ -280,22 +279,14 @@ class TextComponent private constructor(
                     it.put("obfuscated", it, true)
                 style_.clickEvent?.let { event ->
                     if (event.action != null) {
-                        //#if MC>=12004
                         it.put("clickAction", it, event.action.asString())
-                        //#else
-                        //$$ it.put("clickAction", it, event.action.name)
-                        //#endif
                         if (event.value != null)
                             it.put("clickValue", it, event.value)
                     }
                 }
                 style_.hoverEvent?.let { event ->
                     if (event.action != null) {
-                        //#if MC>=12004
                         it.put("hoverAction", it, event.action.asString())
-                        //#else
-                        //$$ it.put("hoverAction", it, event.action.name)
-                        //#endif
                         event.getValue(event.action!!)?.let { value ->
                             it.put("hoverValue", it, value)
                         }
@@ -372,24 +363,20 @@ class TextComponent private constructor(
             return visitor.accept(this.style_.withParent(style), text)
         }
 
-        //#if MC>=12004
         override fun getType(): TextContent.Type<*> = TextContent.Type(CODEC, "ctjs_part")
-        //#endif
 
         companion object {
-            //#if MC>=12004
             private val CODEC: MapCodec<PartContent> = RecordCodecBuilder.mapCodec { builder ->
                 builder.group(
                     Codec.STRING.fieldOf("text").forGetter(PartContent::text),
                     net.minecraft.text.Style.Codecs.CODEC.fieldOf("style").forGetter(PartContent::style_),
                 ).apply(builder) { text, style -> PartContent(text, style) }
             }
-            //#endif
         }
     }
 
-    companion object {
-        private val colorToFormatChar = Formatting.values().mapNotNull { format ->
+    private companion object {
+        private val colorToFormatChar = Formatting.entries.mapNotNull { format ->
             TextColor.fromFormatting(format)?.let { it to format }
         }.toMap()
 
@@ -400,13 +387,9 @@ class TextComponent private constructor(
                         is TextColor -> color
                         is Formatting -> TextColor.fromFormatting(color)
                         is Number -> TextColor.fromRgb(color.toInt())
-                        //#if MC>=12004
                         is CharSequence -> TextColor.parse(color.toString()).result().orElseThrow {
                             IllegalArgumentException("Could not parse \"$color\" as a text color")
                         }
-                        //#else
-                        //$$ is CharSequence -> TextColor.parse(color.toString()) ?: throw IllegalArgumentException("Could not parse \"$color\" as a text color")
-                        //#endif
                         else -> throw IllegalArgumentException("Could not convert type ${color::class.simpleName} to a text color")
                     }
                 })
@@ -487,7 +470,12 @@ class TextComponent private constructor(
         private fun makeHoverEvent(action: Any?, value: Any?): HoverEvent? {
             val hoverAction = when (action) {
                 is HoverEvent.Action<*> -> action
-                is CharSequence -> hoverEventActionByName(action.toString())
+                is CharSequence -> when (action.toString().uppercase()) {
+                    "SHOW_TEXT" -> HoverEvent.Action.SHOW_TEXT
+                    "SHOW_ITEM" -> HoverEvent.Action.SHOW_ITEM
+                    "SHOW_ENTITY" -> HoverEvent.Action.SHOW_ENTITY
+                    else -> throw IllegalStateException("Unknown hover event action \"$action\"")
+                }
                 null -> if (value != null) {
                     error("Cannot set Style's hover value without a hover action")
                 } else return null
@@ -522,12 +510,8 @@ class TextComponent private constructor(
             return when (obj) {
                 is MCEntity -> obj
                 is Entity -> obj.toMC()
-                //#if MC>=12004
                 is CharSequence -> return HoverEvent.EntityContent.legacySerializer(TextComponent(obj))
                     .getOrThrow(false) {}
-                //#else
-                //$$ is CharSequence -> return HoverEvent.EntityContent.parse(TextComponent(obj))
-                //#endif
                 is HoverEvent.EntityContent -> return obj
                 else -> error("${obj::class} cannot be parsed as an entity HoverEvent")
             }.let { HoverEvent.EntityContent(it.type, it.uuid, it.name) }

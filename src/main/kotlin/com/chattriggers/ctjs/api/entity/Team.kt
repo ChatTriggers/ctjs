@@ -107,7 +107,7 @@ class Team(override val mcValue: MCTeam) : CTWrapper<MCTeam> {
 
         companion object {
             @JvmStatic
-            fun fromMC(mcValue: AbstractTeam.VisibilityRule) = values().first { it.mcValue == mcValue }
+            fun fromMC(mcValue: AbstractTeam.VisibilityRule) = entries.first { it.mcValue == mcValue }
         }
     }
 }

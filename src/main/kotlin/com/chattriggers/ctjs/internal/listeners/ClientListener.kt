@@ -17,7 +17,6 @@ import com.chattriggers.ctjs.internal.engine.CTEvents
 import com.chattriggers.ctjs.internal.engine.JSContextFactory
 import com.chattriggers.ctjs.internal.engine.JSLoader
 import com.chattriggers.ctjs.internal.utils.Initializer
-import com.chattriggers.ctjs.internal.utils.toMatrixStack
 import gg.essential.universal.UMinecraft
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
@@ -62,11 +61,7 @@ object ClientListener : Initializer {
                 }
             }
 
-            //#if MC>=12004
             if (World.isLoaded() && World.toMC()?.tickManager?.shouldTick() == true) {
-            //#else
-            //$$ if (World.isLoaded()) {
-            //#endif
                 TriggerType.TICK.triggerAll(ticksPassed)
                 ticksPassed++
 
@@ -91,14 +86,14 @@ object ClientListener : Initializer {
         ScreenEvents.BEFORE_INIT.register { _, screen, _, _ ->
             // TODO: Why does Renderer.drawString not work in here?
             ScreenEvents.beforeRender(screen).register { _, stack, mouseX, mouseY, partialTicks ->
-                Renderer.withMatrix(stack.toMatrixStack(), partialTicks) {
+                Renderer.withMatrix(stack.matrices, partialTicks) {
                     TriggerType.GUI_RENDER.triggerAll(mouseX, mouseY, screen)
                 }
             }
 
             // TODO: Why does Renderer.drawString not work in here?
             ScreenEvents.afterRender(screen).register { _, stack, mouseX, mouseY, partialTicks ->
-                Renderer.withMatrix(stack.toMatrixStack(), partialTicks) {
+                Renderer.withMatrix(stack.matrices, partialTicks) {
                     TriggerType.POST_GUI_RENDER.triggerAll(mouseX, mouseY, screen, partialTicks)
                 }
             }

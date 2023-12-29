@@ -333,30 +333,19 @@ public final class com/chattriggers/ctjs/api/client/Settings$ChatVisibility : ja
 	public static final field HIDDEN Lcom/chattriggers/ctjs/api/client/Settings$ChatVisibility;
 	public static final field SYSTEM Lcom/chattriggers/ctjs/api/client/Settings$ChatVisibility;
 	public static final fun from (Ljava/lang/Object;)Lcom/chattriggers/ctjs/api/client/Settings$ChatVisibility;
-	@1.20.4-fabric
 	public static final fun fromMC (Lnet/minecraft/network/message/ChatVisibility;)Lcom/chattriggers/ctjs/api/client/Settings$ChatVisibility;
-	@1.19.4-fabric
-	public static final fun fromMC (Lnet/minecraft/client/option/ChatVisibility;)Lcom/chattriggers/ctjs/api/client/Settings$ChatVisibility;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public synthetic fun getMcValue ()Ljava/lang/Object;
-	@1.20.4-fabric
 	public fun getMcValue ()Lnet/minecraft/network/message/ChatVisibility;
-	@1.19.4-fabric
-	public fun getMcValue ()Lnet/minecraft/client/option/ChatVisibility;
 	public synthetic fun toMC ()Ljava/lang/Object;
-	@1.20.4-fabric
 	public fun toMC ()Lnet/minecraft/network/message/ChatVisibility;
-	@1.19.4-fabric
-	public fun toMC ()Lnet/minecraft/client/option/ChatVisibility;
 	public static fun valueOf (Ljava/lang/String;)Lcom/chattriggers/ctjs/api/client/Settings$ChatVisibility;
 	public static fun values ()[Lcom/chattriggers/ctjs/api/client/Settings$ChatVisibility;
 }
 
 public final class com/chattriggers/ctjs/api/client/Settings$ChatVisibility$Companion {
 	public final fun from (Ljava/lang/Object;)Lcom/chattriggers/ctjs/api/client/Settings$ChatVisibility;
-	@1.20.4-fabric
 	public final fun fromMC (Lnet/minecraft/network/message/ChatVisibility;)Lcom/chattriggers/ctjs/api/client/Settings$ChatVisibility;
-	@1.19.4-fabric
-	public final fun fromMC (Lnet/minecraft/client/option/ChatVisibility;)Lcom/chattriggers/ctjs/api/client/Settings$ChatVisibility;
 }
 
 public final class com/chattriggers/ctjs/api/client/Settings$ChatWrapper {
@@ -390,6 +379,7 @@ public final class com/chattriggers/ctjs/api/client/Settings$CloudRenderMode : j
 	public static final field OFF Lcom/chattriggers/ctjs/api/client/Settings$CloudRenderMode;
 	public static final fun from (Ljava/lang/Object;)Lcom/chattriggers/ctjs/api/client/Settings$CloudRenderMode;
 	public static final fun fromMC (Lnet/minecraft/client/option/CloudRenderMode;)Lcom/chattriggers/ctjs/api/client/Settings$CloudRenderMode;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public synthetic fun getMcValue ()Ljava/lang/Object;
 	public fun getMcValue ()Lnet/minecraft/client/option/CloudRenderMode;
 	public synthetic fun toMC ()Ljava/lang/Object;
@@ -410,6 +400,7 @@ public final class com/chattriggers/ctjs/api/client/Settings$Difficulty : java/l
 	public static final field NORMAL Lcom/chattriggers/ctjs/api/client/Settings$Difficulty;
 	public static final field PEACEFUL Lcom/chattriggers/ctjs/api/client/Settings$Difficulty;
 	public static final fun fromMC (Lnet/minecraft/world/Difficulty;)Lcom/chattriggers/ctjs/api/client/Settings$Difficulty;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public synthetic fun getMcValue ()Ljava/lang/Object;
 	public fun getMcValue ()Lnet/minecraft/world/Difficulty;
 	public synthetic fun toMC ()Ljava/lang/Object;
@@ -428,6 +419,7 @@ public final class com/chattriggers/ctjs/api/client/Settings$GraphicsMode : java
 	public static final field FANCY Lcom/chattriggers/ctjs/api/client/Settings$GraphicsMode;
 	public static final field FAST Lcom/chattriggers/ctjs/api/client/Settings$GraphicsMode;
 	public static final fun fromMC (Lnet/minecraft/client/option/GraphicsMode;)Lcom/chattriggers/ctjs/api/client/Settings$GraphicsMode;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public synthetic fun getMcValue ()Ljava/lang/Object;
 	public fun getMcValue ()Lnet/minecraft/client/option/GraphicsMode;
 	public synthetic fun toMC ()Ljava/lang/Object;
@@ -447,6 +439,7 @@ public final class com/chattriggers/ctjs/api/client/Settings$ParticlesMode : jav
 	public static final field MINIMAL Lcom/chattriggers/ctjs/api/client/Settings$ParticlesMode;
 	public static final fun from (Ljava/lang/Object;)Lcom/chattriggers/ctjs/api/client/Settings$ParticlesMode;
 	public static final fun fromMC (Lnet/minecraft/client/option/ParticlesMode;)Lcom/chattriggers/ctjs/api/client/Settings$ParticlesMode;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public synthetic fun getMcValue ()Ljava/lang/Object;
 	public fun getMcValue ()Lnet/minecraft/client/option/ParticlesMode;
 	public synthetic fun toMC ()Ljava/lang/Object;
@@ -531,7 +524,6 @@ public final class com/chattriggers/ctjs/api/client/Settings$VideoWrapper {
 }
 
 public final class com/chattriggers/ctjs/api/client/Sound {
-	public static final field Companion Lcom/chattriggers/ctjs/api/client/Sound$Companion;
 	public fun <init> (Lorg/mozilla/javascript/NativeObject;)V
 	public final fun destroy ()V
 	public final fun getAttenuation ()I
@@ -570,6 +562,7 @@ public final class com/chattriggers/ctjs/api/client/Sound$AttenuationType : java
 	public static final field NONE Lcom/chattriggers/ctjs/api/client/Sound$AttenuationType;
 	public static final fun from (Ljava/lang/Object;)Lcom/chattriggers/ctjs/api/client/Sound$AttenuationType;
 	public static final fun fromMC (Lnet/minecraft/client/sound/SoundInstance$AttenuationType;)Lcom/chattriggers/ctjs/api/client/Sound$AttenuationType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public synthetic fun getMcValue ()Ljava/lang/Object;
 	public fun getMcValue ()Lnet/minecraft/client/sound/SoundInstance$AttenuationType;
 	public synthetic fun toMC ()Ljava/lang/Object;
@@ -597,6 +590,7 @@ public final class com/chattriggers/ctjs/api/client/Sound$Category : java/lang/E
 	public static final field WEATHER Lcom/chattriggers/ctjs/api/client/Sound$Category;
 	public static final fun from (Ljava/lang/Object;)Lcom/chattriggers/ctjs/api/client/Sound$Category;
 	public static final fun fromMC (Lnet/minecraft/sound/SoundCategory;)Lcom/chattriggers/ctjs/api/client/Sound$Category;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public synthetic fun getMcValue ()Ljava/lang/Object;
 	public fun getMcValue ()Lnet/minecraft/sound/SoundCategory;
 	public synthetic fun toMC ()Ljava/lang/Object;
@@ -608,9 +602,6 @@ public final class com/chattriggers/ctjs/api/client/Sound$Category : java/lang/E
 public final class com/chattriggers/ctjs/api/client/Sound$Category$Companion {
 	public final fun from (Ljava/lang/Object;)Lcom/chattriggers/ctjs/api/client/Sound$Category;
 	public final fun fromMC (Lnet/minecraft/sound/SoundCategory;)Lcom/chattriggers/ctjs/api/client/Sound$Category;
-}
-
-public final class com/chattriggers/ctjs/api/client/Sound$Companion {
 }
 
 public final class com/chattriggers/ctjs/api/commands/DynamicCommands : com/chattriggers/ctjs/internal/commands/CommandCollection {
@@ -890,6 +881,7 @@ public final class com/chattriggers/ctjs/api/entity/Entity$DimensionType : java/
 	public static final field NETHER Lcom/chattriggers/ctjs/api/entity/Entity$DimensionType;
 	public static final field OVERWORLD Lcom/chattriggers/ctjs/api/entity/Entity$DimensionType;
 	public static final field OVERWORLD_CAVES Lcom/chattriggers/ctjs/api/entity/Entity$DimensionType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public synthetic fun getMcValue ()Ljava/lang/Object;
 	public fun getMcValue ()Lnet/minecraft/registry/RegistryKey;
 	public synthetic fun toMC ()Ljava/lang/Object;
@@ -915,6 +907,10 @@ public class com/chattriggers/ctjs/api/entity/LivingEntity : com/chattriggers/ct
 	public final fun isPotionActive (I)Z
 	public final fun isPotionActive (Lcom/chattriggers/ctjs/api/world/PotionEffect;)Z
 	public final fun isPotionActive (Lcom/chattriggers/ctjs/api/world/PotionEffectType;)Z
+}
+
+public synthetic class com/chattriggers/ctjs/api/entity/LivingEntity$EntriesMappings {
+	public static final synthetic field entries$0 Lkotlin/enums/EnumEntries;
 }
 
 public final class com/chattriggers/ctjs/api/entity/Particle : com/chattriggers/ctjs/api/CTWrapper {
@@ -1044,6 +1040,7 @@ public final class com/chattriggers/ctjs/api/entity/Team$Visibility : java/lang/
 	public static final field HIDE_FOR_OWN_TEAM Lcom/chattriggers/ctjs/api/entity/Team$Visibility;
 	public static final field NEVER Lcom/chattriggers/ctjs/api/entity/Team$Visibility;
 	public static final fun fromMC (Lnet/minecraft/scoreboard/AbstractTeam$VisibilityRule;)Lcom/chattriggers/ctjs/api/entity/Team$Visibility;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public synthetic fun getMcValue ()Ljava/lang/Object;
 	public fun getMcValue ()Lnet/minecraft/scoreboard/AbstractTeam$VisibilityRule;
 	public synthetic fun toMC ()Ljava/lang/Object;
@@ -1188,6 +1185,7 @@ public final class com/chattriggers/ctjs/api/inventory/action/Action$Type : java
 	public static final field DRAG Lcom/chattriggers/ctjs/api/inventory/action/Action$Type;
 	public static final field DROP Lcom/chattriggers/ctjs/api/inventory/action/Action$Type;
 	public static final field KEY Lcom/chattriggers/ctjs/api/inventory/action/Action$Type;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/chattriggers/ctjs/api/inventory/action/Action$Type;
 	public static fun values ()[Lcom/chattriggers/ctjs/api/inventory/action/Action$Type;
 }
@@ -1210,6 +1208,7 @@ public final class com/chattriggers/ctjs/api/inventory/action/ClickAction$ClickT
 	public static final field MIDDLE Lcom/chattriggers/ctjs/api/inventory/action/ClickAction$ClickType;
 	public static final field RIGHT Lcom/chattriggers/ctjs/api/inventory/action/ClickAction$ClickType;
 	public final fun getButton ()I
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/chattriggers/ctjs/api/inventory/action/ClickAction$ClickType;
 	public static fun values ()[Lcom/chattriggers/ctjs/api/inventory/action/ClickAction$ClickType;
 }
@@ -1229,6 +1228,7 @@ public final class com/chattriggers/ctjs/api/inventory/action/DragAction$ClickTy
 	public static final field MIDDLE Lcom/chattriggers/ctjs/api/inventory/action/DragAction$ClickType;
 	public static final field RIGHT Lcom/chattriggers/ctjs/api/inventory/action/DragAction$ClickType;
 	public final fun getButton ()I
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/chattriggers/ctjs/api/inventory/action/DragAction$ClickType;
 	public static fun values ()[Lcom/chattriggers/ctjs/api/inventory/action/DragAction$ClickType;
 }
@@ -1237,6 +1237,7 @@ public final class com/chattriggers/ctjs/api/inventory/action/DragAction$Stage :
 	public static final field BEGIN Lcom/chattriggers/ctjs/api/inventory/action/DragAction$Stage;
 	public static final field END Lcom/chattriggers/ctjs/api/inventory/action/DragAction$Stage;
 	public static final field SLOT Lcom/chattriggers/ctjs/api/inventory/action/DragAction$Stage;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public final fun getStage ()I
 	public static fun valueOf (Ljava/lang/String;)Lcom/chattriggers/ctjs/api/inventory/action/DragAction$Stage;
 	public static fun values ()[Lcom/chattriggers/ctjs/api/inventory/action/DragAction$Stage;
@@ -1342,6 +1343,7 @@ public final class com/chattriggers/ctjs/api/inventory/nbt/NBTTagCompound$NBTDat
 	public static final field SHORT Lcom/chattriggers/ctjs/api/inventory/nbt/NBTTagCompound$NBTDataType;
 	public static final field STRING Lcom/chattriggers/ctjs/api/inventory/nbt/NBTTagCompound$NBTDataType;
 	public static final field TAG_LIST Lcom/chattriggers/ctjs/api/inventory/nbt/NBTTagCompound$NBTDataType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/chattriggers/ctjs/api/inventory/nbt/NBTTagCompound$NBTDataType;
 	public static fun values ()[Lcom/chattriggers/ctjs/api/inventory/nbt/NBTTagCompound$NBTDataType;
 }
@@ -1409,7 +1411,6 @@ public final class com/chattriggers/ctjs/api/message/ChatLib {
 }
 
 public final class com/chattriggers/ctjs/api/message/TextComponent : java/lang/Iterable, kotlin/jvm/internal/markers/KMappedMarker, net/minecraft/text/Text {
-	public static final field Companion Lcom/chattriggers/ctjs/api/message/TextComponent$Companion;
 	public fun <init> ()V
 	public fun <init> ([Ljava/lang/Object;)V
 	public final fun actionBar ()Lcom/chattriggers/ctjs/api/message/TextComponent;
@@ -1445,7 +1446,8 @@ public final class com/chattriggers/ctjs/api/message/TextComponent : java/lang/I
 	public final fun withoutTextAt (I)Lcom/chattriggers/ctjs/api/message/TextComponent;
 }
 
-public final class com/chattriggers/ctjs/api/message/TextComponent$Companion {
+public synthetic class com/chattriggers/ctjs/api/message/TextComponent$EntriesMappings {
+	public static final synthetic field entries$0 Lkotlin/enums/EnumEntries;
 }
 
 public final class com/chattriggers/ctjs/api/render/Book {
@@ -1500,6 +1502,7 @@ public final class com/chattriggers/ctjs/api/render/Display$Background : java/la
 	public static final field FULL Lcom/chattriggers/ctjs/api/render/Display$Background;
 	public static final field NONE Lcom/chattriggers/ctjs/api/render/Display$Background;
 	public static final field PER_LINE Lcom/chattriggers/ctjs/api/render/Display$Background;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/chattriggers/ctjs/api/render/Display$Background;
 	public static fun values ()[Lcom/chattriggers/ctjs/api/render/Display$Background;
 }
@@ -1507,12 +1510,12 @@ public final class com/chattriggers/ctjs/api/render/Display$Background : java/la
 public final class com/chattriggers/ctjs/api/render/Display$Order : java/lang/Enum {
 	public static final field NORMAL Lcom/chattriggers/ctjs/api/render/Display$Order;
 	public static final field REVERSED Lcom/chattriggers/ctjs/api/render/Display$Order;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/chattriggers/ctjs/api/render/Display$Order;
 	public static fun values ()[Lcom/chattriggers/ctjs/api/render/Display$Order;
 }
 
 public final class com/chattriggers/ctjs/api/render/Gui : gg/essential/universal/UScreen {
-	public static final field Companion Lcom/chattriggers/ctjs/api/render/Gui$Companion;
 	public fun <init> ()V
 	public fun <init> (Lcom/chattriggers/ctjs/api/message/TextComponent;)V
 	public synthetic fun <init> (Lcom/chattriggers/ctjs/api/message/TextComponent;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -1572,9 +1575,6 @@ public final class com/chattriggers/ctjs/api/render/Gui : gg/essential/universal
 	public final fun unregisterMouseReleased ()Lcom/chattriggers/ctjs/api/render/Gui;
 	public final fun unregisterOpened ()Lcom/chattriggers/ctjs/api/render/Gui;
 	public final fun unregisterScrolled ()Lcom/chattriggers/ctjs/api/render/Gui;
-}
-
-public final class com/chattriggers/ctjs/api/render/Gui$Companion {
 }
 
 public final class com/chattriggers/ctjs/api/render/Image {
@@ -1757,6 +1757,7 @@ public final class com/chattriggers/ctjs/api/render/Renderer$DrawMode : java/lan
 	public static final field TRIANGLE_FAN Lcom/chattriggers/ctjs/api/render/Renderer$DrawMode;
 	public static final field TRIANGLE_STRIP Lcom/chattriggers/ctjs/api/render/Renderer$DrawMode;
 	public static final fun fromUC (Lgg/essential/universal/UGraphics$DrawMode;)Lcom/chattriggers/ctjs/api/render/Renderer$DrawMode;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public final fun toUC ()Lgg/essential/universal/UGraphics$DrawMode;
 	public static fun valueOf (Ljava/lang/String;)Lcom/chattriggers/ctjs/api/render/Renderer$DrawMode;
 	public static fun values ()[Lcom/chattriggers/ctjs/api/render/Renderer$DrawMode;
@@ -1785,6 +1786,7 @@ public final class com/chattriggers/ctjs/api/render/Renderer$VertexFormat : java
 	public static final field POSITION_TEXTURE_COLOR_NORMAL Lcom/chattriggers/ctjs/api/render/Renderer$VertexFormat;
 	public static final field POSITION_TEXTURE_LIGHT_COLOR Lcom/chattriggers/ctjs/api/render/Renderer$VertexFormat;
 	public static final fun fromMC (Lnet/minecraft/client/render/VertexFormat;)Lcom/chattriggers/ctjs/api/render/Renderer$VertexFormat;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public final fun toMC ()Lnet/minecraft/client/render/VertexFormat;
 	public static fun valueOf (Ljava/lang/String;)Lcom/chattriggers/ctjs/api/render/Renderer$VertexFormat;
 	public static fun values ()[Lcom/chattriggers/ctjs/api/render/Renderer$VertexFormat;
@@ -1889,17 +1891,14 @@ public final class com/chattriggers/ctjs/api/render/Text$Align : java/lang/Enum 
 	public static final field CENTER Lcom/chattriggers/ctjs/api/render/Text$Align;
 	public static final field LEFT Lcom/chattriggers/ctjs/api/render/Text$Align;
 	public static final field RIGHT Lcom/chattriggers/ctjs/api/render/Text$Align;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/chattriggers/ctjs/api/render/Text$Align;
 	public static fun values ()[Lcom/chattriggers/ctjs/api/render/Text$Align;
 }
 
 public final class com/chattriggers/ctjs/api/render/Toast : net/minecraft/client/toast/Toast {
-	public static final field Companion Lcom/chattriggers/ctjs/api/render/Toast$Companion;
 	public fun <init> (Lorg/mozilla/javascript/NativeObject;)V
-	@1.20.4-fabric
 	public fun draw (Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/client/toast/ToastManager;J)Lnet/minecraft/client/toast/Toast$Visibility;
-	@1.19.4-fabric
-	public fun draw (Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/toast/ToastManager;J)Lnet/minecraft/client/toast/Toast$Visibility;
 	public final fun getBackground ()Ljava/lang/Object;
 	public final fun getDescription ()Ljava/lang/Object;
 	public final fun getDisplayTime ()J
@@ -1913,9 +1912,6 @@ public final class com/chattriggers/ctjs/api/render/Toast : net/minecraft/client
 	public final fun setIcon (Ljava/lang/Object;)V
 	public final fun setTitle (Ljava/lang/Object;)V
 	public final fun show ()Lcom/chattriggers/ctjs/api/render/Toast;
-}
-
-public final class com/chattriggers/ctjs/api/render/Toast$Companion {
 }
 
 public class com/chattriggers/ctjs/api/triggers/CancellableEvent {
@@ -2053,6 +2049,7 @@ public final class com/chattriggers/ctjs/api/triggers/Trigger$Priority : java/la
 	public static final field LOW Lcom/chattriggers/ctjs/api/triggers/Trigger$Priority;
 	public static final field LOWEST Lcom/chattriggers/ctjs/api/triggers/Trigger$Priority;
 	public static final field NORMAL Lcom/chattriggers/ctjs/api/triggers/Trigger$Priority;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/chattriggers/ctjs/api/triggers/Trigger$Priority;
 	public static fun values ()[Lcom/chattriggers/ctjs/api/triggers/Trigger$Priority;
 }
@@ -2098,6 +2095,7 @@ public final class com/chattriggers/ctjs/api/triggers/TriggerType : java/lang/En
 	public static final field TICK Lcom/chattriggers/ctjs/api/triggers/TriggerType;
 	public static final field WORLD_LOAD Lcom/chattriggers/ctjs/api/triggers/TriggerType;
 	public static final field WORLD_UNLOAD Lcom/chattriggers/ctjs/api/triggers/TriggerType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public synthetic fun getName ()Ljava/lang/String;
 	public fun triggerAll ([Ljava/lang/Object;)V
 	public static fun valueOf (Ljava/lang/String;)Lcom/chattriggers/ctjs/api/triggers/TriggerType;
@@ -2234,6 +2232,7 @@ public final class com/chattriggers/ctjs/api/world/BossBars$Color : java/lang/En
 	public static final field YELLOW Lcom/chattriggers/ctjs/api/world/BossBars$Color;
 	public static final fun from (Ljava/lang/Object;)Lcom/chattriggers/ctjs/api/world/BossBars$Color;
 	public static final fun fromMC (Lnet/minecraft/entity/boss/BossBar$Color;)Lcom/chattriggers/ctjs/api/world/BossBars$Color;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public synthetic fun getMcValue ()Ljava/lang/Object;
 	public fun getMcValue ()Lnet/minecraft/entity/boss/BossBar$Color;
 	public synthetic fun toMC ()Ljava/lang/Object;
@@ -2256,6 +2255,7 @@ public final class com/chattriggers/ctjs/api/world/BossBars$Style : java/lang/En
 	public static final field TWENTY Lcom/chattriggers/ctjs/api/world/BossBars$Style;
 	public static final fun from (Ljava/lang/Object;)Lcom/chattriggers/ctjs/api/world/BossBars$Style;
 	public static final fun fromMC (Lnet/minecraft/entity/boss/BossBar$Style;)Lcom/chattriggers/ctjs/api/world/BossBars$Style;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public synthetic fun getMcValue ()Ljava/lang/Object;
 	public fun getMcValue ()Lnet/minecraft/entity/boss/BossBar$Style;
 	public final fun getSections ()I
@@ -2336,16 +2336,10 @@ public final class com/chattriggers/ctjs/api/world/Scoreboard {
 }
 
 public final class com/chattriggers/ctjs/api/world/Scoreboard$Score {
-	@1.20.4-fabric
 	public fun <init> (Lnet/minecraft/scoreboard/ScoreboardEntry;)V
-	@1.19.4-fabric
-	public fun <init> (Lnet/minecraft/scoreboard/ScoreboardPlayerScore;)V
 	public final fun getName ()Lcom/chattriggers/ctjs/api/message/TextComponent;
 	public final fun getPoints ()I
-	@1.20.4-fabric
 	public final fun toMC ()Lnet/minecraft/scoreboard/ScoreboardEntry;
-	@1.19.4-fabric
-	public final fun toMC ()Lnet/minecraft/scoreboard/ScoreboardPlayerScore;
 	public fun toString ()Ljava/lang/String;
 }
 
@@ -2468,6 +2462,7 @@ public final class com/chattriggers/ctjs/api/world/block/BlockFace : java/lang/E
 	public final fun getAxis ()Lcom/chattriggers/ctjs/api/world/block/BlockFace$Axis;
 	public final fun getAxisDirection ()Lcom/chattriggers/ctjs/api/world/block/BlockFace$AxisDirection;
 	public final fun getDirectionVec ()Lcom/chattriggers/ctjs/api/vec/Vec3i;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public synthetic fun getMcValue ()Ljava/lang/Object;
 	public fun getMcValue ()Lnet/minecraft/util/math/Direction;
 	public final fun getOffsetX ()I
@@ -2491,6 +2486,7 @@ public final class com/chattriggers/ctjs/api/world/block/BlockFace$Axis : java/l
 	public static final field Z Lcom/chattriggers/ctjs/api/world/block/BlockFace$Axis;
 	public fun asString ()Ljava/lang/String;
 	public static final fun fromMC (Lnet/minecraft/util/math/Direction$Axis;)Lcom/chattriggers/ctjs/api/world/block/BlockFace$Axis;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public synthetic fun getMcValue ()Ljava/lang/Object;
 	public fun getMcValue ()Lnet/minecraft/util/math/Direction$Axis;
 	public final fun getPlane ()Lcom/chattriggers/ctjs/api/world/block/BlockFace$Plane;
@@ -2513,6 +2509,7 @@ public final class com/chattriggers/ctjs/api/world/block/BlockFace$AxisDirection
 	public static final field NEGATIVE Lcom/chattriggers/ctjs/api/world/block/BlockFace$AxisDirection;
 	public static final field POSITIVE Lcom/chattriggers/ctjs/api/world/block/BlockFace$AxisDirection;
 	public static final fun fromMC (Lnet/minecraft/util/math/Direction$AxisDirection;)Lcom/chattriggers/ctjs/api/world/block/BlockFace$AxisDirection;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public synthetic fun getMcValue ()Ljava/lang/Object;
 	public fun getMcValue ()Lnet/minecraft/util/math/Direction$AxisDirection;
 	public final fun getOffset ()I
@@ -2534,6 +2531,7 @@ public final class com/chattriggers/ctjs/api/world/block/BlockFace$Plane : java/
 	public static final field HORIZONTAL Lcom/chattriggers/ctjs/api/world/block/BlockFace$Plane;
 	public static final field VERTICAL Lcom/chattriggers/ctjs/api/world/block/BlockFace$Plane;
 	public final fun facings ()[Lcom/chattriggers/ctjs/api/world/block/BlockFace;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public fun iterator ()Ljava/util/Iterator;
 	public fun test (Lcom/chattriggers/ctjs/api/world/block/BlockFace;)Z
 	public synthetic fun test (Ljava/lang/Object;)Z
@@ -2636,6 +2634,7 @@ public final class com/chattriggers/ctjs/engine/LogType : java/lang/Enum {
 	public static final field ERROR Lcom/chattriggers/ctjs/engine/LogType;
 	public static final field INFO Lcom/chattriggers/ctjs/engine/LogType;
 	public static final field WARN Lcom/chattriggers/ctjs/engine/LogType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/chattriggers/ctjs/engine/LogType;
 	public static fun values ()[Lcom/chattriggers/ctjs/engine/LogType;
 }

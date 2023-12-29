@@ -1,0 +1,63 @@
+[versions]
+# Library versions
+minecraft = "1.20.4"
+yarn = "1.20.4+build.3"
+
+loader = "0.15.3"
+fabric-api = "0.92.1+1.20.4"
+fabric-kotlin = "1.10.16+kotlin.1.9.21"
+
+mapping-io = "0.5.1"
+rhino = "96d0c07966"
+jackson-core = "2.13.2"
+textarea = "3.2.0"
+serialization = "1.5.1"
+koffee = "315bc11234"
+
+universalcraft = "323"
+elementa = "619"
+vigilance = "295"
+
+modmenu = "9.0.0"
+devauth = "1.2.0"
+dokka = "1.9.10"
+
+# Plugin Versions
+kotlin = "1.9.21"
+loom = "1.5-SNAPSHOT"
+validator = "0.13.2"
+
+[libraries]
+minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
+yarn = { module = "net.fabricmc:yarn", version.ref = "yarn" }
+
+fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "loader" }
+fabric-api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric-api" }
+fabric-kotlin = { module = "net.fabricmc:fabric-language-kotlin", version.ref = "fabric-kotlin" }
+
+mapping-io = { module = "net.fabricmc:mapping-io", version.ref = "mapping-io" }
+rhino = { module = "com.github.ChatTriggers:rhino", version.ref = "rhino" }
+jackson-core = { module = "com.fasterxml.jackson.core:jackson-core", version.ref = "jackson-core" }
+textarea = { module = "com.fifesoft:rsyntaxtextarea", version.ref = "textarea" }
+serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
+koffee = { module = "com.github.ChatTriggers:koffee", version.ref = "koffee" }
+
+universalcraft = { module = "gg.essential:universalcraft-1.20.4-fabric", version.ref = "universalcraft" }
+elementa = { module = "gg.essential:elementa-1.18.1-fabric", version.ref = "elementa" }
+vigilance = { module = "gg.essential:vigilance-1.18.1-fabric", version.ref = "vigilance" }
+
+modmenu = { module = "com.terraformersmc:modmenu", version.ref = "modmenu" }
+devauth = { module = "me.djtheredstoner:DevAuth-fabric", version.ref = "devauth" }
+versioning = { module = "org.jetbrains.dokka:versioning-plugin", version.ref = "dokka" }
+
+[bundles]
+fabric = ["fabric-loader", "fabric-api", "fabric-kotlin"]
+included = ["mapping-io", "rhino", "jackson-core", "textarea", "serialization", "koffee"]
+essential = ["universalcraft", "elementa", "vigilance"]
+
+[plugins]
+kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+loom = { id = "fabric-loom", version.ref = "loom" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+validator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "validator" }

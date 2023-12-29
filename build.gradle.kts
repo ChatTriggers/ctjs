@@ -7,76 +7,46 @@ import java.io.ByteArrayOutputStream
 
 buildscript {
     dependencies {
-        classpath("org.jetbrains.dokka:versioning-plugin:1.8.20")
+        classpath(libs.versioning)
     }
 }
 
 plugins {
-    kotlin("jvm") version "1.8.21"
-    kotlin("plugin.serialization") version "1.8.21"
-    id("gg.essential.multi-version")
-
-    // Apply defaults individually since "gg.essential.defaults" includes
-    // mixin-extras which requires Essential
-    id("gg.essential.defaults.java")
-    id("gg.essential.defaults.loom")
-    id("gg.essential.defaults.repo")
-
-    id("io.github.juuxel.loom-quiltflower") version "1.10.0"
-    id("org.jetbrains.dokka") version "1.8.20"
+    alias(libs.plugins.kotlin)
+    alias(libs.plugins.serialization)
+    alias(libs.plugins.loom)
+    alias(libs.plugins.dokka)
+    alias(libs.plugins.validator)
 }
 
-val modVersion = property("mod_version")!!.toString()
-val mcVersion = platform.toString()
-
-version = "${modVersion}_$mcVersion"
-group = property("mod_group")!!
-val yarnMappings = property("yarn_mappings")!!
+version = property("mod_version").toString()
 
 repositories {
     maven("https://jitpack.io")
     maven("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1")
     maven("https://maven.terraformersmc.com/releases")
+    maven("https://repo.essential.gg/repository/maven-public")
 }
 
 dependencies {
-    include(modImplementation("net.fabricmc:fabric-loader:${property("loader_version")}")!!)
-    include(modImplementation("net.fabricmc.fabric-api:fabric-api:${property("fabric_version")}")!!)
+    // To change the versions see the gradle/libs.versions.toml
+    minecraft(libs.minecraft)
+    mappings(variantOf(libs.yarn) { classifier("v2") })
+    modImplementation(libs.bundles.fabric)
 
-    include(modImplementation("net.fabricmc:fabric-language-kotlin:1.9.4+kotlin.1.8.21")!!)
-    include(modImplementation("net.fabricmc:mapping-io:0.5.1")!!)
-    include(modImplementation("com.github.ChatTriggers:rhino:739c70599b")!!)
-    include(modImplementation("com.fasterxml.jackson.core:jackson-core:2.13.2")!!)
-    include(modImplementation("com.fifesoft:rsyntaxtextarea:3.2.0")!!)
-    include(modImplementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")!!)
-    include(modImplementation("com.github.ChatTriggers:Koffee:315bc11234")!!)
-
-    include(implementation(annotationProcessor("com.github.llamalad7.mixinextras:mixinextras-fabric:0.2.0")!!)!!)
-
-    // 1.18 versions are good enough for Elementa and Vigilance, but not UC, so we
-    // need to exclude this version
-    configurations.modImplementation { exclude("gg.essential", "universalcraft-1.18.1-fabric") }
-
-    include(modImplementation("gg.essential:vigilance-1.18.1-fabric:295")!!)
-    val ucArtifact = if (mcVersion == "1.19.4-fabric") mcVersion else "1.20.3-fabric"
-    include(modImplementation("gg.essential:universalcraft-$ucArtifact:320")!!)
-    include(modImplementation("gg.essential:elementa-1.18.1-fabric:610")!!)
-
-    val modMenuVersion = when (mcVersion) {
-        "1.20.4-fabric" -> "9.0.0"
-        "1.19.4-fabric" -> "6.3.1"
-        else -> throw Exception("Minecraft version $mcVersion is not supported")
+    modImplementation(libs.bundles.included) { include(this) }
+    modImplementation(libs.bundles.essential) {
+        exclude("gg.essential", "universalcraft-1.18.1-fabric")
+        include(this)
     }
-    modApi("com.terraformersmc:modmenu:$modMenuVersion")
 
-
-    modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:1.1.2")
-
-    dokkaPlugin("org.jetbrains.dokka:versioning-plugin:1.8.20")
+    modApi(libs.modmenu)
+    modRuntimeOnly(libs.devauth)
+    dokkaPlugin(libs.versioning)
 }
 
 loom {
-    accessWidenerPath.set(rootProject.file("src/main/resources/chattriggers.accesswidener"))
+    accessWidenerPath.set(file("src/main/resources/chattriggers.accesswidener"))
 }
 
 base {
@@ -90,13 +60,31 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
+apiValidation {
+    ignoredPackages.add("com.chattriggers.ctjs.internal")
+}
+
 tasks {
     processResources {
-        inputs.property("yarn_mappings", yarnMappings)
+        val flkVersion = libs.versions.fabric.kotlin.get()
+        val yarnVersion = libs.versions.yarn.get()
+        val fapiVersion = libs.versions.fabric.api.get()
+        val loaderVersion = libs.versions.loader.get()
+
         inputs.property("version", project.version)
+        inputs.property("yarn_mappings", yarnVersion)
+        inputs.property("fabric_kotlin_version", flkVersion)
+        inputs.property("fabric_api_version", fapiVersion)
+        inputs.property("loader_version", loaderVersion)
 
         filesMatching("fabric.mod.json") {
-            expand("version" to project.version, "yarn_mappings" to yarnMappings)
+            expand(
+                "version" to project.version,
+                "yarn_mappings" to yarnVersion,
+                "fabric_kotlin_version" to flkVersion,
+                "fabric_api_version" to fapiVersion,
+                "loader_version" to loaderVersion
+            )
         }
     }
 
@@ -117,99 +105,90 @@ tasks {
         }
     }
 
-    build {
-        doLast {
-            allprojects {
-                copy {
-                    from("build/libs")
-                    into(rootProject.file("build"))
+    dokkaHtml {
+        // Just use the module name here since the MC version doesn't affect CT's API
+        // across the same mod version
+        moduleVersion.set(project.version.toString())
+        moduleName.set("ctjs")
+
+        val docVersionsDir = projectDir.resolve("build/javadocs")
+        val currentVersion = project.version.toString()
+        val currentDocsDir = docVersionsDir.resolve(currentVersion)
+        outputs.upToDateWhen { docVersionsDir.exists() }
+
+        outputDirectory.set(file(currentDocsDir))
+
+        pluginConfiguration<VersioningPlugin, VersioningConfiguration> {
+            version = project.version.toString()
+            olderVersionsDir = docVersionsDir
+            renderVersionsNavigationOnAllPages = true
+        }
+
+        suppressObviousFunctions.set(true)
+        suppressInheritedMembers.set(true)
+
+        val branch = getBranch()
+        dokkaSourceSets {
+            configureEach {
+                jdkVersion.set(17)
+
+                perPackageOption {
+                    matchingRegex.set("com\\.chattriggers\\.ctjs\\.internal(\$|\\.).*")
+                    suppress.set(true)
+                }
+
+                sourceLink {
+                    localDirectory.set(file("src/main/kotlin"))
+                    remoteUrl.set(URL("https://github.com/ChatTriggers/ctjs/blob/$branch/src/main/kotlin"))
+                    remoteLineSuffix.set("#L")
+                }
+
+                externalDocumentationLink {
+                    val yarnVersion = libs.versions.yarn.get()
+
+                    url.set(URL("https://maven.fabricmc.net/docs/yarn-$yarnVersion/"))
+                    packageListUrl.set(URL("https://maven.fabricmc.net/docs/yarn-$yarnVersion/element-list"))
                 }
             }
         }
-    }
-}
 
-tasks.dokkaHtml {
-    // Just use the module name here since the MC version doesn't affect CT's API
-    // across the same mod version
-    moduleVersion.set(modVersion)
-    moduleName.set("ctjs")
+        doFirst {
+            val archiveBase = "https://www.chattriggers.com/javadocs-archive/"
+            val versions = String(downloadFile(archiveBase + "versions")).lines().map(String::trim)
+            val tmpFile = File(temporaryDir, "oldVersionsZip.zip")
 
-    val docVersionsDir = projectDir.resolve("build/javadocs")
-    val currentVersion = project.version.toString()
-    val currentDocsDir = docVersionsDir.resolve(currentVersion)
-    outputs.upToDateWhen { docVersionsDir.exists() }
-
-    outputDirectory.set(file(currentDocsDir))
-
-    pluginConfiguration<VersioningPlugin, VersioningConfiguration> {
-        version = modVersion
-        olderVersionsDir = docVersionsDir
-        renderVersionsNavigationOnAllPages = true
-    }
-
-    suppressObviousFunctions.set(true)
-    suppressInheritedMembers.set(true)
-
-    val branch = getBranch()
-    dokkaSourceSets {
-        configureEach {
-            jdkVersion.set(17)
-
-            perPackageOption {
-                matchingRegex.set("com\\.chattriggers\\.ctjs\\.internal(\$|\\.).*")
-                suppress.set(true)
+            versions.filter(String::isNotEmpty).map(String::trim).forEach { version ->
+                val zipBytes = downloadFile("$archiveBase$version.zip")
+                tmpFile.writeBytes(zipBytes)
+                unzipTo(docVersionsDir, tmpFile)
             }
 
-            sourceLink {
-                localDirectory.set(file("src/main/kotlin"))
-                remoteUrl.set(URL("https://github.com/ChatTriggers/ctjs/blob/$branch/src/main/kotlin"))
-                remoteLineSuffix.set("#L")
+            tmpFile.delete()
+        }
+
+        doLast {
+            // At this point we have a structure that looks something like this:
+            // javadocs
+            //   \-- 2.2.0-1.8.9
+            //   \-- 3.0.0
+            //         \-- older
+            //
+            // The "older" directory contains all old versions, so we want to
+            // delete the top-level older versions and move everything inside the
+            // latest directory to the top level so the GitHub actions workflow
+            // doesn't need to figure out the correct version name
+
+            docVersionsDir.listFiles()?.forEach {
+                if (it.name != version)
+                    it.deleteRecursively()
             }
 
-            externalDocumentationLink {
-                url.set(URL("https://maven.fabricmc.net/docs/yarn-$yarnMappings/"))
-                packageListUrl.set(URL("https://maven.fabricmc.net/docs/yarn-$yarnMappings/element-list"))
+            val latestVersionDir = docVersionsDir.listFiles()!!.single()
+            latestVersionDir.listFiles()!!.forEach {
+                it.renameTo(File(it.parentFile.parentFile, it.name))
             }
+            latestVersionDir.deleteRecursively()
         }
-    }
-
-    doFirst {
-        val archiveBase = "https://www.chattriggers.com/javadocs-archive/"
-        val versions = String(downloadFile(archiveBase + "versions")).lines().map(String::trim)
-        val tmpFile = File(temporaryDir, "oldVersionsZip.zip")
-
-        versions.filter(String::isNotEmpty).map(String::trim).forEach { version ->
-            val zipBytes = downloadFile("$archiveBase$version.zip")
-            tmpFile.writeBytes(zipBytes)
-            unzipTo(docVersionsDir, tmpFile)
-        }
-
-        tmpFile.delete()
-    }
-
-    doLast {
-        // At this point we have a structure that looks something like this:
-        // javadocs
-        //   \-- 2.2.0-1.8.9
-        //   \-- 3.0.0
-        //         \-- older
-        //
-        // The "older" directory contains all old versions, so we want to
-        // delete the top-level older versions and move everything inside the
-        // latest directory to the top level so the GitHub actions workflow
-        // doesn't need to figure out the correct version name
-
-        docVersionsDir.listFiles()?.forEach {
-            if (it.name != version)
-                it.deleteRecursively()
-        }
-
-        val latestVersionDir = docVersionsDir.listFiles()!!.single()
-        latestVersionDir.listFiles()!!.forEach {
-            it.renameTo(File(it.parentFile.parentFile, it.name))
-        }
-        latestVersionDir.deleteRecursively()
     }
 }
 

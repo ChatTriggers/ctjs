@@ -20,7 +20,7 @@ enum class BlockFace(
     WEST(5, AxisDirection.NEGATIVE, Axis.X, Vec3i(-1, 0, 0), Direction.WEST),
     EAST(4, AxisDirection.POSITIVE, Axis.X, Vec3i(1, 0, 0), Direction.EAST);
 
-    fun getOpposite() = values()[oppositeIndex]
+    fun getOpposite() = entries[oppositeIndex]
 
     fun getOffsetX() = directionVec.x
 

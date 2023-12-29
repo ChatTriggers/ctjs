@@ -34,14 +34,14 @@ open class Block(
     fun isEmittingPower(face: BlockFace? = null): Boolean {
         if (face != null)
             return World.toMC()!!.isEmittingRedstonePower(pos.toMC(), face.toMC())
-        return BlockFace.values().any { isEmittingPower(it) }
+        return BlockFace.entries.any { isEmittingPower(it) }
     }
 
     @JvmOverloads
     fun getEmittingPower(face: BlockFace? = null): Int {
         if (face != null)
             return World.toMC()!!.getEmittedRedstonePower(pos.toMC(), face.toMC())
-        return BlockFace.values().asSequence().map(::getEmittingPower).firstOrNull { it != 0 } ?: 0
+        return BlockFace.entries.asSequence().map(::getEmittingPower).firstOrNull { it != 0 } ?: 0
     }
 
     fun isReceivingPower() = World.toMC()!!.isReceivingRedstonePower(pos.toMC())

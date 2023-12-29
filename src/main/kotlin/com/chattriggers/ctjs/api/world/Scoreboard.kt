@@ -4,10 +4,7 @@ import com.chattriggers.ctjs.api.message.TextComponent
 import com.chattriggers.ctjs.MCTeam
 import net.minecraft.scoreboard.ScoreboardEntry
 import net.minecraft.scoreboard.ScoreboardObjective
-
-//#if MC>=12004
 import net.minecraft.scoreboard.ScoreboardScore
-//#endif
 
 object Scoreboard {
     private var needsUpdate = true
@@ -109,30 +106,18 @@ object Scoreboard {
         val sidebarObjective = getSidebar() ?: return
 
         if (override) {
-            //#if MC>=12004
             scoreboard.getScoreboardEntries(sidebarObjective).filter {
                 it.value == score
             }.forEach {
                 scoreboard.removeScore({ it.owner }, sidebarObjective)
             }
-            //#else
-            //$$ scoreboard.getAllPlayerScores(sidebarObjective).filter {
-            //$$     it.score == score
-            //$$ }.forEach {
-            //$$     scoreboard.resetPlayerScore(it.playerName, sidebarObjective)
-            //$$ }
-            //#endif
         }
 
-        //#if MC>=12004
         scoreboard.knownScoreHolders.forEach {
             val scoreboardScore = scoreboard.getScore({ it.nameForScoreboard }, sidebarObjective) as? ScoreboardScore
             if (scoreboardScore?.score == score)
                 scoreboardScore.displayText = line
         }
-        //#else
-        //$$ scoreboard.getPlayerScore(line.formattedText, sidebarObjective).score = score
-        //#endif
     }
 
     @JvmStatic
@@ -156,11 +141,7 @@ object Scoreboard {
 
         scoreboardTitle = TextComponent(objective.displayName)
         scoreboardNames = scoreboard.getScoreboardEntries(objective).filter {
-            //#if MC>=12004
             it.owner != null && !it.owner.startsWith("#")
-            //#else
-            //$$ it.playerName != null && !it.playerName.startsWith("#")
-            //#endif
         }.map(::Score).sortedBy { it.getPoints() }.toMutableList()
     }
 
@@ -177,11 +158,7 @@ object Scoreboard {
          *
          * @return the actual point value
          */
-        //#if MC>=12004
         fun getPoints(): Int = mcValue.value
-        //#else
-        //$$ fun getPoints(): Int = mcValue.score
-        //#endif
 
         /**
          * Gets the display string of this score
@@ -190,13 +167,8 @@ object Scoreboard {
          */
         fun getName() = TextComponent(
             MCTeam.decorateName(
-                //#if MC>=12004
                 Scoreboard.toMC()!!.getScoreHolderTeam(mcValue.owner),
                 TextComponent(mcValue.owner),
-                //#else
-                //$$ Scoreboard.toMC()!!.getPlayerTeam(mcValue.playerName),
-                //$$ TextComponent(mcValue.playerName),
-                //#endif
             )
         )
 
