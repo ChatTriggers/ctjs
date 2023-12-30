@@ -45,7 +45,7 @@ dependencies {
 
     include(modImplementation("net.fabricmc:fabric-language-kotlin:1.9.4+kotlin.1.8.21")!!)
     include(modImplementation("net.fabricmc:mapping-io:0.5.1")!!)
-    include(modImplementation("com.github.ChatTriggers:rhino:96d0c07966")!!)
+    include(modImplementation("com.github.ChatTriggers:rhino:dcbb729fe5")!!)
     include(modImplementation("com.fasterxml.jackson.core:jackson-core:2.13.2")!!)
     include(modImplementation("com.fifesoft:rsyntaxtextarea:3.2.0")!!)
     include(modImplementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")!!)
