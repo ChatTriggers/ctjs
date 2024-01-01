@@ -337,7 +337,7 @@ class TextComponent private constructor(
         }
 
         companion object {
-            fun of(obj: Any) = when (obj) {
+            fun of(obj: Any?): List<Part> = when (obj) {
                 is NativeObject -> {
                     val text = obj["text"]
                         ?: throw IllegalArgumentException("Expected TextComponent part to have a \"text\" key")
@@ -367,6 +367,8 @@ class TextComponent private constructor(
 
                     parts
                 }
+                is List<*> -> obj.flatMap(::of)
+                null -> emptyList()
                 else -> throw IllegalArgumentException("Cannot convert ${obj::class.simpleName} to TextComponent part")
             }
         }
