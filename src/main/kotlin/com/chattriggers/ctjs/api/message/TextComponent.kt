@@ -1,6 +1,5 @@
 package com.chattriggers.ctjs.api.message
 
-import com.chattriggers.ctjs.CTJS
 import com.chattriggers.ctjs.MCEntity
 import com.chattriggers.ctjs.api.client.Client
 import com.chattriggers.ctjs.api.client.Player
@@ -13,15 +12,10 @@ import com.mojang.serialization.Codec
 import com.mojang.serialization.MapCodec
 import com.mojang.serialization.codecs.RecordCodecBuilder
 import gg.essential.universal.UChat
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.buildJsonArray
-import kotlinx.serialization.json.buildJsonObject
 import net.minecraft.item.ItemStack
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket
 import net.minecraft.text.*
 import net.minecraft.util.Formatting
-import net.minecraft.util.Identifier
 import org.mozilla.javascript.Context
 import org.mozilla.javascript.NativeObject
 import org.mozilla.javascript.ScriptRuntime
@@ -240,7 +234,7 @@ class TextComponent private constructor(
         var i = 0
         parts.all {
             it.text.codePoints().toList().all { cp ->
-                visitor.accept(i++, style, cp)
+                visitor.accept(i++, it.style, cp)
             }
         }
     }
