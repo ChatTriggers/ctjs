@@ -381,7 +381,7 @@ class TextComponent private constructor(
         override fun <T : Any?> visit(visitor: StringVisitable.Visitor<T>): Optional<T> = visitor.accept(text)
 
         override fun <T> visit(visitor: StringVisitable.StyledVisitor<T>, style: Style): Optional<T> {
-            return visitor.accept(this.style_, text)
+            return visitor.accept(this.style_.withParent(style), text)
         }
 
         //#if MC>=12004
