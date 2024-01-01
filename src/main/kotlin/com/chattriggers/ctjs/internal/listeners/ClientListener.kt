@@ -13,14 +13,11 @@ import com.chattriggers.ctjs.api.world.Scoreboard
 import com.chattriggers.ctjs.api.world.World
 import com.chattriggers.ctjs.api.world.block.BlockFace
 import com.chattriggers.ctjs.api.world.block.BlockPos
-import com.chattriggers.ctjs.engine.LogType
-import com.chattriggers.ctjs.engine.printToConsole
 import com.chattriggers.ctjs.internal.engine.CTEvents
 import com.chattriggers.ctjs.internal.engine.JSContextFactory
 import com.chattriggers.ctjs.internal.engine.JSLoader
 import com.chattriggers.ctjs.internal.utils.Initializer
 import com.chattriggers.ctjs.internal.utils.toMatrixStack
-import gg.essential.universal.UMatrixStack
 import gg.essential.universal.UMinecraft
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
@@ -28,7 +25,6 @@ import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents
 import net.fabricmc.fabric.api.client.screen.v1.ScreenKeyboardEvents
 import net.fabricmc.fabric.api.event.player.*
-import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.text.Text
 import net.minecraft.util.ActionResult
 import net.minecraft.util.TypedActionResult
@@ -95,14 +91,14 @@ object ClientListener : Initializer {
         ScreenEvents.BEFORE_INIT.register { _, screen, _, _ ->
             // TODO: Why does Renderer.drawString not work in here?
             ScreenEvents.beforeRender(screen).register { _, stack, mouseX, mouseY, partialTicks ->
-                renderTrigger(stack.toMatrixStack(), partialTicks) {
+                Renderer.withMatrix(stack.toMatrixStack(), partialTicks) {
                     TriggerType.GUI_RENDER.triggerAll(mouseX, mouseY, screen)
                 }
             }
 
             // TODO: Why does Renderer.drawString not work in here?
             ScreenEvents.afterRender(screen).register { _, stack, mouseX, mouseY, partialTicks ->
-                renderTrigger(stack.toMatrixStack(), partialTicks) {
+                Renderer.withMatrix(stack.toMatrixStack(), partialTicks) {
                     TriggerType.POST_GUI_RENDER.triggerAll(mouseX, mouseY, screen, partialTicks)
                 }
             }
@@ -131,19 +127,19 @@ object ClientListener : Initializer {
         }
 
         CTEvents.RENDER_OVERLAY.register { stack, partialTicks ->
-            renderTrigger(stack, partialTicks) {
+            Renderer.withMatrix(stack, partialTicks) {
                 TriggerType.RENDER_OVERLAY.triggerAll()
             }
         }
 
         CTEvents.RENDER_ENTITY.register { stack, entity, partialTicks, ci ->
-            renderTrigger(stack, partialTicks) {
+            Renderer.withMatrix(stack, partialTicks) {
                 TriggerType.RENDER_ENTITY.triggerAll(Entity.fromMC(entity), partialTicks, ci)
             }
         }
 
         CTEvents.RENDER_BLOCK_ENTITY.register { stack, blockEntity, partialTicks, ci ->
-            renderTrigger(stack, partialTicks) {
+            Renderer.withMatrix(stack, partialTicks) {
                 TriggerType.RENDER_BLOCK_ENTITY.triggerAll(BlockEntity(blockEntity), partialTicks, ci)
             }
         }
@@ -251,19 +247,4 @@ object ClientListener : Initializer {
             !event.isCancelled()
         }
     }
-
-    internal fun renderTrigger(stack: MatrixStack, partialTicks: Float, block: () -> Unit) {
-        Renderer.partialTicks = partialTicks
-        Renderer.matrixPushCounter = 0
-        Renderer.pushMatrix(UMatrixStack(stack))
-        block()
-        Renderer.popMatrix()
-
-        if (Renderer.matrixPushCounter > 0) {
-            "Warning: Render trigger missing a call to Renderer.popMatrix()".printToConsole(LogType.WARN)
-        } else if (Renderer.matrixPushCounter < 0) {
-            "Warning: Render trigger has too many calls to Renderer.popMatrix()".printToConsole(LogType.WARN)
-        }
-    }
-
 }

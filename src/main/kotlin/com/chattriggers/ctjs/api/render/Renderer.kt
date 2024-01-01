@@ -7,6 +7,8 @@ import com.chattriggers.ctjs.api.message.ChatLib
 import com.chattriggers.ctjs.api.vec.Vec3f
 import com.chattriggers.ctjs.internal.mixins.EntityRenderDispatcherAccessor
 import com.chattriggers.ctjs.MCVertexFormat
+import com.chattriggers.ctjs.engine.LogType
+import com.chattriggers.ctjs.engine.printToConsole
 import com.chattriggers.ctjs.internal.utils.asMixin
 import com.chattriggers.ctjs.internal.utils.getOrDefault
 import com.chattriggers.ctjs.internal.utils.toRadians
@@ -26,7 +28,7 @@ import net.minecraft.client.render.Tessellator
 import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.client.render.VertexFormats
 import net.minecraft.client.render.entity.EntityRendererFactory
-import net.minecraft.util.math.RotationAxis
+import net.minecraft.client.util.math.MatrixStack
 import org.joml.Matrix4f
 import org.joml.Quaternionf
 import org.mozilla.javascript.NativeObject
@@ -738,6 +740,20 @@ object Renderer {
         entity.headYaw = oldHeadYaw
 
         matrixStack.pop()
+    }
+
+    internal fun withMatrix(stack: MatrixStack, partialTicks: Float = Renderer.partialTicks, block: () -> Unit) {
+        Renderer.partialTicks = partialTicks
+        matrixPushCounter = 0
+        pushMatrix(UMatrixStack(stack))
+        block()
+        popMatrix()
+
+        if (matrixPushCounter > 0) {
+            "Warning: Render function missing a call to Renderer.popMatrix()".printToConsole(LogType.WARN)
+        } else if (matrixPushCounter < 0) {
+            "Warning: Render function has too many calls to Renderer.popMatrix()".printToConsole(LogType.WARN)
+        }
     }
 
     enum class DrawMode(private val ucValue: UGraphics.DrawMode) {

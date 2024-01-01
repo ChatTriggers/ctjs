@@ -1,5 +1,6 @@
 package com.chattriggers.ctjs.internal.listeners
 
+import com.chattriggers.ctjs.api.render.Renderer
 import com.chattriggers.ctjs.api.triggers.CancellableEvent
 import com.chattriggers.ctjs.api.triggers.TriggerType
 import com.chattriggers.ctjs.internal.utils.Initializer
@@ -15,13 +16,13 @@ object WorldListener : Initializer {
         }
 
         WorldRenderEvents.START.register { ctx ->
-            ClientListener.renderTrigger(ctx.matrixStack(), ctx.tickDelta()) {
+            Renderer.withMatrix(ctx.matrixStack(), ctx.tickDelta()) {
                 TriggerType.PRE_RENDER_WORLD.triggerAll(ctx.tickDelta())
             }
         }
 
         WorldRenderEvents.LAST.register { ctx ->
-            ClientListener.renderTrigger(ctx.matrixStack(), ctx.tickDelta()) {
+            Renderer.withMatrix(ctx.matrixStack(), ctx.tickDelta()) {
                 TriggerType.POST_RENDER_WORLD.triggerAll(ctx.tickDelta())
             }
         }
