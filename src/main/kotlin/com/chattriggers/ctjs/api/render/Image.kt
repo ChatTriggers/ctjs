@@ -4,6 +4,7 @@ import com.chattriggers.ctjs.CTJS
 import com.chattriggers.ctjs.api.client.Client
 import net.minecraft.client.texture.NativeImage
 import net.minecraft.client.texture.NativeImageBackedTexture
+import net.minecraft.util.Identifier
 import org.lwjgl.system.MemoryUtil
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
@@ -17,6 +18,7 @@ class Image(var image: BufferedImage?) {
     private val textureWidth = image?.width ?: 0
     private val textureHeight = image?.height ?: 0
     private val aspectRatio = if (textureHeight != 0) textureHeight.toFloat() / textureWidth else 0f
+    private var identifier: Identifier? = null
 
     init {
         CTJS.images.add(this)
@@ -36,6 +38,21 @@ class Image(var image: BufferedImage?) {
         }
 
         return texture!!.texture
+    }
+
+    internal fun getIdOrRegister(): Identifier {
+        if (identifier == null) {
+            identifier = Identifier("ctjs:image${nextIdentifierIndex++}")
+            if (texture != null) {
+                Client.getMinecraft().textureManager.registerTexture(identifier!!, texture!!.texture)
+            } else {
+                Client.scheduleTask {
+                    Client.getMinecraft().textureManager.registerTexture(identifier!!, texture!!.texture)
+                }
+            }
+        }
+
+        return identifier!!
     }
 
     /**
@@ -70,6 +87,8 @@ class Image(var image: BufferedImage?) {
     private data class Texture(val texture: NativeImageBackedTexture, val buffer: ByteBuffer)
 
     companion object {
+        private var nextIdentifierIndex = 0
+
         /**
          * Create an image object from a java.io.File object. Throws an exception
          * if the file cannot be found.
