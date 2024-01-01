@@ -62,13 +62,13 @@ dependencies {
     include(modImplementation("gg.essential:universalcraft-$ucArtifact:320")!!)
     include(modImplementation("gg.essential:elementa-1.18.1-fabric:610")!!)
 
-    // TODO: Re-add this
-    // val modMenuVersion = when (mcVersion) {
-    //     "1.20.4-fabric" -> "9.0.0-pre.1"
-    //     "1.19.4-fabric" -> "6.3.1"
-    //     else -> throw Exception("Minecraft version $mcVersion is not supported")
-    // }
-    // modApi("com.terraformersmc:modmenu:$modMenuVersion")
+    val modMenuVersion = when (mcVersion) {
+        "1.20.4-fabric" -> "9.0.0"
+        "1.19.4-fabric" -> "6.3.1"
+        else -> throw Exception("Minecraft version $mcVersion is not supported")
+    }
+    modApi("com.terraformersmc:modmenu:$modMenuVersion")
+
 
     modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:1.1.2")
 
