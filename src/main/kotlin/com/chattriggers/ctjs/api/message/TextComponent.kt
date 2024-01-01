@@ -64,7 +64,9 @@ class TextComponent private constructor(
      *
      * @see Style
      */
-    constructor(vararg parts: Any) : this(parts.flatMap(Part::of).toMutableList())
+    constructor(vararg parts: Any) : this(parts.flatMap(Part::of).toMutableList().let {
+        if (it.isEmpty()) mutableListOf(Part("", Style.EMPTY)) else it
+    })
 
     /**
      * Returns the text of all parts concatenated without formatting codes.
