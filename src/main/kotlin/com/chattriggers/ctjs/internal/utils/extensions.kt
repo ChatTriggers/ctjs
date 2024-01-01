@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.Version
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.MathHelper
 import org.mozilla.javascript.NativeObject
+import org.mozilla.javascript.Scriptable
 import java.net.URLEncoder
 import java.nio.charset.Charset
 import kotlin.reflect.KClass
@@ -40,6 +41,10 @@ fun NativeObject?.getOption(key: String, default: Any): String {
 //       of numeric properties depends on Rhino internals
 inline fun <reified T> NativeObject?.getOrDefault(key: String, default: T): T {
     return this?.get(key) as? T ?: default
+}
+
+fun NativeObject?.getOrNull(key: String): Any? {
+    return this?.get(key).takeIf { it != Scriptable.NOT_FOUND }
 }
 
 fun Double.toRadians() = this * MathHelper.RADIANS_PER_DEGREE

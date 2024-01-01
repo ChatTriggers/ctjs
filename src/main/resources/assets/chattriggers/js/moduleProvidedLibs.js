@@ -88,6 +88,7 @@
     loadClass("com.chattriggers.ctjs.api.render.Renderer3d");
     loadClass("com.chattriggers.ctjs.api.render.Shape");
     loadClass("com.chattriggers.ctjs.api.render.Text");
+    loadClass("com.chattriggers.ctjs.api.render.Toast");
 
     // For module authors to use with custom triggers
     loadClass("com.chattriggers.ctjs.api.triggers.CancellableEvent");

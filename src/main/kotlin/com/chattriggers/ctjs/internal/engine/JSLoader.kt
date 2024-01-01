@@ -171,9 +171,9 @@ object JSLoader {
         }
     }
 
-    fun invoke(method: Callable, args: Array<out Any?>): Any? {
+    fun invoke(method: Callable, args: Array<out Any?>, thisObj: Scriptable = scope): Any? {
         return wrapInContext {
-            Context.jsToJava(method.call(Context.getCurrentContext(), scope, scope, args), Any::class.java)
+            Context.jsToJava(method.call(Context.getCurrentContext(), scope, thisObj, args), Any::class.java)
         }
     }
 

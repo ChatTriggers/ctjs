@@ -1921,6 +1921,31 @@ public final class com/chattriggers/ctjs/api/render/Text$Align : java/lang/Enum 
 	public static fun values ()[Lcom/chattriggers/ctjs/api/render/Text$Align;
 }
 
+public final class com/chattriggers/ctjs/api/render/Toast : net/minecraft/client/toast/Toast {
+	public static final field Companion Lcom/chattriggers/ctjs/api/render/Toast$Companion;
+	public fun <init> (Lorg/mozilla/javascript/NativeObject;)V
+	@1.20.4-fabric
+	public fun draw (Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/client/toast/ToastManager;J)Lnet/minecraft/client/toast/Toast$Visibility;
+	@1.19.4-fabric
+	public fun draw (Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/toast/ToastManager;J)Lnet/minecraft/client/toast/Toast$Visibility;
+	public final fun getBackground ()Ljava/lang/Object;
+	public final fun getDescription ()Ljava/lang/Object;
+	public final fun getDisplayTime ()J
+	public fun getHeight ()I
+	public final fun getIcon ()Ljava/lang/Object;
+	public final fun getTitle ()Ljava/lang/Object;
+	public fun getWidth ()I
+	public final fun setBackground (Ljava/lang/Object;)V
+	public final fun setDescription (Ljava/lang/Object;)V
+	public final fun setDisplayTime (J)V
+	public final fun setIcon (Ljava/lang/Object;)V
+	public final fun setTitle (Ljava/lang/Object;)V
+	public final fun show ()Lcom/chattriggers/ctjs/api/render/Toast;
+}
+
+public final class com/chattriggers/ctjs/api/render/Toast$Companion {
+}
+
 public class com/chattriggers/ctjs/api/triggers/CancellableEvent {
 	public fun <init> ()V
 	public final fun isCancelable ()Z
