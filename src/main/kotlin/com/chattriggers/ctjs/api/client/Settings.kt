@@ -291,7 +291,7 @@ object Settings {
 
             @JvmStatic
             fun from(value: Any) = when (value) {
-                is String -> valueOf(value)
+                is CharSequence -> valueOf(value.toString())
                 is MCCloudRenderMode -> fromMC(value)
                 is CloudRenderMode -> value
                 else -> throw IllegalArgumentException("Cannot create CloudRenderMode from $value")
@@ -310,7 +310,7 @@ object Settings {
 
             @JvmStatic
             fun from(value: Any) = when (value) {
-                is String -> valueOf(value)
+                is CharSequence -> valueOf(value.toString())
                 is MCParticlesMode -> fromMC(value)
                 is ParticlesMode -> value
                 else -> throw IllegalArgumentException("Cannot create ParticlesMode from $value")
@@ -329,7 +329,7 @@ object Settings {
 
             @JvmStatic
             fun from(value: Any) = when (value) {
-                is String -> valueOf(value)
+                is CharSequence -> valueOf(value.toString())
                 is MCChatVisibility -> fromMC(value)
                 is ChatVisibility -> value
                 else -> throw IllegalArgumentException("Cannot create ChatVisibility from $value")

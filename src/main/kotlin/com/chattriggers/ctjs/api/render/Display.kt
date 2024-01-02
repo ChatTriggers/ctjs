@@ -51,7 +51,7 @@ class Display() {
      */
     fun setAlign(align: Any) = apply {
         this.align = when (align) {
-            is String -> Text.Align.valueOf(align.uppercase())
+            is CharSequence -> Text.Align.valueOf(align.toString().uppercase())
             is Text.Align -> align
             else -> Text.Align.LEFT
         }
@@ -61,7 +61,7 @@ class Display() {
 
     fun setOrder(order: Any) = apply {
         this.order = when (order) {
-            is String -> Order.valueOf(order.uppercase())
+            is CharSequence -> Order.valueOf(order.toString().uppercase())
             is Order -> order
             else -> Order.NORMAL
         }
@@ -71,7 +71,7 @@ class Display() {
 
     fun setBackground(background: Any) = apply {
         this.background = when (background) {
-            is String -> Background.valueOf(background.uppercase().replace(" ", "_"))
+            is CharSequence -> Background.valueOf(background.toString().uppercase().replace(" ", "_"))
             is Background -> background
             else -> Background.NONE
         }
@@ -88,7 +88,7 @@ class Display() {
             lines.add(Text(""))
 
         when (line) {
-            is String -> lines[index].setString(line)
+            is CharSequence -> lines[index].setString(line.toString())
             is Text -> lines[index] = line
             else -> lines[index] = Text("")
         }

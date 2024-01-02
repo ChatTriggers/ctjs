@@ -28,7 +28,7 @@ object ChatLib {
     fun chat(text: Any?) {
         when (text) {
             is TextComponent -> text
-            is String -> TextComponent(text)
+            is CharSequence -> TextComponent(text)
             else -> TextComponent(text.toString())
         }.chat()
     }
@@ -43,7 +43,7 @@ object ChatLib {
     fun actionBar(text: Any?) {
         when (text) {
             is TextComponent -> text
-            is String -> TextComponent(text)
+            is CharSequence -> TextComponent(text)
             else -> TextComponent(text.toString())
         }.actionBar()
     }
@@ -58,7 +58,7 @@ object ChatLib {
     fun simulateChat(text: Any?) {
         when (text) {
             is TextComponent -> text
-            is String -> TextComponent(text)
+            is CharSequence -> TextComponent(text)
             else -> TextComponent(text.toString())
         }.withRecursive().chat()
     }

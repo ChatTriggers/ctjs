@@ -461,7 +461,7 @@ class Sound(private val config: NativeObject) {
 
             @JvmStatic
             fun from(value: Any) = when (value) {
-                is String -> valueOf(value)
+                is CharSequence -> valueOf(value.toString())
                 is SoundCategory -> fromMC(value)
                 is Category -> value
                 else -> throw IllegalArgumentException("Cannot create Sound.Category from $value")
@@ -479,7 +479,7 @@ class Sound(private val config: NativeObject) {
 
             @JvmStatic
             fun from(value: Any) = when (value) {
-                is String -> valueOf(value)
+                is CharSequence -> valueOf(value.toString())
                 is MCAttenuationType -> fromMC(value)
                 is AttenuationType -> value
                 else -> throw IllegalArgumentException("Cannot create Sound.Category from $value")

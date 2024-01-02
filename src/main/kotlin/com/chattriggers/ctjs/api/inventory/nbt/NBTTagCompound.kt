@@ -161,7 +161,7 @@ class NBTTagCompound(override val mcValue: MCNbtCompound) : NBTBase(mcValue) {
             is Long -> setLong(key, value)
             is Float -> setFloat(key, value)
             is Double -> setDouble(key, value)
-            is String -> setString(key, value)
+            is CharSequence -> setString(key, value.toString())
             is ByteArray -> setByteArray(key, value)
             is IntArray -> setIntArray(key, value)
             is Boolean -> setBoolean(key, value)

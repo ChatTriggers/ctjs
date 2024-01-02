@@ -13,9 +13,9 @@ class SoundPlayTrigger(method: Any) : Trigger(method, TriggerType.SOUND_PLAY) {
     fun setCriteria(soundNameCriteria: String) = apply { this.soundNameCriteria = soundNameCriteria }
 
     override fun trigger(args: Array<out Any?>) {
-        if (args[1] is String
+        if (args[1] is CharSequence
             && soundNameCriteria != ""
-            && !(args[1] as String).equals(soundNameCriteria, ignoreCase = true)
+            && !args[1].toString().equals(soundNameCriteria, ignoreCase = true)
         )
             return
 

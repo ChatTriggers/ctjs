@@ -72,7 +72,7 @@ class Text {
 
     fun setAlign(align: Any) = apply {
         this.align = when (align) {
-            is String -> Align.valueOf(align.uppercase())
+            is CharSequence -> Align.valueOf(align.toString().uppercase())
             is Align -> align
             else -> Align.LEFT
         }

@@ -83,7 +83,7 @@ object NBT {
                 }
             }
             is Boolean -> NbtByte.of(if (this) 1 else 0)
-            is String -> parseString(this, coerceNumericStrings)
+            is CharSequence -> parseString(this.toString(), coerceNumericStrings)
             is Byte -> NbtByte.of(this)
             is Short -> NbtShort.of(this)
             is Int -> NbtInt.of(this)

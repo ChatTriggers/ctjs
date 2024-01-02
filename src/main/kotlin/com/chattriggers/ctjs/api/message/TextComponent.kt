@@ -343,18 +343,18 @@ class TextComponent private constructor(
                 is NativeObject -> {
                     val text = obj["text"]
                         ?: throw IllegalArgumentException("Expected TextComponent part to have a \"text\" key")
-                    require(text is String) { "TextComponent part's \"text\" key must be a string" }
-                    listOf(Part(UChat.addColor(text), jsObjectToStyle(obj)))
+                    require(text is CharSequence) { "TextComponent part's \"text\" key must be a string" }
+                    listOf(Part(UChat.addColor(text.toString()), jsObjectToStyle(obj)))
                 }
                 is Part -> listOf(obj)
                 is TextComponent -> obj.parts
                 is Text -> listOf(Part(obj.string, obj.style))
-                is String -> {
+                is CharSequence -> {
                     val parts = mutableListOf<Part>()
                     val builder = StringBuilder()
                     var lastStyle = Style.EMPTY
 
-                    TextVisitFactory.visitFormatted(UChat.addColor(obj), 0, Style.EMPTY) { _, style, cp ->
+                    TextVisitFactory.visitFormatted(UChat.addColor(obj.toString()), 0, Style.EMPTY) { _, style, cp ->
                         if (style != lastStyle) {
                             parts.add(Part(builder.toString(), lastStyle))
                             lastStyle = style
@@ -413,11 +413,11 @@ class TextComponent private constructor(
                         is Formatting -> TextColor.fromFormatting(color)
                         is Int -> TextColor.fromRgb(color)
                         //#if MC>=12004
-                        is String -> TextColor.parse(color).result().orElseThrow {
+                        is CharSequence -> TextColor.parse(color.toString()).result().orElseThrow {
                             IllegalArgumentException("Could not parse \"$color\" as a text color")
                         }
                         //#else
-                        //$$ is String -> TextColor.parse(color) ?: throw IllegalArgumentException("Could not parse \"$color\" as a text color")
+                        //$$ is CharSequence -> TextColor.parse(color.toString()) ?: throw IllegalArgumentException("Could not parse \"$color\" as a text color")
                         //#endif
                         else -> throw IllegalArgumentException("Could not convert type ${color::class.simpleName} to a text color")
                     }
@@ -447,7 +447,7 @@ class TextComponent private constructor(
                         obj["clickAction"],
                         when (val clickValue = obj["clickValue"]) {
                             null -> null
-                            is String -> clickValue
+                            is CharSequence -> clickValue.toString()
                             else -> error("Expected \"clickValue\" key to be a string")
                         }
                     )
@@ -456,14 +456,14 @@ class TextComponent private constructor(
                 .withInsertion(
                     when (val insertion = obj["insertion"]) {
                         null -> null
-                        is String -> insertion
+                        is CharSequence -> insertion.toString()
                         else -> error("Expected \"insertion\" key to be a String")
                     }
                 )
                 .withFont(
                     when (val font = obj["font"]) {
                         null -> null
-                        is String -> font.toIdentifier()
+                        is CharSequence -> font.toString().toIdentifier()
                         else -> error("Expected \"font\" key to be a String")
                     }
                 )
@@ -486,7 +486,7 @@ class TextComponent private constructor(
         private fun makeClickEvent(action: Any?, value: String?): ClickEvent? {
             val clickAction = when (action) {
                 is ClickEvent.Action -> action
-                is String -> ClickEvent.Action.valueOf(action.uppercase())
+                is CharSequence -> ClickEvent.Action.valueOf(action.toString().uppercase())
                 null -> if (value != null) {
                     error("Cannot set Style's click value without a click action")
                 } else return null
@@ -499,7 +499,7 @@ class TextComponent private constructor(
         private fun makeHoverEvent(action: Any?, value: Any?): HoverEvent? {
             val hoverAction = when (action) {
                 is HoverEvent.Action<*> -> action
-                is String -> hoverEventActionByName(action)
+                is CharSequence -> hoverEventActionByName(action.toString())
                 null -> if (value != null) {
                     error("Cannot set Style's hover value without a hover action")
                 } else return null
@@ -524,7 +524,7 @@ class TextComponent private constructor(
             return when (obj) {
                 is ItemStack -> obj
                 is Item -> obj.toMC()
-                is String -> ItemType(obj).asItem().toMC()
+                is CharSequence -> ItemType(obj.toString()).asItem().toMC()
                 is HoverEvent.ItemStackContent -> return obj
                 else -> error("${obj::class} cannot be parsed as an item HoverEvent")
             }.let(HoverEvent::ItemStackContent)
@@ -535,10 +535,10 @@ class TextComponent private constructor(
                 is MCEntity -> obj
                 is Entity -> obj.toMC()
                 //#if MC>=12004
-                is String -> return HoverEvent.EntityContent.legacySerializer(TextComponent(obj))
+                is CharSequence -> return HoverEvent.EntityContent.legacySerializer(TextComponent(obj))
                     .getOrThrow(false) {}
                 //#else
-                //$$ is String -> return HoverEvent.EntityContent.parse(TextComponent(obj))
+                //$$ is CharSequence -> return HoverEvent.EntityContent.parse(TextComponent(obj))
                 //#endif
                 is HoverEvent.EntityContent -> return obj
                 else -> error("${obj::class} cannot be parsed as an entity HoverEvent")

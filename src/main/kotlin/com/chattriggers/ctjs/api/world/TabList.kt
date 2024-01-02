@@ -89,7 +89,7 @@ object TabList {
     @JvmStatic
     fun setHeader(header: Any?) {
         when (header) {
-            is String -> toMC()?.setHeader(TextComponent(header))
+            is CharSequence -> toMC()?.setHeader(TextComponent(header))
             is TextComponent -> toMC()?.setHeader(header)
             is Text -> toMC()?.setHeader(header)
             null -> toMC()?.setHeader(null)
@@ -114,7 +114,7 @@ object TabList {
     @JvmStatic
     fun setFooter(footer: Any?) {
         when (footer) {
-            is String -> toMC()?.setFooter(TextComponent(footer))
+            is CharSequence -> toMC()?.setFooter(TextComponent(footer))
             is TextComponent -> toMC()?.setFooter(footer)
             is Text -> toMC()?.setFooter(footer)
             null -> toMC()?.setFooter(null)

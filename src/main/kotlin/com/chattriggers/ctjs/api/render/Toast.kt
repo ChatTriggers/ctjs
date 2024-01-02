@@ -182,7 +182,7 @@ class Toast(config: NativeObject) : Toast {
 
         private fun toIdentifier(value: Any?): Identifier? = when (value) {
             is Image -> value.getIdOrRegister()
-            is String -> value.toIdentifier()
+            is CharSequence -> value.toString().toIdentifier()
             is Identifier -> value
             null -> null
             else -> throw IllegalArgumentException(

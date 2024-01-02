@@ -251,7 +251,7 @@ object BossBars {
 
             @JvmStatic
             fun from(value: Any) = when (value) {
-                is String -> valueOf(value)
+                is CharSequence -> valueOf(value.toString())
                 is MCBossBarColor -> fromMC(value)
                 is Color -> value
                 else -> throw IllegalArgumentException("Cannot create BossBars.Color from $value")
@@ -272,7 +272,7 @@ object BossBars {
 
             @JvmStatic
             fun from(value: Any) = when (value) {
-                is String -> valueOf(value)
+                is CharSequence -> valueOf(value.toString())
                 is MCBossBarStyle -> fromMC(value)
                 is Style -> value
                 is Int -> values().first { it.sections == value }

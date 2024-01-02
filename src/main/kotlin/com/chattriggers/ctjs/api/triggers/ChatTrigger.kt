@@ -34,11 +34,11 @@ class ChatTrigger(method: Any, type: ITriggerType) : Trigger(method, type) {
         var source = ".+"
 
         when (chatCriteria) {
-            is String -> {
+            is CharSequence -> {
                 if (!formattedForced)
                     formatted = Regex("[&\u00a7]") in chatCriteria
 
-                val replacedCriteria = Regex.escape(chatCriteria.replace("\n", "->newLine<-"))
+                val replacedCriteria = Regex.escape(chatCriteria.toString().replace("\n", "->newLine<-"))
                     .replace(Regex("\\\$\\{[^*]+?}"), "\\\\E(.+)\\\\Q")
                     .replace(Regex("\\$\\{\\*?}"), "\\\\E(?:.+)\\\\Q")
 
