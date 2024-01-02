@@ -411,7 +411,7 @@ class TextComponent private constructor(
                     when (color) {
                         is TextColor -> color
                         is Formatting -> TextColor.fromFormatting(color)
-                        is Int -> TextColor.fromRgb(color)
+                        is Number -> TextColor.fromRgb(color.toInt())
                         //#if MC>=12004
                         is CharSequence -> TextColor.parse(color.toString()).result().orElseThrow {
                             IllegalArgumentException("Could not parse \"$color\" as a text color")

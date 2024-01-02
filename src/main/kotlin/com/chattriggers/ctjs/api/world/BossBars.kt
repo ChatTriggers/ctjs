@@ -275,7 +275,7 @@ object BossBars {
                 is CharSequence -> valueOf(value.toString())
                 is MCBossBarStyle -> fromMC(value)
                 is Style -> value
-                is Int -> values().first { it.sections == value }
+                is Number -> values().first { it.sections == value }
                 else -> throw IllegalArgumentException("Cannot create BossBars.Style from $value")
             }
         }
