@@ -204,7 +204,7 @@ object Client {
         if (isInChat()) {
             val chatGui = getMinecraft().currentScreen as ChatScreen
             chatGui.asMixin<ChatScreenAccessor>().chatField.text = message
-        } else getMinecraft().setScreen(ChatScreen(message))
+        } else currentGui.set(ChatScreen(message))
     }
 
     @JvmStatic
