@@ -3,6 +3,7 @@ package com.chattriggers.ctjs.engine
 import com.chattriggers.ctjs.api.Config
 import com.chattriggers.ctjs.internal.console.ConsoleHostProcess
 import kotlinx.serialization.Serializable
+import org.mozilla.javascript.WrappedException
 import java.awt.Color
 
 // A wrapper object so that we can hide away the implementation in the
@@ -33,7 +34,9 @@ fun Any.printToConsole(logType: LogType = LogType.INFO) {
     Console.println(this, logType)
 }
 
-fun Throwable.printTraceToConsole() {
+fun Throwable.printTraceToConsole(): Unit = if (this is WrappedException) {
+    wrappedException.printTraceToConsole()
+} else {
     this.printStackTrace()
     Console.printStackTrace(this)
 }
