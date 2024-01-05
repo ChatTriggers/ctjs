@@ -57,7 +57,7 @@ class Toast(config: NativeObject) : Toast {
         it.toInt()
     } ?: super.getWidth()
 
-    private var toastHeight = config.getOrNull("width")?.let {
+    private var toastHeight = config.getOrNull("height")?.let {
         require(it is Number) { "Toast \"height\" must be a number" }
         it.toInt()
     } ?: super.getHeight()
