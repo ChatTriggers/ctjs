@@ -45,7 +45,7 @@ class TextComponent private constructor(
     private val parts: MutableList<Part>,
     private val chatLineId: Int = -1,
     private val isRecursive: Boolean = false,
-) : Text, List<NativeObject> {
+) : Text, Iterable<NativeObject> {
     /**
      * Creates an empty [TextComponent] with a single, unstyled, empty part.
      */
@@ -241,34 +241,22 @@ class TextComponent private constructor(
         }
     }
 
-    /////////////
-    // List<T> //
-    /////////////
+    // "List<NativeObject>" impl
+    // This interface doesn't actually implement List<NativeObject>, as that would cause Rhino to convert it to a JS
+    // array when returned from a Java API
+    val size by parts::size
 
-    override val size by parts::size
+    operator fun contains(element: NativeObject) = parts.any { ScriptRuntime.eq(element, it.nativeObject) }
 
-    override fun contains(element: NativeObject) = parts.any { ScriptRuntime.eq(element, it.nativeObject) }
+    fun containsAll(elements: Collection<NativeObject>) = elements.all(::contains)
 
-    override fun containsAll(elements: Collection<NativeObject>) = elements.all(::contains)
+    operator fun get(index: Int) = parts[index].nativeObject
 
-    override fun get(index: Int) = parts[index].nativeObject
+    fun indexOf(element: NativeObject) = parts.indexOfFirst { it.nativeObject == element }
 
-    override fun indexOf(element: NativeObject) = parts.indexOfFirst { it.nativeObject == element }
-
-    override fun isEmpty() = parts.isEmpty()
+    fun isEmpty() = parts.isEmpty()
 
     override fun iterator() = parts.map(Part::nativeObject).iterator()
-
-    override fun listIterator() = parts.map(Part::nativeObject).listIterator()
-
-    override fun listIterator(index: Int) = parts.map(Part::nativeObject).listIterator(index)
-
-    override fun lastIndexOf(element: NativeObject) = parts.indexOfLast { it.nativeObject == element }
-
-    override fun spliterator() = parts.map(Part::nativeObject).spliterator()
-
-    override fun subList(fromIndex: Int, toIndex: Int): List<NativeObject> =
-        parts.subList(fromIndex, toIndex).map(Part::nativeObject)
 
     private class Part(val content: PartContent) : Text {
         val text by content::text
