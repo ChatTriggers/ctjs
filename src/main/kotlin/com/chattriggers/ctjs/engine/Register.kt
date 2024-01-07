@@ -418,7 +418,7 @@ object Register {
      * Registers a new trigger that runs before an item is dropped.
      *
      * Passes through two arguments:
-     * - The [com.chattriggers.ctjs.minecraft.wrappers.inventory.Item] that was dropped
+     * - The [com.chattriggers.ctjs.api.inventory.Item] that was dropped
      * - Whether the entire stack (true), or just 1 item (false) will be dropped
      * - The event, which can be cancelled
      *
@@ -458,7 +458,7 @@ object Register {
      *
      * Passes through three arguments:
      * - The list of lore to modify.
-     * - The [com.chattriggers.ctjs.minecraft.wrappers.inventory.Item] that this lore is attached to.
+     * - The [com.chattriggers.ctjs.api.inventory.Item] that this lore is attached to.
      * - The cancellable event.
      *
      * Available modifications:
@@ -476,11 +476,11 @@ object Register {
      * Registers a new trigger that runs before the player interacts.
      *
      * Passes through three arguments:
-     * - The [ClientListener.PlayerInteraction]
+     * - The [com.chattriggers.ctjs.api.entity.PlayerInteraction]
      * - The object of interaction, depending on the interaction type. Either a
-     *   [com.chattriggers.ctjs.minecraft.wrappers.entity.Entity],
-     *   [com.chattriggers.ctjs.minecraft.wrappers.world.block.Block], or
-     *   [com.chattriggers.ctjs.minecraft.wrappers.inventory.Item],
+     *   [com.chattriggers.ctjs.api.entity.Entity],
+     *   [com.chattriggers.ctjs.api.world.block.Block], or
+     *   [com.chattriggers.ctjs.api.inventory.Item],
      * - The event, which can be cancelled if the interaction is not BreakBlock
      *
      * Available modifications:
@@ -681,7 +681,7 @@ object Register {
      * Registers a new trigger that runs whenever an entity is rendered
      *
      * Passes through three arguments:
-     * - The [com.chattriggers.ctjs.minecraft.wrappers.entity.Entity]
+     * - The [com.chattriggers.ctjs.api.entity.Entity]
      * - The partial ticks
      * - The event, which can be cancelled
      *
@@ -702,7 +702,7 @@ object Register {
      * Registers a new trigger that runs whenever a block entity is rendered
      *
      * Passes through three arguments:
-     * - The [com.chattriggers.ctjs.minecraft.wrappers.entity.BlockEntity]
+     * - The [com.chattriggers.ctjs.api.entity.BlockEntity]
      * - The partial ticks
      * - The event, which can be cancelled
      *
@@ -742,7 +742,7 @@ object Register {
      * Registers a new trigger that runs whenever a particle is spawned
      *
      * Passes through two arguments:
-     * - The [com.chattriggers.ctjs.minecraft.wrappers.entity.Particle]
+     * - The [com.chattriggers.ctjs.api.entity.Particle]
      * - The event, which can be cancelled
      *
      * Available modifications:
