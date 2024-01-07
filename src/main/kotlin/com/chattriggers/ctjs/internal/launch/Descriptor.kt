@@ -247,7 +247,17 @@ sealed interface Descriptor {
         }
 
         private fun parseJavaIdentifier(): String? {
-            if (done || !ch.isJavaIdentifierStart())
+            if (done)
+                return null
+
+            listOf("<init>", "<clinit>").forEach {
+                if (text.substring(cursor).startsWith(it)) {
+                    cursor += it.length
+                    return it
+                }
+            }
+
+            if (!ch.isJavaIdentifierStart())
                 return null
 
             val start = cursor
