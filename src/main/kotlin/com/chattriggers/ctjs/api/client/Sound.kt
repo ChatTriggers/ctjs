@@ -106,7 +106,7 @@ class Sound(private val config: NativeObject) {
         }
 
         val initialData = soundData
-        soundData = BootstrappedSoundData(sound, soundImpl, initialData.volume, initialData.pitch)
+        soundData = BootstrappedSoundData(sound, soundImpl)
 
         // Apply all initial values as the user may have changed them
         soundData.loop = initialData.loop
@@ -117,6 +117,8 @@ class Sound(private val config: NativeObject) {
         soundData.attenuation = initialData.attenuation
         soundData.category = initialData.category
         soundData.attenuationType = initialData.attenuationType
+        soundData.volume = initialData.volume
+        soundData.pitch = initialData.pitch
     }
 
     fun destroy() {
@@ -345,11 +347,12 @@ class Sound(private val config: NativeObject) {
     private class BootstrappedSoundData(
         private val sound: MCSound,
         private val impl: SoundImpl,
-        override var volume: Float,
-        override var pitch: Float,
     ) : SoundData {
         private val mixedSound: SoundAccessor = sound.asMixin()
         private val mixedImpl: AbstractSoundInstanceAccessor = impl.asMixin()
+
+        override var volume by impl::volume
+        override var pitch by impl::pitch
 
         override var loop: Boolean
             get() = impl.isRepeatable
