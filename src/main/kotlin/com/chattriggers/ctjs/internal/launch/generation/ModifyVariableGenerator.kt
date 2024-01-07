@@ -1,5 +1,6 @@
 package com.chattriggers.ctjs.internal.launch.generation
 
+import codes.som.koffee.MethodAssembly
 import com.chattriggers.ctjs.internal.launch.Local
 import com.chattriggers.ctjs.internal.launch.ModifyVariable
 import com.chattriggers.ctjs.internal.utils.descriptorString
@@ -64,5 +65,10 @@ internal class ModifyVariableGenerator(
                 visit("constraints", modifyVariable.constraints)
             visitEnd()
         }
+    }
+
+    context(MethodAssembly)
+    override fun generateNotAttachedBehavior() {
+        generateParameterLoad(0)
     }
 }

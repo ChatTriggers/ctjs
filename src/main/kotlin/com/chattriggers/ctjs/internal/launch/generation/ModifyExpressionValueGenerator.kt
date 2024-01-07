@@ -1,5 +1,8 @@
 package com.chattriggers.ctjs.internal.launch.generation
 
+import codes.som.koffee.MethodAssembly
+import com.chattriggers.ctjs.internal.launch.At
+import com.chattriggers.ctjs.internal.launch.Descriptor
 import com.chattriggers.ctjs.internal.launch.ModifyExpressionValue
 import com.chattriggers.ctjs.internal.utils.descriptorString
 import org.objectweb.asm.tree.MethodNode
@@ -15,14 +18,17 @@ internal class ModifyExpressionValueGenerator(
     override fun getInjectionSignature(): InjectionSignature {
         val (mappedMethod, method) = ctx.findMethod(modifyExpressionValue.method)
 
-        val exprDescriptor = when (val atTarget = Utils.getAtTargetDescriptor(modifyExpressionValue.at)) {
-            is Utils.InvokeAtTarget -> atTarget.descriptor.returnType
-            is Utils.FieldAtTarget -> atTarget.descriptor.type
-            is Utils.NewAtTarget -> atTarget.descriptor.type
-            is Utils.ConstantAtTarget -> atTarget.descriptor
+        val exprDescriptor = when (val atTarget = modifyExpressionValue.at.atTarget) {
+            is At.InvokeTarget -> atTarget.descriptor.returnType
+            is At.FieldTarget -> atTarget.descriptor.type
+            is At.NewTarget -> atTarget.descriptor.type
+            is At.ConstantTarget -> atTarget.descriptor
         }
 
         check(exprDescriptor != null && exprDescriptor.isType)
+        check(exprDescriptor != Descriptor.Primitive.VOID) {
+            "ModifyExpressionValue mixin cannot target a void method"
+        }
 
         val parameters = listOf(Parameter(exprDescriptor)) + modifyExpressionValue.locals
             ?.map(Utils::getParameterFromLocal)
@@ -52,5 +58,10 @@ internal class ModifyExpressionValueGenerator(
                 visit("allow", modifyExpressionValue.allow)
             visitEnd()
         }
+    }
+
+    context(MethodAssembly)
+    override fun generateNotAttachedBehavior() {
+        generateParameterLoad(0)
     }
 }

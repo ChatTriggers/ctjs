@@ -29,7 +29,7 @@ internal object Utils {
             if (at.args != null)
                 visit("args", at.args)
             if (at.target != null)
-                visit("target", getAtTargetDescriptor(at).descriptor.mappedDescriptor())
+                visit("target", at.atTarget.descriptor.mappedDescriptor())
             if (at.ordinal != null)
                 visit("ordinal", at.ordinal)
             if (at.opcode != null)
@@ -158,7 +158,7 @@ internal object Utils {
                 method.name.value,
                 method.toDescriptor(),
                 ClassInfo.SearchType.ALL_CLASSES,
-                ClassInfo.INCLUDE_ALL,
+                ClassInfo.INCLUDE_ALL or ClassInfo.INCLUDE_INITIALISERS,
             ) ?: continue
 
             if (value != null)
@@ -200,83 +200,5 @@ internal object Utils {
         require(descriptor.isType)
 
         return InjectorGenerator.Parameter(descriptor, local)
-    }
-
-    sealed class AtTarget<T : Descriptor>(val descriptor: T, val targetName: String)
-
-    class InvokeAtTarget(descriptor: Descriptor.Method) : AtTarget<Descriptor.Method>(descriptor, "INVOKE") {
-        override fun toString() = descriptor.originalDescriptor()
-    }
-
-    class NewAtTarget(descriptor: Descriptor.New) : AtTarget<Descriptor.New>(descriptor, "NEW") {
-        override fun toString() = descriptor.originalDescriptor()
-    }
-
-    class FieldAtTarget(
-        descriptor: Descriptor.Field, val isGet: Boolean?, val isStatic: Boolean?,
-    ) : AtTarget<Descriptor.Field>(descriptor, "FIELD") {
-        override fun toString() = descriptor.originalDescriptor()
-    }
-
-    class ConstantAtTarget(val key: String, descriptor: Descriptor) : AtTarget<Descriptor>(descriptor, "CONSTANT") {
-        init {
-            require(descriptor.isType)
-        }
-
-        override fun toString() = "$key=$descriptor"
-    }
-
-    fun getAtTargetDescriptor(at: At): AtTarget<*> {
-        return when (at.value) {
-            "INVOKE" -> {
-                requireNotNull(at.target) { "At targeting INVOKE expects its target to be a method descriptor" }
-                InvokeAtTarget(Descriptor.Parser(at.target).parseMethod(full = true))
-            }
-            "NEW" -> {
-                requireNotNull(at.target) { "At targeting NEW expects its target to be a new invocation descriptor" }
-                NewAtTarget(Descriptor.Parser(at.target).parseNew(full = true))
-            }
-            "FIELD" -> {
-                requireNotNull(at.target) { "At targeting FIELD expects its target to be a field descriptor" }
-                if (at.opcode != null) {
-                    require(
-                        at.opcode in setOf(
-                            Opcodes.GETFIELD,
-                            Opcodes.GETSTATIC,
-                            Opcodes.PUTFIELD,
-                            Opcodes.PUTSTATIC
-                        )
-                    ) {
-                        "At targeting FIELD expects its opcode to be one of: GETFIELD, GETSTATIC, PUTFIELD, PUTSTATIC"
-                    }
-                    val isGet = at.opcode == Opcodes.GETFIELD || at.opcode == Opcodes.GETSTATIC
-                    val isStatic = at.opcode == Opcodes.GETSTATIC || at.opcode == Opcodes.PUTSTATIC
-                    FieldAtTarget(Descriptor.Parser(at.target).parseField(full = true), isGet, isStatic)
-                } else {
-                    FieldAtTarget(Descriptor.Parser(at.target).parseField(full = true), null, null)
-                }
-            }
-            "CONSTANT" -> {
-                require(at.args != null) {
-                    "At targeting CONSTANT requires args"
-                }
-                at.args.firstNotNullOfOrNull {
-                    val key = it.substringBefore('=')
-                    val type = when (key) {
-                        "null" -> Any::class.descriptor() // Is this right?
-                        "intValue" -> Descriptor.Primitive.INT
-                        "floatValue" -> Descriptor.Primitive.FLOAT
-                        "longValue" -> Descriptor.Primitive.LONG
-                        "doubleValue" -> Descriptor.Primitive.DOUBLE
-                        "stringValue" -> String::class.descriptor()
-                        "classValue" -> Descriptor.Object("L${it.substringAfter("=")};")
-                        else -> return@firstNotNullOfOrNull null
-                    }
-
-                    ConstantAtTarget(key, type)
-                } ?: error("At targeting CONSTANT expects a typeValue arg")
-            }
-            else -> error("Invalid At.value for Utils.getAtTarget: ${at.value}")
-        }
     }
 }

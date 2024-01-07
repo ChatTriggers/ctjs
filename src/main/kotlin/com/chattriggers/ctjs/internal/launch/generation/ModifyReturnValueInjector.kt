@@ -1,9 +1,11 @@
 package com.chattriggers.ctjs.internal.launch.generation
 
+import codes.som.koffee.MethodAssembly
 import com.chattriggers.ctjs.internal.launch.Descriptor
 import com.chattriggers.ctjs.internal.launch.ModifyReturnValue
 import com.chattriggers.ctjs.internal.utils.descriptorString
 import org.objectweb.asm.tree.MethodNode
+import org.spongepowered.asm.mixin.injection.Desc
 import com.llamalad7.mixinextras.injector.ModifyReturnValue as SPModifyReturnValue
 
 internal class ModifyReturnValueInjector(
@@ -16,6 +18,9 @@ internal class ModifyReturnValueInjector(
     override fun getInjectionSignature(): InjectionSignature {
         val (mappedMethod, method) = ctx.findMethod(modifyReturnValue.method)
         val returnType = Descriptor.Parser(mappedMethod.returnType.value).parseType(full = true)
+        check(returnType != Descriptor.Primitive.VOID) {
+            "ModifyReturnValue mixin cannot target a void method"
+        }
 
         val parameters = listOf(Parameter(returnType)) + modifyReturnValue.locals
             ?.map(Utils::getParameterFromLocal)
@@ -45,5 +50,10 @@ internal class ModifyReturnValueInjector(
                 visit("allow", modifyReturnValue.allow)
             visitEnd()
         }
+    }
+
+    context(MethodAssembly)
+    override fun generateNotAttachedBehavior() {
+        generateParameterLoad(0)
     }
 }

@@ -68,20 +68,8 @@ internal object InvokeDynamicSupport {
         // Make an initial lookup to the target function. This is where we want our mixin handler method to point to
         val mixinCallback = JSLoader.invokeMixinLookup(mixinId)
 
-        check((mixinCallback.handle == null) == (mixinCallback.method == null))
-
-        val targetHandle = if (mixinCallback.handle == null) {
-            // If we don't have a handle, that means the user hasn't called attach() on the callback, meaning this mixin
-            // is "unused"...
-            val (methodName, injectionType) = InjectorGenerator.disassembleIndyName(name)
-
-            error(
-                "$injectionType mixin into method $methodName was called, but has no handler. Did you forget to " +
-                    "call attach()?"
-            )
-        } else {
-            mixinCallback.handle!!
-        }
+        checkNotNull(mixinCallback.handle)
+        checkNotNull(mixinCallback.method)
 
         // Until we /ct load, however. When we reload, we need to re-resolve all JS invocation targets since our old
         // engine context has been thrown away and recreated. It is also possible that the user has changed their code
@@ -96,7 +84,7 @@ internal object InvokeDynamicSupport {
         // Note that the mechanism for flipping these switches is in MixinCallback. When the user calls attach(), the
         // invalidator gets invalidated, as the method has changed. This of course happens for all mixins when the user
         // /ct loads, since the scripts are re-run.
-        val guardedTarget = mixinCallback.invalidator.guardWithTest(targetHandle, initTarget)
+        val guardedTarget = mixinCallback.invalidator.guardWithTest(mixinCallback.handle, initTarget)
 
         // We now have a target that is very fast to call back into the target method, and can survive reloads or calls
         // to attach(), so we want our call site to now point to that target.
@@ -104,6 +92,6 @@ internal object InvokeDynamicSupport {
 
         // This method invocation occurred because we actually tried to call the target method with the supplied mixin
         // arguments. So in addition to performing the call site rebinding, we also need to make the actual method call.
-        return targetHandle.invoke(args)
+        return mixinCallback.handle!!.invoke(args)
     }
 }

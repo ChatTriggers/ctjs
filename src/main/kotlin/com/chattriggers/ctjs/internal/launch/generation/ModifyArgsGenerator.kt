@@ -1,5 +1,7 @@
 package com.chattriggers.ctjs.internal.launch.generation
 
+import codes.som.koffee.MethodAssembly
+import codes.som.koffee.insns.jvm.aconst_null
 import com.chattriggers.ctjs.internal.launch.Descriptor
 import com.chattriggers.ctjs.internal.launch.ModifyArgs
 import com.chattriggers.ctjs.internal.utils.descriptor
@@ -47,5 +49,11 @@ internal class ModifyArgsGenerator(
             if (modifyArgs.constraints != null)
                 visit("constraints", modifyArgs.constraints)
         }
+    }
+
+    context(MethodAssembly)
+    override fun generateNotAttachedBehavior() {
+        // This method is expected to leave something on the stack
+        aconst_null
     }
 }
