@@ -49,7 +49,7 @@ dependencies {
     include(modImplementation("com.fasterxml.jackson.core:jackson-core:2.13.2")!!)
     include(modImplementation("com.fifesoft:rsyntaxtextarea:3.2.0")!!)
     include(modImplementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")!!)
-    include(modImplementation("com.github.char:Koffee:3a78d8a437")!!)
+    include(modImplementation("com.github.ChatTriggers:Koffee:315bc11234")!!)
 
     include(implementation(annotationProcessor("com.github.llamalad7.mixinextras:mixinextras-fabric:0.2.0")!!)!!)
 
