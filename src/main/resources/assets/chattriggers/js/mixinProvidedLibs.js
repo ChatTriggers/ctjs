@@ -55,7 +55,7 @@
             for (let arg of options.args)
                 str += arg;
             str += ')';
-            str += options.ret ?? '';
+            str += options.ret ?? 'V';
         }
         return str;
     }
