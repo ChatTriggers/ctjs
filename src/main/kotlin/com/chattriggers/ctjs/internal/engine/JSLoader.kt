@@ -33,9 +33,8 @@ import kotlin.contracts.contract
 object JSLoader {
     private val triggers = ConcurrentHashMap<ITriggerType, ConcurrentSkipListSet<Trigger>>()
 
-    private lateinit var moduleContext: Context
-    private lateinit var evalContext: Context
-    private lateinit var scope: Scriptable
+    private lateinit var moduleScope: Scriptable
+    private lateinit var evalScope: Scriptable
     private lateinit var require: CTRequire
     private lateinit var moduleProvider: ModuleScriptProvider
 
@@ -60,19 +59,15 @@ object JSLoader {
 
         JSContextFactory.addAllURLs(jars)
 
-        moduleContext = JSContextFactory.enterContext()
+        val cx = JSContextFactory.enterContext()
         val sourceProvider = UrlModuleSourceProvider(listOf(modulesFolder.toURI()), listOf())
         moduleProvider = StrongCachingModuleScriptProvider(sourceProvider)
-        scope = ImporterTopLevel(moduleContext)
+        moduleScope = ImporterTopLevel(cx)
+        evalScope = ImporterTopLevel(cx)
         require = CTRequire(moduleProvider)
-        require.install(scope)
-
+        require.install(moduleScope)
+        require.install(evalScope)
         Context.exit()
-
-        JSContextFactory.optimize = false
-        evalContext = JSContextFactory.enterContext()
-        Context.exit()
-        JSContextFactory.optimize = true
 
         mixinLibsLoaded = false
     }
@@ -107,12 +102,9 @@ object JSLoader {
         )
 
         try {
-            moduleContext.evaluateString(
-                scope,
-                moduleProvidedLibs,
-                "moduleProvided",
-                1, null
-            )
+            val script = it.compileString(moduleProvidedLibs, "moduleProvided", 1, null)
+            script.exec(it, moduleScope)
+            script.exec(it, evalScope)
         } catch (e: Throwable) {
             e.printTraceToConsole()
         }
@@ -144,36 +136,43 @@ object JSLoader {
         triggers[trigger.type]?.remove(trigger)
     }
 
-    internal inline fun <T> wrapInContext(context: Context = moduleContext, crossinline block: () -> T): T {
+    // Note: block takes a Context since most caller use it. Context.getContext() is a threadlocal access, so we might
+    //       as well avoid it if we can
+    internal inline fun <T> wrapInContext(context: Context? = null, crossinline block: (Context) -> T): T {
         contract {
             callsInPlace(block, InvocationKind.EXACTLY_ONCE)
         }
 
-        val missingContext = Context.getCurrentContext() == null
-        if (missingContext) {
-            try {
-                JSContextFactory.enterContext(context)
-            } catch (e: Throwable) {
-                JSContextFactory.enterContext()
-            }
-        }
+        var cx = context ?: Context.getCurrentContext()
+        val missingContext = cx == null
+        if (missingContext)
+            cx = JSContextFactory.enterContext()
 
         try {
-            return block()
+            return block(cx)
         } finally {
             if (missingContext) Context.exit()
         }
     }
 
     fun eval(code: String): String {
-        return wrapInContext(evalContext) {
-            Context.toString(evalContext.evaluateString(scope, code, "<eval>", 1, null))
+        return wrapInContext {
+            ScriptRuntime.doTopCall(
+                { cx, scope, thisObj, args ->
+                    ScriptRuntime.toString(cx.evaluateString(scope, code, "<eval>", 1, null))
+                },
+                it,
+                evalScope,
+                evalScope,
+                emptyArray(),
+                true,
+            ) as String
         }
     }
 
-    fun invoke(method: Callable, args: Array<out Any?>, thisObj: Scriptable = scope): Any? {
+    fun invoke(method: Callable, args: Array<out Any?>, thisObj: Scriptable = moduleScope): Any? {
         return wrapInContext {
-            Context.jsToJava(method.call(Context.getCurrentContext(), scope, thisObj, args), Any::class.java)
+            Context.jsToJava(method.call(it, moduleScope, thisObj, args), Any::class.java)
         }
     }
 
@@ -195,8 +194,8 @@ object JSLoader {
 
         wrapInContext {
             try {
-                moduleContext.evaluateString(
-                    scope,
+                it.evaluateString(
+                    moduleScope,
                     mixinProvidedLibs,
                     "mixinProvided",
                     1, null
@@ -237,7 +236,7 @@ object JSLoader {
     @JvmStatic
     fun invokeMixin(func: Callable, args: Array<Any?>): Any? {
         return wrapInContext {
-            Context.jsToJava(func.call(Context.getCurrentContext(), scope, scope, args), Any::class.java)
+            Context.jsToJava(func.call(it, moduleScope, moduleScope, args), Any::class.java)
         }
     }
 
@@ -296,9 +295,9 @@ object JSLoader {
 
     private class CTRequire(
         moduleProvider: ModuleScriptProvider,
-    ) : Require(moduleContext, scope, moduleProvider, null, null, false) {
+    ) : Require(Context.getContext(), moduleScope, moduleProvider, null, null, false) {
         fun loadCTModule(cachedName: String, uri: URI): Scriptable {
-            return getExportedModuleInterface(moduleContext, cachedName, uri, null, false)
+            return getExportedModuleInterface(Context.getContext(), cachedName, uri, null, false)
         }
     }
 }
