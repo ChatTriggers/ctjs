@@ -9,6 +9,8 @@ sealed interface Descriptor {
 
     fun originalDescriptor(): String
     fun mappedDescriptor(): String
+
+    fun toType(): Type
     fun toMappedType(): Type
 
     enum class Primitive(private val type: Type) : Descriptor {
@@ -24,6 +26,7 @@ sealed interface Descriptor {
 
         override fun originalDescriptor(): String = type.descriptor
         override fun mappedDescriptor() = originalDescriptor()
+        override fun toType() = type
         override fun toMappedType() = type
 
         override fun toString() = originalDescriptor()
@@ -64,6 +67,8 @@ sealed interface Descriptor {
             return descriptor
         }
 
+        override fun toType(): Type = Type.getType(originalDescriptor())
+
         override fun toMappedType(): Type = Type.getType(mappedDescriptor())
 
         override fun toString() = originalDescriptor()
@@ -82,6 +87,8 @@ sealed interface Descriptor {
         override fun originalDescriptor() = "[".repeat(dimensions) + base.originalDescriptor()
 
         override fun mappedDescriptor() = "[".repeat(dimensions) + base.mappedDescriptor()
+
+        override fun toType(): Type = Type.getType(originalDescriptor())
 
         override fun toMappedType(): Type = Type.getType(mappedDescriptor())
 
@@ -120,6 +127,8 @@ sealed interface Descriptor {
             if (type != null)
                 append(type.mappedDescriptor())
         }
+
+        override fun toType() = error("Cannot convert Field descriptor to Type")
 
         override fun toMappedType() = error("Cannot convert Field descriptor to Type")
 
@@ -181,6 +190,8 @@ sealed interface Descriptor {
             }
         }
 
+        override fun toType(): Type = Type.getMethodType(originalDescriptor())
+
         override fun toMappedType(): Type = Type.getMethodType(mappedDescriptor())
 
         override fun toString() = originalDescriptor()
@@ -218,6 +229,8 @@ sealed interface Descriptor {
             }
             append(type.mappedDescriptor())
         }
+
+        override fun toType() = error("Cannot convert New descriptor to Type")
 
         override fun toMappedType() = error("Cannot convert New descriptor to Type")
 
