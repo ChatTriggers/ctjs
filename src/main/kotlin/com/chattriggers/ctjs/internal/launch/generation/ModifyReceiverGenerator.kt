@@ -1,5 +1,10 @@
 package com.chattriggers.ctjs.internal.launch.generation
 
+import codes.som.koffee.MethodAssembly
+import codes.som.koffee.insns.jvm.getfield
+import codes.som.koffee.insns.jvm.invokevirtual
+import codes.som.koffee.insns.jvm.putfield
+import com.chattriggers.ctjs.internal.launch.At
 import com.chattriggers.ctjs.internal.launch.ModifyReceiver
 import com.chattriggers.ctjs.internal.utils.descriptorString
 import org.objectweb.asm.tree.MethodNode
@@ -15,9 +20,9 @@ internal class ModifyReceiverGenerator(
     override fun getInjectionSignature(): InjectionSignature {
         val (mappedMethod, method) = ctx.findMethod(modifyReceiver.method)
 
-        val (owner, extraParams) = when (val atTarget = Utils.getAtTargetDescriptor(modifyReceiver.at)) {
-            is Utils.InvokeAtTarget -> atTarget.descriptor.owner to atTarget.descriptor.parameters
-            is Utils.FieldAtTarget -> {
+        val (owner, extraParams) = when (val atTarget = modifyReceiver.at.atTarget) {
+            is At.InvokeTarget -> atTarget.descriptor.owner to atTarget.descriptor.parameters
+            is At.FieldTarget -> {
                 check(atTarget.isStatic != null && atTarget.isGet != null) {
                     "ModifyReceiver targeting FIELD expects an opcode value"
                 }
@@ -57,5 +62,10 @@ internal class ModifyReceiverGenerator(
                 visit("allow", modifyReceiver.allow)
             visitEnd()
         }
+    }
+
+    context(MethodAssembly)
+    override fun generateNotAttachedBehavior() {
+        generateParameterLoad(0)
     }
 }

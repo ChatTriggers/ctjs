@@ -1,6 +1,9 @@
 package com.chattriggers.ctjs.internal.launch.generation
 
+import codes.som.koffee.MethodAssembly
+import codes.som.koffee.insns.jvm.ldc
 import com.chattriggers.ctjs.api.Mappings
+import com.chattriggers.ctjs.internal.launch.At
 import com.chattriggers.ctjs.internal.launch.Descriptor
 import com.chattriggers.ctjs.internal.launch.WrapWithCondition
 import com.chattriggers.ctjs.internal.utils.descriptorString
@@ -19,8 +22,8 @@ internal class WrapWithConditionGenerator(
 
         val parameters = mutableListOf<Parameter>()
 
-        when (val atTarget = Utils.getAtTargetDescriptor(wrapWithCondition.at)) {
-            is Utils.InvokeAtTarget -> {
+        when (val atTarget = wrapWithCondition.at.atTarget) {
+            is At.InvokeTarget -> {
                 val descriptor = atTarget.descriptor
 
                 val targetClass = Mappings.getMappedClass(descriptor.owner!!.originalDescriptor())
@@ -34,7 +37,7 @@ internal class WrapWithConditionGenerator(
                     parameters.add(Parameter(it))
                 }
             }
-            is Utils.FieldAtTarget -> {
+            is At.FieldTarget -> {
                 require(atTarget.isStatic != null && atTarget.isGet != null) {
                     "WrapWithCondition targeting FIELD expects an opcode value"
                 }
@@ -75,5 +78,10 @@ internal class WrapWithConditionGenerator(
                 visit("allow", wrapWithCondition.allow)
             visitEnd()
         }
+    }
+
+    context(MethodAssembly)
+    override fun generateNotAttachedBehavior() {
+        ldc(1)
     }
 }

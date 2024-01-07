@@ -206,6 +206,9 @@ object JSLoader {
         }
     }
 
+    @JvmStatic
+    fun mixinIsAttached(id: Int) = mixinIdMap[id]?.method != null
+
     fun invokeMixinLookup(id: Int): MixinCallback {
         val callback = mixinIdMap[id] ?: error("Unknown mixin id $id for loader ${this::class.simpleName}")
 

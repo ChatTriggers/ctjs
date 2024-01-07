@@ -44,8 +44,8 @@ internal object DynamicMixinManager {
         for ((mixin, details) in mixins) {
             val ctx = GenerationContext(mixin)
             val generator = DynamicMixinGenerator(ctx, details)
-            ByteBasedStreamHandler[generator.generatedClassFullPath + ".class"] = generator.generate()
-            dynamicMixins += generator.generatedClassName
+            ByteBasedStreamHandler[ctx.generatedClassFullPath + ".class"] = generator.generate()
+            dynamicMixins += ctx.generatedClassName
         }
 
         ByteBasedStreamHandler[GENERATED_MIXIN] = createDynamicMixinsJson(dynamicMixins)

@@ -1,58 +1,66 @@
 package com.chattriggers.ctjs.internal.launch.generation
 
 import codes.som.koffee.ClassAssembly
+import codes.som.koffee.MethodAssembly
 import codes.som.koffee.insns.InstructionAssembly
 import codes.som.koffee.insns.jvm.*
+import codes.som.koffee.insns.sugar.JumpCondition
+import codes.som.koffee.insns.sugar.ifStatement
 import com.chattriggers.ctjs.api.Mappings
+import com.chattriggers.ctjs.internal.engine.JSLoader
 import com.chattriggers.ctjs.internal.launch.Descriptor
 import com.chattriggers.ctjs.internal.launch.InvokeDynamicSupport
 import com.chattriggers.ctjs.internal.launch.Local
 import com.chattriggers.ctjs.internal.utils.descriptor
 import com.chattriggers.ctjs.internal.utils.descriptorString
-import com.llamalad7.mixinextras.sugar.ref.*
 import org.objectweb.asm.tree.MethodNode
 
 internal abstract class InjectorGenerator(protected val ctx: GenerationContext, val id: Int) {
     abstract val type: String
-
-    abstract fun getInjectionSignature(): InjectionSignature
-
-    abstract fun attachAnnotation(node: MethodNode, signature: InjectionSignature)
-
-    context(ClassAssembly)
-    fun generate() {
-        val signature = getInjectionSignature()
-        val (targetMethod, parameters, returnType, isStatic) = signature
-
-        var modifiers = private
-        if (isStatic)
-            modifiers += static
-
-        val parameterTypes = parameters.map {
+    protected val signature by lazy { getInjectionSignature() }
+    protected val parameterDescriptors by lazy {
+        signature.parameters.map {
             // Check if the type needs to be wrapped in a ref. Also handle the case where
             // the user provides an explicitly wrapped type
             if (it.local?.mutable == true && !it.descriptor.originalDescriptor()
                     .startsWith("Lcom/llamalad7/mixinextras/sugar/ref/")
             ) {
                 when (it.descriptor) {
-                    Descriptor.Primitive.BOOLEAN -> LocalBooleanRef::class.descriptor()
-                    Descriptor.Primitive.BYTE -> LocalByteRef::class.descriptor()
-                    Descriptor.Primitive.CHAR -> LocalCharRef::class.descriptor()
-                    Descriptor.Primitive.DOUBLE -> LocalDoubleRef::class.descriptor()
-                    Descriptor.Primitive.FLOAT -> LocalFloatRef::class.descriptor()
-                    Descriptor.Primitive.INT -> LocalIntRef::class.descriptor()
-                    Descriptor.Primitive.LONG -> LocalLongRef::class.descriptor()
-                    Descriptor.Primitive.SHORT -> LocalShortRef::class.descriptor()
-                    else -> LocalRef::class.descriptor()
+                    com.chattriggers.ctjs.internal.launch.Descriptor.Primitive.BOOLEAN -> com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef::class.descriptor()
+                    com.chattriggers.ctjs.internal.launch.Descriptor.Primitive.BYTE -> com.llamalad7.mixinextras.sugar.ref.LocalByteRef::class.descriptor()
+                    com.chattriggers.ctjs.internal.launch.Descriptor.Primitive.CHAR -> com.llamalad7.mixinextras.sugar.ref.LocalCharRef::class.descriptor()
+                    com.chattriggers.ctjs.internal.launch.Descriptor.Primitive.DOUBLE -> com.llamalad7.mixinextras.sugar.ref.LocalDoubleRef::class.descriptor()
+                    com.chattriggers.ctjs.internal.launch.Descriptor.Primitive.FLOAT -> com.llamalad7.mixinextras.sugar.ref.LocalFloatRef::class.descriptor()
+                    com.chattriggers.ctjs.internal.launch.Descriptor.Primitive.INT -> com.llamalad7.mixinextras.sugar.ref.LocalIntRef::class.descriptor()
+                    com.chattriggers.ctjs.internal.launch.Descriptor.Primitive.LONG -> com.llamalad7.mixinextras.sugar.ref.LocalLongRef::class.descriptor()
+                    com.chattriggers.ctjs.internal.launch.Descriptor.Primitive.SHORT -> com.llamalad7.mixinextras.sugar.ref.LocalShortRef::class.descriptor()
+                    else -> com.llamalad7.mixinextras.sugar.ref.LocalRef::class.descriptor()
                 }
             } else it.descriptor
         }
+    }
 
+    abstract fun getInjectionSignature(): InjectionSignature
+
+    abstract fun attachAnnotation(node: MethodNode, signature: InjectionSignature)
+
+    context(MethodAssembly)
+    abstract fun generateNotAttachedBehavior()
+
+    context(ClassAssembly)
+    fun generate() {
+        val (targetMethod, parameters, returnType, isStatic) = signature
+
+        var modifiers = private
+        if (isStatic)
+            modifiers += static
+
+        val nameForInjection = targetMethod.name.original.replace('<', '$').replace('>', '$')
         val methodNode = method(
             modifiers,
-            "ctjs_${type}_${targetMethod.name.original}_${counter++}",
+            "ctjs_${type}_${nameForInjection}_${counter++}",
             returnType.toMappedType(),
-            *parameterTypes.map { it.toMappedType() }.toTypedArray(),
+            *parameterDescriptors.map { it.toMappedType() }.toTypedArray(),
         ) {
             // Apply parameter annotations
             for (i in parameters.indices) {
@@ -65,6 +73,14 @@ internal abstract class InjectorGenerator(protected val ctx: GenerationContext, 
                     }
             }
 
+            // Check if we're attached
+            ldc(id)
+            invokestatic(JSLoader::class, "mixinIsAttached", Boolean::class, Int::class)
+            ifStatement(JumpCondition.False) {
+                generateNotAttachedBehavior()
+                generateReturn(returnType)
+            }
+
             ldc(parameters.size + if (isStatic) 0 else 1)
             anewarray(Any::class)
 
@@ -75,100 +91,109 @@ internal abstract class InjectorGenerator(protected val ctx: GenerationContext, 
                 aastore
             }
 
-            parameterTypes.forEachIndexed { index, descriptor ->
+            parameterDescriptors.forEachIndexed { index, descriptor ->
                 dup
                 ldc(index + if (isStatic) 0 else 1)
-                getLoadInsn(descriptor)(index + if (isStatic) 0 else 1)
-
-                // Box primitives if necessary
-                when (descriptor) {
-                    Descriptor.Primitive.VOID -> throw IllegalStateException("Cannot use Void as a parameter type")
-                    Descriptor.Primitive.BOOLEAN ->
-                        invokestatic(java.lang.Boolean::class, "valueOf", java.lang.Boolean::class, boolean)
-                    Descriptor.Primitive.CHAR ->
-                        invokestatic(java.lang.Character::class, "valueOf", java.lang.Character::class, char)
-                    Descriptor.Primitive.BYTE ->
-                        invokestatic(java.lang.Byte::class, "valueOf", java.lang.Byte::class, byte)
-                    Descriptor.Primitive.SHORT ->
-                        invokestatic(java.lang.Short::class, "valueOf", java.lang.Short::class, short)
-                    Descriptor.Primitive.INT ->
-                        invokestatic(java.lang.Integer::class, "valueOf", java.lang.Integer::class, int)
-                    Descriptor.Primitive.FLOAT ->
-                        invokestatic(java.lang.Float::class, "valueOf", java.lang.Float::class, float)
-                    Descriptor.Primitive.LONG ->
-                        invokestatic(java.lang.Long::class, "valueOf", java.lang.Long::class, long)
-                    Descriptor.Primitive.DOUBLE ->
-                        invokestatic(java.lang.Double::class, "valueOf", java.lang.Double::class, double)
-                    else -> {}
-                }
-
+                generateParameterLoad(index)
+                generateBoxIfNecessary(descriptor)
                 aastore
             }
 
             invokedynamic(
-                assembleIndyName(targetMethod.name.original, type),
+                assembleIndyName(nameForInjection, type),
                 "([Ljava/lang/Object;)Ljava/lang/Object;",
                 InvokeDynamicSupport.BOOTSTRAP_HANDLE,
                 arrayOf(id),
             )
 
-            when (returnType) {
-                Descriptor.Primitive.VOID -> {
-                    pop
-                    _return
-                }
-                Descriptor.Primitive.BOOLEAN -> {
-                    checkcast(java.lang.Boolean::class)
-                    invokevirtual(java.lang.Boolean::class, "booleanValue", boolean)
-                    ireturn
-                }
-                is Descriptor.Primitive -> {
-                    checkcast(java.lang.Number::class)
-
-                    when (returnType) {
-                        Descriptor.Primitive.CHAR -> {
-                            invokevirtual(java.lang.Number::class, "charValue", char)
-                            ireturn
-                        }
-                        Descriptor.Primitive.BYTE -> {
-                            invokevirtual(java.lang.Number::class, "byteValue", byte)
-                            ireturn
-                        }
-                        Descriptor.Primitive.SHORT -> {
-                            invokevirtual(java.lang.Number::class, "shortValue", short)
-                            ireturn
-                        }
-                        Descriptor.Primitive.INT -> {
-                            invokevirtual(java.lang.Number::class, "intValue", int)
-                            ireturn
-                        }
-                        Descriptor.Primitive.LONG -> {
-                            invokevirtual(java.lang.Number::class, "longValue", long)
-                            lreturn
-                        }
-                        Descriptor.Primitive.FLOAT -> {
-                            invokevirtual(java.lang.Number::class, "floatValue", float)
-                            freturn
-                        }
-                        Descriptor.Primitive.DOUBLE -> {
-                            invokevirtual(java.lang.Number::class, "doubleValue", double)
-                            dreturn
-                        }
-                        else -> throw IllegalStateException()
-                    }
-                }
-                else -> {
-                    checkcast(returnType.toMappedType())
-                    areturn
-                }
-            }
+            generateUnboxIfNecessary(returnType)
+            generateReturn(returnType)
         }
 
         attachAnnotation(methodNode, signature)
     }
 
-    private fun InstructionAssembly.getLoadInsn(descriptor: Descriptor): (Int) -> Unit {
-        return when (descriptor) {
+    context(MethodAssembly)
+    private fun generateBoxIfNecessary(descriptor: Descriptor) {
+        when (descriptor) {
+            Descriptor.Primitive.VOID -> throw IllegalStateException("Cannot use Void as a parameter type")
+            Descriptor.Primitive.BOOLEAN ->
+                invokestatic(java.lang.Boolean::class, "valueOf", java.lang.Boolean::class, boolean)
+            Descriptor.Primitive.CHAR ->
+                invokestatic(java.lang.Character::class, "valueOf", java.lang.Character::class, char)
+            Descriptor.Primitive.BYTE ->
+                invokestatic(java.lang.Byte::class, "valueOf", java.lang.Byte::class, byte)
+            Descriptor.Primitive.SHORT ->
+                invokestatic(java.lang.Short::class, "valueOf", java.lang.Short::class, short)
+            Descriptor.Primitive.INT ->
+                invokestatic(java.lang.Integer::class, "valueOf", java.lang.Integer::class, int)
+            Descriptor.Primitive.FLOAT ->
+                invokestatic(java.lang.Float::class, "valueOf", java.lang.Float::class, float)
+            Descriptor.Primitive.LONG ->
+                invokestatic(java.lang.Long::class, "valueOf", java.lang.Long::class, long)
+            Descriptor.Primitive.DOUBLE ->
+                invokestatic(java.lang.Double::class, "valueOf", java.lang.Double::class, double)
+            else -> {}
+        }
+    }
+
+    context(MethodAssembly)
+    private fun generateUnboxIfNecessary(descriptor: Descriptor) {
+        when (descriptor) {
+            Descriptor.Primitive.VOID -> {}
+            Descriptor.Primitive.BOOLEAN -> {
+                checkcast(java.lang.Boolean::class)
+                invokevirtual(java.lang.Boolean::class, "booleanValue", boolean)
+            }
+            is Descriptor.Primitive -> {
+                checkcast(java.lang.Number::class)
+
+                when (descriptor) {
+                    Descriptor.Primitive.CHAR -> invokevirtual(java.lang.Number::class, "charValue", char)
+                    Descriptor.Primitive.BYTE -> invokevirtual(java.lang.Number::class, "byteValue", byte)
+                    Descriptor.Primitive.SHORT -> invokevirtual(java.lang.Number::class, "shortValue", short)
+                    Descriptor.Primitive.INT -> invokevirtual(java.lang.Number::class, "intValue", int)
+                    Descriptor.Primitive.LONG -> invokevirtual(java.lang.Number::class, "longValue", long)
+                    Descriptor.Primitive.FLOAT -> invokevirtual(java.lang.Number::class, "floatValue", float)
+                    Descriptor.Primitive.DOUBLE -> invokevirtual(java.lang.Number::class, "doubleValue", double)
+                    else -> throw IllegalStateException()
+                }
+            }
+            else -> checkcast(descriptor.toMappedType())
+        }
+    }
+
+    context(MethodAssembly)
+    private fun generateReturn(returnType: Descriptor) {
+        when (returnType) {
+            Descriptor.Primitive.VOID -> {
+                pop
+                _return
+            }
+            Descriptor.Primitive.BOOLEAN -> ireturn
+            Descriptor.Primitive.LONG -> lreturn
+            Descriptor.Primitive.FLOAT -> freturn
+            Descriptor.Primitive.DOUBLE -> dreturn
+            is Descriptor.Primitive -> ireturn
+            else -> areturn
+        }
+    }
+
+    protected fun InstructionAssembly.generateParameterLoad(parameterIndex: Int) {
+        val localIndex = (0 until parameterIndex).sumOf {
+            val descriptor = parameterDescriptors[it]
+            if (descriptor == Descriptor.Primitive.LONG || descriptor == Descriptor.Primitive.DOUBLE) {
+                // Compiler bug
+                @Suppress("USELESS_CAST")
+                2 as Int
+            } else 1
+        }
+        generateLoad(parameterDescriptors[parameterIndex], localIndex)
+    }
+
+    protected fun InstructionAssembly.generateLoad(descriptor: Descriptor, index: Int) {
+        val modifiedIndex = if (signature.isStatic) index else index + 1
+        when (descriptor) {
             Descriptor.Primitive.BOOLEAN,
             Descriptor.Primitive.BYTE,
             Descriptor.Primitive.SHORT,
@@ -177,7 +202,7 @@ internal abstract class InjectorGenerator(protected val ctx: GenerationContext, 
             Descriptor.Primitive.FLOAT -> ::fload
             Descriptor.Primitive.DOUBLE -> ::dload
             else -> ::aload
-        }
+        }(modifiedIndex)
     }
 
     data class Parameter(
@@ -197,10 +222,5 @@ internal abstract class InjectorGenerator(protected val ctx: GenerationContext, 
 
         fun assembleIndyName(methodName: String, injectionType: String) =
             "invokeDynamic_${methodName}_${injectionType}_${counter++}"
-
-        fun disassembleIndyName(name: String): Pair<String, String> = name.drop("invokeDynamic_".length).let {
-            val (methodName, injectionType) = it.split('_')
-            methodName to injectionType
-        }
     }
 }

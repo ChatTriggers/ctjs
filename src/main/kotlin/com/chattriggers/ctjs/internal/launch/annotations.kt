@@ -1,6 +1,7 @@
 package com.chattriggers.ctjs.internal.launch
 
 import com.chattriggers.ctjs.internal.utils.descriptor
+import org.objectweb.asm.Opcodes
 import org.spongepowered.asm.mixin.injection.Constant as SPConstant
 
 /*
@@ -27,6 +28,86 @@ data class At(
     val opcode: Int?,
     val remap: Boolean?,
 ) {
+    internal val atTarget: AtTarget<*> by lazy(::getAtTarget)
+
+    internal sealed class AtTarget<T : Descriptor>(val descriptor: T, val targetName: String)
+
+    internal class InvokeTarget(descriptor: Descriptor.Method) : AtTarget<Descriptor.Method>(descriptor, "INVOKE") {
+        override fun toString() = descriptor.originalDescriptor()
+    }
+
+    internal class NewTarget(descriptor: Descriptor.New) : AtTarget<Descriptor.New>(descriptor, "NEW") {
+        override fun toString() = descriptor.originalDescriptor()
+    }
+
+    internal class FieldTarget(
+        descriptor: Descriptor.Field, val isGet: Boolean?, val isStatic: Boolean?,
+    ) : AtTarget<Descriptor.Field>(descriptor, "FIELD") {
+        override fun toString() = descriptor.originalDescriptor()
+    }
+
+    internal class ConstantTarget(val key: String, descriptor: Descriptor) : AtTarget<Descriptor>(descriptor, "CONSTANT") {
+        init {
+            require(descriptor.isType)
+        }
+
+        override fun toString() = "$key=$descriptor"
+    }
+
+    private fun getAtTarget(): AtTarget<*> {
+        return when (value) {
+            "INVOKE" -> {
+                requireNotNull(target) { "At targeting INVOKE expects its target to be a method descriptor" }
+                InvokeTarget(Descriptor.Parser(target).parseMethod(full = true))
+            }
+            "NEW" -> {
+                requireNotNull(target) { "At targeting NEW expects its target to be a new invocation descriptor" }
+                NewTarget(Descriptor.Parser(target).parseNew(full = true))
+            }
+            "FIELD" -> {
+                requireNotNull(target) { "At targeting FIELD expects its target to be a field descriptor" }
+                if (opcode != null) {
+                    require(
+                        opcode in setOf(
+                            Opcodes.GETFIELD,
+                            Opcodes.GETSTATIC,
+                            Opcodes.PUTFIELD,
+                            Opcodes.PUTSTATIC
+                        )
+                    ) {
+                        "At targeting FIELD expects its opcode to be one of: GETFIELD, GETSTATIC, PUTFIELD, PUTSTATIC"
+                    }
+                    val isGet = opcode == Opcodes.GETFIELD || opcode == Opcodes.GETSTATIC
+                    val isStatic = opcode == Opcodes.GETSTATIC || opcode == Opcodes.PUTSTATIC
+                    FieldTarget(Descriptor.Parser(target).parseField(full = true), isGet, isStatic)
+                } else {
+                    FieldTarget(Descriptor.Parser(target).parseField(full = true), null, null)
+                }
+            }
+            "CONSTANT" -> {
+                require(args != null) {
+                    "At targeting CONSTANT requires args"
+                }
+                args.firstNotNullOfOrNull {
+                    val key = it.substringBefore('=')
+                    val type = when (key) {
+                        "null" -> Any::class.descriptor() // Is this right?
+                        "intValue" -> Descriptor.Primitive.INT
+                        "floatValue" -> Descriptor.Primitive.FLOAT
+                        "longValue" -> Descriptor.Primitive.LONG
+                        "doubleValue" -> Descriptor.Primitive.DOUBLE
+                        "stringValue" -> String::class.descriptor()
+                        "classValue" -> Descriptor.Object("L${it.substringAfter("=")};")
+                        else -> return@firstNotNullOfOrNull null
+                    }
+
+                    ConstantTarget(key, type)
+                } ?: error("At targeting CONSTANT expects a typeValue arg")
+            }
+            else -> error("Invalid At.value for Utils.getAtTarget: ${value}")
+        }
+    }
+
     enum class Shift {
         NONE,
         BEFORE,

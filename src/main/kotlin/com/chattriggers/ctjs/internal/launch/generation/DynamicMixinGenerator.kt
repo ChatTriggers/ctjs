@@ -10,11 +10,8 @@ import java.io.File
 import org.spongepowered.asm.mixin.Mixin as SPMixin
 
 internal class DynamicMixinGenerator(private val ctx: GenerationContext, private val details: MixinDetails) {
-    val generatedClassName = "CTMixin_\$${ctx.mixin.target.replace('.', '_')}\$_${mixinCounter++}"
-    val generatedClassFullPath = "${DynamicMixinManager.GENERATED_PACKAGE}/$generatedClassName"
-
     fun generate(): ByteArray {
-        val mixinClassNode = assembleClass(public, generatedClassFullPath, version = Opcodes.V17) {
+        val mixinClassNode = assembleClass(public, ctx.generatedClassFullPath, version = Opcodes.V17) {
             for ((id, injector) in details.injectors) {
                 when (injector) {
                     is Inject -> InjectGenerator(ctx, id, injector).generate()
@@ -48,13 +45,9 @@ internal class DynamicMixinGenerator(private val ctx: GenerationContext, private
         if (CTJS.isDevelopment) {
             val dir = File(CTJS.configLocation, "ChatTriggers/mixin-classes")
             dir.mkdirs()
-            File(dir, "$generatedClassName.class").writeBytes(bytes)
+            File(dir, "${ctx.generatedClassName}.class").writeBytes(bytes)
         }
 
         return bytes
-    }
-
-    companion object {
-        private var mixinCounter = 0
     }
 }

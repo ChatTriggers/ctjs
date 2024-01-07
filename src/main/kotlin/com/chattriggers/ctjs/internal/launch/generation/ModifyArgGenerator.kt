@@ -1,8 +1,11 @@
 package com.chattriggers.ctjs.internal.launch.generation
 
+import codes.som.koffee.MethodAssembly
+import com.chattriggers.ctjs.internal.launch.At
 import com.chattriggers.ctjs.internal.launch.ModifyArg
 import com.chattriggers.ctjs.internal.utils.descriptorString
 import org.objectweb.asm.tree.MethodNode
+import kotlin.math.sign
 import org.spongepowered.asm.mixin.injection.ModifyArg as SPModifyArg
 
 internal class ModifyArgGenerator(
@@ -16,8 +19,8 @@ internal class ModifyArgGenerator(
         val (mappedMethod, method) = ctx.findMethod(modifyArg.method)
 
         // Resolve the target method
-        val atTarget = Utils.getAtTargetDescriptor(modifyArg.at)
-        check(atTarget is Utils.InvokeAtTarget) { "ModifyArg expects At.target to be INVOKE" }
+        val atTarget = modifyArg.at.atTarget
+        check(atTarget is At.InvokeTarget) { "ModifyArg expects At.target to be INVOKE" }
         val targetDescriptor = atTarget.descriptor
         requireNotNull(targetDescriptor.parameters)
 
@@ -60,5 +63,10 @@ internal class ModifyArgGenerator(
             if (modifyArg.constraints != null)
                 visit("constraints", modifyArg.constraints)
         }
+    }
+
+    context(MethodAssembly)
+    override fun generateNotAttachedBehavior() {
+        generateParameterLoad(0)
     }
 }

@@ -1,5 +1,9 @@
 package com.chattriggers.ctjs.internal.launch.generation
 
+import codes.som.koffee.MethodAssembly
+import codes.som.koffee.insns.jvm.aconst_null
+import codes.som.koffee.insns.jvm.areturn
+import codes.som.koffee.insns.jvm.ldc
 import com.chattriggers.ctjs.internal.launch.Descriptor
 import com.chattriggers.ctjs.internal.launch.Inject
 import com.chattriggers.ctjs.internal.utils.descriptor
@@ -60,5 +64,11 @@ internal class InjectGenerator(
                 visit("constraints", inject.constraints)
             visitEnd()
         }
+    }
+
+    context(MethodAssembly)
+    override fun generateNotAttachedBehavior() {
+        // This method is expected to leave something on the stack
+        aconst_null
     }
 }

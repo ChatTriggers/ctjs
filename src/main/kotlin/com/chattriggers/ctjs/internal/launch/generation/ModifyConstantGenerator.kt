@@ -1,5 +1,6 @@
 package com.chattriggers.ctjs.internal.launch.generation
 
+import codes.som.koffee.MethodAssembly
 import com.chattriggers.ctjs.internal.launch.ModifyConstant
 import com.chattriggers.ctjs.internal.utils.descriptorString
 import org.objectweb.asm.tree.MethodNode
@@ -44,5 +45,10 @@ internal class ModifyConstantGenerator(
                 visit("constraints", modifyConstant.constraints)
             visitEnd()
         }
+    }
+
+    context(MethodAssembly)
+    override fun generateNotAttachedBehavior() {
+        generateParameterLoad(0)
     }
 }
