@@ -481,7 +481,7 @@ object Register {
      *   [com.chattriggers.ctjs.minecraft.wrappers.entity.Entity],
      *   [com.chattriggers.ctjs.minecraft.wrappers.world.block.Block], or
      *   [com.chattriggers.ctjs.minecraft.wrappers.inventory.Item],
-     * - The event, which can be cancelled
+     * - The event, which can be cancelled if the interaction is not BreakBlock
      *
      * Available modifications:
      * - [Trigger.setPriority] Sets the priority

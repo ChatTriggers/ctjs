@@ -171,11 +171,12 @@ object ClientListener : Initializer {
         }
 
         CTEvents.BREAK_BLOCK.register { pos ->
-            TriggerType.PLAYER_INTERACT.triggerAll(
-                PlayerInteraction.BreakBlock,
-                World.getBlockAt(BlockPos(pos)),
-                CancellableEvent(),
-            )
+            val event = CancellableEvent()
+            TriggerType.PLAYER_INTERACT.triggerAll(PlayerInteraction.BreakBlock, World.getBlockAt(BlockPos(pos)), event)
+
+            check(!event.isCancelled()) {
+                "PlayerInteraction event of type BreakBlock is not cancellable"
+            }
         }
 
         UseBlockCallback.EVENT.register { player, _, hand, hitResult ->
