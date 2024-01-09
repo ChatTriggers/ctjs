@@ -82,6 +82,9 @@ class ConsoleClientProcess(private val port: Int, private val hostPid: Long) {
                                 },
                                 onReload = {
                                     socketOut.println(Json.encodeToString<C2HMessage>(ReloadCTMessage))
+                                },
+                                fontSizeListener = { delta ->
+                                    socketOut.println(Json.encodeToString<C2HMessage>(FontSizeMessage(delta)))
                                 }
                             )
                         }

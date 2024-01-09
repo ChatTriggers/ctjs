@@ -42,10 +42,10 @@ class InitMessage(
 ) : H2CMessage()
 
 @Serializable
-object OpenMessage : H2CMessage()
+data object OpenMessage : H2CMessage()
 
 @Serializable
-object TerminateMessage : H2CMessage()
+data object TerminateMessage : H2CMessage()
 
 @Serializable
 class EvalResultMessage(val id: Int, val result: String) : H2CMessage()
@@ -73,7 +73,7 @@ data class StackTrace(
 )
 
 @Serializable
-object ClearConsoleMessage : H2CMessage()
+data object ClearConsoleMessage : H2CMessage()
 
 @Serializable
 sealed class C2HMessage
@@ -82,4 +82,7 @@ sealed class C2HMessage
 class EvalTextMessage(val id: Int, val string: String) : C2HMessage()
 
 @Serializable
-object ReloadCTMessage : C2HMessage()
+data object ReloadCTMessage : C2HMessage()
+
+@Serializable
+class FontSizeMessage(val delta: Int) : C2HMessage()
