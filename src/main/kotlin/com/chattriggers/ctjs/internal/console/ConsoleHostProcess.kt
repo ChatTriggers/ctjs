@@ -130,22 +130,14 @@ object ConsoleHostProcess : Initializer {
 
                     when (val message = Json.decodeFromString<C2HMessage>(messageText)) {
                         is EvalTextMessage -> {
-                            // If this is the general console, we effectively just ignore this message
-                            try {
-                                val result = JSLoader.eval(message.string) ?: continue
-                                synchronized(socketOut) {
-                                    socketOut.println(
-                                        Json.encodeToString<H2CMessage>(
-                                            EvalResultMessage(
-                                                message.id,
-                                                result
-                                            )
-                                        )
-                                    )
-                                }
-                            } catch (e: Throwable) {
-                                e.printTraceToConsole()
-                            }
+                            val result = JSLoader.eval(message.string)
+                            trySendMessage(EvalResultMessage(message.id, result))
+                        }
+                        is FontSizeMessage -> {
+                            val newValue = Config.consoleFontSize + message.delta
+
+                            Config.consoleFontSize = newValue.coerceIn(6..32)
+                            onConsoleSettingsChanged(Config.ConsoleSettings.make())
                         }
                         ReloadCTMessage -> Client.scheduleTask { CTJS.load() }
                     }

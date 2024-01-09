@@ -21,6 +21,7 @@ class ConsoleFrame(
     private val init: InitMessage,
     var onEval: (String) -> CompletableFuture<String>,
     var onReload: () -> Unit,
+    var fontSizeListener: (Int) -> Unit,
 ) {
     private lateinit var currentConfig: ConfigUpdateMessage
     private var firaFont: Font? = init.firaFontBytes?.let {
@@ -83,6 +84,8 @@ class ConsoleFrame(
                                   Control + UP / DOWN: Cycle between ran code history
                                   Control + L: Clear console
                                   Control + R: Reload ChatTriggers
+                                  Control +: Increase console font size
+                                  Control -: Decreate console font size
                                 -------------------------------------------------------
                             """.trimIndent()
                             )
@@ -117,6 +120,8 @@ class ConsoleFrame(
                     }
                     KeyEvent.VK_L -> clearConsole()
                     KeyEvent.VK_R -> onReload()
+                    KeyEvent.VK_MINUS -> fontSizeListener(-1)
+                    KeyEvent.VK_PLUS, KeyEvent.VK_EQUALS -> fontSizeListener(1)
                 }
             }
         })
