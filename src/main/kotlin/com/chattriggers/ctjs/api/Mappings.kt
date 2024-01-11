@@ -8,8 +8,10 @@ import net.fabricmc.mappingio.tree.MappingTree.ElementMapping
 import net.fabricmc.mappingio.tree.MappingTree.MethodArgMapping
 import net.fabricmc.mappingio.tree.MappingTreeView
 import net.fabricmc.mappingio.tree.MemoryMappingTree
+import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Type
 import org.spongepowered.asm.mixin.transformer.ClassInfo
+import org.spongepowered.asm.service.MixinService
 import java.io.ByteArrayInputStream
 import java.net.URL
 import java.nio.file.Files
@@ -92,9 +94,62 @@ object Mappings {
     }
 
     internal fun getMappedClass(unmappedClassName: String): MappedClass? {
-        var name = unmappedClassName.let(Mappings::normalizeClassName)
+        var name = normalizeClassName(unmappedClassName)
         mappedToUnmappedClassNames[name]?.also { name = it }
         return unmappedClasses[name]
+    }
+
+    internal fun getUnmappedClass(unmappedClassName: String): MappedClass {
+        val name = normalizeClassName(unmappedClassName)
+        val classNode = MixinService.getService().bytecodeProvider.getClassNode(unmappedClassName)
+
+        val fields = classNode.fields.associate {
+            val type = it.desc
+            val fieldName = it.name
+
+            fieldName to MappedField(Mapping(fieldName, fieldName), Mapping(type, mapClassName(type) ?: type))
+        }
+
+        val methods = mutableMapOf<String, MutableList<MappedMethod>>()
+        for (method in classNode.methods) {
+            val isStatic = method.access and Opcodes.ACC_STATIC != 0
+            var lvtIndex = if (isStatic) 0 else 1
+
+            val params = mutableListOf<MappedParameter>()
+            Type.getArgumentTypes(method.desc).forEachIndexed { index, type ->
+                val paramType = type.descriptor
+                val paramName = method.parameters?.get(index)?.name ?: return@forEachIndexed
+
+                params.add(
+                    MappedParameter(
+                        Mapping(paramName, paramName),
+                        Mapping(paramType, mapClassName(paramType) ?: paramType),
+                        lvtIndex
+                    )
+                )
+
+                if (type == Type.DOUBLE_TYPE || type == Type.LONG_TYPE) {
+                    lvtIndex += 2
+                } else {
+                    lvtIndex++
+                }
+            }
+
+            val returnType = Type.getReturnType(method.desc).descriptor
+            val methodName = method.name
+            methods.getOrPut(methodName, ::mutableListOf).add(
+                MappedMethod(
+                    Mapping(methodName, methodName),
+                    params,
+                    Mapping(returnType, mapClassName(returnType) ?: returnType)
+                )
+            )
+        }
+
+        mappedToUnmappedClassNames[name] = name
+        return MappedClass(Mapping(name, name), fields, methods).also {
+            unmappedClasses[name] = it
+        }
     }
 
     internal fun getMappedClassName(unmappedClassName: String) = getMappedClass(unmappedClassName)?.name?.value

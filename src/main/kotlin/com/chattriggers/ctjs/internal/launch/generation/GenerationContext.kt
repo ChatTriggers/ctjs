@@ -7,7 +7,13 @@ import com.chattriggers.ctjs.internal.launch.Mixin
 import org.spongepowered.asm.mixin.transformer.ClassInfo
 
 internal data class GenerationContext(val mixin: Mixin) {
-    val mappedClass = Mappings.getMappedClass(mixin.target) ?: error("Unknown class name ${mixin.target}")
+    val mappedClass = Mappings.getMappedClass(mixin.target) ?: run {
+        if (mixin.remap == false) {
+            Mappings.getUnmappedClass(mixin.target)
+        } else {
+            error("Unknown class name ${mixin.target}")
+        }
+    }
     val generatedClassName = "CTMixin_\$${mixin.target.replace('.', '_')}\$_${mixinCounter++}"
     val generatedClassFullPath = "${DynamicMixinManager.GENERATED_PACKAGE}/$generatedClassName"
 
