@@ -1,8 +1,9 @@
 package com.chattriggers.ctjs.internal.mixins;
 
-import com.chattriggers.ctjs.api.message.TextComponent;
 import com.chattriggers.ctjs.api.inventory.Item;
+import com.chattriggers.ctjs.api.message.TextComponent;
 import com.chattriggers.ctjs.api.triggers.TriggerType;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.item.ItemStack;
@@ -17,14 +18,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-//#if MC>=12000
-import net.minecraft.client.gui.DrawContext;
 import java.util.Objects;
-//#else
-//$$ import net.minecraft.client.util.math.MatrixStack;
-
-//$$ import java.util.Objects;
-//#endif
 
 @Mixin(HandledScreen.class)
 public class HandledScreenMixin extends Screen {
@@ -40,31 +34,19 @@ public class HandledScreenMixin extends Screen {
     }
 
     @Inject(
-            method = "drawMouseoverTooltip",
-            at = @At(
-                    value = "INVOKE",
-                    //#if MC>=12000
-                    target = "Lnet/minecraft/client/gui/DrawContext;drawTooltip(Lnet/minecraft/client/font/TextRenderer;Ljava/util/List;Ljava/util/Optional;II)V"
-                    //#else
-                    //$$ target = "Lnet/minecraft/client/gui/screen/ingame/HandledScreen;renderTooltip(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/item/ItemStack;II)V"
-                    //#endif
-            ),
-            cancellable = true
+        method = "drawMouseoverTooltip",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/client/gui/DrawContext;drawTooltip(Lnet/minecraft/client/font/TextRenderer;Ljava/util/List;Ljava/util/Optional;II)V"
+        ),
+        cancellable = true
     )
-    //#if MC>=12000
     private void injectDrawMouseoverTooltip(DrawContext context, int x, int y, CallbackInfo ci) {
-    //#else
-    //$$ private void injectDrawMouseoverTooltip(MatrixStack matrices, int x, int y, CallbackInfo ci) {
-    //#endif
         ItemStack stack = focusedSlot.getStack();
         TriggerType.ITEM_TOOLTIP.triggerAll(
-            //#if MC>=12000
             getTooltipFromItem(Objects.requireNonNull(client), stack)
-            //#else
-            //$$ getTooltipFromItem(stack)
-            //#endif
                 .stream()
-                .map(text -> new TextComponent(text).getFormattedText())
+                .map(TextComponent::new)
                 .toList(),
             Item.fromMC(stack),
             ci
@@ -74,8 +56,8 @@ public class HandledScreenMixin extends Screen {
     @Inject(method = "onMouseClick(Lnet/minecraft/screen/slot/Slot;IILnet/minecraft/screen/slot/SlotActionType;)V", at = @At("HEAD"), cancellable = true)
     private void injectOnMouseClick(Slot slot, int slotId, int button, SlotActionType actionType, CallbackInfo ci) {
         if (
-                (slotId != -999 && actionType == SlotActionType.THROW) || // dropping item from slot
-                        (slotId == -999 && actionType == SlotActionType.PICKUP) // dropping by clicking outside inventory
+            (slotId != -999 && actionType == SlotActionType.THROW) || // dropping item from slot
+                (slotId == -999 && actionType == SlotActionType.PICKUP) // dropping by clicking outside inventory
         ) {
             TriggerType.DROP_ITEM.triggerAll(Item.fromMC(handler.getCursorStack()), button == 0, ci);
         }

@@ -454,10 +454,12 @@ object Register {
     /**
      * Registers a new trigger that runs when a tooltip is being rendered.
      * This allows for the user to modify what text is in the tooltip, and even the
-     * ability to cancel rendering completely.
+     * ability to cancel rendering completely. Note that you must call
+     * [com.chattriggers.ctjs.api.inventory.Item.setLore] with the modified lore for
+     * the changes to take effect.
      *
      * Passes through three arguments:
-     * - The list of lore to modify.
+     * - A list of [com.chattriggers.ctjs.api.message.TextComponent] objects to modify.
      * - The [com.chattriggers.ctjs.api.inventory.Item] that this lore is attached to.
      * - The cancellable event.
      *

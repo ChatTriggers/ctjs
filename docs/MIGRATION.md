@@ -87,6 +87,7 @@ Here is a list of targeted changes for various different APIs:
   - `renderEntity` no longer takes the entity's position as an argument. Instead, call `Entity.getPos()`
   - `spawnParticle` no longer passes in the particle type (which no longer exists in the MC codebase). Instead, the class can be access from the particle wrapper's underlying MC type
   - `renderOverlay` no longer passes in the event, as it was unused previously
+  - `itemTooltip` now receives a list of `TextComponent` objects instead of a list of strings
   - Removed all Trigger classes from the global namespace
   - Removed `CancellableEvent` from the global scope
 - `Message`/`TextComponent`
