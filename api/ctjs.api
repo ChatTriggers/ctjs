@@ -2036,6 +2036,7 @@ public abstract class com/chattriggers/ctjs/api/triggers/Trigger : java/lang/Com
 	public synthetic fun compareTo (Ljava/lang/Object;)I
 	public final fun getMethod ()Ljava/lang/Object;
 	public final fun getType ()Lcom/chattriggers/ctjs/api/triggers/ITriggerType;
+	public final fun isRegistered ()Z
 	public fun register ()Lcom/chattriggers/ctjs/api/triggers/Trigger;
 	public final fun setMethod (Ljava/lang/Object;)V
 	public final fun setPriority (Lcom/chattriggers/ctjs/api/triggers/Trigger$Priority;)Lcom/chattriggers/ctjs/api/triggers/Trigger;
