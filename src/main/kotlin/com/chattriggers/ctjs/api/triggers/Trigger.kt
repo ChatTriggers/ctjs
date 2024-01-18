@@ -9,6 +9,9 @@ abstract class Trigger protected constructor(
 ) : Comparable<Trigger> {
     private var priority: Priority = Priority.NORMAL
 
+    var isRegistered = false
+        private set
+
     init {
         // See note for register method
         @Suppress("LeakingThis")
@@ -38,7 +41,10 @@ abstract class Trigger protected constructor(
     //       the init block above, and thus the child class version will not be
     //       run initially
     open fun register() = apply {
-        JSLoader.addTrigger(this)
+        if (!isRegistered) {
+            isRegistered = true
+            JSLoader.addTrigger(this)
+        }
     }
 
     /**
@@ -46,7 +52,10 @@ abstract class Trigger protected constructor(
      * @return the trigger for method chaining
      */
     open fun unregister() = apply {
-        JSLoader.removeTrigger(this)
+        if (isRegistered) {
+            isRegistered = false
+            JSLoader.removeTrigger(this)
+        }
     }
 
     protected fun callMethod(args: Array<out Any?>) {
