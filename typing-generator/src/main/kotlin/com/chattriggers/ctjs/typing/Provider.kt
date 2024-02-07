@@ -173,8 +173,14 @@ class Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
         val (staticProperties, instanceProperties) = properties.partition { it.isStatic() }
         val isEnum = clazz.classKind == ClassKind.ENUM_CLASS
 
+        val nestedClasses = clazz.declarations.filterIsInstance<KSClassDeclaration>().filter {
+            it.isPublic()
+        }.filter {
+            it.classKind == ClassKind.ENUM_CLASS || it.classKind == ClassKind.CLASS
+        }.toList()
+
         // Output static object first, if necessary
-        if (staticProperties.isNotEmpty() || staticFunctions.isNotEmpty() || isEnum) {
+        if (staticProperties.isNotEmpty() || staticFunctions.isNotEmpty() || nestedClasses.isNotEmpty() || isEnum) {
             appendLine("const $name: {")
             indented {
                 if (isEnum) {
@@ -184,6 +190,10 @@ class Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
                         .forEach {
                             appendLine("${it.simpleName.asString()}: ${clazz.path};")
                         }
+                }
+
+                nestedClasses.forEach {
+                    appendLine("${it.simpleName.asString()}: typeof ${it.path};")
                 }
 
                 staticProperties.forEach { buildProperty(it, resolver) }
@@ -234,6 +244,10 @@ class Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
         })
 
         indented {
+            if (clazz.classKind == ClassKind.OBJECT) {
+                staticProperties.forEach { buildProperty(it, resolver) }
+                staticFunctions.forEach { buildFunction(it, resolver, omitName = false) }
+            }
             instanceProperties.forEach { buildProperty(it, resolver) }
             instanceFunctions.forEach { buildFunction(it, resolver, omitName = false) }
 
@@ -267,7 +281,7 @@ class Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
             val getter = property.getter
             val setter = property.setter
 
-            if (getter != null) {
+            if (getter != null && (getter.modifiers.isEmpty() || getter.modifiers.contains(Modifier.PUBLIC))) {
                 appendLine(buildString {
                     append(resolver.getJvmName(getter)!!)
                     if (getter.returnType != null) {
@@ -280,7 +294,7 @@ class Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
                 })
             }
 
-            if (setter != null) {
+            if (setter != null && (setter.modifiers.isEmpty() || setter.modifiers.contains(Modifier.PUBLIC))) {
                 appendLine(buildString {
                     append(resolver.getJvmName(setter)!!)
                     append("(value: ")
