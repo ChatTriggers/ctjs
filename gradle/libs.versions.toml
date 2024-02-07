@@ -52,6 +52,7 @@ devauth = { module = "me.djtheredstoner:DevAuth-fabric", version.ref = "devauth"
 versioning = { module = "org.jetbrains.dokka:versioning-plugin", version.ref = "dokka" }
 
 ksp = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
+gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 
 [bundles]
 fabric = ["fabric-loader", "fabric-api", "fabric-kotlin"]
@@ -65,4 +66,4 @@ loom = { id = "fabric-loom", version.ref = "loom" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 validator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "validator" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-kotlin-gradle-plugin = { id = "org.jetbrains.kotlin.gradle-plugin", version.ref = "kotlin" }
+

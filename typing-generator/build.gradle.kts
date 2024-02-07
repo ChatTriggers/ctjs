@@ -1,5 +1,11 @@
+buildscript {
+    dependencies {
+        classpath(libs.gradle.plugin)
+    }
+}
+
 plugins {
-    kotlin("jvm")
+    alias(libs.plugins.kotlin)
 }
 
 repositories {
