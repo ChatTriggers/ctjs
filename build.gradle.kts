@@ -66,7 +66,8 @@ java {
 }
 
 apiValidation {
-    ignoredPackages.add("com.chattriggers.ctjs.internal")
+    ignoredProjects += "typing-generator"
+    ignoredPackages += "com.chattriggers.ctjs.internal"
 }
 
 tasks {
