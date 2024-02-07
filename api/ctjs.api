@@ -2398,7 +2398,7 @@ public final class com/chattriggers/ctjs/api/world/World {
 	public static final fun hasPlayer (Ljava/lang/String;)Z
 	public static final fun isLoaded ()Z
 	public static final fun isRaining ()Z
-	public final fun toMC ()Lnet/minecraft/client/world/ClientWorld;
+	public static final fun toMC ()Lnet/minecraft/client/world/ClientWorld;
 }
 
 public final class com/chattriggers/ctjs/api/world/World$BorderWrapper {
