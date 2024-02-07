@@ -28,6 +28,7 @@ import net.minecraft.world.LightType
 import kotlin.math.roundToInt
 
 object World {
+    @JvmStatic
     fun toMC() = UMinecraft.getMinecraft().world
 
     @JvmField
