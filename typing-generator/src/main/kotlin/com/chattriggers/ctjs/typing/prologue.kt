@@ -63,7 +63,6 @@ private val providedTypes = mutableMapOf(
     "Slot" to "com.chattriggers.ctjs.api.inventory.Slot",
 
     "ChatLib" to "com.chattriggers.ctjs.api.message.ChatLib",
-    "Message" to "com.chattriggers.ctjs.api.message.Message",
     "TextComponent" to "com.chattriggers.ctjs.api.message.TextComponent",
 
     "Book" to "com.chattriggers.ctjs.api.render.Book",
