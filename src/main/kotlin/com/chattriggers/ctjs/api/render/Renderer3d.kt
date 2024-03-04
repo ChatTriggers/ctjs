@@ -12,13 +12,14 @@ import gg.essential.elementa.dsl.component4
 import gg.essential.universal.UGraphics
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.font.TextRenderer
+import net.minecraft.client.render.LightmapTextureManager
 import net.minecraft.client.render.Tessellator
+import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.client.render.VertexFormat
 import org.joml.Vector3f
 import org.lwjgl.opengl.GL11
 import org.mozilla.javascript.NativeObject
 import java.awt.Color
-import kotlin.math.sqrt
 
 object Renderer3d {
     private var firstVertex = true
@@ -203,6 +204,7 @@ object Renderer3d {
      * @param renderBlackBox render a pretty black border behind the text
      * @param scale the scale of the text
      * @param increase whether to scale the text up as the player moves away
+     * @param centered whether to center each line based on the longest line (this has no effect if there are no newline characters)
      * @param renderThroughBlocks whether to render the text through blocks
      */
     @JvmStatic
@@ -230,15 +232,11 @@ object Renderer3d {
         )
 
         val lScale = scale * if (increase) {
-            val distance =
-                sqrt(renderPos.x * renderPos.x + renderPos.y * renderPos.y + renderPos.z * renderPos.z)
-            val multiplier = distance / 120f //mobs only render ~120 blocks away
-            multiplier
+            renderPos.magnitude() / 120f //mobs only render ~120 blocks away
         } else {
             0.025f
         }
 
-        Renderer.colorize(1f, 1f, 1f, 0.5f)
         Renderer.pushMatrix()
         Renderer.translate(renderPos.x, renderPos.y, renderPos.z)
         Renderer.multiply(camera.rotation)
@@ -252,15 +250,15 @@ object Renderer3d {
 
         val opacity = (Settings.toMC().getTextBackgroundOpacity(0.25f) * 255).toInt() shl 24
 
-        val xShift = -(width / 2)
-        val yShift = -(height / 2)
+        val xShift = -width / 2
+        val yShift = -height / 2
 
-        val vertexConsumers = MinecraftClient.getInstance().bufferBuilders.entityVertexConsumers
+        val vertexConsumers = VertexConsumerProvider.immediate(tessellator.buffer)
         var yOffset = 0
 
         for (line in lines) {
             val centerShift = if (centered) {
-                xShift + (fontRenderer.getWidth(line).toFloat() / 2)
+                xShift + (fontRenderer.getWidth(line) / 2f)
             } else 0f
 
             Renderer.pushMatrix()
@@ -271,14 +269,15 @@ object Renderer3d {
                     line,
                     xShift - centerShift,
                     yShift + yOffset,
-                    553648127,
+                    0x20FFFFFF,
                     false,
                     matrix,
                     vertexConsumers,
                     TextRenderer.TextLayerType.NORMAL,
                     opacity,
-                    0xff,
+                    LightmapTextureManager.MAX_LIGHT_COORDINATE
                 )
+                Renderer.translate(0f, 0f, -0.03f)
             }
 
             fontRenderer.draw(
@@ -291,9 +290,9 @@ object Renderer3d {
                 vertexConsumers,
                 TextRenderer.TextLayerType.NORMAL,
                 0,
-                0xff,
+                LightmapTextureManager.MAX_LIGHT_COORDINATE
             )
-
+            vertexConsumers.draw()
             Renderer.popMatrix()
 
             yOffset += fontRenderer.fontHeight + 1
@@ -302,7 +301,6 @@ object Renderer3d {
         if (renderThroughBlocks) {
             Renderer.depthFunc(GL11.GL_LEQUAL)
         }
-        Renderer.colorize(1f, 1f, 1f, 1f)
         Renderer.popMatrix()
     }
 
@@ -313,9 +311,12 @@ object Renderer3d {
     fun drawString(obj: NativeObject) {
         drawString(
             obj.get<String>("text") ?: error("Expected \"text\" property in object passed to Renderer3d.drawString"),
-            obj.get<Number>("x")?.toFloat() ?: error("Expected \"x\" property in object passed to Renderer3d.drawString"),
-            obj.get<Number>("y")?.toFloat() ?: error("Expected \"y\" property in object passed to Renderer3d.drawString"),
-            obj.get<Number>("z")?.toFloat() ?: error("Expected \"z\" property in object passed to Renderer3d.drawString"),
+            obj.get<Number>("x")?.toFloat()
+                ?: error("Expected \"x\" property in object passed to Renderer3d.drawString"),
+            obj.get<Number>("y")?.toFloat()
+                ?: error("Expected \"y\" property in object passed to Renderer3d.drawString"),
+            obj.get<Number>("z")?.toFloat()
+                ?: error("Expected \"z\" property in object passed to Renderer3d.drawString"),
             obj.get<Number>("color")?.toLong() ?: Renderer.colorized ?: Renderer.WHITE,
             obj.get<Boolean>("renderBlackBox") ?: true,
             obj.get<Number>("scale")?.toFloat() ?: 1f,
