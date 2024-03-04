@@ -222,12 +222,12 @@ object Renderer {
     @JvmStatic
     @JvmOverloads
     fun bindTexture(texture: Image, textureIndex: Int = 0) = apply {
-        UGraphics.bindTexture(textureIndex, texture.getTexture().glId)
+        UGraphics.bindTexture(textureIndex, texture.getTexture()?.glId ?: 0)
     }
 
     @JvmStatic
     fun deleteTexture(texture: Image) = apply {
-        UGraphics.deleteTexture(texture.getTexture().glId)
+        UGraphics.deleteTexture(texture.getTexture()?.glId ?: 0)
     }
 
     @JvmStatic
@@ -580,7 +580,7 @@ object Renderer {
 
         scale(1f, 1f, 50f)
 
-        RenderSystem.setShaderTexture(0, image.getTexture().glId)
+        RenderSystem.setShaderTexture(0, image.getTexture()?.glId ?: 0)
 
         begin(DrawMode.QUADS, VertexFormat.POSITION_TEXTURE)
         pos(x, y + height, 0f).tex(0f, 1f)

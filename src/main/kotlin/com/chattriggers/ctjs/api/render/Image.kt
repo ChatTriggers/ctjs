@@ -32,13 +32,7 @@ class Image(var image: BufferedImage?) {
 
     fun getTextureHeight(): Int = textureHeight
 
-    fun getTexture(): NativeImageBackedTexture {
-        requireNotNull(texture) {
-            "Failed to bake Image texture"
-        }
-
-        return texture!!.texture
-    }
+    fun getTexture(): NativeImageBackedTexture? = texture?.texture
 
     internal fun getIdOrRegister(): Identifier {
         if (identifier == null) {
