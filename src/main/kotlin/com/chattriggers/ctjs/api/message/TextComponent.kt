@@ -59,7 +59,17 @@ class TextComponent private constructor(
      *   [TextComponent]'s list of parts
      * - A [Text] object, which acts as a single part
      * - A JS object, which must contain a "text" key, and can optionally contain
-     *   any of the [Style] keys
+     *   any of the [Style] keys:
+     *   - color: a [TextColor] or string format of a [TextColor], [Formatting], or a hex value
+     *   - bold: boolean
+     *   - italic: boolean
+     *   - underline: boolean
+     *   - strikethrough: boolean
+     *   - obfuscated: boolean
+     *   - clickEvent: object with { action: [ClickEvent.Action] or string format of a [ClickEvent.Action], value: string or null }
+     *   - hoverEvent: object with { action: [HoverEvent.Action], string format of a [HoverEvent.Action], or null, value: string or null }
+     *   - insertion: string or null
+     *   - font: string format of an [net.minecraft.util.Identifier]
      *
      * @see Style
      */
@@ -279,17 +289,22 @@ class TextComponent private constructor(
                     it.put("obfuscated", it, true)
                 style_.clickEvent?.let { event ->
                     if (event.action != null) {
-                        it.put("clickAction", it, event.action.asString())
-                        if (event.value != null)
-                            it.put("clickValue", it, event.value)
+                        val clickEvent = NativeObject()
+                        clickEvent.put("action", it, event.action.asString())
+                        clickEvent.put("value", it, event.value)
+
+                        it.put("clickEvent", it, clickEvent)
                     }
                 }
                 style_.hoverEvent?.let { event ->
                     if (event.action != null) {
-                        it.put("hoverAction", it, event.action.asString())
+                        val hoverEvent = NativeObject()
+                        hoverEvent.put("action", it, event.action.asString())
                         event.getValue(event.action!!)?.let { value ->
-                            it.put("hoverValue", it, value)
+                            hoverEvent.put("value", it, value)
                         }
+
+                        it.put("hoverEvent", it, hoverEvent)
                     }
                 }
                 if (style_.insertion != null)
@@ -323,7 +338,7 @@ class TextComponent private constructor(
                     val text = obj["text"]
                         ?: throw IllegalArgumentException("Expected TextComponent part to have a \"text\" key")
                     require(text is CharSequence) { "TextComponent part's \"text\" key must be a string" }
-                    listOf(Part(UChat.addColor(text.toString()), jsObjectToStyle(obj)))
+                    listOf(Part(ChatLib.addColor(text.toString()), jsObjectToStyle(obj)))
                 }
                 is Part -> listOf(obj)
                 is TextComponent -> obj.parts
@@ -333,7 +348,7 @@ class TextComponent private constructor(
                     val builder = StringBuilder()
                     var lastStyle = Style.EMPTY
 
-                    TextVisitFactory.visitFormatted(UChat.addColor(obj.toString()), 0, Style.EMPTY) { _, style, cp ->
+                    TextVisitFactory.visitFormatted(ChatLib.addColor(obj.toString()), 0, Style.EMPTY) { _, style, cp ->
                         if (style != lastStyle) {
                             parts.add(Part(builder.toString(), lastStyle))
                             lastStyle = style
@@ -413,17 +428,8 @@ class TextComponent private constructor(
                     obj.getOrDefault("obfuscated", false) as? Boolean
                         ?: error("Expected \"obfuscated\" key to be a boolean")
                 )
-                .withClickEvent(
-                    makeClickEvent(
-                        obj["clickAction"],
-                        when (val clickValue = obj["clickValue"]) {
-                            null -> null
-                            is CharSequence -> clickValue.toString()
-                            else -> error("Expected \"clickValue\" key to be a string")
-                        }
-                    )
-                )
-                .withHoverEvent(makeHoverEvent(obj["hoverAction"], obj["hoverValue"]))
+                .withClickEvent(makeClickEvent(obj["clickEvent"]))
+                .withHoverEvent(makeHoverEvent(obj["hoverEvent"]))
                 .withInsertion(
                     when (val insertion = obj["insertion"]) {
                         null -> null
@@ -454,7 +460,15 @@ class TextComponent private constructor(
             color?.let(colorToFormatChar::get)?.run(::append)
         }
 
-        private fun makeClickEvent(action: Any?, value: String?): ClickEvent? {
+        private fun makeClickEvent(clickEvent: Any?): ClickEvent? {
+            if (clickEvent is ClickEvent?)
+                return clickEvent
+
+            require(clickEvent is NativeObject) { "Expected \"clickEvent\" key to be an object or ClickEvent" }
+
+            val action = clickEvent["action"]
+            val value = clickEvent["value"]
+
             val clickAction = when (action) {
                 is ClickEvent.Action -> action
                 is CharSequence -> ClickEvent.Action.valueOf(action.toString().uppercase())
@@ -464,10 +478,31 @@ class TextComponent private constructor(
                 else -> error("Style.withClickAction() expects a String, ClickEvent.Action, or null, but got ${action::class.simpleName}")
             }
 
-            return ClickEvent(clickAction, value.orEmpty())
+            val clickValue = when (value) {
+                null -> null
+                is CharSequence -> value.toString().let {
+                    if (clickAction == ClickEvent.Action.OPEN_URL) {
+                        if (!it.startsWith("http://") && !it.startsWith("https://")) {
+                            return@let "http://$it"
+                        }
+                    }
+                    it
+                }
+                else -> error("Expected \"value\" key to be a string")
+            }
+
+            return ClickEvent(clickAction, clickValue.orEmpty())
         }
 
-        private fun makeHoverEvent(action: Any?, value: Any?): HoverEvent? {
+        private fun makeHoverEvent(hoverEvent: Any?): HoverEvent? {
+            if (hoverEvent is HoverEvent?)
+                return hoverEvent
+
+            require(hoverEvent is NativeObject) { "Expected \"hoverEvent\" key to be an object or HoverEvent" }
+
+            val action = hoverEvent["action"]
+            val value = hoverEvent["value"]
+
             val hoverAction = when (action) {
                 is HoverEvent.Action<*> -> action
                 is CharSequence -> when (action.toString().uppercase()) {
