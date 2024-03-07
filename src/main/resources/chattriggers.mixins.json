@@ -29,6 +29,7 @@
         "InGameHudMixin",
         "ItemStackMixin",
         "KeyBindingAccessor",
+        "LivingEntityMixin",
         "MinecraftClientMixin",
         "MouseMixin",
         "NbtCompoundAccessor",

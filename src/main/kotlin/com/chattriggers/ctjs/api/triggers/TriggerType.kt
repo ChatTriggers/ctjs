@@ -55,7 +55,6 @@ enum class TriggerType : ITriggerType {
     ENTITY_DAMAGE,
 
     // misc
-    MIXIN,
     COMMAND,
     OTHER
 }
