@@ -2075,7 +2075,6 @@ public final class com/chattriggers/ctjs/api/triggers/TriggerType : java/lang/En
 	public static final field GUI_RENDER Lcom/chattriggers/ctjs/api/triggers/TriggerType;
 	public static final field ITEM_TOOLTIP Lcom/chattriggers/ctjs/api/triggers/TriggerType;
 	public static final field MESSAGE_SENT Lcom/chattriggers/ctjs/api/triggers/TriggerType;
-	public static final field MIXIN Lcom/chattriggers/ctjs/api/triggers/TriggerType;
 	public static final field OTHER Lcom/chattriggers/ctjs/api/triggers/TriggerType;
 	public static final field PACKET_RECEIVED Lcom/chattriggers/ctjs/api/triggers/TriggerType;
 	public static final field PACKET_SENT Lcom/chattriggers/ctjs/api/triggers/TriggerType;

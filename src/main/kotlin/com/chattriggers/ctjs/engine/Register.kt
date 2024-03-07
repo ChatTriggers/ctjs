@@ -496,11 +496,10 @@ object Register {
     }
 
     /**
-     * Registers a new trigger that runs before an entity is damaged
+     * Registers a new trigger that runs when an entity is damaged by the player
      *
-     * Passes through two arguments:
+     * Passes through one argument:
      * - The target Entity that is damaged
-     * - The PlayerMP attacker
      *
      * @param method The method to call when the event is fired
      * @return The trigger for additional modification
@@ -511,7 +510,7 @@ object Register {
     }
 
     /**
-     * Registers a new trigger that runs before an entity dies
+     * Registers a new trigger that runs when an entity dies
      *
      * Passes through one argument:
      * - The Entity that died
