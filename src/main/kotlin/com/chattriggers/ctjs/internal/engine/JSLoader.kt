@@ -159,7 +159,11 @@ object JSLoader {
         return wrapInContext {
             ScriptRuntime.doTopCall(
                 { cx, scope, thisObj, args ->
-                    ScriptRuntime.toString(cx.evaluateString(scope, code, "<eval>", 1, null))
+                    try {
+                        ScriptRuntime.toString(cx.evaluateString(scope, code, "<eval>", 1, null))
+                    } catch (e: Throwable) {
+                        e.printTraceToConsole()
+                    }
                 },
                 it,
                 evalScope,
