@@ -342,7 +342,16 @@ class TextComponent private constructor(
                 }
                 is Part -> listOf(obj)
                 is TextComponent -> obj.parts
-                is Text -> listOf(Part(obj.string, obj.style))
+                is Text -> {
+                    val parts = mutableListOf<Part>()
+
+                    obj.content.visit({ style, text ->
+                        parts.add(Part(text, style))
+                        Optional.empty<Any>()
+                    }, obj.style)
+
+                    parts + obj.siblings.flatMap(::of)
+                }
                 is CharSequence -> {
                     val parts = mutableListOf<Part>()
                     val builder = StringBuilder()
