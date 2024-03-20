@@ -290,8 +290,8 @@ class TextComponent private constructor(
                 style_.clickEvent?.let { event ->
                     if (event.action != null) {
                         val clickEvent = NativeObject()
-                        clickEvent.put("action", it, event.action.asString())
-                        clickEvent.put("value", it, event.value)
+                        clickEvent.put("action", clickEvent, event.action.asString())
+                        clickEvent.put("value", clickEvent, event.value)
 
                         it.put("clickEvent", it, clickEvent)
                     }
@@ -299,9 +299,9 @@ class TextComponent private constructor(
                 style_.hoverEvent?.let { event ->
                     if (event.action != null) {
                         val hoverEvent = NativeObject()
-                        hoverEvent.put("action", it, event.action.asString())
+                        hoverEvent.put("action", hoverEvent, event.action.asString())
                         event.getValue(event.action!!)?.let { value ->
-                            hoverEvent.put("value", it, value)
+                            hoverEvent.put("value", hoverEvent, value)
                         }
 
                         it.put("hoverEvent", it, hoverEvent)
