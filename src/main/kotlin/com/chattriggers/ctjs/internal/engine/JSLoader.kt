@@ -155,7 +155,7 @@ object JSLoader {
         }
     }
 
-    fun eval(code: String): String {
+    fun eval(code: String): String? {
         return wrapInContext {
             ScriptRuntime.doTopCall(
                 { cx, scope, thisObj, args ->
@@ -170,7 +170,7 @@ object JSLoader {
                 evalScope,
                 emptyArray(),
                 true,
-            ) as String
+            ) as? String
         }
     }
 
