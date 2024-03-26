@@ -1,5 +1,6 @@
 package com.chattriggers.ctjs.internal.mixins;
 
+import com.chattriggers.ctjs.api.world.Scoreboard;
 import com.chattriggers.ctjs.internal.engine.CTEvents;
 import com.chattriggers.ctjs.api.triggers.TriggerType;
 import com.chattriggers.ctjs.internal.engine.module.ModuleManager;
@@ -29,8 +30,10 @@ public abstract class MinecraftClientMixin {
             TriggerType.SERVER_DISCONNECT.triggerAll();
         }
 
-        if (this.world != null)
+        if (this.world != null) {
             TriggerType.WORLD_UNLOAD.triggerAll();
+            Scoreboard.INSTANCE.clearCustom$ctjs();
+        }
     }
 
     @Inject(method = "joinWorld", at = @At("TAIL"))
@@ -46,6 +49,7 @@ public abstract class MinecraftClientMixin {
         if (this.isIntegratedServerRunning() || this.getCurrentServerEntry() != null) {
             TriggerType.WORLD_UNLOAD.triggerAll();
             TriggerType.SERVER_DISCONNECT.triggerAll();
+            Scoreboard.INSTANCE.clearCustom$ctjs();
         }
     }
 

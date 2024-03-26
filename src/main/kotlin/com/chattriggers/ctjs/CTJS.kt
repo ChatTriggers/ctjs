@@ -9,6 +9,7 @@ import com.chattriggers.ctjs.api.commands.DynamicCommands
 import com.chattriggers.ctjs.api.message.ChatLib
 import com.chattriggers.ctjs.api.render.Image
 import com.chattriggers.ctjs.api.triggers.TriggerType
+import com.chattriggers.ctjs.api.world.Scoreboard
 import com.chattriggers.ctjs.api.world.World
 import com.chattriggers.ctjs.engine.Console
 import com.chattriggers.ctjs.engine.Register
@@ -85,6 +86,7 @@ class CTJS : ClientModInitializer {
         fun unload(asCommand: Boolean = true) {
             TriggerType.WORLD_UNLOAD.triggerAll()
             TriggerType.GAME_UNLOAD.triggerAll()
+            Scoreboard.clearCustom()
 
             isLoaded = false
 
