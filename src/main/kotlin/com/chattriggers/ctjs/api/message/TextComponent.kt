@@ -399,12 +399,12 @@ class TextComponent private constructor(
         }
     }
 
-    private companion object {
+    internal companion object {
         private val colorToFormatChar = Formatting.entries.mapNotNull { format ->
             TextColor.fromFormatting(format)?.let { it to format }
         }.toMap()
 
-        private fun jsObjectToStyle(obj: NativeObject): Style {
+        internal fun jsObjectToStyle(obj: NativeObject): Style {
             return Style.EMPTY
                 .withColor(obj["color"]?.let { color ->
                     when (color) {
