@@ -134,7 +134,11 @@ Here is a list of targeted changes for various different APIs:
 - `Scoreboard`
   - Remove `Scoreboard.getScoreboardTitle()` in favor of the less verbose `Scoreboard.getTitle()`
   - `Scoreboard.getTitle()` now returns `TextComponent` instead of `String`
-  - `Score.getName()` now returns `TextComponent` instead of `String`
+  - `Score`
+    - is now mutable. You can now edit the score, name, number format, and team
+    - `getPoints`/`setPoints` are renamed to `getScore`/`setScore`
+  - Added `addLine()`, `createTeam()`, `removeIndex()`, `removeScores()` methods
+  - `getLines` now actually sorts by descending instead of ascending
 - `Book` now uses `TextComponent` instead of `Message`
 - `Settings`
   - Renamed all methods in the `skin` object to indicate they return whether the part is enabled, not the actual part themselves (i.e. `getCape()` -> `isCapeEnabled()`)
@@ -195,7 +199,9 @@ Here is a list of targeted changes for various different APIs:
 - `TabList`
   - Renamed `getHeaderMessage()` to `getHeaderComponent()`, and it now returns a `TextComponent` instead of a `Message`
   - Renamed `getFooterMessage()` to `getFooterComponent()`, and it now returns a `TextComponent` instead of a `Message`
-- `Team.getNameTagVisibility()` and `Team.getDeathMessageVisibility()` now return a `Team.Visibility` instead of a string
+- `Team`
+  - `Team.getNameTagVisibility()` and `Team.getDeathMessageVisibility()` now return a `Team.Visibility` instead of a string
+  - Added `setColor()`
 - `Client`
   - `getChatGUI` was renamed to `getChatGui` to match the naming of `getTabGui`
 - Removed `Config.modulesFolder`. Use `ChatTriggers.MODULES_FOLDER` or the string `"./config/ChatTriggers/modules"`

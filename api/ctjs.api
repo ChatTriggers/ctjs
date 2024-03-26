@@ -1013,6 +1013,7 @@ public final class com/chattriggers/ctjs/api/entity/PlayerMP : com/chattriggers/
 public final class com/chattriggers/ctjs/api/entity/Team : com/chattriggers/ctjs/api/CTWrapper {
 	public fun <init> (Lnet/minecraft/scoreboard/Team;)V
 	public final fun canSeeInvisibleTeammates ()Z
+	public final fun getColor ()Ljava/lang/String;
 	public final fun getDeathMessageVisibility ()Lcom/chattriggers/ctjs/api/entity/Team$Visibility;
 	public final fun getFriendlyFire ()Z
 	public synthetic fun getMcValue ()Ljava/lang/Object;
@@ -1023,6 +1024,7 @@ public final class com/chattriggers/ctjs/api/entity/Team : com/chattriggers/ctjs
 	public final fun getPrefix ()Ljava/lang/String;
 	public final fun getRegisteredName ()Ljava/lang/String;
 	public final fun getSuffix ()Ljava/lang/String;
+	public final fun setColor (Ljava/lang/Object;)Lcom/chattriggers/ctjs/api/entity/Team;
 	public final fun setName (Lcom/chattriggers/ctjs/api/message/TextComponent;)Lcom/chattriggers/ctjs/api/entity/Team;
 	public final fun setName (Ljava/lang/String;)Lcom/chattriggers/ctjs/api/entity/Team;
 	public final fun setPrefix (Lcom/chattriggers/ctjs/api/message/TextComponent;)Lcom/chattriggers/ctjs/api/entity/Team;
@@ -1031,6 +1033,10 @@ public final class com/chattriggers/ctjs/api/entity/Team : com/chattriggers/ctjs
 	public final fun setSuffix (Ljava/lang/String;)Lcom/chattriggers/ctjs/api/entity/Team;
 	public synthetic fun toMC ()Ljava/lang/Object;
 	public fun toMC ()Lnet/minecraft/scoreboard/Team;
+}
+
+public synthetic class com/chattriggers/ctjs/api/entity/Team$EntriesMappings {
+	public static final synthetic field entries$0 Lkotlin/enums/EnumEntries;
 }
 
 public final class com/chattriggers/ctjs/api/entity/Team$Visibility : java/lang/Enum, com/chattriggers/ctjs/api/CTWrapper {
@@ -2314,6 +2320,9 @@ public final class com/chattriggers/ctjs/api/world/PotionEffectType {
 
 public final class com/chattriggers/ctjs/api/world/Scoreboard {
 	public static final field INSTANCE Lcom/chattriggers/ctjs/api/world/Scoreboard;
+	public static final fun addLine (ILcom/chattriggers/ctjs/api/message/TextComponent;)V
+	public static final fun addLine (ILjava/lang/String;)V
+	public static final fun createTeam (Ljava/lang/String;)Lcom/chattriggers/ctjs/api/entity/Team;
 	public static final fun getLineByIndex (I)Lcom/chattriggers/ctjs/api/world/Scoreboard$Score;
 	public static final fun getLines ()Ljava/util/List;
 	public static final fun getLines (Z)Ljava/util/List;
@@ -2323,6 +2332,10 @@ public final class com/chattriggers/ctjs/api/world/Scoreboard {
 	public static final fun getShouldRender ()Z
 	public static final fun getSidebar ()Lnet/minecraft/scoreboard/ScoreboardObjective;
 	public static final fun getTitle ()Lcom/chattriggers/ctjs/api/message/TextComponent;
+	public static final fun removeIndex (I)V
+	public static final fun removeIndex (IZ)V
+	public static synthetic fun removeIndex$default (IZILjava/lang/Object;)V
+	public static final fun removeScores (I)V
 	public static final fun setLine (ILcom/chattriggers/ctjs/api/message/TextComponent;)V
 	public static final fun setLine (ILcom/chattriggers/ctjs/api/message/TextComponent;Z)V
 	public static final fun setLine (ILjava/lang/String;)V
@@ -2335,11 +2348,21 @@ public final class com/chattriggers/ctjs/api/world/Scoreboard {
 	public static final fun toMC ()Lnet/minecraft/scoreboard/Scoreboard;
 }
 
-public final class com/chattriggers/ctjs/api/world/Scoreboard$Score {
-	public fun <init> (Lnet/minecraft/scoreboard/ScoreboardEntry;)V
+public final class com/chattriggers/ctjs/api/world/Scoreboard$Score : com/chattriggers/ctjs/api/CTWrapper {
+	public fun <init> (Lnet/minecraft/scoreboard/ScoreAccess;)V
+	public synthetic fun getMcValue ()Ljava/lang/Object;
+	public fun getMcValue ()Lnet/minecraft/scoreboard/ScoreAccess;
 	public final fun getName ()Lcom/chattriggers/ctjs/api/message/TextComponent;
-	public final fun getPoints ()I
-	public final fun toMC ()Lnet/minecraft/scoreboard/ScoreboardEntry;
+	public final fun getNumberFormat ()Lnet/minecraft/scoreboard/number/NumberFormat;
+	public final fun getScore ()I
+	public final fun getTeam ()Lcom/chattriggers/ctjs/api/entity/Team;
+	public final fun remove ()V
+	public final fun setName (Lcom/chattriggers/ctjs/api/message/TextComponent;)Lcom/chattriggers/ctjs/api/world/Scoreboard$Score;
+	public final fun setNumberFormat (Ljava/lang/Object;)Lcom/chattriggers/ctjs/api/world/Scoreboard$Score;
+	public final fun setScore (I)Lcom/chattriggers/ctjs/api/world/Scoreboard$Score;
+	public final fun setTeam (Lcom/chattriggers/ctjs/api/entity/Team;)Lcom/chattriggers/ctjs/api/world/Scoreboard$Score;
+	public synthetic fun toMC ()Ljava/lang/Object;
+	public fun toMC ()Lnet/minecraft/scoreboard/ScoreAccess;
 	public fun toString ()Ljava/lang/String;
 }
 

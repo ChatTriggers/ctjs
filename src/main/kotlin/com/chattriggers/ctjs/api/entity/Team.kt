@@ -3,7 +3,10 @@ package com.chattriggers.ctjs.api.entity
 import com.chattriggers.ctjs.api.CTWrapper
 import com.chattriggers.ctjs.api.message.TextComponent
 import com.chattriggers.ctjs.MCTeam
+import com.chattriggers.ctjs.api.message.ChatLib
 import net.minecraft.scoreboard.AbstractTeam
+import net.minecraft.text.TextColor
+import net.minecraft.util.Formatting
 
 class Team(override val mcValue: MCTeam) : CTWrapper<MCTeam> {
     /**
@@ -78,6 +81,24 @@ class Team(override val mcValue: MCTeam) : CTWrapper<MCTeam> {
      * @return the team for method chaining
      */
     fun setSuffix(suffix: String) = setSuffix(TextComponent(suffix))
+
+    fun getColor() = mcValue.color.toString()
+
+    /**
+     * Sets the team color
+     * @param color a string format of a [Formatting], or a hex value
+     * @return the team for method chaining
+     */
+    fun setColor(color: Any?) = apply {
+        mcValue.color = when (color) {
+            is Number -> Formatting.byColorIndex(color.toInt())
+            is CharSequence -> Formatting.entries.find {
+                it.toString() == ChatLib.addColor(color.toString())
+            } ?: Formatting.RESET
+            null -> Formatting.RESET
+            else -> throw IllegalArgumentException("Could not convert type ${color::class.simpleName} to a Formatting")
+        }
+    }
 
     /**
      * Gets the team's friendly fire setting
