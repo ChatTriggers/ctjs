@@ -1936,21 +1936,10 @@ public class com/chattriggers/ctjs/api/triggers/CancellableEvent {
 
 public final class com/chattriggers/ctjs/api/triggers/ChatTrigger : com/chattriggers/ctjs/api/triggers/Trigger {
 	public fun <init> (Ljava/lang/Object;Lcom/chattriggers/ctjs/api/triggers/ITriggerType;)V
-	public final fun addParameter (Ljava/lang/String;)Lcom/chattriggers/ctjs/api/triggers/ChatTrigger;
-	public final fun addParameters ([Ljava/lang/String;)Lcom/chattriggers/ctjs/api/triggers/ChatTrigger;
-	public final fun setCaseInsensitive ()Lcom/chattriggers/ctjs/api/triggers/ChatTrigger;
-	public final fun setChatCriteria (Ljava/lang/Object;)Lcom/chattriggers/ctjs/api/triggers/ChatTrigger;
-	public final fun setContains ()Lcom/chattriggers/ctjs/api/triggers/ChatTrigger;
+	public final fun contains ([Ljava/lang/Object;)Lcom/chattriggers/ctjs/api/triggers/ChatTrigger;
+	public final fun endsWith (Ljava/lang/Object;)Lcom/chattriggers/ctjs/api/triggers/ChatTrigger;
 	public final fun setCriteria (Ljava/lang/Object;)Lcom/chattriggers/ctjs/api/triggers/ChatTrigger;
-	public final fun setEnd ()Lcom/chattriggers/ctjs/api/triggers/ChatTrigger;
-	public final fun setExact ()Lcom/chattriggers/ctjs/api/triggers/ChatTrigger;
-	public final fun setFormatted ()V
-	public final fun setFormatted (Z)V
-	public static synthetic fun setFormatted$default (Lcom/chattriggers/ctjs/api/triggers/ChatTrigger;ZILjava/lang/Object;)V
-	public final fun setParameter (Ljava/lang/String;)Lcom/chattriggers/ctjs/api/triggers/ChatTrigger;
-	public final fun setParameters ([Ljava/lang/String;)Lcom/chattriggers/ctjs/api/triggers/ChatTrigger;
-	public final fun setStart ()Lcom/chattriggers/ctjs/api/triggers/ChatTrigger;
-	public final fun triggerIfCanceled (Z)Lcom/chattriggers/ctjs/api/triggers/ChatTrigger;
+	public final fun startsWith (Ljava/lang/Object;)Lcom/chattriggers/ctjs/api/triggers/ChatTrigger;
 }
 
 public final class com/chattriggers/ctjs/api/triggers/ChatTrigger$Event : com/chattriggers/ctjs/api/triggers/CancellableEvent {

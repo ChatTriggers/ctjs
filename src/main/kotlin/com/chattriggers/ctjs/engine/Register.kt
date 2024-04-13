@@ -56,9 +56,10 @@ object Register {
      * - The chat event, which can be cancelled
      *
      * Available modifications:
-     * - [ChatTrigger.triggerIfCanceled] Sets if triggered if event is already cancelled
-     * - [ChatTrigger.setChatCriteria] Sets the chat criteria
-     * - [ChatTrigger.setParameter] Sets the chat parameter
+     * - [ChatTrigger.setCriteria] Sets the exact chat criteria
+     * - [ChatTrigger.startsWith] Sets the starting criteria
+     * - [ChatTrigger.contains] Sets the containing criteria
+     * - [ChatTrigger.endsWith] Sets the ending criteria
      * - [Trigger.setPriority] Sets the priority
      *
      * @param method The method to call when the event is fired
@@ -77,9 +78,10 @@ object Register {
      * - The chat event, which can be cancelled
      *
      * Available modifications:
-     * - [ChatTrigger.triggerIfCanceled] Sets if triggered if event is already cancelled
-     * - [ChatTrigger.setChatCriteria] Sets the chat criteria
-     * - [ChatTrigger.setParameter] Sets the chat parameter
+     * - [ChatTrigger.setCriteria] Sets the exact chat criteria
+     * - [ChatTrigger.startsWith] Sets the starting criteria
+     * - [ChatTrigger.contains] Sets the containing criteria
+     * - [ChatTrigger.endsWith] Sets the ending criteria
      * - [Trigger.setPriority] Sets the priority
      *
      * @param method The method to call when the event is fired
