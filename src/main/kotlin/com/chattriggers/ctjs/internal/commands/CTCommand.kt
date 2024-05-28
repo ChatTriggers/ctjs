@@ -136,6 +136,12 @@ internal object CTCommand : Initializer {
                 }
 
                 ChatLib.chat("&aSuccessfully imported ${module.metadata.name ?: module.name}")
+
+                if (dependencies.isNotEmpty()) {
+                    val dependencyNames = dependencies.map { it.metadata.name ?: it.name }
+                    ChatLib.chat("&eAlso imported ${dependencyNames.joinToString(", ")}")
+                }
+
                 if (Config.moduleImportHelp && module.metadata.helpMessage != null) {
                     ChatLib.chat(module.metadata.helpMessage.toString().take(383))
                 }
