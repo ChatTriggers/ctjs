@@ -50,6 +50,15 @@ object Config : Vigilant(File(CTJS.configLocation, "ChatTriggers.toml"), sorting
     @JvmStatic
     @Property(
         PropertyType.SWITCH,
+        name = "Show Dependencies Confirmation",
+        category = "General",
+        description = "Receive a confirmation message listing the dependencies before importing a module.",
+    )
+    var dependenciesConfirmation = false
+
+    @JvmStatic
+    @Property(
+        PropertyType.SWITCH,
         name = "Clear console on CT load",
         category = "Console",
     )
