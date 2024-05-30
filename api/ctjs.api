@@ -42,6 +42,7 @@ public final class com/chattriggers/ctjs/api/Config : gg/essential/vigilance/Vig
 	public static final fun getConsoleTheme ()I
 	public static final fun getConsoleWarningColor ()Ljava/awt/Color;
 	public static final fun getCustomTheme ()Z
+	public static final fun getDependenciesConfirmation ()Z
 	public static final fun getModuleChangelog ()Z
 	public static final fun getModuleImportHelp ()Z
 	public static final fun getOpenConsoleOnError ()Z
@@ -56,6 +57,7 @@ public final class com/chattriggers/ctjs/api/Config : gg/essential/vigilance/Vig
 	public static final fun setConsoleTheme (I)V
 	public static final fun setConsoleWarningColor (Ljava/awt/Color;)V
 	public static final fun setCustomTheme (Z)V
+	public static final fun setDependenciesConfirmation (Z)V
 	public static final fun setModuleChangelog (Z)V
 	public static final fun setModuleImportHelp (Z)V
 	public static final fun setOpenConsoleOnError (Z)V
