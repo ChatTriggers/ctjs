@@ -8,6 +8,7 @@ import com.chattriggers.ctjs.api.message.TextComponent
 import com.chattriggers.ctjs.internal.commands.StaticCommand.Companion.onExecute
 import com.chattriggers.ctjs.engine.Console
 import com.chattriggers.ctjs.engine.printTraceToConsole
+import com.chattriggers.ctjs.internal.engine.module.Module
 import com.chattriggers.ctjs.internal.engine.module.ModuleManager
 import com.chattriggers.ctjs.internal.engine.module.ModulesGui
 import com.chattriggers.ctjs.internal.listeners.ClientListener
@@ -37,6 +38,7 @@ import kotlin.concurrent.thread
 internal object CTCommand : Initializer {
     private const val idFixed = 90123 // ID for dumped chat
     private var idFixedOffset = -1 // ID offset (increments)
+    private var pendingImport: String? = null
 
     override fun init() {
         ClientCommandRegistrationCallback.EVENT.register { dispatcher, _ ->
@@ -118,34 +120,54 @@ internal object CTCommand : Initializer {
     private fun import(moduleName: String) {
         if (ModuleManager.cachedModules.any { it.name.equals(moduleName, ignoreCase = true) }) {
             ChatLib.chat("&cModule $moduleName is already installed!")
-        } else {
-            ChatLib.chat("&cImporting $moduleName...")
-            thread {
-                val (module, dependencies) = ModuleManager.importModule(moduleName)
-                if (module == null) {
-                    ChatLib.chat("&cUnable to import module $moduleName")
-                    return@thread
-                }
-
-                val allModules = listOf(module) + dependencies
-                val modVersion = CTJS.MOD_VERSION.toVersion()
-                allModules.forEach {
-                    val version = it.targetModVersion ?: return@forEach
-                    if (version.majorVersion < modVersion.majorVersion)
-                        ModuleManager.tryReportOldVersion(it)
-                }
-
-                ChatLib.chat("&aSuccessfully imported ${module.metadata.name ?: module.name}")
-
-                if (dependencies.isNotEmpty()) {
-                    val dependencyNames = dependencies.map { it.metadata.name ?: it.name }
-                    ChatLib.chat("&eAlso imported ${dependencyNames.joinToString(", ")}")
-                }
-
-                if (Config.moduleImportHelp && module.metadata.helpMessage != null) {
-                    ChatLib.chat(module.metadata.helpMessage.toString().take(383))
-                }
+            return
+        }
+        
+        thread {
+            val (module, dependencies) = ModuleManager.importModule(moduleName)
+            if (module == null) {
+                ChatLib.chat("&cUnable to import module $moduleName")
+                return@thread
             }
+
+            if (pendingImport == moduleName) {
+                // User has confirmed the import, proceed with the import
+                pendingImport = null
+                performImport(module, dependencies)
+            } else if(Config.dependenciesConfirmation) {
+                // User has not confirmed the import yet, fetch the dependencies and ask for confirmation
+                val dependencyNames = dependencies.map { it.metadata.name ?: it.name }
+                ChatLib.chat("&cImporting $moduleName... This will also import ${dependencyNames.joinToString(", ")}. Are you sure?")
+                TextComponent(Text.literal("Type `/ct import $moduleName` again or click [Import] to confirm.").styled {
+                    it.withClickEvent(ClickEvent(ClickEvent.Action.RUN_COMMAND, "/ct import $moduleName"))
+                }).chat()
+
+                pendingImport = moduleName
+            } else {
+                ChatLib.chat("&cImporting $moduleName...")
+                performImport(module, dependencies)
+            }
+        }
+    }
+
+    private fun performImport(module: Module, dependencies: List<Module>) {
+        val allModules = listOf(module) + dependencies
+        val modVersion = CTJS.MOD_VERSION.toVersion()
+        allModules.forEach {
+            val version = it.targetModVersion ?: return@forEach
+            if (version.majorVersion < modVersion.majorVersion)
+                ModuleManager.tryReportOldVersion(it)
+        }
+
+        ChatLib.chat("&aSuccessfully imported ${module.metadata.name ?: module.name}")
+
+        if (dependencies.isNotEmpty()) {
+            val dependencyNames = dependencies.map { it.metadata.name ?: it.name }
+            ChatLib.chat("&eAlso imported ${dependencyNames.joinToString(", ")}")
+        }
+
+        if (Config.moduleImportHelp && module.metadata.helpMessage != null) {
+            ChatLib.chat(module.metadata.helpMessage.toString().take(383))
         }
     }
 
