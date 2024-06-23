@@ -36,7 +36,7 @@ class Image(var image: BufferedImage?) {
 
     internal fun getIdOrRegister(): Identifier {
         if (identifier == null) {
-            identifier = Identifier("ctjs:image${nextIdentifierIndex++}")
+            identifier = Identifier.of(CTJS.MOD_ID,"image${nextIdentifierIndex++}")
             if (texture != null) {
                 Client.getMinecraft().textureManager.registerTexture(identifier!!, texture!!.texture)
             } else {

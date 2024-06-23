@@ -199,11 +199,11 @@ open class Entity(override val mcValue: MCEntity) : CTWrapper<MCEntity> {
 
     fun isWet() = mcValue.isWet
 
-    fun getDimension() = mcValue.world.dimensionKey.let { key ->
+    fun getDimension() = mcValue.world.dimensionEntry.key.let { key ->
         DimensionType.entries.first { it.toMC() == key }
     }
 
-    fun getMaxInPortalTime() = mcValue.maxNetherPortalTime
+    fun getMaxInPortalTime() = mcValue.portalCooldown
 
     fun isSilent() = mcValue.isSilent
 

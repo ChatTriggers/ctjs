@@ -102,6 +102,7 @@ object Client {
                 ServerAddress(ip, port),
                 ServerInfo("Server", ip, ServerInfo.ServerType.OTHER),
                 false,
+                null,
             )
         }
     }

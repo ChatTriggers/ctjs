@@ -20,7 +20,7 @@ fun String.toVersion(): Version {
 }
 
 fun String.toIdentifier(): Identifier {
-    return Identifier(if (':' in this) this else "minecraft:$this")
+    return Identifier.of(if (':' in this) this else "minecraft:$this")
 }
 
 fun String.urlEncode() = URLEncoder.encode(this, Charset.defaultCharset())

@@ -13,6 +13,7 @@ import org.objectweb.asm.Type
 import org.spongepowered.asm.mixin.transformer.ClassInfo
 import org.spongepowered.asm.service.MixinService
 import java.io.ByteArrayInputStream
+import java.net.URI
 import java.net.URL
 import java.nio.file.Files
 import java.util.zip.ZipFile
@@ -30,12 +31,12 @@ object Mappings {
     private val mappedToUnmappedClassNames = mutableMapOf<String, String>()
 
     internal fun initialize() {
-        val container = FabricLoader.getInstance().getModContainer("chattriggers")
-        val mappingVersion = container.get().metadata.getCustomValue("ctjs:yarn-mappings").asString
+        val container = FabricLoader.getInstance().getModContainer(CTJS.MOD_ID)
+        val mappingVersion = container.get().metadata.getCustomValue("${CTJS.MOD_ID}:yarn-mappings").asString
         val jarName = "yarn-$mappingVersion-v2.jar".urlEncode()
 
-        val jarBytes = URL("$YARN_MAPPINGS_URL_PREFIX${mappingVersion.urlEncode()}/$jarName").readBytes()
-        val tempFile = Files.createTempFile("ctjs", "mapping").toFile()
+        val jarBytes = URI("$YARN_MAPPINGS_URL_PREFIX${mappingVersion.urlEncode()}/$jarName").toURL().readBytes()
+        val tempFile = Files.createTempFile(CTJS.MOD_ID, "mapping").toFile()
         tempFile.writeBytes(jarBytes)
 
         val mappingBytes = ZipFile(tempFile).use { file ->

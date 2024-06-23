@@ -3,9 +3,10 @@ package com.chattriggers.ctjs.internal.mixins;
 import com.chattriggers.ctjs.internal.Skippable;
 import com.chattriggers.ctjs.internal.TooltipOverridable;
 import com.llamalad7.mixinextras.sugar.Local;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -28,13 +29,13 @@ public class ItemStackMixin implements TooltipOverridable, Skippable {
     private boolean shouldSkipFabricEvent = false;
 
     @Inject(method = "getTooltip", at = @At("HEAD"), cancellable = true)
-    private void injectGetTooltip(@Nullable PlayerEntity player, TooltipContext context, CallbackInfoReturnable<List<Text>> cir) {
+    private void injectGetTooltip(Item.TooltipContext context, @Nullable PlayerEntity player, TooltipType type, CallbackInfoReturnable<List<Text>> cir) {
         if (shouldOverrideTooltip)
             cir.setReturnValue(Objects.requireNonNull(overriddenTooltip));
     }
 
-    @Inject(method = "getTooltip", at = @At(value = "RETURN", shift = At.Shift.BEFORE), cancellable = true)
-    private void cancelFabricEvent(@Nullable PlayerEntity player, TooltipContext context, CallbackInfoReturnable<List<Text>> cir, @Local List<Text> list) {
+    @Inject(method = "getTooltip", at = @At(value = "RETURN", ordinal = 1, shift = At.Shift.BEFORE), cancellable = true)
+    private void cancelFabricEvent(Item.TooltipContext context, @Nullable PlayerEntity player, TooltipType type, CallbackInfoReturnable<List<Text>> cir, @Local List<Text> list) {
         if (shouldSkipFabricEvent)
             cir.setReturnValue(list);
     }

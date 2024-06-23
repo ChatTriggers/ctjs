@@ -4,7 +4,7 @@ import com.chattriggers.ctjs.*
 import com.chattriggers.ctjs.api.CTWrapper
 import com.chattriggers.ctjs.api.world.World
 import gg.essential.universal.UMinecraft
-import net.minecraft.client.render.entity.PlayerModelPart
+import net.minecraft.entity.player.PlayerModelPart
 import net.minecraft.sound.SoundCategory
 
 object Settings {

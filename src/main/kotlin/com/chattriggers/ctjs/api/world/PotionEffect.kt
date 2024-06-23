@@ -12,7 +12,7 @@ class PotionEffect(val effect: StatusEffectInstance) {
     /**
      * The type of this potion
      */
-    val type get() = PotionEffectType(effect.effectType)
+    val type get() = PotionEffectType(effect.effectType.value())
 
     /**
      * Returns the translation key of the potion.
@@ -25,13 +25,13 @@ class PotionEffect(val effect: StatusEffectInstance) {
      * is displayed in the player's inventory.
      * Ex: "Poison"
      */
-    val localizedName get() = TextComponent(effect.effectType.name).unformattedText
+    val localizedName get() = TextComponent(effect.effectType.value().name).unformattedText
 
     val amplifier get() = effect.amplifier
 
     val duration get() = effect.duration
 
-    val id get() = Registries.STATUS_EFFECT.getRawId(effect.effectType)
+    val id get() = Registries.STATUS_EFFECT.getRawId(effect.effectType.value())
 
     val ambient get() = effect.isAmbient
 

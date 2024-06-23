@@ -41,7 +41,7 @@ public class MouseMixin {
     }
 
     @Inject(
-        method = "method_1602(Lnet/minecraft/client/gui/screen/Screen;DDDD)V",
+        method = "method_55795(Lnet/minecraft/client/gui/screen/Screen;DDDD)V",
         at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/client/gui/screen/Screen;mouseDragged(DDIDD)Z"

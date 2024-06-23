@@ -53,7 +53,6 @@ object Server {
         return toMC()?.label?.let { TextComponent(it) }?.formattedText ?: ""
     }
 
-    // TODO(breaking): Return -1 if not in a world
     /**
      * Gets the ping to the current server, or 5 if the player
      * is in a single-player world. Returns -1 if not in a world

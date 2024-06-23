@@ -537,7 +537,7 @@ object Renderer {
         val fr = getFontRenderer()
         var newY = y
 
-        val immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().buffer)
+        val immediate = Client.getMinecraft().bufferBuilders.entityVertexConsumers
         splitText(text).lines.forEach {
             fr.draw(
                 it,
@@ -738,12 +738,19 @@ object Renderer {
         matrixStack.pop()
     }
 
-    internal fun withMatrix(stack: MatrixStack, partialTicks: Float = Renderer.partialTicks, block: () -> Unit) {
+    internal fun withMatrix(stack: MatrixStack?, partialTicks: Float = Renderer.partialTicks, block: () -> Unit) {
         Renderer.partialTicks = partialTicks
         matrixPushCounter = 0
-        pushMatrix(UMatrixStack(stack))
-        block()
-        popMatrix()
+
+        try {
+            if (stack != null)
+                pushMatrix(UMatrixStack(stack))
+
+            block()
+        } finally {
+            if (stack != null)
+                popMatrix()
+        }
 
         if (matrixPushCounter > 0) {
             "Warning: Render function missing a call to Renderer.popMatrix()".printToConsole(LogType.WARN)

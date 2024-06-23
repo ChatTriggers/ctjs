@@ -26,17 +26,17 @@ public class ChatHudMixin {
         ChatLib.INSTANCE.onChatHudClearChat$ctjs();
     }
 
+    // TODO: is it this or addVisibleMessage
     @Inject(
-        method = "addMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/message/MessageSignatureData;ILnet/minecraft/client/gui/hud/MessageIndicator;Z)V",
+        method = "addMessage(Lnet/minecraft/client/gui/hud/ChatHudLine;)V",
         at = @At(
             value = "INVOKE",
             target = "Ljava/util/List;remove(I)Ljava/lang/Object;",
-            ordinal = 1,
             shift = At.Shift.BEFORE
         )
     )
-    private void injectMessageRemovedForChatLimit(Text message, MessageSignatureData signature, int ticks, MessageIndicator indicator, boolean refresh, CallbackInfo ci) {
-        ChatLib.INSTANCE.onChatHudLineRemoved$ctjs(messages.get(messages.size() - 1));
+    private void injectMessageRemovedForChatLimit(ChatHudLine message, CallbackInfo ci) {
+        ChatLib.INSTANCE.onChatHudLineRemoved$ctjs(messages.getLast());
     }
 
     // Note: ChatHudLine objects are also removed in queueForRemoval, however those are signature based.

@@ -38,9 +38,9 @@ open class LivingEntity(override val mcValue: MCLivingEntity) : Entity(mcValue) 
 
     fun getArmorValue() = mcValue.armor
 
-    fun isPotionActive(id: Int) = mcValue.hasStatusEffect(Registries.STATUS_EFFECT.get(id))
+    fun isPotionActive(id: Int) = mcValue.hasStatusEffect(Registries.STATUS_EFFECT.getEntry(id).get())
 
-    fun isPotionActive(type: PotionEffectType) = mcValue.hasStatusEffect(type.type)
+    fun isPotionActive(type: PotionEffectType) = mcValue.hasStatusEffect(Registries.STATUS_EFFECT.getEntry(type.type))
 
     fun isPotionActive(effect: PotionEffect) = isPotionActive(effect.type)
 }

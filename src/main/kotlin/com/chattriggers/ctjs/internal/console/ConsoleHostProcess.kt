@@ -4,7 +4,6 @@ import com.chattriggers.ctjs.CTJS
 import com.chattriggers.ctjs.api.Config
 import com.chattriggers.ctjs.api.client.Client
 import com.chattriggers.ctjs.engine.LogType
-import com.chattriggers.ctjs.engine.printTraceToConsole
 import com.chattriggers.ctjs.internal.engine.CTEvents
 import com.chattriggers.ctjs.internal.engine.JSLoader
 import com.chattriggers.ctjs.internal.utils.Initializer
@@ -62,10 +61,10 @@ object ConsoleHostProcess : Initializer {
     override fun init() {
         val keybind = KeyBindingHelper.registerKeyBinding(
             KeyBinding(
-                "chattriggers.key.binding.console",
+                "ctjs.key.binding.console",
                 InputUtil.Type.KEYSYM,
                 GLFW.GLFW_KEY_GRAVE_ACCENT,
-                "chattriggers.key.category",
+                "ctjs.key.category",
             )
         )
 
@@ -107,7 +106,7 @@ object ConsoleHostProcess : Initializer {
                 val initMessage = InitMessage(
                     CTJS.MOD_VERSION,
                     ConfigUpdateMessage.constructFromConfig(Config.ConsoleSettings.make()),
-                    this::class.java.getResourceAsStream("/assets/chattriggers/FiraCode-Regular.otf")?.readAllBytes(),
+                    this::class.java.getResourceAsStream("/assets/ctjs/FiraCode-Regular.otf")?.readAllBytes(),
                 )
 
                 synchronized(socketOut) {

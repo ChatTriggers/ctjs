@@ -97,7 +97,7 @@ object JSLoader {
             loadMixinLibs()
 
         val moduleProvidedLibs = saveResource(
-            "/assets/chattriggers/js/moduleProvidedLibs.js",
+            "/assets/ctjs/js/moduleProvidedLibs.js",
             File(modulesFolder.parentFile, "chattriggers-modules-provided-libs.js"),
         )
 
@@ -192,7 +192,7 @@ object JSLoader {
 
     private fun loadMixinLibs() {
         val mixinProvidedLibs = saveResource(
-            "/assets/chattriggers/js/mixinProvidedLibs.js",
+            "/assets/ctjs/js/mixinProvidedLibs.js",
             File(modulesFolder.parentFile, "chattriggers-mixin-provided-libs.js"),
         )
 

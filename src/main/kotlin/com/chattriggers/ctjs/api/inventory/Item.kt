@@ -15,15 +15,17 @@ import com.chattriggers.ctjs.internal.TooltipOverridable
 import com.chattriggers.ctjs.MCNbtCompound
 import com.chattriggers.ctjs.internal.utils.asMixin
 import net.minecraft.block.pattern.CachedBlockPosition
-import net.minecraft.client.item.TooltipContext
 import net.minecraft.client.render.DiffuseLighting
 import net.minecraft.client.render.OverlayTexture
 import net.minecraft.client.render.model.json.ModelTransformationMode
+import net.minecraft.component.DataComponentTypes
 import net.minecraft.enchantment.EnchantmentHelper
+import net.minecraft.item.Item.TooltipContext
 import net.minecraft.item.ItemStack
-import net.minecraft.registry.Registries
+import net.minecraft.item.tooltip.TooltipType
 import net.minecraft.util.crash.CrashException
 import net.minecraft.util.crash.CrashReport
+import kotlin.jvm.optionals.getOrNull
 
 class Item(override val mcValue: ItemStack) : CTWrapper<ItemStack> {
     val type: ItemType = ItemType(mcValue.item)
@@ -44,8 +46,8 @@ class Item(override val mcValue: ItemStack) : CTWrapper<ItemStack> {
         mcValue.count = size
     }
 
-    fun getEnchantments() = EnchantmentHelper.get(mcValue).mapKeys {
-        EnchantmentHelper.getEnchantmentId(it.key)!!.toTranslationKey()?.replace("enchantment.", "")
+    fun getEnchantments() = EnchantmentHelper.getEnchantments(mcValue).enchantments.associate {
+        it.key.getOrNull() to EnchantmentHelper.getLevel(it, mcValue)
     }
 
     fun isEnchantable() = mcValue.isEnchantable
@@ -53,12 +55,12 @@ class Item(override val mcValue: ItemStack) : CTWrapper<ItemStack> {
     fun isEnchanted() = mcValue.hasEnchantments()
 
     fun canPlaceOn(pos: BlockPos) =
-        mcValue.canPlaceOn(Registries.BLOCK, CachedBlockPosition(World.toMC(), pos.toMC(), false))
+        mcValue.canPlaceOn(CachedBlockPosition(World.toMC(), pos.toMC(), false))
 
     fun canPlaceOn(block: Block) = canPlaceOn(block.pos)
 
     fun canHarvest(pos: BlockPos) =
-        mcValue.canDestroy(Registries.BLOCK, CachedBlockPosition(World.toMC(), pos.toMC(), false))
+        mcValue.canBreak(CachedBlockPosition(World.toMC(), pos.toMC(), false))
 
     fun canHarvest(block: Block) = canHarvest(block.pos)
 
@@ -73,7 +75,7 @@ class Item(override val mcValue: ItemStack) : CTWrapper<ItemStack> {
     fun getName(): String = TextComponent(mcValue.name).formattedText
 
     fun setName(name: TextComponent?) = apply {
-        mcValue.setCustomName(name)
+        mcValue.set(DataComponentTypes.CUSTOM_NAME, name)
     }
 
     fun resetName() {
@@ -83,8 +85,12 @@ class Item(override val mcValue: ItemStack) : CTWrapper<ItemStack> {
     @JvmOverloads
     fun getLore(advanced: Boolean = false): List<TextComponent> {
         mcValue.asMixin<Skippable>().ctjs_setShouldSkip(true)
-        val tooltip = mcValue.getTooltip(Player.toMC(), if (advanced) TooltipContext.ADVANCED else TooltipContext.BASIC)
-            .mapTo(mutableListOf()) { TextComponent(it) }
+        val tooltip = mcValue.getTooltip(
+            TooltipContext.DEFAULT,
+            Player.toMC(),
+            if (advanced) TooltipType.ADVANCED else TooltipType.BASIC,
+        ).mapTo(mutableListOf()) { TextComponent(it) }
+
         mcValue.asMixin<Skippable>().ctjs_setShouldSkip(false)
 
         return tooltip
@@ -101,7 +107,8 @@ class Item(override val mcValue: ItemStack) : CTWrapper<ItemStack> {
         mcValue.asMixin<TooltipOverridable>().ctjs_setShouldOverrideTooltip(false)
     }
 
-    fun getNBT() = mcValue.nbt?.let(::NBTTagCompound) ?: NBTTagCompound(MCNbtCompound())
+    // TODO: make a component wrapper?
+    fun getNBT() = mcValue.components
 
     /**
      * Renders the item icon to the client's overlay, with customizable overlay information.
@@ -153,7 +160,7 @@ class Item(override val mcValue: ItemStack) : CTWrapper<ItemStack> {
             val crashReportSection = crashReport.addElement("Item being rendered")
             crashReportSection.add("Item Type") { mcValue.item.toString() }
             crashReportSection.add("Item Damage") { mcValue.damage.toString() }
-            crashReportSection.add("Item NBT") { mcValue.nbt.toString() }
+            crashReportSection.add("Item Components") { mcValue.components.toString() }
             crashReportSection.add("Item Foil") { mcValue.hasGlint().toString() }
             throw CrashException(crashReport)
         } finally {
