@@ -8,7 +8,7 @@ import com.chattriggers.ctjs.internal.launch.Descriptor
 import com.chattriggers.ctjs.internal.launch.WrapWithCondition
 import com.chattriggers.ctjs.internal.utils.descriptorString
 import org.objectweb.asm.tree.MethodNode
-import com.llamalad7.mixinextras.injector.WrapWithCondition as SPWrapWithCondition
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition as SPWrapWithCondition
 
 internal class WrapWithConditionGenerator(
     ctx: GenerationContext,

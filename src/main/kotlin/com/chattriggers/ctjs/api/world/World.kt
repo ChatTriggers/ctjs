@@ -1,5 +1,7 @@
 package com.chattriggers.ctjs.api.world
 
+import com.chattriggers.ctjs.MCBlockPos
+import com.chattriggers.ctjs.MCParticle
 import com.chattriggers.ctjs.api.client.Client
 import com.chattriggers.ctjs.api.client.Settings
 import com.chattriggers.ctjs.api.entity.BlockEntity
@@ -13,18 +15,26 @@ import com.chattriggers.ctjs.api.world.block.BlockType
 import com.chattriggers.ctjs.internal.mixins.ClientChunkManagerAccessor
 import com.chattriggers.ctjs.internal.mixins.ClientChunkMapAccessor
 import com.chattriggers.ctjs.internal.mixins.ClientWorldAccessor
-import com.chattriggers.ctjs.MCBlockPos
-import com.chattriggers.ctjs.MCParticle
 import com.chattriggers.ctjs.internal.utils.asMixin
 import com.chattriggers.ctjs.internal.utils.toIdentifier
-import com.mojang.brigadier.StringReader
 import gg.essential.universal.UMinecraft
 import net.minecraft.block.BlockState
 import net.minecraft.client.world.ClientWorld
+import net.minecraft.item.ItemStack
+import net.minecraft.item.Items
+import net.minecraft.particle.BlockStateParticleEffect
+import net.minecraft.particle.DustColorTransitionParticleEffect
+import net.minecraft.particle.DustParticleEffect
+import net.minecraft.particle.EntityEffectParticleEffect
+import net.minecraft.particle.ItemStackParticleEffect
 import net.minecraft.particle.ParticleEffect
-import net.minecraft.particle.ParticleType
+import net.minecraft.particle.ParticleTypes
+import net.minecraft.particle.SculkChargeParticleEffect
+import net.minecraft.particle.ShriekParticleEffect
+import net.minecraft.particle.VibrationParticleEffect
 import net.minecraft.registry.Registries
 import net.minecraft.world.LightType
+import net.minecraft.world.event.BlockPositionSource
 import kotlin.math.roundToInt
 
 object World {
@@ -296,7 +306,7 @@ object World {
 
         /**
          * Spawns a particle into the world with the given attributes,
-         * which can be configured further with the returned [com.chattriggers.ctjs.minecraft.wrappers.entity.Particle]
+         * which can be configured further with the returned [com.chattriggers.ctjs.api.entity.Particle]
          *
          * @param particle the name of the particle to spawn, see [getParticleNames]
          * @param x the x coordinate to spawn the particle at
@@ -315,25 +325,47 @@ object World {
             xSpeed: Double,
             ySpeed: Double,
             zSpeed: Double,
-        ): Particle {
-            @Suppress("UNCHECKED_CAST")
-            val particleType = Registries.PARTICLE_TYPE.get(particle.toIdentifier()) as? ParticleType<ParticleEffect>
+        ): Particle? {
+            val particleType = Registries.PARTICLE_TYPE.get(particle.toIdentifier())
 
             requireNotNull(particleType) {
                 "Invalid particle parameter"
             }
 
+            val effect = if (particleType is ParticleEffect) {
+                particleType
+            } else {
+                val blockPos = BlockPos(x, y, z)
+                val blockState = getBlockStateAt(blockPos)
+
+                when (particleType) {
+                    ParticleTypes.BLOCK -> BlockStateParticleEffect(ParticleTypes.BLOCK, blockState)
+                    ParticleTypes.BLOCK_MARKER -> BlockStateParticleEffect(ParticleTypes.BLOCK_MARKER, blockState)
+                    ParticleTypes.DUST -> DustParticleEffect.DEFAULT
+                    ParticleTypes.DUST_COLOR_TRANSITION -> DustColorTransitionParticleEffect.DEFAULT
+                    ParticleTypes.DUST_PILLAR -> BlockStateParticleEffect(ParticleTypes.DUST_PILLAR, blockState)
+                    ParticleTypes.ENTITY_EFFECT -> EntityEffectParticleEffect.create(ParticleTypes.ENTITY_EFFECT, 1f, 0f, 0f)
+                    ParticleTypes.FALLING_DUST -> BlockStateParticleEffect(ParticleTypes.FALLING_DUST, blockState)
+                    ParticleTypes.ITEM -> ItemStackParticleEffect(ParticleTypes.ITEM, ItemStack(Items.STONE, 1))
+                    ParticleTypes.SCULK_CHARGE -> SculkChargeParticleEffect(0f)
+                    ParticleTypes.SHRIEK -> ShriekParticleEffect(0)
+                    ParticleTypes.VIBRATION -> VibrationParticleEffect(BlockPositionSource(blockPos.toMC()), 0)
+
+                    else -> throw IllegalStateException("Particle not accounted for: $particle")
+                }
+            }
+
             val fx = Client.getMinecraft().particleManager.addParticle(
-                particleType.parametersFactory.read(particleType, StringReader(particle)),
+                effect,
                 x,
                 y,
                 z,
                 xSpeed,
                 ySpeed,
                 zSpeed
-            )!!
+            )
 
-            return Particle(fx)
+            return fx?.let(::Particle)
         }
 
         fun spawnParticle(particle: MCParticle): Particle {

@@ -1,6 +1,7 @@
 import org.gradle.kotlin.dsl.support.unzipTo
 import org.jetbrains.dokka.versioning.VersioningConfiguration
 import org.jetbrains.dokka.versioning.VersioningPlugin
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.net.HttpURLConnection
 import java.net.URL
 import java.io.ByteArrayOutputStream
@@ -55,7 +56,7 @@ dependencies {
 }
 
 loom {
-    accessWidenerPath.set(file("src/main/resources/chattriggers.accesswidener"))
+    accessWidenerPath.set(file("src/main/resources/ctjs.accesswidener"))
 }
 
 base {
@@ -65,8 +66,8 @@ base {
 java {
     withSourcesJar()
 
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 apiValidation {
@@ -99,12 +100,12 @@ tasks {
     }
 
     withType<JavaCompile>().configureEach {
-        options.release.set(17)
+        options.release.set(21)
     }
 
-    compileKotlin {
-        kotlinOptions {
-            jvmTarget = JavaVersion.VERSION_17.toString()
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_21)
             freeCompilerArgs = listOf("-Xcontext-receivers")
         }
     }
@@ -140,7 +141,7 @@ tasks {
         val branch = getBranch()
         dokkaSourceSets {
             configureEach {
-                jdkVersion.set(17)
+                jdkVersion.set(21)
 
                 perPackageOption {
                     matchingRegex.set("com\\.chattriggers\\.ctjs\\.internal(\$|\\.).*")

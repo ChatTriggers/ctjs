@@ -1,32 +1,32 @@
 [versions]
 # Library versions
-minecraft = "1.20.4"
-yarn = "1.20.4+build.3"
+minecraft = "1.21"
+yarn = "1.21+build.2"
 
-loader = "0.15.3"
-fabric-api = "0.92.1+1.20.4"
-fabric-kotlin = "1.10.17+kotlin.1.9.22"
+loader = "0.15.11"
+fabric-api = "0.100.3+1.21"
+fabric-kotlin = "1.11.0+kotlin.2.0.0"
 
-mapping-io = "0.5.1"
+mapping-io = "0.6.1"
 rhino = "f61b5a4"
 jackson-core = "2.13.2"
 textarea = "3.2.0"
 serialization = "1.5.1"
 koffee = "315bc11234"
 
-universalcraft = "323"
-elementa = "619"
-vigilance = "295"
+universalcraft = "342"
+elementa = "649"
+vigilance = "297"
 
-modmenu = "9.0.0"
-devauth = "1.2.0"
-dokka = "1.9.10"
+modmenu = "11.0.1"
+devauth = "1.2.1"
+dokka = "1.9.20"
 
 # Plugin Versions
-kotlin = "1.9.22"
-loom = "1.5-SNAPSHOT"
-validator = "0.13.2"
-ksp = "1.9.22-1.0.17"
+kotlin = "2.0.0"
+loom = "1.7-SNAPSHOT"
+validator = "0.14.0"
+ksp = "2.0.0-1.0.22"
 
 [libraries]
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
@@ -43,7 +43,7 @@ textarea = { module = "com.fifesoft:rsyntaxtextarea", version.ref = "textarea" }
 serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
 koffee = { module = "com.github.ChatTriggers:koffee", version.ref = "koffee" }
 
-universalcraft = { module = "gg.essential:universalcraft-1.20.4-fabric", version.ref = "universalcraft" }
+universalcraft = { module = "gg.essential:universalcraft-1.21-fabric", version.ref = "universalcraft" }
 elementa = { module = "gg.essential:elementa-1.18.1-fabric", version.ref = "elementa" }
 vigilance = { module = "gg.essential:vigilance-1.18.1-fabric", version.ref = "vigilance" }
 

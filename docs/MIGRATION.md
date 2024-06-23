@@ -204,6 +204,7 @@ Here is a list of targeted changes for various different APIs:
   - Added `setColor()`
 - `Client`
   - `getChatGUI` was renamed to `getChatGui` to match the naming of `getTabGui`
+- `Server.getPing()` now returns -1 if not in a world
 - Removed `Config.modulesFolder`. Use `ChatTriggers.MODULES_FOLDER` or the string `"./config/ChatTriggers/modules"`
 - Renamed `ChatTriggers.loadCT()` and `ChatTriggers.unloadCT()` to `load()` and `unload()`
 - Provided JS API: 

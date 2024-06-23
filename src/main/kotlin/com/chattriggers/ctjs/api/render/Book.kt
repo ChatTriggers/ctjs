@@ -9,7 +9,7 @@ import net.minecraft.text.StringVisitable
 
 class Book {
     private var screen: BookScreen? = null
-    private val customContents = CustomBookContents()
+    private val customContents = BookScreen.Contents(emptyList())
 
     /**
      * Add a page to the book.
@@ -82,13 +82,5 @@ class Book {
 
     fun getCurrentPage(): Int {
         return if (!isOpen() || screen == null) -1 else screen!!.asMixin<BookScreenAccessor>().pageIndex
-    }
-
-    private class CustomBookContents : BookScreen.Contents {
-        val pages = mutableListOf<TextComponent>()
-
-        override fun getPageCount() = pages.size
-
-        override fun getPageUnchecked(index: Int): StringVisitable = pages[index]
     }
 }

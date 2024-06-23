@@ -24,7 +24,7 @@ public interface EntitySelectorAccessor {
     boolean getIncludesNonPlayers();
 
     @Accessor
-    Predicate<Entity> getBasePredicate();
+    List<Predicate<Entity>> getPredicates();
 
     @Accessor
     NumberRange.DoubleRange getDistance();

@@ -40,6 +40,7 @@ import net.minecraft.command.EntitySelector
 import net.minecraft.command.argument.*
 import net.minecraft.command.argument.AngleArgumentType.Angle
 import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.item.ItemStack
 import net.minecraft.registry.BuiltinRegistries
 import net.minecraft.server.command.CommandManager
 import net.minecraft.server.command.ServerCommandSource
@@ -827,7 +828,7 @@ object DynamicCommands : CommandCollection() {
         }
 
         private fun getPositionPredicate(pos: Vec3d): Predicate<MCEntity> {
-            var predicate = mixed.basePredicate
+            var predicate = mixed.predicates.reduceOrNull { acc, predicate -> acc.and(predicate) } ?: Predicate { true }
             if (mixed.box != null) {
                 val box = mixed.box!!.offset(pos)
                 predicate = predicate.and { box.intersects(it.boundingBox) }
@@ -841,13 +842,13 @@ object DynamicCommands : CommandCollection() {
     data class ItemStackArgumentWrapper(private val impl: ItemStackArgument) : Predicate<Item> {
         val itemType = ItemType(impl.item)
 
-        override fun test(item: Item) = impl.test(item.toMC())
+        override fun test(item: Item) = ItemStack.areItemsAndComponentsEqual(itemType.asItem().toMC(), item.toMC())
 
         fun test(type: ItemType) = itemType.getRegistryName() == type.getRegistryName()
     }
 
     data class MessageFormatArgumentWrapper(private val impl: MessageArgumentType.MessageFormat) {
-        val text: String by impl::contents
+        var text = impl.contents
 
         fun format(): TextComponent {
             if (impl.selectors.isEmpty())

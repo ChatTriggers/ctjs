@@ -6,6 +6,7 @@ import codes.som.koffee.insns.InstructionAssembly
 import codes.som.koffee.insns.jvm.*
 import codes.som.koffee.insns.sugar.JumpCondition
 import codes.som.koffee.insns.sugar.ifStatement
+import com.chattriggers.ctjs.CTJS
 import com.chattriggers.ctjs.api.Mappings
 import com.chattriggers.ctjs.internal.engine.JSLoader
 import com.chattriggers.ctjs.internal.launch.Descriptor
@@ -58,7 +59,7 @@ internal abstract class InjectorGenerator(protected val ctx: GenerationContext, 
         val nameForInjection = targetMethod.name.original.replace('<', '$').replace('>', '$')
         val methodNode = method(
             modifiers,
-            "ctjs_${type}_${nameForInjection}_${counter++}",
+            "${CTJS.MOD_ID}_${type}_${nameForInjection}_${counter++}",
             returnType.toMappedType(),
             *parameterDescriptors.map { it.toMappedType() }.toTypedArray(),
         ) {

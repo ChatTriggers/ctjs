@@ -40,7 +40,7 @@ class Toast(config: NativeObject) : Toast {
         get() = descriptionBacker
         set(value) { descriptionBacker = value?.let { TextComponent(it) } }
 
-    private var backgroundBacker: Identifier? = Identifier("textures/gui/sprites/toast/advancement.png")
+    private var backgroundBacker: Identifier? = Identifier.ofVanilla("toast/advancement")
     var background: Any?
         get() = backgroundBacker
         set(value) { backgroundBacker = toIdentifier(value) }

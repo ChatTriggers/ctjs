@@ -20,6 +20,7 @@ import kotlinx.serialization.json.Json
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.loader.api.FabricLoader
 import java.io.File
+import java.net.URI
 import java.net.URL
 import java.net.URLConnection
 import java.security.MessageDigest
@@ -57,6 +58,7 @@ class CTJS : ClientModInitializer {
     }
 
     companion object {
+        const val MOD_ID = "ctjs"
         const val WEBSITE_ROOT = "https://www.chattriggers.com"
         const val MOD_VERSION = "3.0.0-beta"
         const val MODULES_FOLDER = "./config/ChatTriggers/modules"
@@ -76,7 +78,7 @@ class CTJS : ClientModInitializer {
 
         @JvmOverloads
         internal fun makeWebRequest(url: String, userAgent: String? = "Mozilla/5.0 (ChatTriggers)"): URLConnection =
-            URL(url).openConnection().apply {
+            URI(url).toURL().openConnection().apply {
                 setRequestProperty("User-Agent", userAgent)
                 connectTimeout = 3000
                 readTimeout = 3000

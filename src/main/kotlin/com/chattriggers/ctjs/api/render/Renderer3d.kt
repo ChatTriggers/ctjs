@@ -26,7 +26,7 @@ object Renderer3d {
     private var began = false
 
     private val tessellator = Tessellator.getInstance()
-    private val worldRenderer = UGraphics(tessellator.buffer)
+    private val worldRenderer = UGraphics.getFromTessellator()
 
     /**
      * Begin drawing with the world renderer
@@ -253,7 +253,7 @@ object Renderer3d {
         val xShift = -width / 2
         val yShift = -height / 2
 
-        val vertexConsumers = VertexConsumerProvider.immediate(tessellator.buffer)
+        val vertexConsumers = Client.getMinecraft().bufferBuilders.entityVertexConsumers
         var yOffset = 0
 
         for (line in lines) {

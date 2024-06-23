@@ -14,20 +14,19 @@ import gg.essential.universal.UMinecraft
 import net.minecraft.client.sound.MovingSoundInstance
 import net.minecraft.client.sound.Sound.RegistrationType
 import net.minecraft.client.sound.WeightedSoundSet
-import net.minecraft.resource.InputSupplier
-import net.minecraft.resource.Resource
-import net.minecraft.resource.ResourcePack
-import net.minecraft.resource.ResourceType
+import net.minecraft.resource.*
 import net.minecraft.resource.metadata.ResourceMetadata
 import net.minecraft.resource.metadata.ResourceMetadataReader
 import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvent
+import net.minecraft.text.Text
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.Vec3d
 import net.minecraft.util.math.random.Random
 import org.mozilla.javascript.NativeObject
 import java.io.File
 import java.io.InputStream
+import java.util.*
 import kotlin.io.path.Path
 import kotlin.io.path.nameWithoutExtension
 
@@ -84,12 +83,12 @@ class Sound(private val config: NativeObject) {
             soundManagerAccessor.soundResources[identifier.withPrefixedPath("sounds/").withSuffixedPath(".ogg")] =
                 resource
         } else {
-            identifier = Identifier(source)
+            identifier = Identifier.of(source)
         }
 
         soundImpl = SoundImpl(SoundEvent.of(identifier), soundData.category.toMC(), soundData.attenuationType.toMC())
         sound = MCSound(
-            identifier.toString(),
+            identifier,
             { soundData.volume },
             { soundData.pitch },
             1,
@@ -310,8 +309,8 @@ class Sound(private val config: NativeObject) {
     }
 
     private fun makeIdentifier(source: String): Identifier {
-        return Identifier(
-            "ctjs",
+        return Identifier.of(
+            CTJS.MOD_ID,
             Path(source).nameWithoutExtension.lowercase().filter { it in validIdentChars } + "_${counter++}",
         )
     }
@@ -491,6 +490,8 @@ class Sound(private val config: NativeObject) {
     }
 
     private object CTResourcePack : ResourcePack {
+        override fun getId() = CTJS.MOD_ID
+
         override fun close() {
             throw NotImplementedError()
         }
@@ -523,8 +524,8 @@ class Sound(private val config: NativeObject) {
             throw NotImplementedError()
         }
 
-        override fun getName(): String {
-            return "CTJS_Sounds"
+        override fun getInfo(): ResourcePackInfo {
+            throw NotImplementedError()
         }
     }
 

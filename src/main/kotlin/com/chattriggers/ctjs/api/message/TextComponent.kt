@@ -1,5 +1,6 @@
 package com.chattriggers.ctjs.api.message
 
+import com.chattriggers.ctjs.CTJS
 import com.chattriggers.ctjs.MCEntity
 import com.chattriggers.ctjs.api.client.Client
 import com.chattriggers.ctjs.api.client.Player
@@ -387,7 +388,7 @@ class TextComponent private constructor(
             return visitor.accept(this.style_.withParent(style), text)
         }
 
-        override fun getType(): TextContent.Type<*> = TextContent.Type(CODEC, "ctjs_part")
+        override fun getType(): TextContent.Type<*> = TextContent.Type(CODEC, "${CTJS.MOD_ID}_part")
 
         companion object {
             private val CODEC: MapCodec<PartContent> = RecordCodecBuilder.mapCodec { builder ->
@@ -554,8 +555,8 @@ class TextComponent private constructor(
             return when (obj) {
                 is MCEntity -> obj
                 is Entity -> obj.toMC()
-                is CharSequence -> return HoverEvent.EntityContent.legacySerializer(TextComponent(obj))
-                    .getOrThrow(false) {}
+                is CharSequence -> return HoverEvent.EntityContent.legacySerializer(TextComponent(obj), null)
+                    .getOrThrow()
                 is HoverEvent.EntityContent -> return obj
                 else -> error("${obj::class} cannot be parsed as an entity HoverEvent")
             }.let { HoverEvent.EntityContent(it.type, it.uuid, it.name) }

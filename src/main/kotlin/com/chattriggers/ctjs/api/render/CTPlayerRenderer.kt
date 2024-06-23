@@ -84,10 +84,11 @@ internal class CTPlayerRenderer(
         text: Text?,
         matrixStack: MatrixStack?,
         vertexConsumerProvider: VertexConsumerProvider?,
-        i: Int
+        i: Int,
+        f: Float
     ) {
         if (showNametag)
-            super.renderLabelIfPresent(abstractClientPlayerEntity, text, matrixStack, vertexConsumerProvider, i)
+            super.renderLabelIfPresent(abstractClientPlayerEntity, text, matrixStack, vertexConsumerProvider, i, f)
     }
 
     private fun reset() {

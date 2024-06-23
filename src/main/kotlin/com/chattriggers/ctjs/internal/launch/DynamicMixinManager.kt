@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.Mixins
 import org.spongepowered.asm.service.MixinService
 import java.io.ByteArrayInputStream
 import java.io.File
+import java.net.URI
 import java.net.URL
 import java.net.URLConnection
 import java.net.URLStreamHandler
@@ -94,7 +95,7 @@ internal object DynamicMixinManager {
     private object ByteBasedStreamHandler : URLStreamHandler() {
         private val classBytes = mutableMapOf<String, ByteArray>()
 
-        val url = URL(GENERATED_PROTOCOL, null, -1, "/", ByteBasedStreamHandler)
+        val url = URL.of(URI(GENERATED_PROTOCOL, null, "/", ""), ByteBasedStreamHandler)
 
         operator fun set(path: String, bytes: ByteArray) {
             check(classBytes.put(path, bytes) == null)
