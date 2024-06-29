@@ -5,7 +5,9 @@ import org.mozilla.javascript.JavaObjectMappingProvider
 import java.lang.reflect.Modifier
 
 object CTJavaObjectMappingProvider : JavaObjectMappingProvider {
-    override fun remapClassName(className: String) = Mappings.getMappedClassName(className)?.replace('/', '.')
+    override fun mapClassName(className: String) = Mappings.mapClassName(className)?.replace('/', '.')
+
+    override fun unmapClassName(className: String) = Mappings.unmapClassName(className)?.replace('/', '.')
 
     override fun findExtraMethods(
         clazz: Class<*>,

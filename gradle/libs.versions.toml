@@ -8,7 +8,7 @@ fabric-api = "0.100.3+1.21"
 fabric-kotlin = "1.11.0+kotlin.2.0.0"
 
 mapping-io = "0.6.1"
-rhino = "f61b5a4"
+rhino = "7c7c509668"
 jackson-core = "2.13.2"
 textarea = "3.2.0"
 serialization = "1.5.1"
