@@ -5,9 +5,9 @@ import com.chattriggers.ctjs.api.Config
 import com.chattriggers.ctjs.api.client.Client
 import com.chattriggers.ctjs.api.message.ChatLib
 import com.chattriggers.ctjs.api.message.TextComponent
-import com.chattriggers.ctjs.internal.commands.StaticCommand.Companion.onExecute
 import com.chattriggers.ctjs.engine.Console
 import com.chattriggers.ctjs.engine.printTraceToConsole
+import com.chattriggers.ctjs.internal.commands.StaticCommand.Companion.onExecute
 import com.chattriggers.ctjs.internal.engine.module.ModuleManager
 import com.chattriggers.ctjs.internal.engine.module.ModulesGui
 import com.chattriggers.ctjs.internal.listeners.ClientListener
@@ -20,18 +20,22 @@ import com.mojang.brigadier.arguments.IntegerArgumentType
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.exceptions.CommandSyntaxException
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType
+import com.mojang.brigadier.suggestion.Suggestions
+import com.mojang.brigadier.suggestion.SuggestionsBuilder
 import gg.essential.universal.UDesktop
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
+import net.minecraft.command.CommandSource
 import net.minecraft.text.ClickEvent
 import net.minecraft.text.HoverEvent
 import net.minecraft.text.Text
 import net.minecraft.util.Util
 import java.io.File
 import java.io.IOException
-import java.lang.IllegalArgumentException
+import java.util.concurrent.CompletableFuture
 import kotlin.concurrent.thread
 
 internal object CTCommand : Initializer {
@@ -56,11 +60,11 @@ internal object CTCommand : Initializer {
             )
             .then(
                 literal("delete")
-                    .then(argument("module", StringArgumentType.string())
+                    .then(argument("module", ModuleArgumentType)
                         .onExecute {
-                            val module = StringArgumentType.getString(it, "module")
+                            val module = ModuleArgumentType.getModule(it, "module")
                             if (ModuleManager.deleteModule(module)) {
-                                ChatLib.chat("&aDeleted")
+                                ChatLib.chat("&aDeleted $module")
                             } else ChatLib.chat("&cFailed to delete $module")
                         })
             )
@@ -183,7 +187,12 @@ internal object CTCommand : Initializer {
             val msg = ChatLib.replaceFormatting(messages[messages.size - toDump + i].formattedText)
             TextComponent(Text.literal(msg).styled {
                 it.withClickEvent(ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, msg))
-                    .withHoverEvent(HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent("&eClick here to copy this message.")))
+                    .withHoverEvent(
+                        HoverEvent(
+                            HoverEvent.Action.SHOW_TEXT,
+                            TextComponent("&eClick here to copy this message.")
+                        )
+                    )
             })
                 .withChatLineId(idFixed + i + 1)
                 .chat()
@@ -258,6 +267,29 @@ internal object CTCommand : Initializer {
 
         companion object {
             fun getFile(ctx: CommandContext<*>, name: String) = ctx.getArgument(name, File::class.java)
+        }
+    }
+
+    private object ModuleArgumentType : ArgumentType<String> {
+        override fun parse(reader: StringReader): String {
+            val string = reader.readUnquotedString()
+            val modules = ModuleManager.cachedModules.map { it.name }
+
+            return modules.find {
+                it.equals(string, ignoreCase = true)
+            } ?: throw SimpleCommandExceptionType(Text.literal("No modules found with name \"$string\""))
+                .createWithContext(reader)
+        }
+
+        override fun <S : Any?> listSuggestions(
+            context: CommandContext<S>?,
+            builder: SuggestionsBuilder?
+        ): CompletableFuture<Suggestions> {
+            return CommandSource.suggestMatching(ModuleManager.cachedModules.map { it.name }, builder)
+        }
+
+        fun getModule(ctx: CommandContext<FabricClientCommandSource>, module: String): String {
+            return ctx.getArgument(module, String::class.java)
         }
     }
 }
