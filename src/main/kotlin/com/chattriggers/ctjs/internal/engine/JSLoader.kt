@@ -50,6 +50,10 @@ object JSLoader {
         MethodType.methodType(Any::class.java, Callable::class.java, Array<Any?>::class.java),
     )
 
+    internal var activeModuleMap = ThreadLocal<Module?>()
+    internal val activeModule: Module?
+        get() = activeModuleMap.get()
+
     fun setup(jars: List<URL>) {
         // Ensure all active mixins are invalidated
         // TODO: It would be nice to do this, but it's possible to have a @Redirect or similar
@@ -111,17 +115,22 @@ object JSLoader {
     }
 
     fun entryPass(module: Module, entryURI: URI): Unit = wrapInContext {
+        check(activeModule == null) { "Entry pass ran while module ${activeModule!!.name} was active" }
+        activeModuleMap.set(module)
+
         try {
             require.loadCTModule(module.name, entryURI)
         } catch (e: Throwable) {
             println("Error loading module ${module.name}")
             "Error loading module ${module.name}".printToConsole(LogType.ERROR)
             e.printTraceToConsole()
+        } finally {
+            activeModuleMap.set(null)
         }
     }
 
     fun exec(type: ITriggerType, args: Array<out Any?>) {
-        triggers[type]?.forEach { it.trigger(args) }
+        triggers[type]?.forEach { trigger(it, args) }
     }
 
     fun addTrigger(trigger: Trigger) {
@@ -136,7 +145,20 @@ object JSLoader {
         triggers[trigger.type]?.remove(trigger)
     }
 
-    // Note: block takes a Context since most caller use it. Context.getContext() is a threadlocal access, so we might
+    fun trigger(trigger: Trigger, args: Array<out Any?> = emptyArray()) {
+        check(activeModule == null) {
+            "${trigger::class.simpleName} called while module ${activeModule!!.name} was active"
+        }
+        activeModuleMap.set(trigger.owningModule)
+
+        try {
+            trigger.triggerImpl(args)
+        } finally {
+            activeModuleMap.set(null)
+        }
+    }
+
+    // Note: block takes a Context since most callers use it. Context.getContext() is a threadlocal access, so we might
     //       as well avoid it if we can
     internal inline fun <T> wrapInContext(context: Context? = null, crossinline block: (Context) -> T): T {
         contract {
@@ -174,19 +196,19 @@ object JSLoader {
         }
     }
 
-    fun invoke(method: Callable, args: Array<out Any?>, thisObj: Scriptable = moduleScope): Any? {
-        return wrapInContext {
-            Context.jsToJava(method.call(it, moduleScope, thisObj, args), Any::class.java)
-        }
-    }
-
-    fun trigger(trigger: Trigger, method: Any, args: Array<out Any?>) {
+    fun invoke(trigger: Trigger, method: Any, args: Array<out Any?>) {
         try {
             require(method is Callable) { "Need to pass actual function to the register function, not the name!" }
             invoke(method, args)
         } catch (e: Throwable) {
             e.printTraceToConsole()
             removeTrigger(trigger)
+        }
+    }
+
+    fun invoke(method: Callable, args: Array<out Any?>, thisObj: Scriptable = moduleScope): Any? {
+        return wrapInContext {
+            Context.jsToJava(method.call(it, moduleScope, thisObj, args), Any::class.java)
         }
     }
 

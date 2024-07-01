@@ -29,7 +29,7 @@ sealed class ClassFilterTrigger<Wrapped, Unwrapped>(
      */
     fun setFilteredClasses(classes: List<Class<Unwrapped>>) = apply { triggerClasses = classes }
 
-    override fun trigger(args: Array<out Any?>) {
+    override fun triggerImpl(args: Array<out Any?>) {
         val placeholder = evalTriggerType(args)
         if (triggerClasses.isEmpty() || triggerClasses.any { it.isInstance(placeholder) })
             callMethod(args)

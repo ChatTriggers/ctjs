@@ -4,6 +4,7 @@ import com.chattriggers.ctjs.api.client.Client
 import com.chattriggers.ctjs.api.message.TextComponent
 import com.chattriggers.ctjs.api.triggers.RegularTrigger
 import com.chattriggers.ctjs.api.triggers.TriggerType
+import com.chattriggers.ctjs.internal.engine.JSLoader
 import com.chattriggers.ctjs.internal.mixins.ClickableWidgetAccessor
 import com.chattriggers.ctjs.internal.utils.asMixin
 import gg.essential.universal.UKeyboard
@@ -218,11 +219,11 @@ class Gui @JvmOverloads constructor(
         super.initScreen(width, height)
 
         ScreenMouseEvents.afterMouseScroll(this).register { _, x, y, _, dy ->
-            onScroll?.trigger(arrayOf(x, y, dy))
+            onScroll?.let { JSLoader.trigger(it, arrayOf(x, y, dy)) }
         }
 
         buttons.values.forEach(::addDrawableChild)
-        onOpened?.trigger(arrayOf(this))
+        onOpened?.let { JSLoader.trigger(it, arrayOf(this)) }
     }
 
     /**
@@ -230,7 +231,7 @@ class Gui @JvmOverloads constructor(
      */
     override fun onScreenClose() {
         super.onScreenClose()
-        onClosed?.trigger(arrayOf(this))
+        onClosed?.let { JSLoader.trigger(it, arrayOf(this)) }
     }
 
     /**
@@ -238,7 +239,7 @@ class Gui @JvmOverloads constructor(
      */
     override fun onMouseClicked(mouseX: Double, mouseY: Double, mouseButton: Int) {
         super.onMouseClicked(mouseX, mouseY, mouseButton)
-        onClick?.trigger(arrayOf(mouseX, mouseY, mouseButton))
+        onClick?.let { JSLoader.trigger(it, arrayOf(mouseX, mouseY, mouseButton)) }
     }
 
     /**
@@ -248,7 +249,7 @@ class Gui @JvmOverloads constructor(
      */
     override fun onMouseReleased(mouseX: Double, mouseY: Double, state: Int) {
         super.onMouseReleased(mouseX, mouseY, state)
-        onMouseReleased?.trigger(arrayOf(mouseX, mouseY, state))
+        onMouseReleased?.let { JSLoader.trigger(it, arrayOf(mouseX, mouseY, state)) }
     }
 
     /**
@@ -261,7 +262,7 @@ class Gui @JvmOverloads constructor(
         timeSinceLastClick: Long,
     ) {
         super.onMouseDragged(x, y, clickedButton, timeSinceLastClick)
-        onMouseDragged?.trigger(arrayOf(mouseX, mouseY, clickedButton))
+        onMouseDragged?.let { JSLoader.trigger(it, arrayOf(mouseX, mouseY, clickedButton)) }
     }
 
     /**
@@ -283,7 +284,7 @@ class Gui @JvmOverloads constructor(
 
         this.mouseX = mouseX
         this.mouseY = mouseY
-        onDraw?.trigger(arrayOf(mouseX, mouseY, partialTicks))
+        onDraw?.let { JSLoader.trigger(it, arrayOf(mouseX, mouseY, partialTicks)) }
 
         Renderer.popMatrix()
     }
@@ -298,7 +299,7 @@ class Gui @JvmOverloads constructor(
             var char = keyCode.toChar()
             if (modifiers?.isShift != true)
                 char = char.lowercaseChar()
-            onKeyTyped?.trigger(arrayOf(char, keyCode))
+            onKeyTyped?.let { JSLoader.trigger(it, arrayOf(char, keyCode)) }
         }
     }
 
@@ -343,7 +344,7 @@ class Gui @JvmOverloads constructor(
     ): Int {
         val id = nextButtonId++
         val button = ButtonWidget.builder(buttonText) {
-            onActionPerformed?.trigger(arrayOf(id))
+            onActionPerformed?.let { JSLoader.trigger(it, arrayOf(id)) }
         }.dimensions(x, y, width, height).build()
         buttons[id] = button
         addDrawableChild(button)

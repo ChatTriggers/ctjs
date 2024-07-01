@@ -4,6 +4,7 @@ import com.chattriggers.ctjs.api.triggers.RegularTrigger
 import com.chattriggers.ctjs.api.triggers.TriggerType
 import com.chattriggers.ctjs.api.world.World
 import com.chattriggers.ctjs.internal.BoundKeyUpdater
+import com.chattriggers.ctjs.internal.engine.JSLoader
 import com.chattriggers.ctjs.internal.mixins.GameOptionsAccessor
 import com.chattriggers.ctjs.internal.mixins.KeyBindingAccessor
 import com.chattriggers.ctjs.internal.utils.Initializer
@@ -103,12 +104,12 @@ class KeyBind {
                 }
             }
 
-            onKeyPress?.trigger(arrayOf())
+            onKeyPress?.let(JSLoader::trigger)
             down = true
         }
 
         if (isKeyDown()) {
-            onKeyDown?.trigger(arrayOf())
+            onKeyDown?.let(JSLoader::trigger)
             down = true
         }
 
@@ -117,7 +118,7 @@ class KeyBind {
                 // consume the rest of the key presses
             }
 
-            onKeyRelease?.trigger(arrayOf())
+            onKeyRelease?.let(JSLoader::trigger)
             down = false
         }
     }

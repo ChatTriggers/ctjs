@@ -11,7 +11,7 @@ class CommandTrigger(method: Any) : Trigger(method, TriggerType.COMMAND) {
     private var command: Command? = null
     private var dynamicCompletions: ((List<String>) -> List<String>)? = null
 
-    override fun trigger(args: Array<out Any?>) {
+    override fun triggerImpl(args: Array<out Any?>) {
         callMethod(args)
     }
 

@@ -12,6 +12,8 @@ abstract class Trigger protected constructor(
     var isRegistered = false
         private set
 
+    internal val owningModule = JSLoader.activeModule
+
     init {
         // See note for register method
         @Suppress("LeakingThis")
@@ -60,10 +62,11 @@ abstract class Trigger protected constructor(
 
     protected fun callMethod(args: Array<out Any?>) {
         if (CTJS.isLoaded)
-            JSLoader.trigger(this, method, args)
+            JSLoader.invoke(this, method, args)
     }
 
-    internal abstract fun trigger(args: Array<out Any?>)
+    // Note: This method should not be called directly. Use JSLoader.trigger() instead
+    internal abstract fun triggerImpl(args: Array<out Any?>)
 
     override fun compareTo(other: Trigger): Int {
         val ordCmp = priority.ordinal - other.priority.ordinal

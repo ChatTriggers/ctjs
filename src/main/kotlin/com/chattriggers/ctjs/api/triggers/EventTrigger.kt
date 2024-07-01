@@ -14,7 +14,7 @@ class EventTrigger(method: Any, triggerType: ITriggerType) : Trigger(method, tri
      */
     fun triggerIfCanceled(bool: Boolean) = apply { triggerIfCanceled = bool }
 
-    override fun trigger(args: Array<out Any?>) {
+    override fun triggerImpl(args: Array<out Any?>) {
         val isCanceled = when (val event = args.lastOrNull()) {
             is CancellableEvent -> event.isCanceled()
             is CallbackInfo -> event.isCancelled

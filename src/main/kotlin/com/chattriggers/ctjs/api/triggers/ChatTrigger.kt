@@ -175,7 +175,7 @@ class ChatTrigger(method: Any, type: ITriggerType) : Trigger(method, type) {
      * Argument 2 (ClientChatReceivedEvent) the chat event fired
      * @param args list of arguments as described
      */
-    override fun trigger(args: Array<out Any?>) {
+    override fun triggerImpl(args: Array<out Any?>) {
         require(args[0] is Event) {
             "Argument 1 must be a ChatTrigger.Event"
         }

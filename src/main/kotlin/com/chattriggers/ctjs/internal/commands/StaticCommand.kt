@@ -1,6 +1,7 @@
 package com.chattriggers.ctjs.internal.commands
 
 import com.chattriggers.ctjs.api.triggers.CommandTrigger
+import com.chattriggers.ctjs.internal.engine.JSLoader
 import com.chattriggers.ctjs.internal.mixins.commands.CommandNodeAccessor
 import com.chattriggers.ctjs.internal.utils.asMixin
 import com.mojang.brigadier.CommandDispatcher
@@ -38,9 +39,9 @@ internal class StaticCommand(
                     builder.buildFuture()
                 }
                 .onExecute {
-                    trigger.trigger(StringArgumentType.getString(it, "args").split(" ").toTypedArray())
+                    JSLoader.trigger(trigger, StringArgumentType.getString(it, "args").split(" ").toTypedArray())
                 })
-            .onExecute { trigger.trigger(emptyArray()) }
+            .onExecute { JSLoader.trigger(trigger) }
 
         val node = dispatcher.register(builder)
 

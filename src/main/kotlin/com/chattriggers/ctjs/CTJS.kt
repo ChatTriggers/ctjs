@@ -14,6 +14,8 @@ import com.chattriggers.ctjs.api.world.World
 import com.chattriggers.ctjs.engine.Console
 import com.chattriggers.ctjs.engine.Register
 import com.chattriggers.ctjs.internal.commands.StaticCommand
+import com.chattriggers.ctjs.internal.engine.JSLoader
+import com.chattriggers.ctjs.internal.engine.module.Module
 import com.chattriggers.ctjs.internal.engine.module.ModuleManager
 import com.chattriggers.ctjs.internal.utils.Initializer
 import kotlinx.serialization.json.Json
@@ -81,6 +83,31 @@ class CTJS : ClientModInitializer {
                 connectTimeout = 3000
                 readTimeout = 3000
             }
+
+        /**
+         * Gets the active (currently running) Module object.
+         *
+         * There are different ways the active module is determined:
+         * - At engine startup, the active module is the module that is currently having its "entry" script ran. The
+         *   "entry" scripts are ran in dependency order such that modules that don't have any dependencies are ran
+         *   first.
+         * - After engine startup, the active module is the module that belongs to the trigger that is currently
+         *   running, as triggers are the only way user code is ran after engine startup.
+         * - On background threads started from the Thread global, the active module is the module which spawned the
+         *   background thread.
+         * - On background threads not started from the Thread global, such as when invoking java.lang.Thread manually,
+         *   the active module is undefined, and this method will return null.
+         * - During mixin application, the active module is undefined, and this method will return null.
+         *
+         * Due to the way user code is exclusively invoked via triggers, this method allows library authors to determine
+         * where their library code is being invoked from, assuming this method is called outside a trigger created by
+         * the library.
+         */
+        @JvmStatic
+        fun activeModule(): Module? {
+            // Copy the object so the users can't change the mutable internal state
+            return JSLoader.activeModule?.copy()
+        }
 
         @JvmStatic
         fun unload(asCommand: Boolean = true) {

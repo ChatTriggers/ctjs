@@ -10,6 +10,11 @@ class Module(val name: String, var metadata: ModuleMetadata, val folder: File) {
     var targetModVersion: Version? = null
     var requiredBy = mutableSetOf<String>()
 
+    fun copy() = Module(name, metadata.copy(), folder).also {
+        it.targetModVersion = targetModVersion
+        it.requiredBy = requiredBy.toMutableSet()
+    }
+
     private val gui = object {
         var collapsed = true
         var x = 0f

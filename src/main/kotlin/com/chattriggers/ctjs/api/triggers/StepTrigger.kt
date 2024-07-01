@@ -35,7 +35,7 @@ class StepTrigger(method: Any) : Trigger(method, TriggerType.STEP) {
         return super.register()
     }
 
-    override fun trigger(args: Array<out Any?>) {
+    override fun triggerImpl(args: Array<out Any?>) {
         if (delay < 0) {
             // run trigger based on set fps value (60 per second by default)
             while (systemTime < Client.getSystemTime() + 1000 / fps) {
