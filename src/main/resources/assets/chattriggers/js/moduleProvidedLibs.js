@@ -119,6 +119,7 @@
     loadClass("com.chattriggers.ctjs.engine.WrappedThread", "Thread");
     global.Priority = Java.class("com.chattriggers.ctjs.api.triggers.Trigger").Priority;
     loadClass("com.chattriggers.ctjs.CTJS", "ChatTriggers");
+    loadClass("com.chattriggers.ctjs.CTJS", "CTJS");
     global.Console = Java.type("com.chattriggers.ctjs.engine.Console").INSTANCE;
 
     // GL
