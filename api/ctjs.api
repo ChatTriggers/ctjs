@@ -1,6 +1,7 @@
 public final class com/chattriggers/ctjs/CTJS : net/fabricmc/api/ClientModInitializer {
 	public static final field Companion Lcom/chattriggers/ctjs/CTJS$Companion;
 	public static final field MODULES_FOLDER Ljava/lang/String;
+	public static final field MOD_ID Ljava/lang/String;
 	public static final field MOD_VERSION Ljava/lang/String;
 	public static final field WEBSITE_ROOT Ljava/lang/String;
 	public fun <init> ()V
@@ -745,6 +746,7 @@ public final class com/chattriggers/ctjs/api/commands/DynamicCommands$MessageFor
 	public final fun format ()Lcom/chattriggers/ctjs/api/message/TextComponent;
 	public final fun getText ()Ljava/lang/String;
 	public fun hashCode ()I
+	public final fun setText (Ljava/lang/String;)V
 	public fun toString ()Ljava/lang/String;
 }
 
@@ -909,10 +911,6 @@ public class com/chattriggers/ctjs/api/entity/LivingEntity : com/chattriggers/ct
 	public final fun isPotionActive (Lcom/chattriggers/ctjs/api/world/PotionEffectType;)Z
 }
 
-public synthetic class com/chattriggers/ctjs/api/entity/LivingEntity$EntriesMappings {
-	public static final synthetic field entries$0 Lkotlin/enums/EnumEntries;
-}
-
 public final class com/chattriggers/ctjs/api/entity/Particle : com/chattriggers/ctjs/api/CTWrapper {
 	public fun <init> (Lnet/minecraft/client/particle/Particle;)V
 	public final fun getAge ()I
@@ -1035,10 +1033,6 @@ public final class com/chattriggers/ctjs/api/entity/Team : com/chattriggers/ctjs
 	public fun toMC ()Lnet/minecraft/scoreboard/Team;
 }
 
-public synthetic class com/chattriggers/ctjs/api/entity/Team$EntriesMappings {
-	public static final synthetic field entries$0 Lkotlin/enums/EnumEntries;
-}
-
 public final class com/chattriggers/ctjs/api/entity/Team$Visibility : java/lang/Enum, com/chattriggers/ctjs/api/CTWrapper {
 	public static final field ALWAYS Lcom/chattriggers/ctjs/api/entity/Team$Visibility;
 	public static final field Companion Lcom/chattriggers/ctjs/api/entity/Team$Visibility$Companion;
@@ -1110,7 +1104,7 @@ public final class com/chattriggers/ctjs/api/inventory/Item : com/chattriggers/c
 	public final fun getMaxDamage ()I
 	public synthetic fun getMcValue ()Ljava/lang/Object;
 	public fun getMcValue ()Lnet/minecraft/item/ItemStack;
-	public final fun getNBT ()Lcom/chattriggers/ctjs/api/inventory/nbt/NBTTagCompound;
+	public final fun getNBT ()Lnet/minecraft/component/ComponentMap;
 	public final fun getName ()Ljava/lang/String;
 	public final fun getStackSize ()I
 	public final fun getType ()Lcom/chattriggers/ctjs/api/inventory/ItemType;
@@ -1450,10 +1444,6 @@ public final class com/chattriggers/ctjs/api/message/TextComponent : java/lang/I
 	public final fun withText (Ljava/lang/Object;)Lcom/chattriggers/ctjs/api/message/TextComponent;
 	public final fun withTextAt (ILjava/lang/Object;)Lcom/chattriggers/ctjs/api/message/TextComponent;
 	public final fun withoutTextAt (I)Lcom/chattriggers/ctjs/api/message/TextComponent;
-}
-
-public synthetic class com/chattriggers/ctjs/api/message/TextComponent$EntriesMappings {
-	public static final synthetic field entries$0 Lkotlin/enums/EnumEntries;
 }
 
 public final class com/chattriggers/ctjs/api/render/Book {
