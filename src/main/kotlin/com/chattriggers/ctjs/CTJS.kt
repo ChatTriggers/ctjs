@@ -74,7 +74,10 @@ class CTJS : ClientModInitializer {
         internal val sounds = mutableListOf<Sound>()
         internal val isDevelopment = FabricLoader.getInstance().isDevelopmentEnvironment
 
-        internal val json = Json { useAlternativeNames = true }
+        internal val json = Json {
+            useAlternativeNames = true
+            ignoreUnknownKeys = true
+        }
 
         @JvmOverloads
         internal fun makeWebRequest(url: String, userAgent: String? = "Mozilla/5.0 (ChatTriggers)"): URLConnection =
