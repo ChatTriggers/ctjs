@@ -112,9 +112,6 @@ object ModuleUpdater : Initializer {
         }
 
         cachedModules.add(module)
-        cachedModules.sortWith { a, b ->
-            a.name.compareTo(b.name)
-        }
         return listOf(module) + (module.metadata.requires?.map {
             importModule(it, module.name)
         }?.flatten() ?: emptyList())
