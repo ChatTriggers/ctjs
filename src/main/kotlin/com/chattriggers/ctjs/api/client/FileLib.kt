@@ -1,6 +1,7 @@
 package com.chattriggers.ctjs.api.client
 
 import com.chattriggers.ctjs.CTJS
+import net.minecraft.util.Util
 import java.io.*
 import java.net.UnknownHostException
 import java.nio.charset.Charset
@@ -289,5 +290,25 @@ object FileLib {
     @JvmStatic
     fun decodeBase64(toDecode: String): String {
         return String(Base64.getDecoder().decode(toDecode))
+    }
+
+    /**
+     * Opens a url in the default browser
+     *
+     * @param url the url to open
+     */
+    @JvmStatic
+    fun open(url: String) {
+        Util.getOperatingSystem().open(url)
+    }
+
+    /**
+     * Opens a path in the file explorer
+     *
+     * @param path the path to open
+     */
+    @JvmStatic
+    fun open(path: File) {
+        Util.getOperatingSystem().open(path)
     }
 }

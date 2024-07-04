@@ -3,6 +3,7 @@ package com.chattriggers.ctjs.internal.commands
 import com.chattriggers.ctjs.CTJS
 import com.chattriggers.ctjs.api.Config
 import com.chattriggers.ctjs.api.client.Client
+import com.chattriggers.ctjs.api.client.FileLib
 import com.chattriggers.ctjs.api.message.ChatLib
 import com.chattriggers.ctjs.api.message.TextComponent
 import com.chattriggers.ctjs.engine.Console
@@ -23,7 +24,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType
 import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
-import gg.essential.universal.UDesktop
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
@@ -32,7 +32,6 @@ import net.minecraft.command.CommandSource
 import net.minecraft.text.ClickEvent
 import net.minecraft.text.HoverEvent
 import net.minecraft.text.Text
-import net.minecraft.util.Util
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.CompletableFuture
@@ -165,11 +164,7 @@ internal object CTCommand : Initializer {
 
     private fun openFileLocation() {
         try {
-            if (UDesktop.isMac) {
-                Util.getOperatingSystem().open(ModuleManager.modulesFolder.toURI())
-            } else {
-                UDesktop.browse(ModuleManager.modulesFolder.toURI())
-            }
+            FileLib.open(ModuleManager.modulesFolder)
         } catch (exception: IOException) {
             exception.printTraceToConsole()
             ChatLib.chat("&cCould not open file location")
