@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Supplier;
@@ -22,7 +23,7 @@ public abstract class SystemDetailsMixin {
     @Inject(method = "<init>", at = @At("RETURN"))
     private void addModules(CallbackInfo ci) {
         addSection("ChatTriggers Modules", () -> {
-            List<Module> modules = ModuleManager.INSTANCE.getCachedModules();
+            List<Module> modules = new ArrayList<>(ModuleManager.INSTANCE.getCachedModules());
             modules.sort(Comparator.comparing(Module::getName));
 
             StringBuilder sb = new StringBuilder();

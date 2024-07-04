@@ -47,7 +47,7 @@ object ModulesGui : UScreen(unlocalizedName = "Modules") {
         window.exit.draw((middle + width / 2f - 17) / 2f, (window.scroll + 99f) / 2f)
 
         window.height = 125f
-        ModuleManager.cachedModules.forEach {
+        ModuleManager.cachedModules.sortedBy { it.name }.forEach {
             window.height += it.draw(middle - width / 2f, window.scroll + window.height, width)
         }
 
