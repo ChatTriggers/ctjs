@@ -208,6 +208,8 @@ public final class com/chattriggers/ctjs/api/client/FileLib {
 	public static synthetic fun getUrlContent$default (Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ljava/lang/String;
 	public static final fun isDirectory (Ljava/lang/String;)Z
 	public static final fun isDirectory (Ljava/lang/String;Ljava/lang/String;)Z
+	public static final fun open (Ljava/io/File;)V
+	public static final fun open (Ljava/lang/String;)V
 	public static final fun read (Ljava/io/File;)Ljava/lang/String;
 	public static final fun read (Ljava/lang/String;)Ljava/lang/String;
 	public static final fun read (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
