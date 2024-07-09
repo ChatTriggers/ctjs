@@ -199,6 +199,11 @@ Here is a list of targeted changes for various different APIs:
 - `TabList`
   - Renamed `getHeaderMessage()` to `getHeaderComponent()`, and it now returns a `TextComponent` instead of a `Message`
   - Renamed `getFooterMessage()` to `getFooterComponent()`, and it now returns a `TextComponent` instead of a `Message`
+  - Added `addName()`, `getList()`, and `removeNames()`
+  - `getNames()` now returns a list of `Name`
+  - Added `Name`
+    - acts similarly to `Scoreboard.Score`, with the following methods
+    - `getLatency()`, `setLatency()`, `getName()`, `setName()`, `getTeam()`, `setTeam()`, and `remove()`
 - `Team`
   - `Team.getNameTagVisibility()` and `Team.getDeathMessageVisibility()` now return a `Team.Visibility` instead of a string
   - Added `setColor()`

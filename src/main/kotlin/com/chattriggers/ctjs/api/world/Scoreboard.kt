@@ -289,7 +289,7 @@ object Scoreboard {
         }
 
         /**
-         * Gets the display string of this score
+         * Gets the display text of this score
          *
          * @return the display name
          */
