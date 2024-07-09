@@ -2370,6 +2370,12 @@ public final class com/chattriggers/ctjs/api/world/Server {
 
 public final class com/chattriggers/ctjs/api/world/TabList {
 	public static final field INSTANCE Lcom/chattriggers/ctjs/api/world/TabList;
+	public static final fun addName (Lcom/chattriggers/ctjs/api/message/TextComponent;)V
+	public static final fun addName (Lcom/chattriggers/ctjs/api/message/TextComponent;Z)V
+	public static final fun addName (Ljava/lang/String;)V
+	public static final fun addName (Ljava/lang/String;Z)V
+	public static synthetic fun addName$default (Lcom/chattriggers/ctjs/api/message/TextComponent;ZILjava/lang/Object;)V
+	public static synthetic fun addName$default (Ljava/lang/String;ZILjava/lang/Object;)V
 	public static final fun clearFooter ()V
 	public static final fun clearHeader ()V
 	public static final fun getFooter ()Ljava/lang/String;
@@ -2378,10 +2384,29 @@ public final class com/chattriggers/ctjs/api/world/TabList {
 	public static final fun getHeaderComponent ()Lcom/chattriggers/ctjs/api/message/TextComponent;
 	public static final fun getNames ()Ljava/util/List;
 	public static final fun getNamesByObjectives ()Ljava/util/List;
+	public static final fun getObjective ()Lnet/minecraft/scoreboard/ScoreboardObjective;
 	public static final fun getUnformattedNames ()Ljava/util/List;
+	public static final fun removeNames (Lcom/chattriggers/ctjs/api/message/TextComponent;)V
+	public static final fun removeNames (Ljava/lang/String;)V
 	public static final fun setFooter (Ljava/lang/Object;)V
 	public static final fun setHeader (Ljava/lang/Object;)V
 	public static final fun toMC ()Lnet/minecraft/client/gui/hud/PlayerListHud;
+}
+
+public final class com/chattriggers/ctjs/api/world/TabList$Name : com/chattriggers/ctjs/api/CTWrapper {
+	public fun <init> (Lnet/minecraft/client/network/PlayerListEntry;)V
+	public final fun getLatency ()I
+	public synthetic fun getMcValue ()Ljava/lang/Object;
+	public fun getMcValue ()Lnet/minecraft/client/network/PlayerListEntry;
+	public final fun getName ()Lcom/chattriggers/ctjs/api/message/TextComponent;
+	public final fun getTeam ()Lcom/chattriggers/ctjs/api/entity/Team;
+	public final fun remove ()V
+	public final fun setLatency (I)Lcom/chattriggers/ctjs/api/world/TabList$Name;
+	public final fun setName (Lcom/chattriggers/ctjs/api/message/TextComponent;)Lcom/chattriggers/ctjs/api/world/TabList$Name;
+	public final fun setTeam (Lcom/chattriggers/ctjs/api/entity/Team;)Lcom/chattriggers/ctjs/api/world/TabList$Name;
+	public synthetic fun toMC ()Ljava/lang/Object;
+	public fun toMC ()Lnet/minecraft/client/network/PlayerListEntry;
+	public fun toString ()Ljava/lang/String;
 }
 
 public final class com/chattriggers/ctjs/api/world/World {

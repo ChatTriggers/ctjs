@@ -10,6 +10,7 @@ import com.chattriggers.ctjs.api.triggers.CancellableEvent
 import com.chattriggers.ctjs.api.triggers.ChatTrigger
 import com.chattriggers.ctjs.api.triggers.TriggerType
 import com.chattriggers.ctjs.api.world.Scoreboard
+import com.chattriggers.ctjs.api.world.TabList
 import com.chattriggers.ctjs.api.world.World
 import com.chattriggers.ctjs.api.world.block.BlockFace
 import com.chattriggers.ctjs.api.world.block.BlockPos
@@ -66,6 +67,7 @@ object ClientListener : Initializer {
                 ticksPassed++
 
                 Scoreboard.resetCache()
+                TabList.resetCache()
             }
         }
 
