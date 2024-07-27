@@ -4,175 +4,122 @@ import com.chattriggers.ctjs.api.message.TextComponent
 import org.mozilla.javascript.regexp.NativeRegExp
 
 class ChatTrigger(method: Any, type: ITriggerType) : Trigger(method, type) {
-    private lateinit var chatCriteria: Any
     private var formatted: Boolean = false
-    private var formattedForced = false
-    private var caseInsensitive: Boolean = false
     private lateinit var criteriaPattern: Regex
-    private val parameters = mutableListOf<Parameter?>()
-    private var triggerIfCanceled: Boolean = true
+    private var usingCriteria = false
+    private var global = false
+
+    private var startsWith: Regex? = null
+    private val contains = mutableSetOf<Regex>()
+    private var endsWith: Regex? = null
 
     /**
-     * Sets if the chat trigger should run if the chat event has already been canceled.
-     * True by default.
-     * @param bool Boolean to set
-     * @return the trigger object for method chaining
+     * Creates a regex string and flags according to the criteria
      */
-    fun triggerIfCanceled(bool: Boolean) = apply { triggerIfCanceled = bool }
-
-    /**
-     * Sets the chat criteria for [matchesChatCriteria].
-     * Arguments for the trigger's method can be passed in using ${variable}.
-     * Example: `setChatCriteria("<${name}> ${message}");`
-     * Use ${*} to match a chat message but ignore the pass through.
-     * @param chatCriteria the chat criteria to set
-     * @return the trigger object for method chaining
-     */
-    fun setChatCriteria(chatCriteria: Any) = apply {
-        this.chatCriteria = chatCriteria
-        val flags = mutableSetOf<RegexOption>()
+    private fun createCriteria(criteria: Any): Pair<String, Set<RegexOption>> {
         var source = ".+"
+        val flags = mutableSetOf<RegexOption>()
 
-        when (chatCriteria) {
+        when (criteria) {
             is CharSequence -> {
-                if (!formattedForced)
-                    formatted = Regex("[&\u00a7]") in chatCriteria
+                val chatCriteria = criteria.toString()
 
-                val replacedCriteria = Regex.escape(chatCriteria.toString().replace("\n", "->newLine<-"))
-                    .replace(Regex("\\\$\\{[^*]+?}"), "\\\\E(.+)\\\\Q")
-                    .replace(Regex("\\$\\{\\*?}"), "\\\\E(?:.+)\\\\Q")
+                if ("\n" in chatCriteria)
+                    flags.add(RegexOption.DOT_MATCHES_ALL)
 
-                if (caseInsensitive)
-                    flags.add(RegexOption.IGNORE_CASE)
+                val replacedCriteria = chatCriteria.replace("\n", "\\n")
+                    .replace(Regex("""\$\{[^*]+?}"""), "(.+?)")
+                    .replace(Regex("""\$\{\*?}"""), "(?:.+?)")
 
                 if ("" != chatCriteria)
                     source = replacedCriteria
             }
             is NativeRegExp -> {
-                if (chatCriteria["ignoreCase"] as Boolean || caseInsensitive)
+                if (criteria["ignoreCase"] as Boolean)
                     flags.add(RegexOption.IGNORE_CASE)
 
-                if (chatCriteria["multiline"] as Boolean)
+                if (criteria["multiline"] as Boolean)
                     flags.add(RegexOption.MULTILINE)
 
-                source = (chatCriteria["source"] as String).let {
+                if (criteria["dotAll"] as Boolean)
+                    flags.add(RegexOption.DOT_MATCHES_ALL)
+
+                source = (criteria["source"] as String).let {
                     if ("" == it) ".+" else it
                 }
-
-                if (!formattedForced)
-                    formatted = Regex("[&\u00a7]") in source
             }
             else -> throw IllegalArgumentException("Expected String or Regexp Object")
         }
 
-        criteriaPattern = Regex(source, flags)
+        formatted = formatted or (Regex("[&\u00a7]") in source)
+        return source to flags
     }
 
     /**
-     * Alias for [setChatCriteria].
-     * @param chatCriteria the chat criteria to set
+     * Sets the chat criteria for this trigger.
+     * Arguments for the trigger's method can be passed in using ${variable}.
+     * Example: `setCriteria("<${name}> ${message}");`
+     * Use ${*} to match a chat message but ignore the pass through.
+     * @param criteria the chat criteria to set
      * @return the trigger object for method chaining
      */
-    fun setCriteria(chatCriteria: Any) = setChatCriteria(chatCriteria)
+    fun setCriteria(criteria: Any) = apply {
+        check(startsWith == null && contains.isEmpty() && endsWith == null) {
+            "Can not use setCriteria() with any of startsWith(), contains(), or endsWith()"
+        }
+
+        usingCriteria = true
+        val (source, flags) = createCriteria(criteria)
+
+        if (criteria is NativeRegExp && criteria["global"] as Boolean)
+            global = true
+
+        criteriaPattern = Regex("^${source}\$", flags)
+    }
 
     /**
-     * Sets the chat parameter for [Parameter].
-     * Clears current parameter list.
-     * @param parameter the chat parameter to set
+     * Sets the starting criteria for this trigger. In order for this trigger to run, the beginning of
+     * the chat message must match [criteria].
+     * Like [setCriteria], arguments can be passed in using ${variable}.
      * @return the trigger object for method chaining
      */
-    fun setParameter(parameter: String) = apply {
-        parameters.clear()
-        addParameter(parameter)
+    fun startsWith(criteria: Any) = apply {
+        check(!usingCriteria) { "Can not use both setCriteria() and startsWith()" }
+
+        val (source, flags) = createCriteria(criteria)
+        startsWith = Regex("^${source}", flags)
     }
 
     /**
-     * Sets multiple chat parameters for [Parameter].
-     * Clears current parameter list.
-     * @param parameters the chat parameters to set
+     * Sets criteria this trigger must contain. In order for this trigger to run, the beginning of
+     * the chat message must contain **all** [criteria].
+     * Like [setCriteria], arguments can be passed in using ${variable}.
      * @return the trigger object for method chaining
      */
-    fun setParameters(vararg parameters: String) = apply {
-        this.parameters.clear()
-        addParameters(*parameters)
+    fun contains(vararg criteria: Any) = apply {
+        check(!usingCriteria) { "Can not use both setCriteria() and contains()" }
+
+        for (criterion in criteria) {
+            val (source, flags) = createCriteria(criterion)
+            contains += Regex(source, flags)
+        }
     }
 
     /**
-     * Adds chat parameter for [Parameter].
-     * @param parameter the chat parameter to add
+     * Sets the ending criteria for this trigger. In order for this trigger to run, the end of
+     * the chat message must match [criteria].
+     * Like [setCriteria], arguments can be passed in using ${variable}.
      * @return the trigger object for method chaining
      */
-    fun addParameter(parameter: String) = apply {
-        parameters.add(Parameter.getParameterByName(parameter))
+    fun endsWith(criteria: Any) = apply {
+        check(!usingCriteria) { "Can not use both setCriteria() and endsWith()" }
+
+        val (source, flags) = createCriteria(criteria)
+        endsWith = Regex("${source}\$", flags)
     }
 
     /**
-     * Adds multiple chat parameters for [Parameter].
-     * @param parameters the chat parameters to add
-     * @return the trigger object for method chaining
-     */
-    fun addParameters(vararg parameters: String) = apply {
-        parameters.forEach(::addParameter)
-    }
-
-    /**
-     * Adds the "start" parameter
-     * @return the trigger object for method chaining
-     */
-    fun setStart() = apply {
-        setParameter("start")
-    }
-
-    /**
-     * Adds the "contains" parameter
-     * @return the trigger object for method chaining
-     */
-    fun setContains() = apply {
-        setParameter("contains")
-    }
-
-    /**
-     * Adds the "end" parameter
-     * @return the trigger object for method chaining
-     */
-    fun setEnd() = apply {
-        setParameter("end")
-    }
-
-    /**
-     * Forces this trigger to be formatted or unformatted. If no argument is
-     * provided, it will be set to formatted. This method overrides the
-     * behavior of inferring the formatted status from the criteria.
-     */
-    @JvmOverloads
-    fun setFormatted(formatted: Boolean = true) {
-        this.formatted = formatted
-        this.formattedForced = true
-    }
-
-    /**
-     * Makes the trigger match the entire chat message
-     * @return the trigger object for method chaining
-     */
-    fun setExact() = apply {
-        parameters.clear()
-    }
-
-    /**
-     * Makes the chat criteria case insensitive
-     * @return the trigger object for method chaining
-     */
-    fun setCaseInsensitive() = apply {
-        caseInsensitive = true
-
-        // Reparse criteria if setCriteria has already been called
-        if (::chatCriteria.isInitialized)
-            setCriteria(chatCriteria)
-    }
-
-    /**
-     * Argument 1 (String) The chat message received
-     * Argument 2 (ClientChatReceivedEvent) the chat event fired
+     * Argument 0 (Event) The chat message event
      * @param args list of arguments as described
      */
     override fun trigger(args: Array<out Any?>) {
@@ -181,15 +128,12 @@ class ChatTrigger(method: Any, type: ITriggerType) : Trigger(method, type) {
         }
 
         val chatEvent = args[0] as Event
-
-        if (!triggerIfCanceled && chatEvent.isCancelled()) return
+        if (chatEvent.isCancelled()) return
 
         val chatMessage = getChatMessage(chatEvent.message)
 
         val variables = getVariables(chatMessage) ?: return
-        variables.add(chatEvent)
-
-        callMethod(variables.toTypedArray())
+        callMethod((variables + chatEvent).toTypedArray())
     }
 
     // helper method to get the proper chat message based on the presence of color codes
@@ -198,12 +142,6 @@ class ChatTrigger(method: Any, type: ITriggerType) : Trigger(method, type) {
             chatMessage.formattedText.replace("\u00a7", "&")
         else chatMessage.unformattedText
 
-    // helper method to get the variables to pass through
-    private fun getVariables(chatMessage: String) =
-        if (::criteriaPattern.isInitialized)
-            matchesChatCriteria(chatMessage.replace("\n", "->newLine<-"))
-        else ArrayList()
-
     /**
      * A method to check whether a received chat message
      * matches this trigger's definition criteria.
@@ -211,51 +149,52 @@ class ChatTrigger(method: Any, type: ITriggerType) : Trigger(method, type) {
      * @param chat the chat message to compare against
      * @return a list of the variables, in order or null if it doesn't match
      */
-    private fun matchesChatCriteria(chat: String): MutableList<Any>? {
-        val regex = criteriaPattern
+    private fun getVariables(chat: String): List<String>? {
+        if (usingCriteria && ::criteriaPattern.isInitialized) {
+            if (global)
+                return criteriaPattern.findAll(chat).flatMap {
+                    it.groupValues.drop(1)
+                }.toList().ifEmpty { null }
 
-        if (parameters.isEmpty()) {
-            if (!(regex matches chat)) return null
-        } else {
-            parameters.forEach { parameter ->
-                val first = try {
-                    regex.find(chat)?.groups?.get(0)
-                } catch (e: IndexOutOfBoundsException) {
-                    return null
-                }
+            return criteriaPattern.find(chat)?.groupValues?.drop(1)
+        }
 
-                when (parameter) {
-                    Parameter.CONTAINS -> if (first == null) return null
-                    Parameter.START -> if (first == null || first.range.first != 0) return null
-                    Parameter.END -> if (first?.range?.last != chat.length) return null
-                    null -> if (!(regex matches chat)) return null
+        val variables = mutableListOf<String>()
+        var start = 0
+        var end = chat.length
+
+        if (startsWith != null) {
+            val matcher = startsWith!!.find(chat) ?: return null
+            start = matcher.range.last + 1
+            matcher.groupValues.drop(1).let { variables += it }
+        }
+
+        if (endsWith != null) {
+            var subStart = chat.length - 1
+            var matcher: MatchResult? = null
+
+            while (subStart >= 0) {
+                matcher = endsWith!!.find(chat.substring(subStart))
+                if (matcher == null) {
+                    subStart--
+                } else {
+                    break
                 }
             }
+
+            if (matcher == null) return null
+
+            end = subStart
+            matcher.groupValues.drop(1).let { variables += it }
         }
 
-        return regex.find(chat)?.groupValues?.drop(1)?.toMutableList()
-    }
-
-    /**
-     * The parameter to match chat criteria to.
-     * Location parameters
-     * - contains
-     * - start
-     * - end
-     */
-    private enum class Parameter(vararg names: String) {
-        CONTAINS("<c>", "<contains>", "c", "contains"),
-        START("<s>", "<start>", "s", "start"),
-        END("<e>", "<end>", "e", "end");
-
-        var names: List<String> = names.asList()
-
-        companion object {
-            fun getParameterByName(name: String) =
-                entries.find { param ->
-                    param.names.any { it.lowercase() == name }
-                }
+        for (contain in contains) {
+            contain.find(chat.substring(start, end))?.groupValues?.drop(1)?.let {
+                variables += it
+            } ?: return null
         }
+
+        return variables
     }
 
     class Event(@JvmField val message: TextComponent) : CancellableEvent()
