@@ -45,8 +45,8 @@ public abstract class MinecraftClientMixin {
             TriggerType.WORLD_LOAD.triggerAll();
     }
 
-    @Inject(method = "disconnect(Lnet/minecraft/client/gui/screen/Screen;)V", at = @At("HEAD"))
-    private void injectDisconnect(Screen screen, CallbackInfo ci) {
+    @Inject(method = "disconnect(Lnet/minecraft/client/gui/screen/Screen;Z)V", at = @At("HEAD"))
+    private void injectDisconnect(Screen disconnectionScreen, boolean transferring, CallbackInfo ci) {
         // disconnect() is also called when connecting, so we check that there is
         // an existing server
         if (this.isIntegratedServerRunning() || this.getCurrentServerEntry() != null) {
