@@ -129,7 +129,6 @@ tasks {
         val docVersionsDir = projectDir.resolve("build/javadocs")
         val currentVersion = project.version.toString()
         val currentDocsDir = docVersionsDir.resolve(currentVersion)
-        outputs.upToDateWhen { docVersionsDir.exists() }
 
         outputDirectory.set(file(currentDocsDir))
 
@@ -194,20 +193,18 @@ tasks {
             //         \-- older
             //
             // The "older" directory contains all old versions, so we want to
-            // delete the top-level older versions and move everything inside the
-            // latest directory to the top level so the GitHub actions workflow
-            // doesn't need to figure out the correct version name
+            // delete the top-level older versions.
 
             docVersionsDir.listFiles()?.forEach {
                 if (it.name != version)
                     it.deleteRecursively()
             }
 
-            val latestVersionDir = docVersionsDir.listFiles()!!.single()
-            latestVersionDir.listFiles()!!.forEach {
-                it.renameTo(File(it.parentFile.parentFile, it.name))
-            }
-            latestVersionDir.deleteRecursively()
+//            val latestVersionDir = docVersionsDir.listFiles()!!.single()
+//            latestVersionDir.listFiles()!!.forEach {
+//                it.renameTo(File(it.parentFile.parentFile, it.name))
+//            }
+//            latestVersionDir.deleteRecursively()
         }
     }
 }
