@@ -5,6 +5,10 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.net.HttpURLConnection
 import java.net.URL
 import java.io.ByteArrayOutputStream
+import kotlin.io.path.Path
+import kotlin.io.path.exists
+import kotlin.io.path.readBytes
+import kotlin.io.path.readText
 
 buildscript {
     dependencies {
@@ -164,12 +168,17 @@ tasks {
         }
 
         doFirst {
-            val archiveBase = "https://www.chattriggers.com/javadocs-archive/"
-            val versions = String(downloadFile(archiveBase + "versions")).lines().map(String::trim)
+            val javadocsArchive = projectDir.resolve("javadocs-archive")
+            if (!javadocsArchive.exists())
+                return@doFirst
+
             val tmpFile = File(temporaryDir, "oldVersionsZip.zip")
 
-            versions.filter(String::isNotEmpty).map(String::trim).forEach { version ->
-                val zipBytes = downloadFile("$archiveBase$version.zip")
+            javadocsArchive.listFiles()?.forEach {
+                if (it.extension != "zip")
+                    return@forEach
+
+                val zipBytes = it.readBytes()
                 tmpFile.writeBytes(zipBytes)
                 unzipTo(docVersionsDir, tmpFile)
             }
