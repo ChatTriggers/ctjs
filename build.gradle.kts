@@ -53,6 +53,7 @@ dependencies {
     modApi(libs.modmenu)
     modRuntimeOnly(libs.devauth)
     dokkaPlugin(libs.versioning)
+    dokkaHtmlPlugin(project(":dokka-plugin"))
 
     implementation(kotlin("stdlib-jdk8"))
     implementation(project(":typing-generator"))

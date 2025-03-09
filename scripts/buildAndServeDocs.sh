@@ -17,3 +17,9 @@ cp -r "$output_dir" "$JAVADOCS_ARCHIVE_PATH"
 # Remove the version name from the hierarchy so the Dockerfile doesn't need to worry about it
 cp -r "$output_dir"/* "$BUILD_DIR"
 rm -rf "$output_dir"
+
+# Install deps
+sudo apt install httpd
+
+# Run
+trap "exit 0;" TERM INT; httpd -v -p $PORT -h /www -f & wait

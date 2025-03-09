@@ -8,3 +8,4 @@ pluginManagement {
 
 rootProject.name = "ctjs"
 include(":typing-generator")
+include(":dokka-plugin")
