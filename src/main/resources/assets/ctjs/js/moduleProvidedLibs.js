@@ -1,4 +1,4 @@
-(function(global) {
+(function (global) {
     global.Mappings = com.chattriggers.ctjs.api.Mappings;
 
     function getJavaType(clazz) {
@@ -41,7 +41,6 @@
 
     loadClass("java.util.ArrayList");
     loadClass("java.util.HashMap");
-    loadClass("gg.essential.universal.UKeyboard", "Keyboard");
     loadClass("net.minecraft.util.Hand");
     loadClass("com.chattriggers.ctjs.api.FileLib");
 
@@ -49,7 +48,6 @@
     loadClass("com.chattriggers.ctjs.api.triggers.CancellableEvent");
 
     // Misc
-    loadClass("com.chattriggers.ctjs.api.Config");
     loadClass("com.chattriggers.ctjs.engine.Register", "TriggerRegister");
     loadClass("com.chattriggers.ctjs.engine.WrappedThread", "Thread");
     global.Priority = Java.class("com.chattriggers.ctjs.api.triggers.Trigger").Priority;

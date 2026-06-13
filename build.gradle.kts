@@ -14,9 +14,7 @@ version = property("mod_version").toString()
 
 repositories {
     maven("https://jitpack.io")
-    maven("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1")
     maven("https://maven.terraformersmc.com/releases")
-    maven("https://repo.essential.gg/repository/maven-public")
 }
 
 dependencies {
@@ -28,7 +26,6 @@ dependencies {
     modImplementation(libs.bundles.included) { include(this) }
 
     modApi(libs.modmenu)
-    modRuntimeOnly(libs.devauth)
 
     implementation(kotlin("stdlib-jdk8"))
     implementation(project(":typing-generator"))
@@ -81,7 +78,7 @@ tasks {
             )
         }
     }
-    
+
     jar {
         from("LICENSE") {
             rename { "${name}_${base.archivesName.get()}" }

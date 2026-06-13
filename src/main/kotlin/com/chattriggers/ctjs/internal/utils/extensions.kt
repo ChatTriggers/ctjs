@@ -1,13 +1,13 @@
 package com.chattriggers.ctjs.internal.utils
 
 import com.chattriggers.ctjs.internal.launch.Descriptor
-import com.fasterxml.jackson.core.Version
 import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
 import net.minecraft.resources.Identifier
 import net.minecraft.util.Mth
 import org.mozilla.javascript.NativeObject
 import org.mozilla.javascript.Scriptable
+import tools.jackson.core.Version
 import java.net.URLEncoder
 import java.nio.charset.Charset
 import kotlin.reflect.KClass

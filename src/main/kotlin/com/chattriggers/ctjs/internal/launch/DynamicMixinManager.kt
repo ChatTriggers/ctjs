@@ -9,7 +9,6 @@ import com.chattriggers.ctjs.internal.launch.generation.GenerationContext
 import com.chattriggers.ctjs.internal.launch.generation.Utils
 import kotlinx.serialization.json.*
 import org.spongepowered.asm.mixin.Mixins
-import org.spongepowered.asm.service.MixinService
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.net.URI
