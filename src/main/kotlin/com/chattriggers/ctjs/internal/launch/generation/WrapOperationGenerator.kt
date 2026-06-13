@@ -113,7 +113,7 @@ internal class WrapOperationGenerator(
         }
     }
 
-    context(MethodAssembly)
+    context(ma: MethodAssembly)
     override fun generateNotAttachedBehavior() {
         val operationType = Type.getType(Operation::class.java)
         val operationParameterIndex = signature.parameters.indexOfFirst {
@@ -121,17 +121,17 @@ internal class WrapOperationGenerator(
         }
         check(operationParameterIndex != -1)
 
-        generateParameterLoad(operationParameterIndex)
-        ldc(operationParameterIndex)
-        anewarray<Any>()
+        ma.generateParameterLoad(operationParameterIndex)
+        ma.ldc(operationParameterIndex)
+        ma.anewarray<Any>()
 
         (0 until operationParameterIndex).map {
-            dup
-            ldc(it)
-            generateParameterLoad(it)
-            aastore
+            ma.dup
+            ma.ldc(it)
+            ma.generateParameterLoad(it)
+            ma.aastore
         }
 
-        invokeinterface(Operation::class, "call", Any::class, Array<Any>::class)
+        ma.invokeinterface(Operation::class, "call", Any::class, Array<Any>::class)
     }
 }

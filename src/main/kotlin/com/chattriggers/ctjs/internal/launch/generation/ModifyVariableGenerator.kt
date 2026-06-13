@@ -67,8 +67,8 @@ internal class ModifyVariableGenerator(
         }
     }
 
-    context(MethodAssembly)
+    context(ma: MethodAssembly)
     override fun generateNotAttachedBehavior() {
-        generateParameterLoad(0)
+        ma.generateParameterLoad(0)
     }
 }

@@ -45,19 +45,19 @@ internal abstract class InjectorGenerator(protected val ctx: GenerationContext, 
 
     abstract fun attachAnnotation(node: MethodNode, signature: InjectionSignature)
 
-    context(MethodAssembly)
+    context(ma: MethodAssembly)
     abstract fun generateNotAttachedBehavior()
 
-    context(ClassAssembly)
+    context(ca: ClassAssembly)
     fun generate() {
         val (targetMethod, parameters, returnType, isStatic) = signature
 
-        var modifiers = private
+        var modifiers = ca.private
         if (isStatic)
-            modifiers += static
+            modifiers += ca.static
 
         val nameForInjection = targetMethod.name.original.replace('<', '$').replace('>', '$')
-        val methodNode = method(
+        val methodNode = ca.method(
             modifiers,
             "${CTJS.MOD_ID}_${type}_${nameForInjection}_${counter++}",
             returnType.toMappedType(),
@@ -114,69 +114,69 @@ internal abstract class InjectorGenerator(protected val ctx: GenerationContext, 
         attachAnnotation(methodNode, signature)
     }
 
-    context(MethodAssembly)
+    context(ma: MethodAssembly)
     private fun generateBoxIfNecessary(descriptor: Descriptor) {
         when (descriptor) {
             Descriptor.Primitive.VOID -> throw IllegalStateException("Cannot use Void as a parameter type")
             Descriptor.Primitive.BOOLEAN ->
-                invokestatic(java.lang.Boolean::class, "valueOf", java.lang.Boolean::class, boolean)
+                ma.invokestatic(java.lang.Boolean::class, "valueOf", java.lang.Boolean::class, ma.boolean)
             Descriptor.Primitive.CHAR ->
-                invokestatic(Character::class, "valueOf", Character::class, char)
+                ma.invokestatic(Character::class, "valueOf", Character::class, ma.char)
             Descriptor.Primitive.BYTE ->
-                invokestatic(java.lang.Byte::class, "valueOf", java.lang.Byte::class, byte)
+                ma.invokestatic(java.lang.Byte::class, "valueOf", java.lang.Byte::class, ma.byte)
             Descriptor.Primitive.SHORT ->
-                invokestatic(java.lang.Short::class, "valueOf", java.lang.Short::class, short)
+                ma.invokestatic(java.lang.Short::class, "valueOf", java.lang.Short::class, ma.short)
             Descriptor.Primitive.INT ->
-                invokestatic(Integer::class, "valueOf", Integer::class, int)
+                ma.invokestatic(Integer::class, "valueOf", Integer::class, ma.int)
             Descriptor.Primitive.FLOAT ->
-                invokestatic(java.lang.Float::class, "valueOf", java.lang.Float::class, float)
+                ma.invokestatic(java.lang.Float::class, "valueOf", java.lang.Float::class, ma.float)
             Descriptor.Primitive.LONG ->
-                invokestatic(java.lang.Long::class, "valueOf", java.lang.Long::class, long)
+                ma.invokestatic(java.lang.Long::class, "valueOf", java.lang.Long::class, ma.long)
             Descriptor.Primitive.DOUBLE ->
-                invokestatic(java.lang.Double::class, "valueOf", java.lang.Double::class, double)
+                ma.invokestatic(java.lang.Double::class, "valueOf", java.lang.Double::class, ma.double)
             else -> {}
         }
     }
 
-    context(MethodAssembly)
+    context(ma: MethodAssembly)
     private fun generateUnboxIfNecessary(descriptor: Descriptor) {
         when (descriptor) {
             Descriptor.Primitive.VOID -> {}
             Descriptor.Primitive.BOOLEAN -> {
-                checkcast(java.lang.Boolean::class)
-                invokevirtual(java.lang.Boolean::class, "booleanValue", boolean)
+                ma.checkcast(java.lang.Boolean::class)
+                ma.invokevirtual(java.lang.Boolean::class, "booleanValue", ma.boolean)
             }
             is Descriptor.Primitive -> {
-                checkcast(java.lang.Number::class)
+                ma.checkcast(java.lang.Number::class)
 
                 when (descriptor) {
-                    Descriptor.Primitive.CHAR -> invokevirtual(java.lang.Number::class, "charValue", char)
-                    Descriptor.Primitive.BYTE -> invokevirtual(java.lang.Number::class, "byteValue", byte)
-                    Descriptor.Primitive.SHORT -> invokevirtual(java.lang.Number::class, "shortValue", short)
-                    Descriptor.Primitive.INT -> invokevirtual(java.lang.Number::class, "intValue", int)
-                    Descriptor.Primitive.LONG -> invokevirtual(java.lang.Number::class, "longValue", long)
-                    Descriptor.Primitive.FLOAT -> invokevirtual(java.lang.Number::class, "floatValue", float)
-                    Descriptor.Primitive.DOUBLE -> invokevirtual(java.lang.Number::class, "doubleValue", double)
+                    Descriptor.Primitive.CHAR -> ma.invokevirtual(java.lang.Number::class, "charValue", ma.char)
+                    Descriptor.Primitive.BYTE -> ma.invokevirtual(java.lang.Number::class, "byteValue", ma.byte)
+                    Descriptor.Primitive.SHORT -> ma.invokevirtual(java.lang.Number::class, "shortValue", ma.short)
+                    Descriptor.Primitive.INT -> ma.invokevirtual(java.lang.Number::class, "intValue", ma.int)
+                    Descriptor.Primitive.LONG -> ma.invokevirtual(java.lang.Number::class, "longValue", ma.long)
+                    Descriptor.Primitive.FLOAT -> ma.invokevirtual(java.lang.Number::class, "floatValue", ma.float)
+                    Descriptor.Primitive.DOUBLE -> ma.invokevirtual(java.lang.Number::class, "doubleValue", ma.double)
                     else -> throw IllegalStateException()
                 }
             }
-            else -> checkcast(descriptor.toMappedType())
+            else -> ma.checkcast(descriptor.toMappedType())
         }
     }
 
-    context(MethodAssembly)
+    context(ma: MethodAssembly)
     private fun generateReturn(returnType: Descriptor) {
         when (returnType) {
             Descriptor.Primitive.VOID -> {
-                pop
-                _return
+                ma.pop
+                ma._return
             }
-            Descriptor.Primitive.BOOLEAN -> ireturn
-            Descriptor.Primitive.LONG -> lreturn
-            Descriptor.Primitive.FLOAT -> freturn
-            Descriptor.Primitive.DOUBLE -> dreturn
-            is Descriptor.Primitive -> ireturn
-            else -> areturn
+            Descriptor.Primitive.BOOLEAN -> ma.ireturn
+            Descriptor.Primitive.LONG -> ma.lreturn
+            Descriptor.Primitive.FLOAT -> ma.freturn
+            Descriptor.Primitive.DOUBLE -> ma.dreturn
+            is Descriptor.Primitive -> ma.ireturn
+            else -> ma.areturn
         }
     }
 

@@ -1,9 +1,6 @@
 package com.chattriggers.ctjs.internal.launch.generation
 
 import codes.som.koffee.MethodAssembly
-import codes.som.koffee.insns.jvm.getfield
-import codes.som.koffee.insns.jvm.invokevirtual
-import codes.som.koffee.insns.jvm.putfield
 import com.chattriggers.ctjs.internal.launch.At
 import com.chattriggers.ctjs.internal.launch.ModifyReceiver
 import com.chattriggers.ctjs.internal.utils.descriptorString
@@ -35,8 +32,8 @@ internal class ModifyReceiverGenerator(
         }
 
         val params = listOf(Parameter(owner!!)) +
-            extraParams!!.map(::Parameter) +
-            modifyReceiver.locals?.map(Utils::getParameterFromLocal).orEmpty()
+                extraParams!!.map(::Parameter) +
+                modifyReceiver.locals?.map(Utils::getParameterFromLocal).orEmpty()
 
         return InjectionSignature(
             mappedMethod,
@@ -64,8 +61,8 @@ internal class ModifyReceiverGenerator(
         }
     }
 
-    context(MethodAssembly)
+    context(ma: MethodAssembly)
     override fun generateNotAttachedBehavior() {
-        generateParameterLoad(0)
+        ma.generateParameterLoad(0)
     }
 }

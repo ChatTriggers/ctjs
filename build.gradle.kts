@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.kotlin)
     alias(libs.plugins.serialization)
@@ -48,6 +50,12 @@ java {
     targetCompatibility = JavaVersion.VERSION_25
 }
 
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_25)
+    }
+}
+
 apiValidation {
     ignoredProjects += "typing-generator"
     ignoredPackages += "com.chattriggers.ctjs.internal"
@@ -73,7 +81,7 @@ tasks {
             )
         }
     }
-
+    
     jar {
         from("LICENSE") {
             rename { "${name}_${base.archivesName.get()}" }

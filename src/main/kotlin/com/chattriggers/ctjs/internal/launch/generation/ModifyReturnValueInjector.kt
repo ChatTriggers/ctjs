@@ -5,7 +5,6 @@ import com.chattriggers.ctjs.internal.launch.Descriptor
 import com.chattriggers.ctjs.internal.launch.ModifyReturnValue
 import com.chattriggers.ctjs.internal.utils.descriptorString
 import org.objectweb.asm.tree.MethodNode
-import org.spongepowered.asm.mixin.injection.Desc
 import com.llamalad7.mixinextras.injector.ModifyReturnValue as SPModifyReturnValue
 
 internal class ModifyReturnValueInjector(
@@ -52,8 +51,8 @@ internal class ModifyReturnValueInjector(
         }
     }
 
-    context(MethodAssembly)
+    context(ma: MethodAssembly)
     override fun generateNotAttachedBehavior() {
-        generateParameterLoad(0)
+        ma.generateParameterLoad(0)
     }
 }

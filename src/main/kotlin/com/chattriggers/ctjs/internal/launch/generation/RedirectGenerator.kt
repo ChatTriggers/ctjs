@@ -91,13 +91,13 @@ internal class RedirectGenerator(
         }
     }
 
-    context(MethodAssembly)
+    context(ma: MethodAssembly)
     override fun generateNotAttachedBehavior() {
         val parameters = signature.parameters.filter { it.local == null }
 
         when (val target = redirect.at.atTarget) {
             is At.FieldTarget -> {
-                parameters.indices.forEach { generateParameterLoad(it) }
+                parameters.indices.forEach { ma.generateParameterLoad(it) }
 
                 val owner = target.descriptor.owner!!.toType()
                 val name = target.descriptor.name
@@ -105,23 +105,23 @@ internal class RedirectGenerator(
 
                 if (target.isGet!!) {
                     if (target.isStatic!!) {
-                        getstatic(owner, name, type)
+                        ma.getstatic(owner, name, type)
                     } else {
-                        getfield(owner, name, type)
+                        ma.getfield(owner, name, type)
                     }
                 } else {
                     if (target.isStatic!!) {
-                        putstatic(owner, name, type)
+                        ma.putstatic(owner, name, type)
                     } else {
-                        putfield(owner, name, type)
+                        ma.putfield(owner, name, type)
                     }
 
                     // Must leave something on the stack to pop
-                    aconst_null
+                    ma.aconst_null
                 }
             }
             is At.InvokeTarget -> {
-                parameters.indices.forEach { generateParameterLoad(it) }
+                parameters.indices.forEach { ma.generateParameterLoad(it) }
 
                 val owner = target.descriptor.owner!!.toType()
                 val name = target.descriptor.name
@@ -131,13 +131,13 @@ internal class RedirectGenerator(
                 }.toTypedArray()
 
                 if (signature.isStatic) {
-                    invokestatic(owner, name, returnType, *parameterTypes)
+                    ma.invokestatic(owner, name, returnType, *parameterTypes)
                 } else {
-                    invokevirtual(owner, name, returnType, *parameterTypes)
+                    ma.invokevirtual(owner, name, returnType, *parameterTypes)
                 }
             }
             is At.NewTarget -> {
-                construct(
+                ma.construct(
                     target.descriptor.type.toType(),
                     *parameters.map { it.descriptor.toType() }.toTypedArray(),
                 ) {
