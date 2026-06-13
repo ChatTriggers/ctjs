@@ -2,14 +2,10 @@ package com.chattriggers.ctjs.internal.utils
 
 import com.chattriggers.ctjs.internal.launch.Descriptor
 import com.fasterxml.jackson.core.Version
-import com.mojang.brigadier.arguments.ArgumentType
 import com.mojang.brigadier.builder.ArgumentBuilder
-import com.mojang.brigadier.builder.LiteralArgumentBuilder
-import com.mojang.brigadier.builder.RequiredArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
-import net.minecraft.command.CommandSource
-import net.minecraft.util.Identifier
-import net.minecraft.util.math.MathHelper
+import net.minecraft.resources.Identifier
+import net.minecraft.util.Mth
 import org.mozilla.javascript.NativeObject
 import org.mozilla.javascript.Scriptable
 import java.net.URLEncoder
@@ -26,7 +22,7 @@ fun String.toVersion(): Version {
 }
 
 fun String.toIdentifier(): Identifier {
-    return Identifier.of(if (':' in this) this else "minecraft:$this")
+    return Identifier.parse(if (':' in this) this else "minecraft:$this")
 }
 
 fun String.urlEncode() = URLEncoder.encode(this, Charset.defaultCharset())
@@ -53,10 +49,10 @@ fun NativeObject?.getOrNull(key: String): Any? {
     return this?.get(key).takeIf { it != Scriptable.NOT_FOUND }
 }
 
-fun Double.toRadians() = this * MathHelper.RADIANS_PER_DEGREE
-fun Float.toRadians() = this * MathHelper.RADIANS_PER_DEGREE
-fun Double.toDegrees() = this * MathHelper.DEGREES_PER_RADIAN
-fun Float.toDegrees() = this * MathHelper.DEGREES_PER_RADIAN
+fun Double.toRadians() = this * Mth.RAD_TO_DEG
+fun Float.toRadians() = this * Mth.RAD_TO_DEG
+fun Double.toDegrees() = this * Mth.DEG_TO_RAD
+fun Float.toDegrees() = this * Mth.DEG_TO_RAD
 
 fun KClass<*>.descriptorString(): String = java.descriptorString()
 fun KClass<*>.descriptor() = Descriptor.Object(descriptorString())

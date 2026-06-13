@@ -1,12 +1,10 @@
 package com.chattriggers.ctjs.internal.commands
 
 import com.chattriggers.ctjs.CTJS
-import com.chattriggers.ctjs.api.Config
 import com.chattriggers.ctjs.api.FileLib
 import com.chattriggers.ctjs.engine.Console
-import com.chattriggers.ctjs.engine.printTraceToConsole
-import com.chattriggers.ctjs.internal.engine.module.ModuleManager
 import com.chattriggers.ctjs.internal.engine.module.ModuleListScreen
+import com.chattriggers.ctjs.internal.engine.module.ModuleManager
 import com.chattriggers.ctjs.internal.listeners.ClientListener
 import com.chattriggers.ctjs.internal.utils.Initializer
 import com.chattriggers.ctjs.internal.utils.onExecute
@@ -22,14 +20,13 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
-import net.minecraft.client.MinecraftClient
-import net.minecraft.command.CommandSource
-import net.minecraft.text.Text
-import java.io.IOException
+import net.minecraft.client.Minecraft
+import net.minecraft.commands.SharedSuggestionProvider
+import net.minecraft.network.chat.Component
 import java.util.concurrent.CompletableFuture
 
 internal object CTCommand : Initializer {
-    private val mc = MinecraftClient.getInstance()
+    private val mc = Minecraft.getInstance()
 
     override fun init() {
         ClientCommandRegistrationCallback.EVENT.register { dispatcher, _ ->
@@ -44,28 +41,38 @@ internal object CTCommand : Initializer {
             .then(literal("files").onExecute { FileLib.openModulesFolder() })
             .then(
                 literal("delete")
-                    .then(argument("module", ModuleArgumentType)
-                        .onExecute {
-                            val module = ModuleArgumentType.getModule(it, "module")
-                            if (ModuleManager.deleteModule(module)) {
-                                mc.player?.sendMessage(Text.of("&aDeleted $module"), false)
-                            } else mc.player?.sendMessage(Text.of("&cFailed to delete $module"), false)
-                        })
+                    .then(
+                        argument("module", ModuleArgumentType)
+                            .onExecute {
+                                val module = ModuleArgumentType.getModule(it, "module")
+                                if (ModuleManager.deleteModule(module)) {
+                                    mc.player?.displayClientMessage(Component.nullToEmpty("&aDeleted $module"), false)
+                                } else mc.player?.displayClientMessage(
+                                    Component.nullToEmpty("&cFailed to delete $module"),
+                                    false
+                                )
+                            })
             )
             .then(literal("console").onExecute { Console.show() })
-            .then(literal("config").onExecute { ClientListener.addTask(0, {
-                mc.setScreen(Config.gui()!!)
-            }) })
             .then(
                 literal("simulate")
                     .then(
                         argument("message", StringArgumentType.greedyString())
-                            .onExecute { mc.networkHandler?.sendChatMessage(StringArgumentType.getString(it, "message")) }
+                            .onExecute {
+                                mc.connection?.sendChat(
+                                    StringArgumentType.getString(
+                                        it,
+                                        "message"
+                                    )
+                                )
+                            }
                     )
             )
-            .then(literal("modules").onExecute { ClientListener.addTask(0) {
-                mc.setScreen(ModuleListScreen())
-            } })
+            .then(literal("modules").onExecute {
+                ClientListener.addTask(0) {
+                    mc.setScreen(ModuleListScreen())
+                }
+            })
 
         dispatcher.register(command)
     }
@@ -77,15 +84,15 @@ internal object CTCommand : Initializer {
 
             return modules.find {
                 it.equals(string, ignoreCase = true)
-            } ?: throw SimpleCommandExceptionType(Text.literal("No modules found with name \"$string\""))
+            } ?: throw SimpleCommandExceptionType(Component.literal("No modules found with name \"$string\""))
                 .createWithContext(reader)
         }
 
         override fun <S : Any?> listSuggestions(
             context: CommandContext<S>?,
-            builder: SuggestionsBuilder?
+            builder: SuggestionsBuilder
         ): CompletableFuture<Suggestions> {
-            return CommandSource.suggestMatching(ModuleManager.cachedModules.map { it.name }, builder)
+            return SharedSuggestionProvider.suggest(ModuleManager.cachedModules.map { it.name }, builder)
         }
 
         fun getModule(ctx: CommandContext<FabricClientCommandSource>, module: String): String {

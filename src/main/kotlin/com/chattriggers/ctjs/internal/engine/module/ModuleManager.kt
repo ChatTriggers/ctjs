@@ -5,8 +5,6 @@ import com.chattriggers.ctjs.engine.LogType
 import com.chattriggers.ctjs.engine.printToConsole
 import com.chattriggers.ctjs.internal.engine.JSContextFactory
 import com.chattriggers.ctjs.internal.engine.JSLoader
-import net.minecraft.client.MinecraftClient
-import net.minecraft.text.Text
 import org.apache.commons.io.FileUtils
 import org.mozilla.javascript.Context
 import java.io.File

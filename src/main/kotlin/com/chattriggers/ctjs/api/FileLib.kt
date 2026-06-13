@@ -3,17 +3,13 @@ package com.chattriggers.ctjs.api
 import com.chattriggers.ctjs.CTJS
 import com.chattriggers.ctjs.engine.printTraceToConsole
 import com.chattriggers.ctjs.internal.engine.module.ModuleManager
-import net.minecraft.client.MinecraftClient
-import net.minecraft.text.Text
+import net.minecraft.client.Minecraft
+import net.minecraft.network.chat.Component
 import net.minecraft.util.Util
-import java.io.BufferedOutputStream
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.IOException
+import java.io.*
 import java.net.UnknownHostException
 import java.nio.charset.Charset
-import java.util.Base64
+import java.util.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
@@ -307,7 +303,7 @@ object FileLib {
      */
     @JvmStatic
     fun open(url: String) {
-        Util.getOperatingSystem().open(url)
+        Util.getPlatform().openUri(url)
     }
 
     /**
@@ -317,7 +313,7 @@ object FileLib {
      */
     @JvmStatic
     fun open(path: File) {
-        Util.getOperatingSystem().open(path)
+        Util.getPlatform().openFile(path)
     }
 
     /**
@@ -329,7 +325,10 @@ object FileLib {
             open(ModuleManager.modulesFolder)
         } catch (exception: IOException) {
             exception.printTraceToConsole()
-            MinecraftClient.getInstance().player?.sendMessage(Text.of("&cCould not open file location"), false)
+            Minecraft.getInstance().player?.displayClientMessage(
+                Component.nullToEmpty("&cCould not open file location"),
+                false
+            )
         }
     }
 }

@@ -35,17 +35,14 @@ object ManualRoots {
         val doc = Jsoup.connect(url).get()
         val links = doc.getElementsByClass("col-first")
         links.forEach { link ->
-            val a  = link.getElementsByTag("a")
+            val a = link.getElementsByTag("a")
             if (a.isEmpty()) return@forEach
             val href = a.first()?.attr("href") ?: return@forEach
             roots += href.replace("/", ".").replace(".html", "").trim()
         }
     }
 
-    init {
-        collectClasses(YARN_URL)
-        collectClasses(FABRIC_API_URL)
-    }
+
 }
 
 

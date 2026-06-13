@@ -1,8 +1,8 @@
 package com.chattriggers.ctjs.internal.console
 
-import com.chattriggers.ctjs.api.Config
 import com.chattriggers.ctjs.engine.LogType
 import kotlinx.serialization.Serializable
+import java.awt.Color
 
 @Serializable
 sealed class H2CMessage
@@ -20,16 +20,16 @@ class ConfigUpdateMessage(
     val fontSize: Int,
 ) : H2CMessage() {
     companion object {
-        fun constructFromConfig(settings: Config.ConsoleSettings) = ConfigUpdateMessage(
-            settings.consoleTextColor.rgb,
-            settings.consoleBackgroundColor.rgb,
-            settings.consoleWarningColor.rgb,
-            settings.consoleErrorColor.rgb,
-            settings.openConsoleOnError,
-            settings.customTheme,
-            settings.consoleTheme,
-            settings.consoleFiraCodeFont,
-            settings.consoleFontSize,
+        fun constructFromDefaults() = ConfigUpdateMessage(
+            Color(208, 208, 208).rgb,
+            Color(21, 21, 21).rgb,
+            Color(248, 191, 84).rgb,
+            Color(225, 65, 73).rgb,
+            openConsoleOnError = false,
+            customTheme = false,
+            theme = 0,
+            useFiraCode = true,
+            fontSize = 12,
         )
     }
 }

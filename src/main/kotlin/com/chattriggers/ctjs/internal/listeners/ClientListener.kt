@@ -3,13 +3,12 @@ package com.chattriggers.ctjs.internal.listeners
 import com.chattriggers.ctjs.api.triggers.CancellableEvent
 import com.chattriggers.ctjs.api.triggers.TriggerType
 import com.chattriggers.ctjs.internal.utils.Initializer
-import gg.essential.universal.UMinecraft
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
 import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry
-import net.minecraft.client.MinecraftClient
-import net.minecraft.util.Identifier
+import net.minecraft.client.Minecraft
+import net.minecraft.resources.Identifier
 
 object ClientListener : Initializer {
     private val tasks = mutableListOf<Task>()
@@ -21,18 +20,23 @@ object ClientListener : Initializer {
             synchronized(tasks) {
                 tasks.removeAll {
                     if (it.delay-- <= 0) {
-                        UMinecraft.getMinecraft().submit(it.callback)
+                        Minecraft.getInstance().submit(it.callback)
                         true
                     } else false
                 }
             }
 
-            if (MinecraftClient.getInstance()?.world?.tickManager?.shouldTick() == true) {
+            if (Minecraft.getInstance().level?.tickRateManager()?.runsNormally() == true) {
                 TriggerType.TICK.triggerAll()
             }
         }
 
-        HudElementRegistry.addLast(Identifier.of("chattriggers", "render_overlay")) { ctx, tickCounter ->
+        HudElementRegistry.addLast(
+            Identifier.fromNamespaceAndPath(
+                "chattriggers",
+                "render_overlay"
+            )
+        ) { ctx, tickCounter ->
             TriggerType.RENDER_OVERLAY.triggerAll(ctx, tickCounter)
         }
 

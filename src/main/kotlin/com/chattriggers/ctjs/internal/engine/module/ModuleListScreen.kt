@@ -1,145 +1,148 @@
 package com.chattriggers.ctjs.internal.engine.module
 
 import com.chattriggers.ctjs.api.FileLib
-import net.minecraft.client.MinecraftClient
-import net.minecraft.client.font.TextRenderer
-import net.minecraft.client.gl.RenderPipelines
-import net.minecraft.client.gui.DrawContext
-import net.minecraft.client.gui.screen.ConfirmScreen
-import net.minecraft.client.gui.screen.Screen
-import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget
-import net.minecraft.client.gui.widget.ButtonWidget
-import net.minecraft.screen.ScreenTexts
-import net.minecraft.text.StringVisitable
-import net.minecraft.text.Text
-import net.minecraft.util.Identifier
-import net.minecraft.util.math.ColorHelper
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.Font
+import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.components.Button
+import net.minecraft.client.gui.components.ObjectSelectionList
+import net.minecraft.client.gui.screens.ConfirmScreen
+import net.minecraft.client.gui.screens.Screen
+import net.minecraft.client.renderer.RenderPipelines
+import net.minecraft.network.chat.CommonComponents
+import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.FormattedText
+import net.minecraft.resources.Identifier
+import net.minecraft.util.ARGB
 
-class ModuleListScreen : Screen(Text.translatable("ctjs.ui.modules")) {
+class ModuleListScreen : Screen(Component.translatable("ctjs.ui.modules")) {
     private lateinit var moduleList: ModuleListWidget
-    private lateinit var openFolderButton: ButtonWidget
-    private lateinit var deleteButton: ButtonWidget
-    private lateinit var closeButton: ButtonWidget
+    private lateinit var openFolderButton: Button
+    private lateinit var deleteButton: Button
+    private lateinit var closeButton: Button
 
     override fun init() {
-        moduleList = ModuleListWidget(client!!, width, height - 96, 32, 36)
+        moduleList = ModuleListWidget(minecraft, width, height - 96, 32, 36)
 
-        openFolderButton = ButtonWidget.builder(Text.translatable("ctjs.ui.openModulesFolder")) {
+        openFolderButton = Button.builder(Component.translatable("ctjs.ui.openModulesFolder")) {
             FileLib.openModulesFolder()
-        }.width(200).position(width / 2 - 100, height - 56).build()
+        }.width(200).pos(width / 2 - 100, height - 56).build()
 
-        deleteButton = ButtonWidget.builder(Text.translatable("ctjs.ui.delete")) {
-            moduleList.selectedOrNull?.let {
-                client!!.setScreen(ConfirmScreen(
-                    { confirmed ->
-                        if (confirmed) {
-                            ModuleManager.deleteModule(it.module.name)
-                            close()
-                        } else client!!.setScreen(this)
-                    },
-                    Text.translatable("ctjs.ui.deleteConfirmation", it.module.name),
-                    Text.translatable("ctjs.ui.noRevert").withColor(ColorHelper.fromFloats(1f, 1f, 0f, 0f)),
-                    ScreenTexts.PROCEED,
-                    ScreenTexts.CANCEL
-                ))
+        deleteButton = Button.builder(Component.translatable("ctjs.ui.delete")) {
+            moduleList.selected?.let {
+                minecraft.setScreen(
+                    ConfirmScreen(
+                        { confirmed ->
+                            if (confirmed) {
+                                ModuleManager.deleteModule(it.module.name)
+                                onClose()
+                            } else minecraft.setScreen(this)
+                        },
+                        Component.translatable("ctjs.ui.deleteConfirmation", it.module.name),
+                        Component.translatable("ctjs.ui.noRevert").withColor(ARGB.colorFromFloat(1f, 1f, 0f, 0f)),
+                        CommonComponents.GUI_PROCEED,
+                        CommonComponents.GUI_CANCEL
+                    )
+                )
             }
-        }.width(128).position(width / 2 + 4, height - 32).build()
+        }.width(128).pos(width / 2 + 4, height - 32).build()
 
-        closeButton = ButtonWidget.builder(ScreenTexts.BACK) { close() }
+        closeButton = Button.builder(CommonComponents.GUI_BACK) { onClose() }
             .width(128)
-            .position(width / 2 - 132, height - 32).build()
+            .pos(width / 2 - 132, height - 32).build()
 
-        addDrawableChild(openFolderButton)
-        addDrawableChild(deleteButton)
-        addDrawableChild(closeButton)
-        addDrawableChild(moduleList)
+        addRenderableWidget(openFolderButton)
+        addRenderableWidget(deleteButton)
+        addRenderableWidget(closeButton)
+        addRenderableWidget(moduleList)
     }
 
-    override fun render(context: DrawContext?, mouseX: Int, mouseY: Int, deltaTicks: Float) {
+    override fun render(context: GuiGraphics, mouseX: Int, mouseY: Int, deltaTicks: Float) {
         super.render(context, mouseX, mouseY, deltaTicks)
-        context?.drawCenteredTextWithShadow(
-            textRenderer,
+        context.drawStringWithBackdrop(
+            font,
             this.title,
             this.width / 2,
-            20, -1
+            20,
+            -1,
+            -1
         )
-        deleteButton.active = moduleList.selectedOrNull != null
+        deleteButton.active = moduleList.selected != null
     }
 }
 
-class ModuleEntry(val textRenderer: TextRenderer, val module: Module) : AlwaysSelectedEntryListWidget.Entry<ModuleEntry>() {
-    override fun getNarration(): Text {
-        return Text.literal(module.name)
+class ModuleEntry(val textRenderer: Font, val module: Module) :
+    ObjectSelectionList.Entry<ModuleEntry>() {
+    override fun getNarration(): Component {
+        return Component.literal(module.name)
     }
 
-    override fun render(
-        context: DrawContext,
-        index: Int,
-        y: Int,
-        x: Int,
-        entryWidth: Int,
-        entryHeight: Int,
-        mouseX: Int,
-        mouseY: Int,
-        hovered: Boolean,
-        tickProgress: Float
-    ) {
-        val stack = context.matrices
+    override fun renderContent(context: GuiGraphics, mouseY: Int, mouseX: Int, hovered: Boolean, tickProgress: Float) {
+        val stack = context.pose()
 
         stack.pushMatrix()
         stack.scale(1.25f, 1.25f)
-        context.drawTextWithShadow(textRenderer, module.name, (x / 1.25f + 4).toInt(), (y / 1.25f + 4).toInt(), -1)
+        context.drawStringWithBackdrop(
+            textRenderer,
+            Component.literal(module.name),
+            (x / 1.25f + 4).toInt(),
+            (y / 1.25f + 4).toInt(),
+            -1,
+            -1
+        )
         stack.popMatrix()
 
         module.metadata.creator?.let {
-            context.drawTextWithShadow(
+            context.drawStringWithBackdrop(
                 textRenderer,
-                Text.translatable("ctjs.ui.byCreator", it),
+                Component.translatable("ctjs.ui.byCreator", it),
                 x + 2,
-                y + entryHeight - textRenderer.fontHeight - 2,
-                ColorHelper.fromFloats(1f, 0.8f, 0.8f, 0.8f)
+                y + contentHeight - textRenderer.lineHeight / 2,
+                ARGB.colorFromFloat(1f, 0.8f, 0.8f, 0.8f),
+                -1
             )
         }
 
         module.metadata.description?.let {
-            context.drawGuiTexture(
+            context.blitSprite(
                 RenderPipelines.GUI_TEXTURED,
                 INFO_TEXTURE,
-                x + entryWidth - 22, y + 2,
+                x + contentWidth - 22, y + 2,
                 16, 16,
             )
 
             // If the info icon is hovered
-            if (mouseX >= x + entryWidth - 22 && mouseX <= x + entryWidth - 6 && mouseY >= y + 2 && mouseY <= y + 18) {
-                context.drawTooltip(
-                    textRenderer.wrapLines(StringVisitable.plain(it), entryWidth),
+            if (mouseX >= x + contentWidth - 22 && mouseX <= x + contentWidth - 6 && mouseY >= y + 2 && mouseY <= y + 18) {
+                context.setComponentTooltipForNextFrame(
+                    textRenderer,
+                    textRenderer.split(FormattedText.of(it), contentWidth).map { Component.literal(it.toString()) },
                     mouseX, mouseY
                 )
             }
         }
 
         module.metadata.version?.let {
-            context.drawTextWithShadow(
+            context.drawString(
                 textRenderer,
                 it,
-                x + entryWidth - textRenderer.getWidth(it) - 4,
-                y + entryHeight - textRenderer.fontHeight,
-                ColorHelper.fromFloats(1f, 0.4f, 0.4f, 0.4f)
+                x + contentWidth - textRenderer.width(it) - 4,
+                y + contentHeight - textRenderer.lineHeight,
+                ARGB.colorFromFloat(1f, 0.4f, 0.4f, 0.4f)
             )
         }
     }
 
     companion object {
-        val INFO_TEXTURE: Identifier = Identifier.ofVanilla("icon/info")
+        val INFO_TEXTURE: Identifier = Identifier.parse("icon/info")
     }
 }
 
-class ModuleListWidget(client: MinecraftClient, width: Int, height: Int, y: Int, itemHeight: Int)
-    : AlwaysSelectedEntryListWidget<ModuleEntry>(client, width, height, y, itemHeight) {
+class ModuleListWidget(client: Minecraft, width: Int, height: Int, y: Int, itemHeight: Int) :
+    ObjectSelectionList<ModuleEntry>(client, width, height, y, itemHeight) {
     init {
         clearEntries()
         for (module in ModuleManager.cachedModules) {
-            addEntry(ModuleEntry(client.textRenderer, module))
+            addEntry(ModuleEntry(client.font, module))
         }
     }
 

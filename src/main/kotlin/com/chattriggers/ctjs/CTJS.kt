@@ -1,33 +1,21 @@
 package com.chattriggers.ctjs
 
-import com.chattriggers.ctjs.api.Config
-import com.chattriggers.ctjs.api.triggers.Trigger
 import com.chattriggers.ctjs.engine.Console
 import com.chattriggers.ctjs.engine.Register
 import com.chattriggers.ctjs.internal.engine.module.ModuleManager
 import com.chattriggers.ctjs.internal.utils.Initializer
 import kotlinx.serialization.json.Json
 import net.fabricmc.api.ClientModInitializer
-import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElement
-import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry
 import net.fabricmc.loader.api.FabricLoader
-import net.minecraft.client.MinecraftClient
-import net.minecraft.client.gui.DrawContext
-import net.minecraft.client.render.RenderTickCounter
-import net.minecraft.util.Identifier
+import net.minecraft.client.Minecraft
 import java.io.File
 import java.net.URI
-import java.net.URL
 import java.net.URLConnection
-import java.security.MessageDigest
-import java.util.*
 import kotlin.concurrent.thread
 
 class CTJS : ClientModInitializer {
     override fun onInitializeClient() {
         Initializer.initializers.forEach(Initializer::init)
-
-        Config.loadData()
 
         Runtime.getRuntime().addShutdownHook(Thread {
             Console.close()
@@ -68,18 +56,17 @@ class CTJS : ClientModInitializer {
             ModuleManager.teardown()
             Register.clearCustomTriggers()
 
-            if (Config.clearConsoleOnLoad)
-                Console.clear()
+            Console.clear()
         }
 
         @JvmStatic
         fun load() {
-            MinecraftClient.getInstance().options.write()
+            Minecraft.getInstance().options.save()
             unload()
 
             thread {
                 ModuleManager.setup()
-                MinecraftClient.getInstance().options.load()
+                Minecraft.getInstance().options.load()
 
                 // Need to set isLoaded to true before running modules, otherwise custom triggers
                 // activated at the top level will not work
