@@ -1,9 +1,9 @@
 [versions]
 # Library versions
-minecraft = "1.21.11"
+minecraft = "26.1.2"
 
 loader = "0.19.3"
-fabric-api = "0.141.4+1.21.11"
+fabric-api = "0.151.0+26.1.2"
 fabric-kotlin = "1.13.9+kotlin.2.3.10"
 
 rhino = "7c7c509668"
@@ -11,7 +11,7 @@ jackson-core = "3.2.0"
 textarea = "3.6.3"
 serialization = "1.11.0"
 
-modmenu = "17.0.0"
+modmenu = "18.0.0-beta.1"
 
 # Plugin Versions
 kotlin = "2.4.0"
@@ -43,6 +43,6 @@ included = ["rhino", "jackson-core", "textarea", "serialization"]
 [plugins]
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-loom = { id = "fabric-loom", version.ref = "loom" }
+loom = { id = "net.fabricmc.fabric-loom", version.ref = "loom" }
 validator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "validator" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

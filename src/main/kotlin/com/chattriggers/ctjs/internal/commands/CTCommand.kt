@@ -16,9 +16,9 @@ import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType
 import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
+import net.fabricmc.fabric.api.client.command.v2.ClientCommands.argument
+import net.fabricmc.fabric.api.client.command.v2.ClientCommands.literal
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import net.minecraft.client.Minecraft
 import net.minecraft.commands.SharedSuggestionProvider
@@ -46,11 +46,8 @@ internal object CTCommand : Initializer {
                             .onExecute {
                                 val module = ModuleArgumentType.getModule(it, "module")
                                 if (ModuleManager.deleteModule(module)) {
-                                    mc.player?.displayClientMessage(Component.nullToEmpty("&aDeleted $module"), false)
-                                } else mc.player?.displayClientMessage(
-                                    Component.nullToEmpty("&cFailed to delete $module"),
-                                    false
-                                )
+                                    mc.player?.sendSystemMessage(Component.nullToEmpty("&aDeleted $module"))
+                                } else mc.player?.sendSystemMessage(Component.nullToEmpty("&cFailed to delete $module"))
                             })
             )
             .then(literal("console").onExecute { Console.show() })

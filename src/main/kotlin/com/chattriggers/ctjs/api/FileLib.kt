@@ -325,10 +325,7 @@ object FileLib {
             open(ModuleManager.modulesFolder)
         } catch (exception: IOException) {
             exception.printTraceToConsole()
-            Minecraft.getInstance().player?.displayClientMessage(
-                Component.nullToEmpty("&cCould not open file location"),
-                false
-            )
+            Minecraft.getInstance().player?.sendSystemMessage(Component.nullToEmpty("&cCould not open file location"))
         }
     }
 }

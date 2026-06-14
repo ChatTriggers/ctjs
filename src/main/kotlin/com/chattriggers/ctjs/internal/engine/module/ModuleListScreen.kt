@@ -3,7 +3,7 @@ package com.chattriggers.ctjs.internal.engine.module
 import com.chattriggers.ctjs.api.FileLib
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Font
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.components.ObjectSelectionList
 import net.minecraft.client.gui.screens.ConfirmScreen
@@ -57,9 +57,9 @@ class ModuleListScreen : Screen(Component.translatable("ctjs.ui.modules")) {
         addRenderableWidget(moduleList)
     }
 
-    override fun render(context: GuiGraphics, mouseX: Int, mouseY: Int, deltaTicks: Float) {
-        super.render(context, mouseX, mouseY, deltaTicks)
-        context.drawStringWithBackdrop(
+    override fun extractRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, deltaTicks: Float) {
+        super.extractRenderState(context, mouseX, mouseY, deltaTicks)
+        context.textWithBackdrop(
             font,
             this.title,
             this.width / 2,
@@ -77,12 +77,18 @@ class ModuleEntry(val textRenderer: Font, val module: Module) :
         return Component.literal(module.name)
     }
 
-    override fun renderContent(context: GuiGraphics, mouseX: Int, mouseY: Int, hovered: Boolean, tickProgress: Float) {
+    override fun extractContent(
+        context: GuiGraphicsExtractor,
+        mouseX: Int,
+        mouseY: Int,
+        hovered: Boolean,
+        tickProgress: Float
+    ) {
         val stack = context.pose()
 
         stack.pushMatrix()
         stack.scale(1.25f, 1.25f)
-        context.drawStringWithBackdrop(
+        context.textWithBackdrop(
             textRenderer,
             Component.literal(module.name),
             (x / 1.25f + 4).toInt(),
@@ -93,7 +99,7 @@ class ModuleEntry(val textRenderer: Font, val module: Module) :
         stack.popMatrix()
 
         module.metadata.creator?.let {
-            context.drawStringWithBackdrop(
+            context.textWithBackdrop(
                 textRenderer,
                 Component.translatable("ctjs.ui.byCreator", it),
                 x + 4,
@@ -122,7 +128,7 @@ class ModuleEntry(val textRenderer: Font, val module: Module) :
         }
 
         module.metadata.version?.let {
-            context.drawString(
+            context.text(
                 textRenderer,
                 it,
                 x + contentWidth - textRenderer.width(it) - 4,

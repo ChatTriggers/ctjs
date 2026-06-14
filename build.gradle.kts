@@ -20,12 +20,11 @@ repositories {
 dependencies {
     // To change the versions see the gradle/libs.versions.toml
     minecraft(libs.minecraft)
-    mappings(loom.officialMojangMappings())
-    modImplementation(libs.bundles.fabric)
+    implementation(libs.bundles.fabric)
 
-    modImplementation(libs.bundles.included) { include(this) }
+    implementation(libs.bundles.included) { include(this) }
 
-    modApi(libs.modmenu)
+    api(libs.modmenu)
 
     implementation(kotlin("stdlib-jdk8"))
     implementation(project(":typing-generator"))
