@@ -10,7 +10,6 @@ data class ModuleMetadata(
     val name: String? = null,
     val version: String? = null,
     var entry: String? = null,
-    var mixinEntry: String? = null,
     val tags: ArrayList<String>? = null,
     val pictureLink: String? = null,
     @JsonNames("author")

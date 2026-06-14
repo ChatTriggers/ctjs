@@ -2,9 +2,6 @@
     global.Mappings = com.chattriggers.ctjs.api.Mappings;
 
     function getJavaType(clazz) {
-        const mappedName = Mappings.mapClassName(clazz);
-        if (mappedName)
-            return Packages[mappedName.replaceAll("/", ".")]
         return Packages[clazz];
     }
 
@@ -41,7 +38,7 @@
 
     loadClass("java.util.ArrayList");
     loadClass("java.util.HashMap");
-    loadClass("net.minecraft.util.Hand");
+    loadClass("net.minecraft.world.InteractionHand");
     loadClass("com.chattriggers.ctjs.api.FileLib");
 
     // For module authors to use with custom triggers

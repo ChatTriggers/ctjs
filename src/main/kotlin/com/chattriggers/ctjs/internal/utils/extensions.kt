@@ -1,6 +1,5 @@
 package com.chattriggers.ctjs.internal.utils
 
-import com.chattriggers.ctjs.internal.launch.Descriptor
 import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
 import net.minecraft.resources.Identifier
@@ -10,7 +9,6 @@ import org.mozilla.javascript.Scriptable
 import tools.jackson.core.Version
 import java.net.URLEncoder
 import java.nio.charset.Charset
-import kotlin.reflect.KClass
 
 fun String.toVersion(): Version {
     val (semvar, extra) = if ('-' in this) {
@@ -26,9 +24,6 @@ fun String.toIdentifier(): Identifier {
 }
 
 fun String.urlEncode() = URLEncoder.encode(this, Charset.defaultCharset())
-
-// A helper function that makes the intent explicit and reduces parens
-inline fun <reified T> Any.asMixin() = this as T
 
 inline fun <reified T> NativeObject?.get(key: String): T? {
     return this?.get(key) as? T
@@ -53,9 +48,6 @@ fun Double.toRadians() = this * Mth.RAD_TO_DEG
 fun Float.toRadians() = this * Mth.RAD_TO_DEG
 fun Double.toDegrees() = this * Mth.DEG_TO_RAD
 fun Float.toDegrees() = this * Mth.DEG_TO_RAD
-
-fun KClass<*>.descriptorString(): String = java.descriptorString()
-fun KClass<*>.descriptor() = Descriptor.Object(descriptorString())
 
 fun <S, T : ArgumentBuilder<S, T>> ArgumentBuilder<S, T>.onExecute(block: (CommandContext<S>) -> Unit): T =
     executes {

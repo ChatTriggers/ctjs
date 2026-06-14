@@ -1,7 +1,5 @@
 package com.chattriggers.ctjs.internal.launch
 
-import com.chattriggers.ctjs.api.Mappings
-import com.chattriggers.ctjs.engine.printTraceToConsole
 import com.chattriggers.ctjs.internal.engine.module.ModuleManager
 import com.llamalad7.mixinextras.MixinExtrasBootstrap
 import org.objectweb.asm.tree.ClassNode
@@ -14,17 +12,8 @@ import java.io.PrintStream
 class CTMixinPlugin : IMixinConfigPlugin {
     override fun onLoad(mixinPackage: String?) {
         redirectIO()
-
-        Mappings.initialize()
         ModuleManager.setup()
         MixinExtrasBootstrap.init()
-
-        try {
-            DynamicMixinManager.initialize()
-            DynamicMixinManager.applyAccessWideners()
-        } catch (e: Throwable) {
-            IllegalStateException("Error generating dynamic mixins", e).printTraceToConsole()
-        }
     }
 
     override fun getRefMapperConfig(): String? = null

@@ -35,8 +35,6 @@ object ModuleManager {
         // Normalize all metadata
         modules.forEach {
             it.metadata.entry = it.metadata.entry?.replace('/', File.separatorChar)?.replace('\\', File.separatorChar)
-            it.metadata.mixinEntry =
-                it.metadata.mixinEntry?.replace('/', File.separatorChar)?.replace('\\', File.separatorChar)
         }
 
         // Get all jars

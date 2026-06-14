@@ -11,9 +11,7 @@
     },
     "plugin": "com.chattriggers.ctjs.internal.launch.CTMixinPlugin",
     "mixins": [
-        "MinecraftClientAccessor",
         "SystemDetailsMixin",
-        "stdio.BootstrapMixin",
         "stdio.LoggerPrintStreamMixin"
     ]
 }

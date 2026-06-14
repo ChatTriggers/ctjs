@@ -77,7 +77,7 @@ class ModuleEntry(val textRenderer: Font, val module: Module) :
         return Component.literal(module.name)
     }
 
-    override fun renderContent(context: GuiGraphics, mouseY: Int, mouseX: Int, hovered: Boolean, tickProgress: Float) {
+    override fun renderContent(context: GuiGraphics, mouseX: Int, mouseY: Int, hovered: Boolean, tickProgress: Float) {
         val stack = context.pose()
 
         stack.pushMatrix()
@@ -96,8 +96,8 @@ class ModuleEntry(val textRenderer: Font, val module: Module) :
             context.drawStringWithBackdrop(
                 textRenderer,
                 Component.translatable("ctjs.ui.byCreator", it),
-                x + 2,
-                y + contentHeight - textRenderer.lineHeight / 2,
+                x + 4,
+                y + contentHeight - textRenderer.lineHeight / 2 - 2,
                 ARGB.colorFromFloat(1f, 0.8f, 0.8f, 0.8f),
                 -1
             )
@@ -113,9 +113,9 @@ class ModuleEntry(val textRenderer: Font, val module: Module) :
 
             // If the info icon is hovered
             if (mouseX >= x + contentWidth - 22 && mouseX <= x + contentWidth - 6 && mouseY >= y + 2 && mouseY <= y + 18) {
-                context.setComponentTooltipForNextFrame(
+                context.setTooltipForNextFrame(
                     textRenderer,
-                    textRenderer.split(FormattedText.of(it), contentWidth).map { Component.literal(it.toString()) },
+                    textRenderer.split(FormattedText.of(it), contentWidth),
                     mouseX, mouseY
                 )
             }
