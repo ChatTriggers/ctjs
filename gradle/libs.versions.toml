@@ -16,7 +16,6 @@ modmenu = "18.0.0-beta.1"
 # Plugin Versions
 kotlin = "2.4.0"
 loom = "1.16-SNAPSHOT"
-validator = "0.18.1"
 ksp = "2.3.9"
 
 [libraries]
@@ -44,5 +43,4 @@ included = ["rhino", "jackson-core", "textarea", "serialization"]
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 loom = { id = "net.fabricmc.fabric-loom", version.ref = "loom" }
-validator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "validator" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

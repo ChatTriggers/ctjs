@@ -3,14 +3,12 @@ package com.chattriggers.ctjs.typing
 import org.jsoup.Jsoup
 
 object ManualRoots {
-    private const val FABRIC_API_URL = "https://maven.fabricmc.net/docs/fabric-api-0.132.0+1.21.8/allclasses-index.html"
-    private const val YARN_URL = "https://maven.fabricmc.net/docs/yarn-1.21.8+build.1/allclasses-index.html"
+    private const val FABRIC_API_URL = "https://maven.fabricmc.net/docs/fabric-api-0.151.0+26.1.2/allclasses-index.html"
 
     val roots = mutableSetOf(
         "java.awt.Color",
         "java.util.ArrayList",
         "java.util.HashMap",
-        "gg.essential.universal.UKeyboard",
         "org.lwjgl.opengl.GL11",
         "org.lwjgl.opengl.GL12",
         "org.lwjgl.opengl.GL13",
@@ -29,6 +27,8 @@ object ManualRoots {
         "org.lwjgl.opengl.GL44",
         "org.lwjgl.opengl.GL45",
         "org.spongepowered.asm.mixin.injection.callback.CallbackInfo",
+        "net.minecraft.client.Minecraft",
+        "net.minecraft.util.ARGB"
     )
 
     private fun collectClasses(url: String) {
@@ -42,7 +42,9 @@ object ManualRoots {
         }
     }
 
-
+    init {
+        collectClasses(FABRIC_API_URL)
+    }
 }
 
 

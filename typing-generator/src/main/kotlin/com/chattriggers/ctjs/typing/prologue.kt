@@ -1,16 +1,14 @@
 package com.chattriggers.ctjs.typing
 
 private val providedTypes = mutableMapOf(
-    "Keyboard" to "gg.essential.universal.UKeyboard",
-    "Hand" to "net.minecraft.util.Hand",
+    "Hand" to "net.minecraft.world.InteractionHand",
 
     "FileLib" to "com.chattriggers.ctjs.api.FileLib",
     "CancellableEvent" to "com.chattriggers.ctjs.api.triggers.CancellableEvent",
-    "Config" to "com.chattriggers.ctjs.api.Config",
     "TriggerRegister" to "com.chattriggers.ctjs.engine.Register",
     "Thread" to "com.chattriggers.ctjs.engine.WrappedThread",
     "Priority" to "com.chattriggers.ctjs.api.triggers.Trigger\$Priority",
-    "ChatTriggers" to "com.chattriggers.ctjs.CTJS",
+    "CTJS" to "com.chattriggers.ctjs.CTJS",
     "Console" to "com.chattriggers.ctjs.engine.Console",
 
     "GL11" to "org.lwjgl.opengl.GL11",
@@ -42,9 +40,9 @@ val prologue = """
     }
     
     interface RegisterTypes {
-        renderOverlay(ctx: net.minecraft.client.gui.DrawContext, tickCounter: net.minecraft.client.render.RenderTickCounter);
-        chat(message: net.minecraft.text.Text, event: CancellableEvent);
-        actionBar(message: net.minecraft.text.Text, event: CancellableEvent);
+        renderOverlay(ctx: net.minecraft.client.gui.GuiGraphicsExtractor, tickCounter: net.minecraft.client.DeltaTracker);
+        chat(message: net.minecraft.network.chat.Component, event: CancellableEvent);
+        actionBar(message: net.minecraft.network.chat.Component, event: CancellableEvent);
         messageSent(message: string, isCommand: boolean, event: CancellableEvent);
         tick();
     }

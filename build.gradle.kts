@@ -4,11 +4,8 @@ plugins {
     alias(libs.plugins.kotlin)
     alias(libs.plugins.serialization)
     alias(libs.plugins.loom)
-    alias(libs.plugins.validator)
     alias(libs.plugins.ksp)
 }
-
-project.gradle.startParameter.excludedTaskNames.add("kspKotlin")
 
 version = property("mod_version").toString()
 
@@ -31,10 +28,6 @@ dependencies {
     ksp(project(":typing-generator"))
 }
 
-loom {
-    accessWidenerPath.set(file("src/main/resources/ctjs.accesswidener"))
-}
-
 base {
     archivesName.set(property("archives_base_name") as String)
 }
@@ -50,11 +43,6 @@ kotlin {
     compilerOptions {
         jvmTarget.set(JvmTarget.JVM_25)
     }
-}
-
-apiValidation {
-    ignoredProjects += "typing-generator"
-    ignoredPackages += "com.chattriggers.ctjs.internal"
 }
 
 tasks {
