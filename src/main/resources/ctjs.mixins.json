@@ -5,7 +5,8 @@
     "compatibilityLevel": "JAVA_25",
     "client": [
         "KeyBindsListMixin",
-        "MinecraftClientMixin"
+        "MinecraftClientMixin",
+        "OptionsMixin"
     ],
     "injectors": {
         "defaultRequire": 1

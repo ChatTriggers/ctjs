@@ -1,6 +1,5 @@
 package com.chattriggers.ctjs
 
-import com.chattriggers.ctjs.api.CustomKeyMapping
 import com.chattriggers.ctjs.engine.Console
 import com.chattriggers.ctjs.engine.Register
 import com.chattriggers.ctjs.internal.engine.module.ModuleManager
@@ -56,7 +55,6 @@ class CTJS : ClientModInitializer {
 
             ModuleManager.teardown()
             Register.clearCustomTriggers()
-            CustomKeyMapping.clearMappings()
 
             Console.clear()
         }
