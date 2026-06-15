@@ -48,7 +48,8 @@ class Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
             it.declarations.filter { decl ->
                 val qualifier = decl.packageName.asString()
                 !qualifier.startsWith("com.chattriggers.ctjs.internal") &&
-                        !qualifier.startsWith("com.chattriggers.ctjs.typing")
+                        !qualifier.startsWith("com.chattriggers.ctjs.typing") &&
+                        decl.isPublic()
             }
         }.filterIsInstance<KSClassDeclaration>().toSet()
     }
@@ -151,9 +152,11 @@ class Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
         // Note: We take a name parameter so that we can override the name of clazz. This is done for nested classes
 
         val functions = clazz.getDeclaredFunctions().filter {
-            isPublicSafe(it)
+            it.isPublicSafe()
         }.filterNot {
-            it.findOverridee() != null || it.simpleName.asString() in excludedMethods || it.simpleName.asString() in typescriptReservedWords
+            it.findOverridee() != null || it.simpleName.asString().let { name ->
+                name in excludedMethods || name in typescriptReservedWords
+            }
         }.toList()
 
         // Unlike Java, JS does not allow properties and functions to have the same name,
@@ -161,7 +164,7 @@ class Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
         val functionNames = functions.map { it.simpleName.asString() }
 
         val properties = clazz.getDeclaredProperties().filter {
-            isPublicSafe(it)
+            it.isPublicSafe()
         }.filterNot {
             it.simpleName.asString() in functionNames || it.findOverridee() != null
         }.toList()
@@ -173,8 +176,7 @@ class Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
         val nestedClasses = clazz.declarations
             .filterIsInstance<KSClassDeclaration>()
             .filter {
-                isPublicSafe(it) &&
-                        (it.classKind == ClassKind.ENUM_CLASS || it.classKind == ClassKind.CLASS)
+                it.isPublicSafe() && (it.classKind == ClassKind.ENUM_CLASS || it.classKind == ClassKind.CLASS)
             }
             .toList()
 
@@ -458,7 +460,7 @@ class Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
     }
 
     private fun getFunctionalInterfaceMethod(clazz: KSClassDeclaration): KSFunctionDeclaration? {
-        return clazz.getDeclaredFunctions().firstOrNull { it.isAbstract }
+        return clazz.getDeclaredFunctions().firstOrNull { it.isPublic() && it.isAbstract }
     }
 
     private val classNameCache = mutableMapOf<KSClassDeclaration, String>()
@@ -492,10 +494,10 @@ class Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
             isAnnotationPresent(JvmStatic::class) ||
             isConstructor()
 
-    private fun isPublicSafe(decl: KSDeclaration): Boolean {
+    private fun KSDeclaration.isPublicSafe(): Boolean {
         return try {
-            decl.modifiers.contains(Modifier.PUBLIC)
-        } catch (_: Throwable) {
+            isPublic() || Modifier.PUBLIC in modifiers
+        } catch (e: Exception) {
             false
         }
     }

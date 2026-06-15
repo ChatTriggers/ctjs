@@ -26,6 +26,7 @@ object ManualRoots {
         "org.lwjgl.opengl.GL43",
         "org.lwjgl.opengl.GL44",
         "org.lwjgl.opengl.GL45",
+        "org.lwjgl.glfw.GLFW",
         "org.spongepowered.asm.mixin.injection.callback.CallbackInfo",
         "net.minecraft.client.Minecraft",
         "net.minecraft.util.ARGB"
