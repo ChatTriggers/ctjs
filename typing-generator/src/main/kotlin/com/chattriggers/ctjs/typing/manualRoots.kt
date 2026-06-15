@@ -29,7 +29,9 @@ object ManualRoots {
         "org.lwjgl.glfw.GLFW",
         "org.spongepowered.asm.mixin.injection.callback.CallbackInfo",
         "net.minecraft.client.Minecraft",
-        "net.minecraft.util.ARGB"
+        "net.minecraft.util.ARGB",
+        "net.minecraft.client.renderer.ShapeRenderer",
+        "net.minecraft.client.renderer.rendertype.RenderTypes"
     )
 
     private fun collectClasses(url: String) {

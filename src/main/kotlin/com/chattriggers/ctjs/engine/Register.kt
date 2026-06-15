@@ -4,9 +4,18 @@ import com.chattriggers.ctjs.api.triggers.*
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 object Register {
-    private val methodMap = TriggerType.entries.associateBy {
-        it.name.lowercase().replace("_", "")
+    private val methodMap: MutableMap<String, ITriggerType> = mutableMapOf()
+
+    init {
+        TriggerType.entries.forEach { entry ->
+            methodMap[entry.name.lowercase().replace("_", "")] = entry
+        }
+
+        RenderContextTriggerType.entries.forEach { entry ->
+            methodMap["render" + entry.name.lowercase().replace("_", "")] = entry
+        }
     }
+
     private val customTriggers = mutableSetOf<CustomTriggerType>()
 
     internal fun clearCustomTriggers() = customTriggers.clear()

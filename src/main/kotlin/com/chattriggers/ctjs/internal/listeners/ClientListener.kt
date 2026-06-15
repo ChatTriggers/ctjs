@@ -1,12 +1,14 @@
 package com.chattriggers.ctjs.internal.listeners
 
 import com.chattriggers.ctjs.api.triggers.CancellableEvent
+import com.chattriggers.ctjs.api.triggers.RenderContextTriggerType
 import com.chattriggers.ctjs.api.triggers.TriggerType
 import com.chattriggers.ctjs.internal.utils.Initializer
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
 import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents
 import net.minecraft.client.Minecraft
 import net.minecraft.resources.Identifier
 
@@ -67,6 +69,16 @@ object ClientListener : Initializer {
             TriggerType.MESSAGE_SENT.triggerAll(message, true, event)
 
             !event.isCancelled()
+        }
+
+        LevelRenderEvents.END_EXTRACTION.register { ctx ->
+            TriggerType.RENDER_LEVEL_EXTRACTION.triggerAll(ctx)
+        }
+
+        RenderContextTriggerType.entries.forEach { entry ->
+            entry.register { ctx ->
+                entry.triggerAll(ctx)
+            }
         }
     }
 

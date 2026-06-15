@@ -46,6 +46,14 @@ val prologue = """
         actionBar(message: net.minecraft.network.chat.Component, event: CancellableEvent);
         messageSent(message: string, isCommand: boolean, event: CancellableEvent);
         tick();
+        
+        renderLevelExtraction(ctx: net.fabricmc.fabric.api.client.rendering.v1.level.LevelExtractionContext)
+        renderEndMain(ctx: net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext);
+        renderBeforeGizmos(ctx: net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext);
+        renderAfterTranslucentTerrain(ctx: net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext);
+        renderAfterSolidFeatures(ctx: net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext);
+        renderAfterTranslucentFeatures(ctx: net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext);
+        renderBeforeTranslucentTerrain(ctx: net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext);
     }
 
     declare global {
