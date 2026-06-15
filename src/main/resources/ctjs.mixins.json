@@ -4,6 +4,7 @@
     "package": "com.chattriggers.ctjs.internal.mixins",
     "compatibilityLevel": "JAVA_25",
     "client": [
+        "KeyBindsListMixin",
         "MinecraftClientMixin"
     ],
     "injectors": {

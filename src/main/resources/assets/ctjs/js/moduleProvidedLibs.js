@@ -40,6 +40,7 @@
     loadClass("java.util.HashMap");
     loadClass("net.minecraft.world.InteractionHand");
     loadClass("com.chattriggers.ctjs.api.FileLib");
+    loadClass("com.chattriggers.ctjs.api.CustomKeyMapping");
 
     // For module authors to use with custom triggers
     loadClass("com.chattriggers.ctjs.api.triggers.CancellableEvent");
@@ -48,7 +49,7 @@
     loadClass("com.chattriggers.ctjs.engine.Register", "TriggerRegister");
     loadClass("com.chattriggers.ctjs.engine.WrappedThread", "Thread");
     global.Priority = Java.class("com.chattriggers.ctjs.api.triggers.Trigger").Priority;
-    loadClass("com.chattriggers.ctjs.CTJS", "ChatTriggers");
+    loadClass("com.chattriggers.ctjs.CTJS", "CTJS");
     global.Console = Java.type("com.chattriggers.ctjs.engine.Console").INSTANCE;
 
     // GL

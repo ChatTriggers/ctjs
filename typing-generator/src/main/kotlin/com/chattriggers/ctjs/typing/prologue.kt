@@ -4,6 +4,7 @@ private val providedTypes = mutableMapOf(
     "Hand" to "net.minecraft.world.InteractionHand",
 
     "FileLib" to "com.chattriggers.ctjs.api.FileLib",
+    "CustomKeyMapping" to "com.chattriggers.ctjs.api.CustomKeyMapping",
     "CancellableEvent" to "com.chattriggers.ctjs.api.triggers.CancellableEvent",
     "TriggerRegister" to "com.chattriggers.ctjs.engine.Register",
     "Thread" to "com.chattriggers.ctjs.engine.WrappedThread",
