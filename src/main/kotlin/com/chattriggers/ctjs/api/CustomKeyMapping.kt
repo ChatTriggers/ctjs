@@ -7,7 +7,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.resources.Identifier
 
 object CustomKeyMapping {
-    private val SAVE_FILE = CTJS.configLocation.resolve("key_mappings.txt")
+    private val SAVE_FILE = CTJS.configLocation.resolve("ctjs_key_mappings.txt")
     private val KEY_MAP: HashMap<String, String> = HashMap()
     private val customKeyMappings: MutableList<KeyMapping> = mutableListOf()
     private val customCategories: MutableList<KeyMapping.Category> = mutableListOf()
