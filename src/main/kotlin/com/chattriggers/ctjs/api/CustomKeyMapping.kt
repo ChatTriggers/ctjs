@@ -13,7 +13,7 @@ object CustomKeyMapping {
     private val customCategories: MutableList<KeyMapping.Category> = mutableListOf()
 
     @JvmStatic
-    fun registerKeyMapping(key: String, keyCode: Int, category: KeyMapping.Category): KeyMapping {
+    fun register(key: String, keyCode: Int, category: KeyMapping.Category): KeyMapping {
         val customKeyMapping = customKeyMappings.find { it.name == key }
         if (customKeyMapping != null) {
             return customKeyMapping.load()
@@ -29,7 +29,7 @@ object CustomKeyMapping {
     }
 
     @JvmStatic
-    fun registerKeyMapping(key: String, keyCode: Int, category: String): KeyMapping {
+    fun register(key: String, keyCode: Int, category: String): KeyMapping {
         val cat = customCategories.find { it.id.path == category }.let {
             if (it == null) {
                 val parts = category.split(":", limit = 2)
@@ -39,11 +39,11 @@ object CustomKeyMapping {
             } else it
         }
 
-        return registerKeyMapping(key, keyCode, cat)
+        return register(key, keyCode, cat)
     }
 
     @JvmStatic
-    fun getKeyMapping(key: String): KeyMapping? {
+    fun find(key: String): KeyMapping? {
         val vanilla = Minecraft.getInstance().options.keyMappings.find { it.name == key }
         if (vanilla != null) return vanilla
 
