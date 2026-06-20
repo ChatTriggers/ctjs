@@ -4,6 +4,7 @@
     "package": "com.chattriggers.ctjs.internal.mixins",
     "compatibilityLevel": "JAVA_25",
     "client": [
+        "ClientPacketListenerMixin",
         "KeyBindsListMixin",
         "MinecraftClientMixin",
         "OptionsMixin"
@@ -13,6 +14,8 @@
     },
     "plugin": "com.chattriggers.ctjs.internal.launch.CTMixinPlugin",
     "mixins": [
+        "CommandContextAccessor",
+        "CommandNodeAccessor",
         "SystemDetailsMixin",
         "stdio.LoggerPrintStreamMixin"
     ]

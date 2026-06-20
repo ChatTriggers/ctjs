@@ -454,9 +454,19 @@ class Processor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
     override fun finish() {
         check(indent == 0)
 
+        val str = builder.toString().lines().map {
+            for ((from, to) in replacements) {
+                if (it.contains(from)) {
+                    return@map it.replace(from, to)
+                }
+            }
+
+            it
+        }.joinToString("\n")
+
         codeGenerator
             .createNewFileByPath(Dependencies(true, *dependentFiles.toTypedArray()), "typings", "d.ts")
-            .write(builder.toString().toByteArray())
+            .write(str.toByteArray())
     }
 
     private fun getFunctionalInterfaceMethod(clazz: KSClassDeclaration): KSFunctionDeclaration? {

@@ -41,6 +41,7 @@
     loadClass("net.minecraft.world.InteractionHand");
     loadClass("com.chattriggers.ctjs.api.FileLib");
     loadClass("com.chattriggers.ctjs.api.CustomKeyMapping");
+    loadClass("com.chattriggers.ctjs.api.CustomCommand");
 
     // For module authors to use with custom triggers
     loadClass("com.chattriggers.ctjs.api.triggers.CancellableEvent");
