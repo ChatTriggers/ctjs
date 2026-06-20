@@ -19,7 +19,7 @@ import org.mozilla.javascript.NativeObject
 import org.mozilla.javascript.ScriptableObject
 
 object CustomCommand : Initializer {
-    private var commands: MutableSet<Pair<String, (NodeBuilder) -> Any>> = mutableSetOf()
+    private var commands: MutableSet<Pair<String, Function>> = mutableSetOf()
     private var clientDispatcher: CommandDispatcher<CommandSource>? = null
     private var networkDispatcher: CommandDispatcher<CommandSource>? = null
 
@@ -42,8 +42,8 @@ object CustomCommand : Initializer {
     }
 
     internal fun registerAll(dispatcher: CommandDispatcher<CommandSource>) {
-        for ((name, builder) in commands) {
-            val cmd = CommandBuilder(name).apply { builder.invoke(builder()) }
+        for ((name, callback) in commands) {
+            val cmd = CommandBuilder(name).apply { JSLoader.invoke(callback, arrayOf(builder())) }
             dispatcher.register(cmd.build())
         }
     }
@@ -62,13 +62,13 @@ object CustomCommand : Initializer {
     }
 
     @JvmStatic
-    fun register(name: String, callback: (NodeBuilder) -> Any) {
+    fun register(name: String, callback: Function) {
         commands.add(name to callback)
 
         if (clientDispatcher?.root?.getChild(name) != null || networkDispatcher?.root?.getChild(name) != null) {
             "Command with $name already exists".printToConsole(LogType.WARN)
         } else {
-            val cmd = CommandBuilder(name).apply { callback.invoke(builder()) }
+            val cmd = CommandBuilder(name).apply { JSLoader.invoke(callback, arrayOf(builder())) }
             clientDispatcher?.register(cmd.build())
             networkDispatcher?.register(cmd.build())
         }
