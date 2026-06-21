@@ -26,7 +26,7 @@ Making additional registers can require using Fabric events or sometimes mixins,
 modules currently, you can let me know in Discord if you have one you need, and I'll look into it.
 
 > [!NOTE]
-> If you want these libraries and registers, I recommend going to (DocilElm's fork)[https://github.com/Synnerz/ctjs],
+> If you want these libraries and registers, I recommend going to [DocilElm's fork](https://github.com/Synnerz/ctjs),
 > but note that as of writing this it is not being updated.
 
 ### Getting Started
