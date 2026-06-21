@@ -8,81 +8,136 @@
     <a href="https://discord.gg/chattriggers">
       <img src="https://discordapp.com/api/guilds/119493402902528000/embed.png" alt="Discord" />
     </a>
-    <a href="https://github.com/ChatTriggers/ctjs/releases">
-      <img src="https://img.shields.io/github/v/release/ChatTriggers/ctjs.svg?include_prereleases" alt="Releases" />
-    </a>
-    <a href="https://github.com/ChatTriggers/ctjs/actions/workflows/build.yml">
-      <img src="https://github.com/ChatTriggers/ctjs/actions/workflows/build.yml/badge.svg" alt="Build Status" />
-    </a>
   </p>
 </div>
 
-ChatTriggers (CT) is a framework for Minecraft that enables live scripting and client modification using JavaScript. We provide libraries, wrappers, objects, and more to make your life as a modder as easy as possible. Even if we don't support something you need, you can still access any Java classes and native fields/methods.
+ChatTriggers (CT) is a framework for Minecraft that enables live scripting and client modification using JavaScript.
 
-With CT, you have all the power of a modding environment with the benefit of an easy-to-use language and the ability to reload your scripts without restarting the game. CT also provides a way to [define your own Mixins](https://github.com/ChatTriggers/ctjs/wiki/Dynamic-Mixins)!
+This version has been specifically written by me (srockw) for my own purposes, and it is NOT backwards compatible with
+previous CT versions due to a couple of reasons:
 
-CT is currently written for Fabric 1.19. See [this repo](https://github.com/ChatTriggers/ChatTriggers) for the deprecated Forge 1.8.9 version.
+- Most objects and libraries (such as ChatLib, TextComponent, Renderer) have been removed.
+- Most of the registers have been removed.
+- Custom mixins have been removed (but I might add them back later if I get the motivation).
 
-### Examples
+These changes were made to keep the mod as simple as possible and easy to update to newer versions when they come out.
+You can make your own libraries within modules or even fork the project to add them yourself if you want.
+Making additional registers can require using Fabric events or sometimes mixins, so they're not able to be added through
+modules currently, you can let me know in Discord if you have one you need, and I'll look into it.
 
-Want to hide an annoying server message that you see every time you join a world?
-
-```js
-register('chat', event => {
-    cancel(event);
-}).setCriteria("Check out our store at www.some-mc-server.com for 50% off!");
-```
-
-How about automating a series of common commands into one?
-
-```js
-register('command', () => {
-    ChatLib.command('command1');
-    ChatLib.command('command2');
-    ChatLib.command('command3');
-}).setName('commandgroup');
-```
-
-Or even something silly like a calculator command
-
-```js
-register('command', (...args) => {
-    // Evaluate all args the user gives us...
-    const result = new Function('return ' + args.join(' '))();
-
-    // ...and show the result is a nice green color
-    ChatLib.chat(`&aResult: ${result}`);
-}).command('calc');
-```
-
-With CT's register system, you can listen to custom events that we emit and react to them. For example, we emit events when you switch worlds, click on a GUI, hit a block, hover over an item and see its tooltip, and much more! You can even provide custom events for other module authors to use.
+> [!NOTE]
+> If you want these libraries and registers, I recommend going to (DocilElm's fork)[https://github.com/Synnerz/ctjs],
+> but note that as of writing this it is not being updated.
 
 ### Getting Started
 
-To begin, [download and install Fabric](https://fabricmc.net/wiki/install) for one of the supported versions, then head over to our [releases page](https://github.com/ChatTriggers/ctjs/releases) and download the latest version. The mod is installed like any mod; just drag it into your mods folder. Once installed, you can import modules in-game by typing `/ct import <moduleName>`, where `<moduleName>` is the name of the module. You can browse the available modules on [our website](https://www.chattriggers.com/modules).
+I don't currently have any plans to make releases, so the only way for you to download this mod would be
+through [GitHub actions](https://github.com/srockw/ctjs/actions), which require you to login and will expire after a
+certain period of time.
+
+The currently supported version is 26.1.2.
 
 ### Writing Modules
 
-If you can't find any modules on the website that do exactly what you want, which is quite likely, you'll have you write your own! Here are the steps you'll want to take:
+To create a module, follow these steps:
 
-1. Navigate to the `.minecraft/config/ChatTriggers/modules` folder. If you don't know where this is, you can also execute `/ct files`, which will open the correct directory automatically.
-1. Create a new directory with the name of your module
-1. Inside the directory, create a file called `metadata.json`, and inside of that, put the following text: 
+1. Navigate to the `.minecraft/config/ChatTriggers/modules` folder. If you don't know where this is, you can also
+   execute `/ct files`, which will open the correct directory automatically.
+2. Create a new directory with the name of your module.
+3. Inside the directory, create a file called `metadata.json`, and inside of that, put the following text:
     ```json
     {
         "name": "<module name>",
         "entry": "index.js"
     }
     ```
-    This means that when our module first runs, CT will run the `index.js` file
+   This means that when our module first runs, CT will run the `index.js` file
 
-    _Note that `<module name>` must match the name of your folder exactly!_
-1. Create the `index.js` file, and put some code in there. What exactly you write will depend on what you want CT to do. To learn more about the available APIs, take a look at the [Slate](https://chattriggers.com/slate/#introduction).
-    * Some things on the Slate may be outdated, we are working on improving this
+   _Note that `<module name>` must match the name of your folder exactly!_
+4. Create the `index.js` file, and put some code in there.
+5. Do `/ct load` to reload all modules after modifying them.
+6. (Optional, but recommended) After downloading the mod from the latest action you will have also gotten a file called
+   `typings.d.ts`, the purpose of this file is to provide autocompletions and suggestions in an IDE. For example, in
+   VSCode it is sufficient to have the file open while editing your JavaScript files, but it depends on the IDE.
 
 ### Documentation
 
-- [Slate](https://chattriggers.com/slate/#introduction), a guided tutorial that covers the basics
-- [Javadocs](https://chattriggers.com/javadocs/), a technical reference for all public APIs in the mod
-- [MIGRATION.md](docs/MIGRATION.md), a guide for upgrading modules from CT 2.X to 3.0
-- [CONTRIBUTING.md](CONTRIBUTING.md) (TODO)
+Since the game is no longer obfuscated, you can access all the vanilla MC classes and methods by just going through
+their path, such as `net.minecraft.client.Minecraft` and use all their methods as normal. The `typings.d.ts` file
+mentioned previously will help you through this, but note that it does NOT include all classes available to you, I
+recommend
+going to [mcsrc.dev](https://mcsrc.dev) if there is something you can't find.
+
+While most of the libraries have been removed, some essential ones still remain:
+
+#### Register
+
+You can easily view all available registers using the autocompletions from the `typings.d.ts` file, they should be
+pretty self-explanatory, and besides `renderOverlay` the other ones starting with `render` are for 3D rendering.
+
+```js
+// Hide all messages including "something"
+register("chat", (msg, event) => {
+    if (msg.getString().includes("something")) {
+        cancel(event);
+    }
+});
+```
+
+#### CustomKeyMapping
+
+Allows you to create your own keybindings, which will show up in the options screen just as any other.
+
+```js
+const GLFW = org.lwjgl.glfw.GLFW;
+
+// Create your own keybind.
+// Note that the last parameter, the category, has to be a valid identifier, which cannot include spaces and it won't be translated. (So no nice looking categories, at least for now)
+const myKey = CustomKeyMapping.register("My Key", GLFW.GLFW_KEY_P, "my_category"); // This returns a vanilla KeyMapping object.
+
+// Can also get the KeyMapping object of other keys.
+const vanillaSneak = CustomKeyMapping.find("key.sneak");
+
+register("tick", () => {
+    // Using the typings file you can easily see which methods are available through you.
+    if (myKey.consumeClick()) {
+        // Do something
+    }
+});
+```
+
+#### CustomCommand
+
+Allows you to create brigadier commands:
+
+```js
+const IntegerArgumentType = com.mojang.brigadier.arguments.IntegerArgumentType;
+
+CustomCommand.register("mytime", (node) => {
+    node.literal("set", (node) => {
+        node.literal("day", (node) => {
+            node.exec((ctx) => {
+                // called when '/mytime set day' is used
+            });
+        });
+
+        node.literal("night", (node) => {
+            node.exec((ctx) => {
+                // called when '/mytime set night' is used
+            });
+        });
+    });
+
+    node.literal("add", (node) => {
+        // here "time" is the name of this argument, 'IntegerArgumentType.integer()' defines the type of the argument, you can use any ArgumentType.
+        node.argument("time", IntegerArgumentType.integer(), (node) => {
+            node.exec((ctx) => {
+                // called when '/mytime add <int>' is used
+
+                // access the time parameter we defined earlier
+                const time = IntegerArgumentType.getInteger(ctx, "time");
+            });
+        });
+    });
+});
+```
