@@ -2,8 +2,6 @@ package com.chattriggers.ctjs.api
 
 import com.chattriggers.ctjs.engine.LogType
 import com.chattriggers.ctjs.engine.printToConsole
-import com.chattriggers.ctjs.internal.engine.JSLoader
-import com.chattriggers.ctjs.internal.mixins.CommandContextAccessor
 import com.chattriggers.ctjs.internal.mixins.CommandNodeAccessor
 import com.chattriggers.ctjs.internal.utils.Initializer
 import com.mojang.brigadier.CommandDispatcher
@@ -11,15 +9,13 @@ import com.mojang.brigadier.arguments.ArgumentType
 import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.builder.RequiredArgumentBuilder
+import com.mojang.brigadier.context.CommandContext
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents
 import net.minecraft.commands.CommandSource
-import org.mozilla.javascript.Function
-import org.mozilla.javascript.NativeObject
-import org.mozilla.javascript.ScriptableObject
 
 object CustomCommand : Initializer {
-    private var commands: MutableSet<Pair<String, Function>> = mutableSetOf()
+    private var commands: MutableSet<Pair<String, (NodeBuilder) -> Any>> = mutableSetOf()
     private var clientDispatcher: CommandDispatcher<CommandSource>? = null
     private var networkDispatcher: CommandDispatcher<CommandSource>? = null
 
@@ -43,7 +39,7 @@ object CustomCommand : Initializer {
 
     internal fun registerAll(dispatcher: CommandDispatcher<CommandSource>) {
         for ((name, callback) in commands) {
-            val cmd = CommandBuilder(name).apply { JSLoader.invoke(callback, arrayOf(builder())) }
+            val cmd = CommandBuilder(name).apply { callback.invoke(builder()) }
             dispatcher.register(cmd.build())
         }
     }
@@ -62,13 +58,13 @@ object CustomCommand : Initializer {
     }
 
     @JvmStatic
-    fun register(name: String, callback: Function) {
+    fun register(name: String, callback: (NodeBuilder) -> Any) {
         commands.add(name to callback)
 
         if (clientDispatcher?.root?.getChild(name) != null || networkDispatcher?.root?.getChild(name) != null) {
             "Command with $name already exists".printToConsole(LogType.WARN)
         } else {
-            val cmd = CommandBuilder(name).apply { JSLoader.invoke(callback, arrayOf(builder())) }
+            val cmd = CommandBuilder(name).apply { callback.invoke(builder()) }
             clientDispatcher?.register(cmd.build())
             networkDispatcher?.register(cmd.build())
         }
@@ -83,29 +79,23 @@ object CustomCommand : Initializer {
     }
 
     open class NodeBuilder(val node: ArgumentBuilder<CommandSource, *>) {
-        fun literal(s: String, callback: Function): NodeBuilder {
+        fun literal(s: String, callback: (NodeBuilder) -> Any): NodeBuilder {
             val next = LiteralArgumentBuilder.literal<CommandSource>(s)
-            JSLoader.invoke(callback, arrayOf(NodeBuilder(next)))
+            callback.invoke(NodeBuilder(next))
             node.then(next)
             return this
         }
 
-        fun <T> argument(name: String, type: ArgumentType<T>, callback: Function): NodeBuilder {
+        fun <T> argument(name: String, type: ArgumentType<T>, callback: (NodeBuilder) -> Any): NodeBuilder {
             val next = RequiredArgumentBuilder.argument<CommandSource, T>(name, type)
-            JSLoader.invoke(callback, arrayOf(NodeBuilder(next)))
+            callback.invoke(NodeBuilder(next))
             node.then(next)
             return this
         }
 
-        fun exec(callback: Function) {
+        fun exec(callback: (CommandContext<CommandSource>) -> Any) {
             node.executes { ctx ->
-                val obj = NativeObject()
-
-                (ctx as CommandContextAccessor).arguments.forEach { (string, argument) ->
-                    ScriptableObject.putProperty(obj, string, argument.result)
-                }
-
-                JSLoader.invoke(callback, arrayOf(ctx, obj))
+                callback(ctx)
                 1
             }
         }

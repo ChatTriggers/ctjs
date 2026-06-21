@@ -14,7 +14,6 @@
     },
     "plugin": "com.chattriggers.ctjs.internal.launch.CTMixinPlugin",
     "mixins": [
-        "CommandContextAccessor",
         "CommandNodeAccessor",
         "SystemDetailsMixin",
         "stdio.LoggerPrintStreamMixin"
