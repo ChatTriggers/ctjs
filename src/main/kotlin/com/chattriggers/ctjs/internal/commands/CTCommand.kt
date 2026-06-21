@@ -56,12 +56,8 @@ internal object CTCommand : Initializer {
                     .then(
                         argument("message", StringArgumentType.greedyString())
                             .onExecute {
-                                mc.connection?.sendChat(
-                                    StringArgumentType.getString(
-                                        it,
-                                        "message"
-                                    )
-                                )
+                                val msg = StringArgumentType.getString(it, "message")
+                                mc.chatListener.handleSystemMessage(Component.literal(msg), false)
                             }
                     )
             )
