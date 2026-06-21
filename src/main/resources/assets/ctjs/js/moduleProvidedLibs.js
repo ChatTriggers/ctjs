@@ -35,10 +35,6 @@
     }
 
     // API
-
-    loadClass("java.util.ArrayList");
-    loadClass("java.util.HashMap");
-    loadClass("net.minecraft.world.InteractionHand");
     loadClass("com.chattriggers.ctjs.api.FileLib");
     loadClass("com.chattriggers.ctjs.api.CustomKeyMapping");
     loadClass("com.chattriggers.ctjs.api.CustomCommand");
@@ -49,28 +45,9 @@
     // Misc
     loadClass("com.chattriggers.ctjs.engine.Register", "TriggerRegister");
     loadClass("com.chattriggers.ctjs.engine.WrappedThread", "Thread");
+    loadClass("com.chattriggers.ctjs.CTJS");
     global.Priority = Java.class("com.chattriggers.ctjs.api.triggers.Trigger").Priority;
-    loadClass("com.chattriggers.ctjs.CTJS", "CTJS");
     global.Console = Java.type("com.chattriggers.ctjs.engine.Console").INSTANCE;
-
-    // GL
-    loadClass("org.lwjgl.opengl.GL11");
-    loadClass("org.lwjgl.opengl.GL12");
-    loadClass("org.lwjgl.opengl.GL13");
-    loadClass("org.lwjgl.opengl.GL14");
-    loadClass("org.lwjgl.opengl.GL15");
-    loadClass("org.lwjgl.opengl.GL20");
-    loadClass("org.lwjgl.opengl.GL21");
-    loadClass("org.lwjgl.opengl.GL30");
-    loadClass("org.lwjgl.opengl.GL31");
-    loadClass("org.lwjgl.opengl.GL32");
-    loadClass("org.lwjgl.opengl.GL33");
-    loadClass("org.lwjgl.opengl.GL40");
-    loadClass("org.lwjgl.opengl.GL41");
-    loadClass("org.lwjgl.opengl.GL42");
-    loadClass("org.lwjgl.opengl.GL43");
-    loadClass("org.lwjgl.opengl.GL44");
-    loadClass("org.lwjgl.opengl.GL45");
 
     global.cancel = event => {
         if (event instanceof CancellableEvent) {

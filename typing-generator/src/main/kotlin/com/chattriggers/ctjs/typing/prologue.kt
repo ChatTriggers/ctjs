@@ -1,8 +1,6 @@
 package com.chattriggers.ctjs.typing
 
 private val providedTypes = mutableMapOf(
-    "Hand" to "net.minecraft.world.InteractionHand",
-
     "FileLib" to "com.chattriggers.ctjs.api.FileLib",
     "CustomKeyMapping" to "com.chattriggers.ctjs.api.CustomKeyMapping",
     "CustomCommand" to "com.chattriggers.ctjs.api.CustomCommand",
@@ -12,24 +10,6 @@ private val providedTypes = mutableMapOf(
     "Priority" to "com.chattriggers.ctjs.api.triggers.Trigger\$Priority",
     "CTJS" to "com.chattriggers.ctjs.CTJS",
     "Console" to "com.chattriggers.ctjs.engine.Console",
-
-    "GL11" to "org.lwjgl.opengl.GL11",
-    "GL12" to "org.lwjgl.opengl.GL12",
-    "GL13" to "org.lwjgl.opengl.GL13",
-    "GL14" to "org.lwjgl.opengl.GL14",
-    "GL15" to "org.lwjgl.opengl.GL15",
-    "GL20" to "org.lwjgl.opengl.GL20",
-    "GL21" to "org.lwjgl.opengl.GL21",
-    "GL30" to "org.lwjgl.opengl.GL30",
-    "GL31" to "org.lwjgl.opengl.GL31",
-    "GL32" to "org.lwjgl.opengl.GL32",
-    "GL33" to "org.lwjgl.opengl.GL33",
-    "GL40" to "org.lwjgl.opengl.GL40",
-    "GL41" to "org.lwjgl.opengl.GL41",
-    "GL42" to "org.lwjgl.opengl.GL42",
-    "GL43" to "org.lwjgl.opengl.GL43",
-    "GL44" to "org.lwjgl.opengl.GL44",
-    "GL45" to "org.lwjgl.opengl.GL45",
 )
 
 val prologue = """
@@ -83,11 +63,6 @@ val prologue = """
        * instantiation, use `Client.scheduleTask(delayInTicks, func)`.
        */
       function setTimeout(func: () => void, delayInMs: number): void;
-
-      const ArrayList: typeof java.util.ArrayList;
-      interface ArrayList<T> extends java.util.ArrayList<T> {}
-      const HashMap: typeof java.util.HashMap;
-      interface HashMap<K, V> extends java.util.HashMap<K, V> {}
       
 ${
     providedTypes.entries.joinToString("") { (name, type) ->
