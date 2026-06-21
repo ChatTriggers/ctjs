@@ -19,9 +19,9 @@
         "MIT"
     ],
     "contact": {
-        "homepage": "https://chattriggers.com",
-        "sources": "https://github.com/ChatTriggers/ChatTriggers",
-        "issues": "https://github.com/ChatTriggers/ChatTriggers/issues"
+        "homepage": "https://github.com/srockw/ctjs",
+        "sources": "https://github.com/srockw/ctjs",
+        "issues": "https://github.com/srockw/ctjs/issues"
     },
     "environment": "client",
     "entrypoints": {
