@@ -5,12 +5,11 @@ import com.chattriggers.ctjs.api.message.ChatLib
 import com.chattriggers.ctjs.api.world.World
 import com.chattriggers.ctjs.engine.LogType
 import com.chattriggers.ctjs.engine.printToConsole
-import com.chattriggers.ctjs.internal.engine.JSContextFactory
+import com.chattriggers.ctjs.internal.engine.GenerationModuleClassLoader
 import com.chattriggers.ctjs.internal.engine.JSLoader
-import org.apache.commons.io.FileUtils
-import org.mozilla.javascript.Context
+import com.chattriggers.ctjs.internal.lifecycle.RuntimeGenerations
+import com.chattriggers.ctjs.internal.lifecycle.RuntimeOwner
 import java.io.File
-import java.net.URLClassLoader
 import java.util.*
 
 object ModuleManager {
@@ -18,30 +17,42 @@ object ModuleManager {
     val modulesFolder = File(CTJS.MODULES_FOLDER)
     private val pendingOldModules = mutableListOf<Module>()
 
-    fun setup() {
-        modulesFolder.mkdirs()
+    fun setup(): PreparedSetup {
+        try {
+            modulesFolder.mkdirs()
 
-        // Get existing modules
-        val installedModules = getFoldersInDir(modulesFolder).map(::parseModule).distinctBy {
-            it.name.lowercase()
+            val installedModules = getFoldersInDir(modulesFolder).map(::parseModule).distinctBy {
+                it.name.lowercase()
+            }
+
+            installedModules.forEach(ModuleUpdater::updateModule)
+            cachedModules.addAll(installedModules)
+
+            installedModules.distinct().forEach { module ->
+                module.metadata.requires?.forEach { ModuleUpdater.importModule(it, module.name) }
+            }
+
+            val sorted = ModuleDependencyResolver.sort(cachedModules)
+            cachedModules.clear()
+            cachedModules.addAll(sorted)
+
+            loadAssetsAndNormalize(cachedModules)
+            return PreparedSetup(JSLoader.prepareGeneration(findJars(cachedModules)))
+        } catch (e: Throwable) {
+            cachedModules.clear()
+            throw e
         }
-
-        // Check if those modules have updates
-        installedModules.forEach(ModuleUpdater::updateModule)
-        cachedModules.addAll(installedModules)
-
-        // Import required modules
-        installedModules.distinct().forEach { module ->
-            module.metadata.requires?.forEach { ModuleUpdater.importModule(it, module.name) }
-        }
-
-        sortModules()
-
-        loadAssetsAndJars(cachedModules)
     }
 
-    private fun loadAssetsAndJars(modules: List<Module>) {
-        // Load assets
+    internal fun publishPrepared(prepared: PreparedSetup, owner: RuntimeOwner): Boolean {
+        val runtime = prepared.takeRuntime() ?: return false
+        return JSLoader.publishPrepared(runtime, owner)
+    }
+
+    fun publishInitial(prepared: PreparedSetup): Boolean =
+        publishPrepared(prepared, RuntimeGenerations.currentOwner())
+
+    private fun loadAssetsAndNormalize(modules: List<Module>) {
         loadAssets(modules)
 
         // Normalize all metadata
@@ -51,8 +62,10 @@ object ModuleManager {
                 it.metadata.mixinEntry?.replace('/', File.separatorChar)?.replace('\\', File.separatorChar)
         }
 
-        // Get all jars
-        val jars = modules.map { module ->
+    }
+
+    private fun findJars(modules: List<Module>) =
+        modules.map { module ->
             module.folder.walk().filter {
                 it.isFile && it.extension == "jar"
             }.map {
@@ -60,11 +73,9 @@ object ModuleManager {
             }.toList()
         }.flatten()
 
-        JSLoader.setup(jars)
-    }
-
     @JvmOverloads
     fun entryPass(modules: List<Module> = cachedModules, completionListener: (percentComplete: Float) -> Unit = {}) {
+        JSLoader.rebindMixinCallbacks(modules.filter { it.metadata.mixinEntry != null })
         JSLoader.entrySetup()
 
         val total = modules.count { it.metadata.entry != null }
@@ -103,12 +114,37 @@ object ModuleManager {
         return Module(directory.name, metadata, directory)
     }
 
-    data class ImportedModule(val module: Module?, val dependencies: List<Module>)
+    class ImportedModule internal constructor(
+        val module: Module?,
+        val dependencies: List<Module>,
+        internal val loader: GenerationModuleClassLoader?,
+    ) {
+        operator fun component1() = module
+        operator fun component2() = dependencies
+    }
 
     fun importModule(moduleName: String): ImportedModule {
+        val importedModule = prepareImport(moduleName)
+        activateImport(importedModule)
+        return importedModule
+    }
+
+    internal fun prepareImport(moduleName: String): ImportedModule {
         val newModules = ModuleUpdater.importModule(moduleName)
 
-        loadAssetsAndJars(newModules)
+        loadAssetsAndNormalize(newModules)
+        val loader = JSLoader.addGenerationJars(findJars(newModules))
+
+        return ImportedModule(newModules.getOrNull(0), newModules.drop(1), loader)
+    }
+
+    internal fun activateImport(importedModule: ImportedModule): Boolean {
+        if (!JSLoader.isActiveLoader(importedModule.loader))
+            return false
+
+        val newModules = ModuleDependencyResolver.sort(
+            listOfNotNull(importedModule.module) + importedModule.dependencies
+        )
 
         newModules.forEach {
             if (it.metadata.mixinEntry != null)
@@ -116,8 +152,7 @@ object ModuleManager {
         }
 
         entryPass(newModules)
-
-        return ImportedModule(newModules.getOrNull(0), newModules.drop(1))
+        return true
     }
 
     fun deleteModule(name: String): Boolean {
@@ -126,18 +161,9 @@ object ModuleManager {
         val file = File(modulesFolder, module.name)
         check(file.exists()) { "Expected module to have an existing folder!" }
 
-        val context = JSContextFactory.enterContext()
-        try {
-            val classLoader = context.applicationClassLoader as URLClassLoader
-
-            classLoader.close()
-
-            if (file.deleteRecursively()) {
-                CTJS.load()
-                return true
-            }
-        } finally {
-            Context.exit()
+        if (file.deleteRecursively()) {
+            CTJS.load()
+            return true
         }
 
         return false
@@ -164,15 +190,11 @@ object ModuleManager {
     }
 
     private fun loadAssets(modules: List<Module>) {
-        modules.map {
-            File(it.folder, "assets")
-        }.filter {
-            it.exists() && !it.isFile
-        }.map {
-            it.listFiles()?.toList() ?: emptyList()
-        }.flatten().forEach {
-            FileUtils.copyFileToDirectory(it, CTJS.assetsDir)
-        }
+        ModuleAssetManager.reconcile(
+            modules,
+            CTJS.assetsDir,
+            File(CTJS.assetsDir.parentFile, ".module-assets.json"),
+        ) { it.printToConsole(LogType.WARN) }
     }
 
     fun teardown() {
@@ -180,43 +202,16 @@ object ModuleManager {
         JSLoader.clearTriggers()
     }
 
-    private fun sortModules() {
-        // Topological sort, Depth-first search
-        // https://en.wikipedia.org/wiki/Topological_sorting#Depth-first_search
-
-        val sortedModules = LinkedList<Module>()
-        val permanentMarks = mutableSetOf<Module>()
-        val temporaryMarks = LinkedHashSet<Module>()
-        val unmarkedModules = cachedModules.toMutableSet()
-
-        fun visit(module: Module) {
-            if (module in permanentMarks)
-                return
-
-            if (module in temporaryMarks)
-                error("Detected a module dependency cycle: ${temporaryMarks.joinToString(" -> ") { it.name }}")
-
-            temporaryMarks.add(module)
-
-            cachedModules.filter { module.name in it.requiredBy }.forEach(::visit)
-
-            temporaryMarks.remove(module)
-            permanentMarks.add(module)
-            unmarkedModules.remove(module)
-
-            // The Wikipedia algorithm sorts them with the dependants first, but we want them
-            // last, so append to the end instead of the front
-            sortedModules.add(module)
+    class PreparedSetup internal constructor(
+        private var runtime: JSLoader.PreparedGenerationRuntime?,
+    ) : AutoCloseable {
+        internal fun takeRuntime(): JSLoader.PreparedGenerationRuntime? = synchronized(this) {
+            runtime.also { runtime = null }
         }
 
-        while (cachedModules.size != permanentMarks.size) {
-            val module = unmarkedModules.take(1).single()
-            unmarkedModules.remove(module)
-            visit(module)
+        override fun close() {
+            takeRuntime()?.close()
         }
-
-        check(sortedModules.size == cachedModules.size)
-        cachedModules.clear()
-        cachedModules.addAll(sortedModules)
     }
+
 }

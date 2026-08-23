@@ -2,7 +2,7 @@
     "required": true,
     "minVersion": "0.8",
     "package": "com.chattriggers.ctjs.internal.mixins",
-    "compatibilityLevel": "JAVA_21",
+    "compatibilityLevel": "JAVA_25",
     "client": [
         "AbstractSoundInstanceAccessor",
         "BlockEntityRenderDispatcherMixin",
@@ -19,7 +19,6 @@
         "ClientPlayNetworkHandlerAccessor",
         "ClientWorldAccessor",
         "CreativeInventoryScreenMixin",
-        "EntityRenderDispatcherAccessor",
         "EntityRenderDispatcherMixin",
         "GameOptionsAccessor",
         "GameOptionsMixin",
@@ -30,6 +29,7 @@
         "MinecraftClientMixin",
         "MouseMixin",
         "ParticleAccessor",
+        "SingleQuadParticleAccessor",
         "ParticleManagerMixin",
         "PlayerListEntryAccessor",
         "PlayerListHudAccessor",
@@ -40,8 +40,7 @@
         "sound.SoundAccessor",
         "sound.SoundManagerAccessor",
         "sound.SoundSystemAccessor",
-        "sound.SoundSystemMixin",
-        "sound.SourceAccessor"
+        "sound.SoundSystemMixin"
     ],
     "injectors": {
         "defaultRequire": 1
@@ -52,11 +51,9 @@
         "ClientConnectionMixin",
         "ItemStackMixin",
         "LivingEntityMixin",
-        "MinecraftClientAccessor",
         "NbtCompoundAccessor",
         "PlayerEntityMixin",
         "PlayerScreenHandlerMixin",
-        "Scoreboard$1Accessor",
         "ScoreboardObjectiveMixin",
         "ScreenHandlerMixin",
         "SystemDetailsMixin",

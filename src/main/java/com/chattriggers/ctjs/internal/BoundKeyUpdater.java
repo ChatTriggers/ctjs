@@ -1,7 +1,7 @@
 package com.chattriggers.ctjs.internal;
 
-import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.KeyMapping;
 
 public interface BoundKeyUpdater {
-    void ctjs_updateBoundKey(KeyBinding keyBinding);
+    void ctjs_updateBoundKey(KeyMapping keyBinding);
 }

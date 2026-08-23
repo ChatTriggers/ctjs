@@ -12,8 +12,8 @@ import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.tree.CommandNode
 import com.mojang.brigadier.tree.LiteralCommandNode
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager
-import net.minecraft.command.CommandSource
+import net.fabricmc.fabric.api.client.command.v2.ClientCommands
+import net.minecraft.commands.SharedSuggestionProvider
 import org.mozilla.javascript.Function
 import org.mozilla.javascript.NativeObject
 import org.mozilla.javascript.ScriptableObject
@@ -23,12 +23,12 @@ object DynamicCommand {
         var method: Function? = null
         var hasRedirect = false
         val children = mutableListOf<Node>()
-        var builder: ArgumentBuilder<CommandSource, *>? = null
+        var builder: ArgumentBuilder<SharedSuggestionProvider, *>? = null
 
         open class Literal(parent: Node?, val name: String) : Node(parent)
 
         class Root(name: String) : Literal(null, name), RootCommand {
-            var commandNode: LiteralCommandNode<CommandSource>? = null
+            var commandNode: LiteralCommandNode<SharedSuggestionProvider>? = null
 
             override fun register() {
                 DynamicCommands.register(CommandImpl(this))
@@ -39,9 +39,9 @@ object DynamicCommand {
 
         class Redirect(parent: Node?, val target: Root) : Node(parent)
 
-        class RedirectToCommandNode(parent: Node?, val target: CommandNode<CommandSource>) : Node(parent)
+        class RedirectToCommandNode(parent: Node?, val target: CommandNode<SharedSuggestionProvider>) : Node(parent)
 
-        fun initialize(dispatcher: CommandDispatcher<CommandSource>) {
+        fun initialize(dispatcher: CommandDispatcher<SharedSuggestionProvider>) {
             if (this is Redirect) {
                 check(method == null)
                 check(children.isEmpty())
@@ -104,9 +104,9 @@ object DynamicCommand {
         override val overrideExisting = true
         override val name = node.name
 
-        override fun registerImpl(dispatcher: CommandDispatcher<CommandSource>) {
+        override fun registerImpl(dispatcher: CommandDispatcher<SharedSuggestionProvider>) {
             node.initialize(dispatcher)
-            val builder = node.builder!! as LiteralArgumentBuilder<CommandSource>
+            val builder = node.builder!! as LiteralArgumentBuilder<SharedSuggestionProvider>
             node.commandNode = dispatcher.register(builder)
         }
     }

@@ -4,7 +4,7 @@ import com.chattriggers.ctjs.api.CTWrapper
 import com.chattriggers.ctjs.api.entity.Entity
 import com.chattriggers.ctjs.api.vec.Vec3i
 import com.chattriggers.ctjs.MCBlockPos
-import net.minecraft.util.math.Vec3d
+import net.minecraft.world.phys.Vec3
 import kotlin.math.floor
 import kotlin.math.sqrt
 
@@ -67,5 +67,5 @@ class BlockPos(x: Int, y: Int, z: Int) : Vec3i(x, y, z), CTWrapper<MCBlockPos> {
         return sqrt(x * x + y * y + z * z)
     }
 
-    fun toVec3d() = Vec3d(x.toDouble(), y.toDouble(), z.toDouble())
+    fun toVec3d() = Vec3(x.toDouble(), y.toDouble(), z.toDouble())
 }

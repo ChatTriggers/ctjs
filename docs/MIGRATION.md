@@ -6,7 +6,7 @@
 
 ### Mixins
 
-The most exciting new feature is Mixins! Module authors now have the ability to write Mixins in their modules. This replaces the old ASM system, which was clunky and hard to work with. Check out the [Mixins wiki page](https://github.com/ChatTriggers/ctjs/wiki/Dynamic-Mixins) to get started.
+The most exciting new feature is Mixins! Module authors now have the ability to write Mixins in their modules. This replaces the old ASM system, which was clunky and hard to work with. Check out the [Mixins wiki page](https://github.com/ChatTriggers/ctjs/wiki/Dynamic-Mixins) to get started. Existing injected callbacks are safely rebound to the current `/ct reload` generation. Adding a new mixin or injector still requires a full Minecraft restart; hot-adding a transform after its target class has loaded is not supported.
 
 ### Automatic Remapping
 
@@ -49,7 +49,7 @@ TODO: Add more things here?
 
 ## Breaking Changes
 
-This update includes _many_ API changes that will break a wide range of modules. Some of this is due to the fact that the mod has been updated from 1.8.9, released in 2015, to 1.19, released in 2022. That's a 7-year jump and Minecraft changed a lot during that time, changing many APIs and concepts in their codebase. However, we are also taking this opportunity to update many of our APIs to be a bit more polished. Both of these result in quite the list of breaking changes
+This update includes _many_ API changes that will break a wide range of modules. CTJS Reloaded 3.0.0 targets Minecraft 26.1.2 using its modern, unobfuscated API rather than the Minecraft 1.8.9 runtime. Minecraft changed many APIs and concepts across that gap. We are also taking this opportunity to make the CTJS APIs more consistent. Both changes result in the compatibility notes below.
 
 ### Large API Changes
 
@@ -176,7 +176,10 @@ Here is a list of targeted changes for various different APIs:
 - `Image`
   - Remove deprecated constructors. Instead, use the static helper methods: `Image.fromFile(File)`, `Image.fromFile(string)`, `Image.fromAsset(string)`, and `Image.fromUrl(String[, String])`
 - `Renderer`/`Tessellator`
-  - `Tessellator` has been renamed to `Renderer3d`. Some of its methods may have changed and/or moved to `Renderer`
+  - New modules should use `Renderer3d`. The legacy global `Tessellator` remains available as a buffered compatibility adapter.
+  - Legacy vertices are collected until `draw()`, where POSITION/COLOR/UV use is analyzed and missing color or UV attributes receive safe defaults. This avoids modern `Missing elements in vertex: UV0` failures.
+  - `LINE_LOOP` is converted to `LINE_STRIP` with the first vertex appended, convex `POLYGON` uses `TRIANGLE_FAN`, and `QUAD_STRIP` is expanded into legacy-winding quads.
+  - Legacy `normal()` values are accepted but ignored by the generic compatibility pipeline. `POINTS` is not drawn. These remain non-blocking P2 limitations.
   - `Renderer.color()` has been replaced with `Renderer.getColor()`. The new `color()` method is used to color the vertices instead
   - Removed `drawShape`. Instead, create a `Shape` and invoke its `draw()` method
   - `begin()` now no longer translates to the player's camera position. Instead, use `Renderer.translateToPlayer()`
@@ -190,7 +193,7 @@ Here is a list of targeted changes for various different APIs:
   - Most of `Renderer3d`'s rendering should be in `postRenderWorld`
   - Removed `enableAlpha()` and `disableAlpha()` as they do nothing on modern versions
 - `Gui`/`GuiHandler`
-  - `GuiHandler` has been removed. It only had one relevant method (`openGui()`), which can be replaced by `Client.currentGui.set()`
+  - `GuiHandler.openGui(value)` remains as a compatibility facade and delegates to `Client.currentGui.set()`. It accepts a CTJS `Gui`, raw modern `Screen`, supported screen wrapper, or `null`; `null` closes the current GUI.
   - Removed `isControlDown()`, `isAltDown()`, and `isShiftDown()`. Instead, use the method that already exist on `Screen`: `hasControlDown()`, `hasAltDown()`, and `hasShiftDown()`
   - The various `register...()` methods now return the `Gui` instance for method chaining. Use the `unregister...()` methods for unregistering the respective triggers.
   - The `mouseDragged` trigger no longer takes `timeSinceLastClick`. If you _really_ need this, you can track it yourself
@@ -210,7 +213,7 @@ Here is a list of targeted changes for various different APIs:
 - `Client`
   - `getChatGUI` was renamed to `getChatGui` to match the naming of `getTabGui`
 - `Server.getPing()` now returns -1 if not in a world
-- Removed `Config.modulesFolder`. Use `ChatTriggers.MODULES_FOLDER` or the string `"./config/ChatTriggers/modules"`
+- `Config.modulesFolder` remains as a read-only compatibility alias. New code should use `ChatTriggers.MODULES_FOLDER` or the string `"./config/ChatTriggers/modules"`.
 - Renamed `ChatTriggers.loadCT()` and `ChatTriggers.unloadCT()` to `load()` and `unload()`
 - Provided JS API: 
   - Split `print` into `print` and `println`. `print` will no longer emit a trailing newline
@@ -218,3 +221,9 @@ Here is a list of targeted changes for various different APIs:
 ### Misc Changes
 
 - The assets directory has changed from `config/ChatTriggers/images` to `config/ChatTriggers/assets`
+
+### Legacy runtime boundaries
+
+- The global `Thread` is a compatibility wrapper. `start()`, `sleep()`, and `currentThread()` are supported. Unsafe legacy lifecycle operations such as `stop()`, `suspend()`, `resume()`, `destroy()`, and `interrupt()` are no-ops; use `Client.scheduleTask()` or `setTimeout()` for reload-owned work.
+- Global legacy `Renderer.color` value construction is not restored. Use `Renderer.getColor()` to construct a packed color; `Renderer.color()` applies vertex color.
+- Old packet classes, old raw `net.minecraft.*` class names, Forge APIs, LWJGL2 fixed-function APIs, and Rhino binary ABI are not emulated. Modules using those boundaries require a source-level manual port.

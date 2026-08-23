@@ -33,20 +33,20 @@ open class Block(
     @JvmOverloads
     fun isEmittingPower(face: BlockFace? = null): Boolean {
         if (face != null)
-            return World.toMC()!!.isEmittingRedstonePower(pos.toMC(), face.toMC())
+            return World.toMC()!!.hasSignal(pos.toMC(), face.toMC())
         return BlockFace.entries.any { isEmittingPower(it) }
     }
 
     @JvmOverloads
     fun getEmittingPower(face: BlockFace? = null): Int {
         if (face != null)
-            return World.toMC()!!.getEmittedRedstonePower(pos.toMC(), face.toMC())
+            return World.toMC()!!.getSignal(pos.toMC(), face.toMC())
         return BlockFace.entries.asSequence().map(::getEmittingPower).firstOrNull { it != 0 } ?: 0
     }
 
-    fun isReceivingPower() = World.toMC()!!.isReceivingRedstonePower(pos.toMC())
+    fun isReceivingPower() = World.toMC()!!.hasNeighborSignal(pos.toMC())
 
-    fun getReceivingPower() = World.toMC()!!.getReceivedRedstonePower(pos.toMC())
+    fun getReceivingPower() = World.toMC()!!.getBestNeighborSignal(pos.toMC())
 
     /**
      * Checks whether the block can be mined with the tool in the player's hand

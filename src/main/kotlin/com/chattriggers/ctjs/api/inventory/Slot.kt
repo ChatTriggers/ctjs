@@ -10,11 +10,11 @@ class Slot(override val mcValue: MCSlot) : CTWrapper<MCSlot> {
 
     val displayY by mcValue::y
 
-    val inventory get() = Inventory(mcValue.inventory)
+    val inventory get() = Inventory(mcValue.container)
 
-    val item get(): Item? = Item.fromMC(mcValue.stack)
+    val item get(): Item? = Item.fromMC(mcValue.item)
 
-    val isEnabled get() = mcValue.isEnabled
+    val isEnabled get() = mcValue.isActive
 
     override fun toString() = "Slot(inventory=$inventory, index=$index, item=$item)"
 }

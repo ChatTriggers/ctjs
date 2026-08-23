@@ -8,8 +8,8 @@
     <a href="https://discord.gg/chattriggers">
       <img src="https://discordapp.com/api/guilds/119493402902528000/embed.png" alt="Discord" />
     </a>
-    <a href="https://github.com/ChatTriggers/ctjs/releases">
-      <img src="https://img.shields.io/github/v/release/ChatTriggers/ctjs.svg?include_prereleases" alt="Releases" />
+    <a href="https://github.com/ramistarveris/ChatTriggers-Reloaded/releases">
+      <img src="https://img.shields.io/github/v/release/ramistarveris/ChatTriggers-Reloaded.svg" alt="Releases" />
     </a>
     <a href="https://github.com/ChatTriggers/ctjs/actions/workflows/build.yml">
       <img src="https://github.com/ChatTriggers/ctjs/actions/workflows/build.yml/badge.svg" alt="Build Status" />
@@ -21,7 +21,9 @@ ChatTriggers (CT) is a framework for Minecraft that enables live scripting and c
 
 With CT, you have all the power of a modding environment with the benefit of an easy-to-use language and the ability to reload your scripts without restarting the game. CT also provides a way to [define your own Mixins](https://github.com/ChatTriggers/ctjs/wiki/Dynamic-Mixins)!
 
-CT is currently written for Fabric 1.19. See [this repo](https://github.com/ChatTriggers/ChatTriggers) for the deprecated Forge 1.8.9 version.
+CTJS Reloaded 3.0.0 targets Minecraft 26.1.2 on Fabric and requires Java 25. See [this repository](https://github.com/ChatTriggers/ChatTriggers) for the deprecated Forge 1.8.9 version.
+
+Scripts and modules can be reloaded without restarting Minecraft. Dynamic Mixins already present at launch use generation-safe callback rebinding, while adding a new Mixin transform still requires a game restart.
 
 ### Examples
 
@@ -59,7 +61,7 @@ With CT's register system, you can listen to custom events that we emit and reac
 
 ### Getting Started
 
-To begin, [download and install Fabric](https://fabricmc.net/wiki/install) for one of the supported versions, then head over to our [releases page](https://github.com/ChatTriggers/ctjs/releases) and download the latest version. The mod is installed like any mod; just drag it into your mods folder. Once installed, you can import modules in-game by typing `/ct import <moduleName>`, where `<moduleName>` is the name of the module. You can browse the available modules on [our website](https://www.chattriggers.com/modules).
+To begin, install Fabric Loader for Minecraft 26.1.2, then head to the [releases page](https://github.com/ramistarveris/ChatTriggers-Reloaded/releases) and download the latest version. CTJS Reloaded 3.0.0 also requires Fabric API, Fabric Language Kotlin, and Java 25. Install the mod by placing its JAR in the `mods` folder. Once installed, import modules in-game with `/ct import <moduleName>`.
 
 ### Writing Modules
 

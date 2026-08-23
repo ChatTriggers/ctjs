@@ -91,8 +91,7 @@ internal class RedirectGenerator(
         }
     }
 
-    context(MethodAssembly)
-    override fun generateNotAttachedBehavior() {
+    override fun MethodAssembly.generateNotAttachedBehavior() {
         val parameters = signature.parameters.filter { it.local == null }
 
         when (val target = redirect.at.atTarget) {

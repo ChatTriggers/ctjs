@@ -9,6 +9,7 @@ import com.chattriggers.ctjs.api.message.TextComponent
 import com.chattriggers.ctjs.engine.Console
 import com.chattriggers.ctjs.engine.printTraceToConsole
 import com.chattriggers.ctjs.internal.commands.StaticCommand.Companion.onExecute
+import com.chattriggers.ctjs.internal.compat.CTConfigScreen
 import com.chattriggers.ctjs.internal.engine.module.ModuleManager
 import com.chattriggers.ctjs.internal.engine.module.ModulesGui
 import com.chattriggers.ctjs.internal.listeners.ClientListener
@@ -24,14 +25,14 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType
 import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
+import net.fabricmc.fabric.api.client.command.v2.ClientCommands.argument
+import net.fabricmc.fabric.api.client.command.v2.ClientCommands.literal
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
-import net.minecraft.command.CommandSource
-import net.minecraft.text.ClickEvent
-import net.minecraft.text.HoverEvent
-import net.minecraft.text.Text
+import net.minecraft.commands.SharedSuggestionProvider
+import net.minecraft.network.chat.ClickEvent
+import net.minecraft.network.chat.HoverEvent
+import net.minecraft.network.chat.Component
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.CompletableFuture
@@ -50,8 +51,10 @@ internal object CTCommand : Initializer {
     fun register(dispatcher: CommandDispatcher<FabricClientCommandSource>) {
         val command = literal("ct")
             .then(literal("load").onExecute { CTJS.load(asCommand = true) })
+            .then(literal("reload").onExecute { CTJS.load(asCommand = true) })
             .then(literal("unload").onExecute { CTJS.unload(asCommand = true) })
             .then(literal("files").onExecute { openFileLocation() })
+            .then(literal("file").onExecute { openFileLocation() })
             .then(
                 literal("import")
                     .then(argument("module", StringArgumentType.string())
@@ -68,14 +71,35 @@ internal object CTCommand : Initializer {
                         })
             )
             .then(literal("modules").onExecute { Client.currentGui.set(ModulesGui) })
-            .then(literal("console").onExecute { Console.show() })
-            .then(literal("config").onExecute { Client.currentGui.set(Config.gui()!!) })
+            .then(
+                literal("console")
+                    .then(literal("js").onExecute { Console.show() })
+                    .onExecute { Console.show() }
+            )
+            .then(literal("config").onExecute { Client.currentGui.set(CTConfigScreen()) })
+            .then(literal("settings").onExecute { Client.currentGui.set(CTConfigScreen()) })
+            .then(literal("setting").onExecute { Client.currentGui.set(CTConfigScreen()) })
             .then(
                 literal("simulate")
                     .then(
                         argument("message", StringArgumentType.greedyString())
                             .onExecute { ChatLib.simulateChat(StringArgumentType.getString(it, "message")) }
                     )
+            )
+            .then(
+                literal("sim")
+                    .then(
+                        argument("message", StringArgumentType.greedyString())
+                            .onExecute { ChatLib.simulateChat(StringArgumentType.getString(it, "message")) }
+                    )
+            )
+            .then(
+                literal("copy")
+                    .then(
+                        argument("text", StringArgumentType.greedyString())
+                            .onExecute { copyToClipboard(StringArgumentType.getString(it, "text")) }
+                    )
+                    .onExecute { copyToClipboard("") }
             )
             .then(
                 literal("dump")
@@ -115,7 +139,14 @@ internal object CTCommand : Initializer {
             )
             .onExecute { ChatLib.chat(getUsage()) }
 
-        dispatcher.register(command)
+        val commandNode = dispatcher.register(command)
+
+        // ChatTriggers 2.x used /chattriggers as the primary name and /ct as its alias.
+        // Keep the long form working without maintaining a second command tree.
+        val legacyRoot = literal("chattriggers")
+        commandNode.children.forEach(legacyRoot::then)
+        legacyRoot.executes(commandNode.command)
+        dispatcher.register(legacyRoot)
     }
 
     private fun import(moduleName: String) {
@@ -123,24 +154,34 @@ internal object CTCommand : Initializer {
             ChatLib.chat("&cModule $moduleName is already installed!")
         } else {
             ChatLib.chat("&cImporting $moduleName...")
-            thread {
-                val (module, dependencies) = ModuleManager.importModule(moduleName)
+            thread(name = "CTJS module import") {
+                val importedModule = ModuleManager.prepareImport(moduleName)
+                val (module, dependencies) = importedModule
                 if (module == null) {
-                    ChatLib.chat("&cUnable to import module $moduleName")
+                    Client.getMinecraft().execute {
+                        ChatLib.chat("&cUnable to import module $moduleName")
+                    }
                     return@thread
                 }
 
-                val allModules = listOf(module) + dependencies
-                val modVersion = CTJS.MOD_VERSION.toVersion()
-                allModules.forEach {
-                    val version = it.targetModVersion ?: return@forEach
-                    if (version.majorVersion < modVersion.majorVersion)
-                        ModuleManager.tryReportOldVersion(it)
-                }
+                Client.getMinecraft().execute {
+                    if (!ModuleManager.activateImport(importedModule)) {
+                        ChatLib.chat("&cThe module generation changed during import; run /ct reload to activate it")
+                        return@execute
+                    }
 
-                ChatLib.chat("&aSuccessfully imported ${module.metadata.name ?: module.name}")
-                if (Config.moduleImportHelp && module.metadata.helpMessage != null) {
-                    ChatLib.chat(module.metadata.helpMessage.toString().take(383))
+                    val allModules = listOf(module) + dependencies
+                    val modVersion = CTJS.MOD_VERSION.toVersion()
+                    allModules.forEach {
+                        val version = it.targetModVersion ?: return@forEach
+                        if (version.majorVersion < modVersion.majorVersion)
+                            ModuleManager.tryReportOldVersion(it)
+                    }
+
+                    ChatLib.chat("&aSuccessfully imported ${module.metadata.name ?: module.name}")
+                    if (Config.moduleImportHelp && module.metadata.helpMessage != null) {
+                        ChatLib.chat(module.metadata.helpMessage.toString().take(383))
+                    }
                 }
             }
         }
@@ -148,15 +189,16 @@ internal object CTCommand : Initializer {
 
     private fun getUsage() = """
         &b&m${ChatLib.getChatBreak()}
-        &c/ct load &7- &oReloads all of the ChatTriggers modules.
+        &c/ct load &7(&creload&7) &7- &oReloads all ChatTriggers modules.
+        &c/ct unload &7- &oUnloads all ChatTriggers modules.
         &c/ct import <module> &7- &oImports a module.
         &c/ct delete <module> &7- &oDeletes a module.
-        &c/ct files &7- &oOpens the ChatTriggers folder.
+        &c/ct files &7(&cfile&7) &7- &oOpens the ChatTriggers folder.
         &c/ct modules &7- &oOpens the modules GUI.
-        &c/ct console [language] &7- &oOpens the ChatTriggers console.
-        &c/ct simulate <message> &7- &oSimulates a received chat message.
-        &c/ct dump &7- &oDumps previous chat messages into chat.
-        &c/ct settings &7- &oOpens the ChatTriggers settings.
+        &c/ct console [js] &7- &oOpens the ChatTriggers console.
+        &c/ct config &7(&csettings&7) &7- &oOpens the ChatTriggers settings.
+        &c/ct simulate <message> &7(&csim&7) &7- &oSimulates a received chat message.
+        &c/ct dump [chat|actionbar] [amount] &7- &oDumps previous messages into chat.
         &c/ct migrate <input> [output]&7 - &oMigrate a module from version 2.X to 3.X 
         &c/ct &7- &oDisplays this help dialog.
         &b&m${ChatLib.getChatBreak()}
@@ -180,15 +222,13 @@ internal object CTCommand : Initializer {
 
         for (i in 0 until toDump) {
             val msg = ChatLib.replaceFormatting(messages[messages.size - toDump + i].formattedText)
-            TextComponent(Text.literal(msg).styled {
-                it.withClickEvent(ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, msg))
-                    .withHoverEvent(
-                        HoverEvent(
-                            HoverEvent.Action.SHOW_TEXT,
-                            TextComponent("&eClick here to copy this message.")
-                        )
-                    )
-            })
+            TextComponent(
+                Component.literal(msg).withStyle(
+                    net.minecraft.network.chat.Style.EMPTY
+                        .withClickEvent(ClickEvent.CopyToClipboard(msg))
+                        .withHoverEvent(HoverEvent.ShowText(TextComponent("&eClick here to copy this message.")))
+                )
+            )
                 .withChatLineId(idFixed + i + 1)
                 .chat()
         }
@@ -205,12 +245,22 @@ internal object CTCommand : Initializer {
         idFixedOffset = -1
     }
 
+    private fun copyToClipboard(text: String) {
+        clearOldDump()
+        Client.copy(text)
+    }
+
     enum class DumpType(val messageList: () -> List<TextComponent>) {
         CHAT(ClientListener::chatHistory),
         ACTION_BAR(ClientListener::actionBarHistory);
 
         companion object {
-            fun fromString(str: String) = DumpType.entries.first { it.name.equals(str, ignoreCase = true) }
+            fun fromString(str: String): DumpType {
+                val normalized = str.replace("_", "").replace("-", "")
+                return DumpType.entries.first {
+                    it.name.replace("_", "").equals(normalized, ignoreCase = true)
+                }
+            }
         }
     }
 
@@ -272,7 +322,7 @@ internal object CTCommand : Initializer {
 
             return modules.find {
                 it.equals(string, ignoreCase = true)
-            } ?: throw SimpleCommandExceptionType(Text.literal("No modules found with name \"$string\""))
+            } ?: throw SimpleCommandExceptionType(Component.literal("No modules found with name \"$string\""))
                 .createWithContext(reader)
         }
 
@@ -280,7 +330,7 @@ internal object CTCommand : Initializer {
             context: CommandContext<S>?,
             builder: SuggestionsBuilder?
         ): CompletableFuture<Suggestions> {
-            return CommandSource.suggestMatching(ModuleManager.cachedModules.map { it.name }, builder)
+            return SharedSuggestionProvider.suggest(ModuleManager.cachedModules.map { it.name }, requireNotNull(builder))
         }
 
         fun getModule(ctx: CommandContext<FabricClientCommandSource>, module: String): String {

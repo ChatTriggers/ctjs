@@ -16,7 +16,10 @@ class CTMixinPlugin : IMixinConfigPlugin {
         redirectIO()
 
         Mappings.initialize()
-        ModuleManager.setup()
+        val preparedModules = ModuleManager.setup()
+        check(ModuleManager.publishInitial(preparedModules)) {
+            "Failed to publish the initial module classloader generation"
+        }
         MixinExtrasBootstrap.init()
 
         try {

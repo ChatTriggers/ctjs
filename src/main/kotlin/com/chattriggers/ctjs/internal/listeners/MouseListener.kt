@@ -50,16 +50,16 @@ internal object MouseListener : Initializer {
         CTEvents.GUI_MOUSE_DRAG.register(TriggerType.GUI_MOUSE_DRAG::triggerAll)
 
         ScreenEvents.BEFORE_INIT.register { _, screen, _, _ ->
-            ScreenMouseEvents.allowMouseClick(screen).register { _, mouseX, mouseY, button ->
+            ScreenMouseEvents.allowMouseClick(screen).register { _, mouseEvent ->
                 val event = CancellableEvent()
-                TriggerType.GUI_MOUSE_CLICK.triggerAll(mouseX, mouseY, button, true, screen, event)
+                TriggerType.GUI_MOUSE_CLICK.triggerAll(mouseEvent.x(), mouseEvent.y(), mouseEvent.button(), true, screen, event)
 
                 !event.isCanceled()
             }
 
-            ScreenMouseEvents.allowMouseRelease(screen).register { _, mouseX, mouseY, button ->
+            ScreenMouseEvents.allowMouseRelease(screen).register { _, mouseEvent ->
                 val event = CancellableEvent()
-                TriggerType.GUI_MOUSE_CLICK.triggerAll(mouseX, mouseY, button, false, screen, event)
+                TriggerType.GUI_MOUSE_CLICK.triggerAll(mouseEvent.x(), mouseEvent.y(), mouseEvent.button(), false, screen, event)
 
                 !event.isCanceled()
             }

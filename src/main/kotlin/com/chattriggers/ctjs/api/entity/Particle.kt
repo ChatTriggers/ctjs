@@ -3,12 +3,20 @@ package com.chattriggers.ctjs.api.entity
 import com.chattriggers.ctjs.api.CTWrapper
 import com.chattriggers.ctjs.api.render.Renderer
 import com.chattriggers.ctjs.internal.mixins.ParticleAccessor
+import com.chattriggers.ctjs.internal.mixins.SingleQuadParticleAccessor
 import com.chattriggers.ctjs.MCParticle
 import com.chattriggers.ctjs.internal.utils.asMixin
+import net.minecraft.client.particle.SingleQuadParticle
 import java.awt.Color
 
 class Particle(override val mcValue: MCParticle) : CTWrapper<MCParticle> {
     private val mixed: ParticleAccessor = mcValue.asMixin()
+    private val quadMixed: SingleQuadParticleAccessor? =
+        (mcValue as? SingleQuadParticle)?.asMixin()
+    private var fallbackRed = 1f
+    private var fallbackGreen = 1f
+    private var fallbackBlue = 1f
+    private var fallbackAlpha = 1f
 
     var x by mixed::x
     var y by mixed::y
@@ -26,10 +34,30 @@ class Particle(override val mcValue: MCParticle) : CTWrapper<MCParticle> {
     var motionY by mixed::velocityY
     var motionZ by mixed::velocityZ
 
-    var red by mixed::red
-    var green by mixed::green
-    var blue by mixed::blue
-    var alpha by mixed::alpha
+    var red: Float
+        get() = quadMixed?.red ?: fallbackRed
+        set(value) {
+            quadMixed?.red = value
+            fallbackRed = value
+        }
+    var green: Float
+        get() = quadMixed?.green ?: fallbackGreen
+        set(value) {
+            quadMixed?.green = value
+            fallbackGreen = value
+        }
+    var blue: Float
+        get() = quadMixed?.blue ?: fallbackBlue
+        set(value) {
+            quadMixed?.blue = value
+            fallbackBlue = value
+        }
+    var alpha: Float
+        get() = quadMixed?.alpha ?: fallbackAlpha
+        set(value) {
+            quadMixed?.alpha = value
+            fallbackAlpha = value
+        }
 
     var age by mixed::age
     var dead by mixed::dead
@@ -45,7 +73,9 @@ class Particle(override val mcValue: MCParticle) : CTWrapper<MCParticle> {
      * @param blue the blue value between 0 and 1.
      */
     fun setColor(red: Float, green: Float, blue: Float) = apply {
-        mcValue.setColor(red, green, blue)
+        this.red = red
+        this.green = green
+        this.blue = blue
     }
 
     /**
@@ -74,7 +104,7 @@ class Particle(override val mcValue: MCParticle) : CTWrapper<MCParticle> {
      * @param alpha the alpha value between 0 and 1.
      */
     fun setAlpha(alpha: Float) = apply {
-        mixed.alpha = alpha
+        this.alpha = alpha
     }
 
     /**
@@ -92,11 +122,11 @@ class Particle(override val mcValue: MCParticle) : CTWrapper<MCParticle> {
      * @param maxAge the particle's max age (in ticks)
      */
     fun setMaxAge(maxAge: Int) = apply {
-        mcValue.maxAge = maxAge
+        mcValue.lifetime = maxAge
     }
 
     fun remove() = apply {
-        mcValue.markDead()
+        mcValue.remove()
     }
 
     override fun toString() =

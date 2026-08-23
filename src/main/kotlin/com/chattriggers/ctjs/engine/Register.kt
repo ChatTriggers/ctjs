@@ -13,6 +13,8 @@ object Register {
 
     internal fun clearCustomTriggers() = customTriggers.clear()
 
+    internal fun customTriggerCount() = customTriggers.size
+
     /**
      * Helper method register a trigger.
      *
@@ -186,7 +188,7 @@ object Register {
      * - The sound event's name
      * - The sound event's volume
      * - The sound event's pitch
-     * - The sound event's category's name
+     * - The sound event's [net.minecraft.sounds.SoundSource] enum value
      * - The sound event, which can be cancelled
      *
      * Available modifications:
@@ -313,7 +315,7 @@ object Register {
      * Registers a new trigger that runs before the block highlight box is drawn.
      *
      * Passes through two arguments:
-     * - The draw block highlight event's position
+     * - The draw block highlight event's [com.chattriggers.ctjs.api.world.block.BlockPos]
      * - The draw block highlight event, which can be cancelled
      *
      * Available modifications:
@@ -381,7 +383,7 @@ object Register {
     /**
      * Registers a new trigger that runs when a new gui is first opened.
      *
-     * Passes through one argument:
+     * Passes through three arguments:
      * - The [net.minecraft.client.gui.screen.Screen] that was opened
      * - The gui opened event, which can be cancelled
      *
@@ -458,7 +460,7 @@ object Register {
      * the changes to take effect.
      *
      * Passes through three arguments:
-     * - A list of [com.chattriggers.ctjs.api.message.TextComponent] objects to modify.
+     * - A mutable list of [com.chattriggers.ctjs.api.message.TextComponent] objects to modify.
      * - The [com.chattriggers.ctjs.api.inventory.Item] that this lore is attached to.
      * - The cancellable event.
      *
@@ -482,7 +484,7 @@ object Register {
      *   [com.chattriggers.ctjs.api.entity.Entity],
      *   [com.chattriggers.ctjs.api.world.block.Block], or
      *   [com.chattriggers.ctjs.api.inventory.Item],
-     * - The event, which can be cancelled if the interaction is not BreakBlock
+     * - The event, which can be cancelled for every interaction type, including BreakBlock
      *
      * Available modifications:
      * - [Trigger.setPriority] Sets the priority
@@ -546,7 +548,7 @@ object Register {
      * Registers a new trigger that runs whenever a key is typed with a gui open
      *
      * Passes through four arguments:
-     * - The character pressed (e.g. 'd')
+     * - The printable character name (e.g. "d"), or null for non-printable GLFW keys
      * - The key code pressed (e.g. 41)
      * - The gui
      * - The event, which can be cancelled
@@ -665,6 +667,9 @@ object Register {
 
     /**
      * Registers a new trigger that runs whenever the player disconnects from a server
+     * by transitioning from a loaded world to no world. A direct loaded-to-loaded world
+     * replacement fires world lifecycle triggers but is not a server disconnect. `/ct reload`
+     * has its own synthetic world lifecycle and does not fire this trigger.
      *
      * Available modifications:
      * - [Trigger.setPriority] Sets the priority

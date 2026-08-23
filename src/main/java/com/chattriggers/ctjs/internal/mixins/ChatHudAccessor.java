@@ -1,18 +1,18 @@
 package com.chattriggers.ctjs.internal.mixins;
 
-import net.minecraft.client.gui.hud.ChatHud;
-import net.minecraft.client.gui.hud.ChatHudLine;
+import net.minecraft.client.gui.components.ChatComponent;
+import net.minecraft.client.multiplayer.chat.GuiMessage;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
 import java.util.List;
 
-@Mixin(ChatHud.class)
+@Mixin(ChatComponent.class)
 public interface ChatHudAccessor {
-    @Accessor
-    List<ChatHudLine> getMessages();
+    @Accessor("allMessages")
+    List<GuiMessage> getMessages();
 
-    @Invoker
+    @Invoker("refreshTrimmedMessages")
     void invokeRefresh();
 }

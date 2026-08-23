@@ -1,36 +1,33 @@
 [versions]
 # Library versions
-minecraft = "1.21"
-yarn = "1.21+build.2"
+minecraft = "26.1.2"
 
-loader = "0.15.11"
-fabric-api = "0.100.3+1.21"
-fabric-kotlin = "1.11.0+kotlin.2.0.0"
+loader = "0.19.3"
+fabric-api = "0.155.2+26.1.2"
+fabric-kotlin = "1.13.11+kotlin.2.3.21"
 
-mapping-io = "0.6.1"
+mapping-io = "0.8.0"
 rhino = "7c7c509668"
 jackson-core = "2.13.2"
 textarea = "3.2.0"
-serialization = "1.5.1"
+serialization = "1.11.0"
 koffee = "315bc11234"
 
-universalcraft = "342"
-elementa = "649"
-vigilance = "297"
+universalcraft = "511"
+elementa = "710"
+vigilance = "314"
 
-modmenu = "11.0.1"
+modmenu = "18.0.0"
 devauth = "1.2.1"
 dokka = "1.9.20"
 
 # Plugin Versions
-kotlin = "2.0.0"
-loom = "1.7-SNAPSHOT"
-validator = "0.14.0"
-ksp = "2.0.0-1.0.22"
+kotlin = "2.3.21"
+loom = "1.17.19"
+ksp = "2.3.11"
 
 [libraries]
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
-yarn = { module = "net.fabricmc:yarn", version.ref = "yarn" }
 
 fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "loader" }
 fabric-api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric-api" }
@@ -43,9 +40,9 @@ textarea = { module = "com.fifesoft:rsyntaxtextarea", version.ref = "textarea" }
 serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
 koffee = { module = "com.github.ChatTriggers:koffee", version.ref = "koffee" }
 
-universalcraft = { module = "gg.essential:universalcraft-1.21-fabric", version.ref = "universalcraft" }
-elementa = { module = "gg.essential:elementa-1.18.1-fabric", version.ref = "elementa" }
-vigilance = { module = "gg.essential:vigilance-1.18.1-fabric", version.ref = "vigilance" }
+universalcraft = { module = "gg.essential:universalcraft-26.1-fabric", version.ref = "universalcraft" }
+elementa = { module = "gg.essential:elementa", version.ref = "elementa" }
+vigilance = { module = "gg.essential:vigilance", version.ref = "vigilance" }
 
 modmenu = { module = "com.terraformersmc:modmenu", version.ref = "modmenu" }
 devauth = { module = "me.djtheredstoner:DevAuth-fabric", version.ref = "devauth" }
@@ -62,7 +59,6 @@ essential = ["universalcraft", "elementa", "vigilance"]
 [plugins]
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-loom = { id = "fabric-loom", version.ref = "loom" }
+loom = { id = "net.fabricmc.fabric-loom", version.ref = "loom" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
-validator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "validator" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

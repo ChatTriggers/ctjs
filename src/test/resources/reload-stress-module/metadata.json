@@ -1,0 +1,7 @@
+{
+  "name": "ReloadStressProbe",
+  "description": "CTJS 3.0.0 ten-generation reload release gate",
+  "creator": "CTJS",
+  "entry": "index.js",
+  "version": "1.0.0"
+}

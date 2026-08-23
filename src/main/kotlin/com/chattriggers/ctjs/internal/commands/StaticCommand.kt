@@ -5,7 +5,7 @@ import com.chattriggers.ctjs.internal.mixins.commands.CommandNodeAccessor
 import com.chattriggers.ctjs.internal.utils.asMixin
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.arguments.StringArgumentType
-import net.minecraft.command.CommandSource
+import net.minecraft.commands.SharedSuggestionProvider
 
 internal class StaticCommand(
     val trigger: CommandTrigger,
@@ -15,7 +15,7 @@ internal class StaticCommand(
     private val staticSuggestions: List<String>,
     private val dynamicSuggestions: ((List<String>) -> List<String>)?,
 ) : Command {
-    override fun registerImpl(dispatcher: CommandDispatcher<CommandSource>) {
+    override fun registerImpl(dispatcher: CommandDispatcher<SharedSuggestionProvider>) {
         val builder = literal(name)
             .then(argument("args", StringArgumentType.greedyString())
                 .suggests { ctx, builder ->
@@ -56,7 +56,7 @@ internal class StaticCommand(
         }
     }
 
-    override fun unregisterImpl(dispatcher: CommandDispatcher<CommandSource>) {
+    override fun unregisterImpl(dispatcher: CommandDispatcher<SharedSuggestionProvider>) {
         super.unregisterImpl(dispatcher)
         dispatcher.root.asMixin<CommandNodeAccessor>().apply {
             for (alias in aliases) {

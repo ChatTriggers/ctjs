@@ -2,7 +2,9 @@ package com.chattriggers.ctjs.api.inventory.nbt
 
 import com.chattriggers.ctjs.MCNbtBase
 import com.chattriggers.ctjs.MCNbtList
-import net.minecraft.nbt.NbtElement
+import net.minecraft.nbt.Tag
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.ListTag
 import org.mozilla.javascript.NativeArray
 
 class NBTTagList(override val mcValue: MCNbtList) : NBTBase(mcValue) {
@@ -37,28 +39,28 @@ class NBTTagList(override val mcValue: MCNbtList) : NBTBase(mcValue) {
 
     fun getDoubleAt(index: Int) = mcValue.getDouble(index)
 
-    fun getStringTagAt(index: Int): String = mcValue.getString(index)
+    fun getStringTagAt(index: Int): String = mcValue.getString(index).orElse("")
 
-    fun getListAt(index: Int) = NBTTagList(mcValue.getList(index))
+    fun getListAt(index: Int) = NBTTagList(mcValue.getList(index).orElseGet(::ListTag))
 
-    fun getCompoundTagAt(index: Int) = NBTTagCompound(mcValue.getCompound(index))
+    fun getCompoundTagAt(index: Int) = NBTTagCompound(mcValue.getCompound(index).orElseGet(::CompoundTag))
 
-    fun getIntArrayAt(index: Int): IntArray = mcValue.getIntArray(index)
+    fun getIntArrayAt(index: Int): IntArray = mcValue.getIntArray(index).orElseGet { IntArray(0) }
 
-    fun getLongArrayAt(index: Int): LongArray = mcValue.getLongArray(index)
+    fun getLongArrayAt(index: Int): LongArray = mcValue.getLongArray(index).orElseGet { LongArray(0) }
 
-    operator fun get(index: Int): NbtElement = mcValue[index]
+    operator fun get(index: Int): Tag = mcValue[index]
 
     fun get(index: Int, type: Byte): Any = when (type) {
-        NbtElement.SHORT_TYPE -> getShortAt(index)
-        NbtElement.INT_TYPE -> getIntAt(index)
-        NbtElement.FLOAT_TYPE -> getFloatAt(index)
-        NbtElement.DOUBLE_TYPE -> getDoubleAt(index)
-        NbtElement.STRING_TYPE -> getStringTagAt(index)
-        NbtElement.LIST_TYPE -> getListAt(index)
-        NbtElement.COMPOUND_TYPE -> getCompoundTagAt(index)
-        NbtElement.INT_ARRAY_TYPE -> getIntArrayAt(index)
-        NbtElement.LONG_ARRAY_TYPE -> getLongArrayAt(index)
+        Tag.TAG_SHORT -> getShortAt(index)
+        Tag.TAG_INT -> getIntAt(index)
+        Tag.TAG_FLOAT -> getFloatAt(index)
+        Tag.TAG_DOUBLE -> getDoubleAt(index)
+        Tag.TAG_STRING -> getStringTagAt(index)
+        Tag.TAG_LIST -> getListAt(index)
+        Tag.TAG_COMPOUND -> getCompoundTagAt(index)
+        Tag.TAG_INT_ARRAY -> getIntArrayAt(index)
+        Tag.TAG_LONG_ARRAY -> getLongArrayAt(index)
         else -> get(index)
     }
 

@@ -11,6 +11,7 @@ import com.chattriggers.ctjs.internal.engine.module.ModuleManager.modulesFolder
 import com.chattriggers.ctjs.internal.launch.IInjector
 import com.chattriggers.ctjs.internal.launch.Mixin
 import com.chattriggers.ctjs.internal.launch.MixinDetails
+import com.chattriggers.ctjs.internal.lifecycle.RuntimeOwner
 import org.apache.commons.io.FileUtils
 import org.mozilla.javascript.*
 import org.mozilla.javascript.commonjs.module.ModuleScriptProvider
@@ -32,11 +33,17 @@ import kotlin.contracts.contract
 @OptIn(ExperimentalContracts::class)
 object JSLoader {
     private val triggers = ConcurrentHashMap<ITriggerType, ConcurrentSkipListSet<Trigger>>()
+    private val runtimeLock = Any()
 
-    private lateinit var moduleScope: Scriptable
-    private lateinit var evalScope: Scriptable
-    private lateinit var require: CTRequire
-    private lateinit var moduleProvider: ModuleScriptProvider
+    @Volatile
+    private var activeRuntime: RuntimeState? = null
+
+    private val moduleScope: Scriptable
+        get() = currentRuntime().moduleScope
+    private val evalScope: Scriptable
+        get() = currentRuntime().evalScope
+    private val require: CTRequire
+        get() = currentRuntime().require
 
     private var mixinLibsLoaded = false
     private var mixinsFinalized = false
@@ -44,32 +51,93 @@ object JSLoader {
     private val mixinIdMap = mutableMapOf<Int, MixinCallback>()
     private val mixins = mutableMapOf<Mixin, MixinDetails>()
 
-    private val INVOKE_MIXIN_CALL = MethodHandles.lookup().findStatic(
-        JSLoader::class.java,
-        "invokeMixin",
-        MethodType.methodType(Any::class.java, Callable::class.java, Array<Any?>::class.java),
+    private val INVOKE_MIXIN_CALL = MethodHandles.lookup().findVirtual(
+        MixinCallback::class.java,
+        "invokeStable",
+        MethodType.methodType(Any::class.java, Array<Any?>::class.java),
     )
 
-    fun setup(jars: List<URL>) {
+    internal fun prepareGeneration(jars: List<URL>): PreparedGenerationRuntime {
         // Ensure all active mixins are invalidated
         // TODO: It would be nice to do this, but it's possible to have a @Redirect or similar
         //       mixin try to call it's handler between when we start loading and when we finish
         //       loading, which would crash. So we need to be smarter about invalidation on load.
         // mixinIdMap.values.forEach(MixinCallback::release)
 
-        JSContextFactory.addAllURLs(jars)
+        return PreparedGenerationRuntime(JSContextFactory.stageGenerationLoader(jars))
+    }
 
+    internal fun publishPrepared(prepared: PreparedGenerationRuntime, owner: RuntimeOwner): Boolean {
+        val loader = prepared.takeLoader() ?: return false
+        if (!loader.activate(owner) { retireLoader(loader) })
+            return false
+
+        try {
+            JSContextFactory.activateGenerationLoader(loader)
+
+            val runtime = createRuntime(loader, owner)
+            synchronized(runtimeLock) {
+                check(activeRuntime == null) { "A module generation runtime is already active" }
+                activeRuntime = runtime
+            }
+
+            mixinLibsLoaded = false
+            return true
+        } catch (e: Throwable) {
+            loader.close()
+            throw e
+        }
+    }
+
+    internal fun addGenerationJars(jars: List<URL>): GenerationModuleClassLoader? {
+        val loader = activeRuntime?.loader ?: return null
+        return loader.takeIf { it.addJars(jars) && it.isActive }
+    }
+
+    internal fun isActiveLoader(loader: GenerationModuleClassLoader?): Boolean =
+        loader != null && activeRuntime?.loader === loader && loader.isActive
+
+    private fun createRuntime(loader: GenerationModuleClassLoader, owner: RuntimeOwner): RuntimeState {
         val cx = JSContextFactory.enterContext()
-        val sourceProvider = UrlModuleSourceProvider(listOf(modulesFolder.toURI()), listOf())
-        moduleProvider = StrongCachingModuleScriptProvider(sourceProvider)
-        moduleScope = ImporterTopLevel(cx)
-        evalScope = ImporterTopLevel(cx)
-        require = CTRequire(moduleProvider)
-        require.install(moduleScope)
-        require.install(evalScope)
-        Context.exit()
+        try {
+            cx.applicationClassLoader = loader
+            val sourceProvider = UrlModuleSourceProvider(listOf(modulesFolder.toURI()), listOf())
+            val moduleProvider = StrongCachingModuleScriptProvider(sourceProvider)
+            val moduleScope = ImporterTopLevel(cx)
+            val evalScope = ImporterTopLevel(cx)
+            val require = CTRequire(moduleScope, moduleProvider)
+            require.install(moduleScope)
+            require.install(evalScope)
+            return RuntimeState(loader, owner, moduleScope, evalScope, require)
+        } finally {
+            Context.exit()
+        }
+    }
 
+    private fun retireLoader(loader: GenerationModuleClassLoader) {
+        synchronized(runtimeLock) {
+            if (activeRuntime?.loader === loader)
+                activeRuntime = null
+        }
+        JSContextFactory.deactivateGenerationLoader(loader)
         mixinLibsLoaded = false
+    }
+
+    private fun currentRuntime(): RuntimeState =
+        checkNotNull(activeRuntime) { "No active module generation runtime" }
+
+    internal fun currentRuntimeOwner(): RuntimeOwner = currentRuntime().owner
+
+    internal class PreparedGenerationRuntime internal constructor(
+        private var loader: GenerationModuleClassLoader?,
+    ) : AutoCloseable {
+        internal fun takeLoader(): GenerationModuleClassLoader? = synchronized(this) {
+            loader.also { loader = null }
+        }
+
+        override fun close() {
+            takeLoader()?.close()
+        }
     }
 
     internal fun mixinSetup(modules: List<Module>): Map<Mixin, MixinDetails> {
@@ -90,6 +158,24 @@ object JSLoader {
         mixinLibsLoaded = true
 
         return mixins
+    }
+
+    /** Re-executes already transformed mixin entry files to publish current-generation handlers. */
+    internal fun rebindMixinCallbacks(modules: List<Module>) {
+        if (modules.isEmpty())
+            return
+        loadMixinLibs()
+        wrapInContext {
+            modules.forEach { module ->
+                try {
+                    val uri = File(module.folder, module.metadata.mixinEntry!!).normalize().toURI()
+                    require.loadCTModule("ctjs:mixin:${module.name}", uri)
+                } catch (e: Throwable) {
+                    "Error rebinding mixin callbacks for module ${module.name}".printToConsole(LogType.ERROR)
+                    e.printTraceToConsole()
+                }
+            }
+        }
     }
 
     fun entrySetup(): Unit = wrapInContext {
@@ -131,6 +217,10 @@ object JSLoader {
     fun clearTriggers() {
         triggers.clear()
     }
+
+    internal fun registeredTriggerCount(): Int = triggers.values.sumOf(Set<*>::size)
+
+    internal fun activeLoaderGenerationId(): Long? = activeRuntime?.loader?.generationId
 
     fun removeTrigger(trigger: Trigger) {
         triggers[trigger.type]?.remove(trigger)
@@ -191,6 +281,8 @@ object JSLoader {
     }
 
     private fun loadMixinLibs() {
+        if (mixinLibsLoaded)
+            return
         val mixinProvidedLibs = saveResource(
             "/assets/ctjs/js/mixinProvidedLibs.js",
             File(modulesFolder.parentFile, "chattriggers-mixin-provided-libs.js"),
@@ -208,34 +300,34 @@ object JSLoader {
                 e.printTraceToConsole()
             }
         }
+        mixinLibsLoaded = true
     }
 
     @JvmStatic
-    fun mixinIsAttached(id: Int) = mixinIdMap[id]?.method != null
+    fun mixinIsAttached(id: Int) = mixinIdMap[id]?.isActive() == true
 
     fun invokeMixinLookup(id: Int): MixinCallback {
         val callback = mixinIdMap[id] ?: error("Unknown mixin id $id for loader ${this::class.simpleName}")
 
-        callback.handle = if (callback.method != null) {
-            try {
-                require(callback.method is Callable) {
-                    "The value passed to MixinCallback.attach() must be a function"
-                }
+        // The generated call site must always resolve to a stable trampoline. The
+        // generation-owned slot inside MixinCallback decides whether there is a live
+        // handler at invocation time, so linking during the STOPPING/publish window is
+        // a safe no-op instead of a failed bootstrap that permanently poisons the
+        // invokedynamic instruction.
+        callback.handle = try {
+            INVOKE_MIXIN_CALL.bindTo(callback)
+        } catch (e: Throwable) {
+            // This is a pretty vague error, but the trace should make the issue clear
+            // since it will include the stack trace from the Mixed-into class
+            "Error loading mixin callback".printToConsole()
+            e.printTraceToConsole()
 
-                INVOKE_MIXIN_CALL.bindTo(callback.method)
-            } catch (e: Throwable) {
-                // This is a pretty vague error, but the trace should make the issue clear
-                // since it will include the stack trace from the Mixed-into class
-                "Error loading mixin callback".printToConsole()
-                e.printTraceToConsole()
-
-                MethodHandles.dropArguments(
-                    MethodHandles.constant(Any::class.java, null),
-                    0,
-                    Array<Any?>::class.java,
-                )
-            }
-        } else null
+            MethodHandles.dropArguments(
+                MethodHandles.constant(Any::class.java, null),
+                0,
+                Array<Any?>::class.java,
+            )
+        }
 
         return callback
     }
@@ -300,9 +392,28 @@ object JSLoader {
         return res
     }
 
+    private data class RuntimeState(
+        val loader: GenerationModuleClassLoader,
+        val owner: RuntimeOwner,
+        val moduleScope: Scriptable,
+        val evalScope: Scriptable,
+        val require: CTRequire,
+    )
+
     private class CTRequire(
+        moduleScope: Scriptable,
         moduleProvider: ModuleScriptProvider,
     ) : Require(Context.getContext(), moduleScope, moduleProvider, null, null, false) {
+        override fun getExportedModuleInterface(
+            cx: Context,
+            id: String,
+            uri: URI?,
+            base: URI?,
+            isMain: Boolean,
+        ): Scriptable {
+            return CommonJsExports.ensureDefault(super.getExportedModuleInterface(cx, id, uri, base, isMain))
+        }
+
         fun loadCTModule(cachedName: String, uri: URI): Scriptable {
             return getExportedModuleInterface(Context.getContext(), cachedName, uri, null, false)
         }

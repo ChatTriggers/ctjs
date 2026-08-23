@@ -7,12 +7,13 @@ import com.chattriggers.ctjs.engine.LogType
 import com.chattriggers.ctjs.internal.engine.CTEvents
 import com.chattriggers.ctjs.internal.engine.JSLoader
 import com.chattriggers.ctjs.internal.utils.Initializer
+import com.mojang.blaze3d.platform.InputConstants
 import gg.essential.universal.UDesktop
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper
-import net.minecraft.client.option.KeyBinding
-import net.minecraft.client.util.InputUtil
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper
+import net.minecraft.client.KeyMapping
+import net.minecraft.resources.Identifier
 import org.lwjgl.glfw.GLFW
 import java.awt.Color
 import java.io.BufferedReader
@@ -20,130 +21,149 @@ import java.io.File
 import java.io.InputStreamReader
 import java.io.PrintWriter
 import java.net.ServerSocket
+import java.net.Socket
+import java.net.SocketException
 import java.net.URLClassLoader
 import java.net.URLDecoder
 import java.nio.charset.Charset
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.concurrent.thread
 import kotlin.io.path.Path
 
-/**
- * Responsible for spawning and managing a separate Java console process (which uses AWT)
- *
- * As this console runs in a completely separate process, we use sockets to communicate
- * back and forth. The remote process is referred to as the "Client", and this process
- * (the main MC process) is referred to as the "Host". The semantics line up with the
- * naming scheme of the messages passed in the socket connection (H2C/C2H).
- *
- * Why a separate process? AWT is unfortunately incompatible with GLFW, which is an issue
- * on newer versions of MC that use LWJGL 3. So much so that [net.minecraft.client.main.Main]
- * sets the AWT headless property to prevent its use on the render thread. Spawning a
- * new process gives us a new main thread without GLFW.
- *
- * Each console gets its own Host/Client pair running on their own port, so there will be
- * `<number of loaders> + 1` sockets (the extra 1 is for the generic console).
- */
+/** Manages the process-global external console and its reconnectable socket. */
 object ConsoleHostProcess : Initializer {
-    private var PORT = 9002
-    private var running = true
-    private lateinit var socketOut: PrintWriter
-    private lateinit var process: Process
+    private const val PORT = 9002
+    private val running = AtomicBoolean(true)
+    private val stateLock = Any()
+    private val pendingMessages = MessageBacklog<H2CMessage>()
 
-    // We will buffer all message that are attempted to be sent until we connect to a
-    // client socket. This allows us to handle early events (e.g. errors that happen during
-    // dynamic mixin application)
+    @Volatile
     private var connected = false
-    private val pendingMessages = mutableListOf<H2CMessage>()
+    private var socketOut: PrintWriter? = null
+    private var clientSocket: Socket? = null
+    private var serverSocket: ServerSocket? = null
+    private var process: Process? = null
 
-    init {
-        thread { hostMain() }
-    }
+    private val hostThread = thread(name = "CTJS console host") { hostMain() }
 
     override fun init() {
-        val keybind = KeyBindingHelper.registerKeyBinding(
-            KeyBinding(
+        val keybind = KeyMappingHelper.registerKeyMapping(
+            KeyMapping(
                 "ctjs.key.binding.console",
-                InputUtil.Type.KEYSYM,
+                InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_GRAVE_ACCENT,
-                "ctjs.key.category",
+                KeyMapping.Category.register(Identifier.fromNamespaceAndPath("ctjs", "key.category")),
             )
         )
 
         CTEvents.RENDER_GAME.register {
-            if (keybind.wasPressed())
+            if (keybind.consumeClick())
                 show()
         }
     }
 
     private fun hostMain() {
-        // Spawn the Client process. This remote process can be easily debugged in IntelliJ by
-        // adding the Remote JVM Debug command line arguments after the class path argument, and
-        // then simply placing a breakpoint anywhere in the RemoteConsoleClient class.
+        try {
+            val classpath = buildConsoleClasspath()
+            val server = ServerSocket(PORT)
+            synchronized(stateLock) { serverSocket = server }
+            startClientProcess(classpath)
 
-        val urlObjects = (Thread.currentThread().contextClassLoader.parent as URLClassLoader).urLs
-        val urls = urlObjects.joinToString(File.pathSeparator) {
-            val str = if (UDesktop.isWindows) it.toString().replace("file:/", "") else it.toString()
-            URLDecoder.decode(str, Charset.defaultCharset())
+            while (running.get()) {
+                val socket = try {
+                    server.accept()
+                } catch (e: SocketException) {
+                    if (!running.get()) break else throw e
+                }
+                serveClient(socket)
+            }
+        } catch (e: Throwable) {
+            if (running.get())
+                e.printStackTrace()
+        } finally {
+            synchronized(stateLock) {
+                connected = false
+                socketOut = null
+                clientSocket = null
+                serverSocket = null
+            }
         }
+    }
 
-        process = ProcessBuilder()
-            .directory(File("."))
-            .command(
-                Path(System.getProperty("java.home"), "bin", "java").toString(),
-                "-cp",
-                urls,
-                ConsoleClientProcess::class.qualifiedName,
-                PORT.toString(),
-                ProcessHandle.current().pid().toString(),
-            )
-            .start()
+    private fun buildConsoleClasspath(): String {
+        val urls = (Thread.currentThread().contextClassLoader.parent as URLClassLoader).urLs
+        return urls.joinToString(File.pathSeparator) {
+            val value = if (UDesktop.isWindows) it.toString().replace("file:/", "") else it.toString()
+            URLDecoder.decode(value, Charset.defaultCharset())
+        }
+    }
 
-        while (running) {
-            ServerSocket(PORT).accept().use { socket ->
-                socketOut = PrintWriter(socket.outputStream, true, Charsets.UTF_8)
-                val socketIn = BufferedReader(InputStreamReader(socket.inputStream, Charsets.UTF_8))
-                connected = true
-
-                val initMessage = InitMessage(
-                    CTJS.MOD_VERSION,
-                    ConfigUpdateMessage.constructFromConfig(Config.ConsoleSettings.make()),
-                    this::class.java.getResourceAsStream("/assets/ctjs/FiraCode-Regular.otf")?.readAllBytes(),
+    private fun startClientProcess(classpath: String) {
+        synchronized(stateLock) {
+            if (process != null || !running.get())
+                return
+            process = ProcessBuilder()
+                .directory(File("."))
+                .command(
+                    Path(System.getProperty("java.home"), "bin", "java").toString(),
+                    "-cp",
+                    classpath,
+                    ConsoleClientProcess::class.qualifiedName,
+                    PORT.toString(),
+                    ProcessHandle.current().pid().toString(),
                 )
+                .start()
+        }
+    }
 
-                synchronized(socketOut) {
-                    socketOut.println(Json.encodeToString<H2CMessage>(initMessage))
-                    pendingMessages.forEach { socketOut.println(Json.encodeToString<H2CMessage>(it)) }
-                }
-
-                while (running) {
-                    val messageText = try {
-                        socketIn.readLine()
-                    } catch (_: Throwable) {
-                        println("Received error, reopening the connection")
-                        return@use
-                    }
-
-                    if (messageText == null) {
-                        Thread.sleep(50)
-                        continue
-                    }
-
-                    when (val message = Json.decodeFromString<C2HMessage>(messageText)) {
-                        is EvalTextMessage -> {
-                            val result = JSLoader.eval(message.string) ?: continue
-                            trySendMessage(EvalResultMessage(message.id, result))
-                        }
-                        is FontSizeMessage -> {
-                            val newValue = Config.consoleFontSize + message.delta
-
-                            Config.consoleFontSize = newValue.coerceIn(6..32)
-                            onConsoleSettingsChanged(Config.ConsoleSettings.make())
-                        }
-                        ReloadCTMessage -> Client.scheduleTask { CTJS.load() }
-                    }
-                }
+    private fun serveClient(socket: Socket) {
+        synchronized(stateLock) { clientSocket = socket }
+        socket.use {
+            val writer = PrintWriter(socket.outputStream, true, Charsets.UTF_8)
+            val reader = BufferedReader(InputStreamReader(socket.inputStream, Charsets.UTF_8))
+            synchronized(stateLock) {
+                socketOut = writer
+                connected = true
             }
 
+            val font = javaClass.getResourceAsStream("/assets/ctjs/FiraCode-Regular.otf")?.use {
+                it.readAllBytes()
+            }
+            send(
+                writer,
+                InitMessage(
+                    CTJS.MOD_VERSION,
+                    ConfigUpdateMessage.constructFromConfig(Config.ConsoleSettings.make()),
+                    font,
+                )
+            )
+            pendingMessages.flush { send(writer, it) }
+
+            while (running.get()) {
+                val messageText = try {
+                    reader.readLine()
+                } catch (_: Throwable) {
+                    break
+                } ?: break
+
+                when (val message = Json.decodeFromString<C2HMessage>(messageText)) {
+                    is EvalTextMessage -> {
+                        val result = JSLoader.eval(message.string) ?: continue
+                        trySendMessage(EvalResultMessage(message.id, result))
+                    }
+                    is FontSizeMessage -> {
+                        Config.consoleFontSize = (Config.consoleFontSize + message.delta).coerceIn(6..32)
+                        onConsoleSettingsChanged(Config.ConsoleSettings.make())
+                    }
+                    ReloadCTMessage -> Client.scheduleSystemTask { CTJS.load() }
+                }
+            }
+        }
+
+        synchronized(stateLock) {
             connected = false
+            socketOut = null
+            clientSocket = null
         }
     }
 
@@ -168,20 +188,42 @@ object ConsoleHostProcess : Initializer {
     fun show() = trySendMessage(OpenMessage)
 
     fun close() {
-        trySendMessage(TerminateMessage)
-        process.destroy()
+        if (!running.compareAndSet(true, false))
+            return
+
+        synchronized(stateLock) {
+            socketOut?.let { send(it, TerminateMessage) }
+            clientSocket?.close()
+            serverSocket?.close()
+            process?.destroy()
+        }
+        if (Thread.currentThread() !== hostThread)
+            hostThread.join(2_000)
+        process?.takeIf(Process::isAlive)?.destroyForcibly()
+        pendingMessages.clear()
     }
 
     fun onConsoleSettingsChanged(settings: Config.ConsoleSettings) =
         trySendMessage(ConfigUpdateMessage.constructFromConfig(settings))
 
     private fun trySendMessage(message: H2CMessage) {
-        if (connected) {
-            synchronized(socketOut) {
-                socketOut.println(Json.encodeToString(message))
+        synchronized(stateLock) {
+            val writer = socketOut
+            if (running.get() && connected && writer != null) {
+                if (!send(writer, message)) {
+                    connected = false
+                    pendingMessages.add(message)
+                }
+            } else if (running.get()) {
+                pendingMessages.add(message)
             }
-        } else {
-            pendingMessages.add(message)
         }
     }
+
+    private fun send(writer: PrintWriter, message: H2CMessage): Boolean {
+        writer.println(Json.encodeToString(message))
+        return !writer.checkError()
+    }
+
+    internal fun pendingMessageCount(): Int = pendingMessages.size()
 }

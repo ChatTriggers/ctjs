@@ -5,15 +5,15 @@ import com.chattriggers.ctjs.api.world.PotionEffect
 import com.chattriggers.ctjs.api.world.PotionEffectType
 import com.chattriggers.ctjs.MCEntity
 import com.chattriggers.ctjs.MCLivingEntity
-import net.minecraft.entity.EquipmentSlot
-import net.minecraft.registry.Registries
+import net.minecraft.world.entity.EquipmentSlot
+import net.minecraft.core.registries.BuiltInRegistries
 
 open class LivingEntity(override val mcValue: MCLivingEntity) : Entity(mcValue) {
     fun getActivePotionEffects(): List<PotionEffect> {
-        return mcValue.statusEffects.map(::PotionEffect)
+        return mcValue.activeEffects.map(::PotionEffect)
     }
 
-    fun canSeeEntity(other: MCEntity) = mcValue.canSee(other)
+    fun canSeeEntity(other: MCEntity) = mcValue.hasLineOfSight(other)
 
     fun canSeeEntity(other: Entity) = canSeeEntity(other.toMC())
 
@@ -25,7 +25,7 @@ open class LivingEntity(override val mcValue: MCLivingEntity) : Entity(mcValue) 
      * @return the item in said slot
      */
     fun getStackInSlot(slot: Int): Item? {
-        return mcValue.getEquippedStack(EquipmentSlot.entries[slot])?.let(Item::fromMC)
+        return mcValue.getItemBySlot(EquipmentSlot.entries[slot]).let(Item::fromMC)
     }
 
     fun getHP() = mcValue.health
@@ -34,13 +34,13 @@ open class LivingEntity(override val mcValue: MCLivingEntity) : Entity(mcValue) 
 
     fun getAbsorption() = mcValue.absorptionAmount
 
-    fun getAge() = mcValue.age
+    fun getAge() = mcValue.tickCount
 
-    fun getArmorValue() = mcValue.armor
+    fun getArmorValue() = mcValue.armorValue
 
-    fun isPotionActive(id: Int) = mcValue.hasStatusEffect(Registries.STATUS_EFFECT.getEntry(id).get())
+    fun isPotionActive(id: Int) = mcValue.hasEffect(BuiltInRegistries.MOB_EFFECT.get(id).orElseThrow())
 
-    fun isPotionActive(type: PotionEffectType) = mcValue.hasStatusEffect(Registries.STATUS_EFFECT.getEntry(type.type))
+    fun isPotionActive(type: PotionEffectType) = mcValue.hasEffect(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(type.type))
 
     fun isPotionActive(effect: PotionEffect) = isPotionActive(effect.type)
 }

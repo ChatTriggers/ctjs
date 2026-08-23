@@ -24,47 +24,23 @@ public interface ParticleAccessor {
     @Accessor(value = "z")
     void setZ(double value);
 
-    @Accessor
+    @Accessor("xd")
     double getVelocityX();
 
-    @Accessor
+    @Accessor("xd")
     void setVelocityX(double value);
 
-    @Accessor
+    @Accessor("yd")
     double getVelocityY();
 
-    @Accessor
+    @Accessor("yd")
     void setVelocityY(double value);
 
-    @Accessor
+    @Accessor("zd")
     double getVelocityZ();
 
-    @Accessor
+    @Accessor("zd")
     void setVelocityZ(double value);
-
-    @Accessor
-    float getRed();
-
-    @Accessor
-    void setRed(float value);
-
-    @Accessor
-    float getGreen();
-
-    @Accessor
-    void setGreen(float value);
-
-    @Accessor
-    float getBlue();
-
-    @Accessor
-    void setBlue(float value);
-
-    @Accessor
-    float getAlpha();
-
-    @Accessor
-    void setAlpha(float value);
 
     @Accessor
     int getAge();
@@ -72,27 +48,27 @@ public interface ParticleAccessor {
     @Accessor
     void setAge(int value);
 
-    @Accessor
+    @Accessor("xo")
     double getPrevPosX();
 
-    @Accessor
+    @Accessor("xo")
     void setPrevPosX(double value);
 
-    @Accessor
+    @Accessor("yo")
     double getPrevPosY();
 
-    @Accessor
+    @Accessor("yo")
     void setPrevPosY(double value);
 
-    @Accessor
+    @Accessor("zo")
     double getPrevPosZ();
 
-    @Accessor
+    @Accessor("zo")
     void setPrevPosZ(double value);
 
-    @Accessor
+    @Accessor("removed")
     boolean getDead();
 
-    @Accessor
+    @Accessor("removed")
     void setDead(boolean value);
 }

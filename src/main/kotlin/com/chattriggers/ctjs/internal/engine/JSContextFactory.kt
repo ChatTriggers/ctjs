@@ -9,19 +9,41 @@ import org.mozilla.javascript.ContextFactory
 import org.mozilla.javascript.WrapFactory
 import java.io.File
 import java.net.URL
-import java.net.URLClassLoader
 
 object JSContextFactory : ContextFactory() {
-    private val classLoader = ModifiedURLClassLoader()
+    private val loaderLock = Any()
+    private val bootstrapClassLoader = javaClass.classLoader
+
+    @Volatile
+    private var generationClassLoader: GenerationModuleClassLoader? = null
+
     var optimize = true
 
-    fun addAllURLs(urls: List<URL>) = classLoader.addAllURLs(urls)
+    internal fun stageGenerationLoader(urls: Collection<URL>) =
+        GenerationModuleClassLoader.stage(urls, bootstrapClassLoader)
+
+    internal fun activateGenerationLoader(loader: GenerationModuleClassLoader) {
+        check(loader.isActive) { "Cannot publish an inactive module classloader" }
+        synchronized(loaderLock) {
+            generationClassLoader = loader
+        }
+    }
+
+    internal fun deactivateGenerationLoader(loader: GenerationModuleClassLoader) {
+        synchronized(loaderLock) {
+            if (generationClassLoader === loader)
+                generationClassLoader = null
+        }
+    }
+
+    internal fun activeGenerationLoader(): GenerationModuleClassLoader? =
+        generationClassLoader?.takeIf { it.isActive }
 
     override fun onContextCreated(cx: Context) {
         super.onContextCreated(cx)
 
         cx.debugOutputPath = File(".", "DEBUG")
-        cx.applicationClassLoader = classLoader
+        cx.applicationClassLoader = activeGenerationLoader() ?: bootstrapClassLoader
         cx.optimizationLevel = if (optimize) 9 else 0
         cx.languageVersion = Context.VERSION_ES6
         cx.errorReporter = JSErrorReporter
@@ -41,18 +63,5 @@ object JSContextFactory : ContextFactory() {
         }
 
         return super.hasFeature(cx, featureIndex)
-    }
-
-    private class ModifiedURLClassLoader : URLClassLoader(arrayOf(), javaClass.classLoader) {
-        val sources = mutableSetOf<URL>()
-
-        fun addAllURLs(urls: List<URL>) {
-            (urls - sources).forEach(::addURL)
-        }
-
-        public override fun addURL(url: URL) {
-            super.addURL(url)
-            sources.add(url)
-        }
     }
 }

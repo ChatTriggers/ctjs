@@ -6,12 +6,12 @@ import com.chattriggers.ctjs.api.render.Renderer
 import com.chattriggers.ctjs.internal.NameTagOverridable
 import com.chattriggers.ctjs.MCTeam
 import com.chattriggers.ctjs.internal.utils.asMixin
-import net.minecraft.client.network.PlayerListEntry
-import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.text.Text
+import net.minecraft.client.multiplayer.PlayerInfo
+import net.minecraft.world.entity.player.Player
+import net.minecraft.network.chat.Component
 import org.mozilla.javascript.NativeObject
 
-class PlayerMP(override val mcValue: PlayerEntity) : LivingEntity(mcValue) {
+class PlayerMP(override val mcValue: Player) : LivingEntity(mcValue) {
     fun isSpectator() = mcValue.isSpectator
 
     fun getPing(): Int {
@@ -19,7 +19,8 @@ class PlayerMP(override val mcValue: PlayerEntity) : LivingEntity(mcValue) {
     }
 
     fun getTeam(): Team? {
-        return getPlayerInfo()?.scoreboardTeam?.let(::Team)
+        val team = getPlayerInfo()?.team ?: return null
+        return Team(team)
     }
 
     /**
@@ -30,7 +31,7 @@ class PlayerMP(override val mcValue: PlayerEntity) : LivingEntity(mcValue) {
     fun getDisplayName() = getPlayerName(getPlayerInfo())
 
     fun setTabDisplayName(textComponent: TextComponent) {
-        getPlayerInfo()?.displayName = textComponent
+        getPlayerInfo()?.tabListDisplayName = textComponent
     }
 
     /**
@@ -54,15 +55,15 @@ class PlayerMP(override val mcValue: PlayerEntity) : LivingEntity(mcValue) {
         Renderer.drawPlayer(obj)
     }
 
-    private fun getPlayerName(playerListEntry: PlayerListEntry?): TextComponent {
-        return playerListEntry?.displayName?.let { TextComponent(it) }
+    private fun getPlayerName(playerListEntry: PlayerInfo?): TextComponent {
+        return playerListEntry?.tabListDisplayName?.let { TextComponent(it) }
             ?: TextComponent(
-                MCTeam.decorateName(
-                    playerListEntry?.scoreboardTeam,
-                    Text.of(playerListEntry?.profile?.name)
+                MCTeam.formatNameForTeam(
+                    playerListEntry?.team,
+                    Component.literal(playerListEntry?.profile?.name.orEmpty())
                 )
             )
     }
 
-    private fun getPlayerInfo() = Client.getConnection()?.getPlayerListEntry(mcValue.uuid)
+    private fun getPlayerInfo() = Client.getConnection()?.getPlayerInfo(mcValue.uuid)
 }

@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "release": {
+    "name": "CTJS Reloaded",
+    "version": "3.0.0",
+    "status": "READY_FOR_RELEASE",
+    "date": "2026-08-24"
+  },
+  "artifact": {
+    "filename": "ctjs-reloaded-3.0.0.jar",
+    "path": "build/libs/ctjs-reloaded-3.0.0.jar",
+    "sizeBytes": 8116726,
+    "sha256": "5C76A412AE45952922C13033F057C377C0CB2954DBB15AF14764042F84AD0003",
+    "prismPath": "%APPDATA%/PrismLauncher/instances/CTJSR-26.1.2/minecraft/mods/ctjs-reloaded-3.0.0.jar",
+    "prismSha256": "5C76A412AE45952922C13033F057C377C0CB2954DBB15AF14764042F84AD0003",
+    "hashMatch": true,
+    "embeddedModVersion": "3.0.0"
+  },
+  "buildEnvironment": {
+    "operatingSystem": "Microsoft Windows 11 Pro 10.0.26200",
+    "java": "25.0.1 LTS",
+    "gradle": "9.5.1",
+    "fabricLoom": "1.17.19",
+    "kotlin": "2.3.21",
+    "cleanSnapshot": true,
+    "buildCacheEnabled": false,
+    "baseCommit": "3921da9991ac09b872db63a1f4fd5e5cc928c032",
+    "branch": "port/26.1.2"
+  },
+  "runtimeRequirements": {
+    "minecraft": "26.1.2",
+    "fabricLoader": "0.19.3 or newer",
+    "fabricApi": "0.155.2+26.1.2 or newer compatible build",
+    "fabricLanguageKotlin": "1.13.11+kotlin.2.3.21 or newer compatible build",
+    "java": "25 or newer"
+  },
+  "verification": {
+    "nodeCheck": "PASS",
+    "tests": 104,
+    "testFailures": 0,
+    "check": "PASS",
+    "checkKotlinAbi": "PASS",
+    "jar": "PASS",
+    "gitDiffCheck": "PASS",
+    "prismReleaseRuntime": "PASS",
+    "runtimeGenerations": 4,
+    "runtimeReloads": 3,
+    "runtimeRenderFrames": 300,
+    "chatTriggerFirings": 3,
+    "compatRuntimeA": "PASS",
+    "compatTessellatorFrames": 33,
+    "newLoggerErrors": 0,
+    "unexpectedCoreExceptions": 0,
+    "legacyModuleFiles": 537,
+    "legacyModuleSha256Diff": 0,
+    "normalShutdown": true
+  },
+  "knownBoundaryErrors": [
+    "BloomCore setFilteredClass(object)",
+    "ChumuAddons setFilteredClass(object)",
+    "legacy packet and direct old net.minecraft calls in legacy addons"
+  ],
+  "gitPreparation": {
+    "recommendedCommit": "Release CTJS Reloaded 3.0.0",
+    "recommendedTag": "v3.0.0",
+    "commitCreated": false,
+    "tagCreated": false,
+    "remotePublished": false
+  }
+}

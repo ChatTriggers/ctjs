@@ -4,12 +4,12 @@ import com.chattriggers.ctjs.api.client.Client
 import com.chattriggers.ctjs.api.message.TextComponent
 import com.chattriggers.ctjs.internal.mixins.BookScreenAccessor
 import com.chattriggers.ctjs.internal.utils.asMixin
-import net.minecraft.client.gui.screen.ingame.BookScreen
-import net.minecraft.text.StringVisitable
+import net.minecraft.client.gui.screens.inventory.BookViewScreen
+import net.minecraft.network.chat.FormattedText
 
 class Book {
-    private var screen: BookScreen? = null
-    private val customContents = BookScreen.Contents(emptyList())
+    private var screen: BookViewScreen? = null
+    private val customContents = BookViewScreen.BookAccess(mutableListOf())
 
     /**
      * Add a page to the book.
@@ -18,7 +18,7 @@ class Book {
      * @return the current book to allow method chaining
      */
     fun addPage(contents: TextComponent) = apply {
-        customContents.pages.add(contents)
+        customContents.pages().add(contents)
     }
 
     /**
@@ -39,11 +39,11 @@ class Book {
      * @return the current book to allow method chaining
      */
     fun insertPage(pageIndex: Int, message: TextComponent) = apply {
-        require(pageIndex in customContents.pages.indices) {
+        require(pageIndex in customContents.pages().indices) {
             println("Invalid index $pageIndex for Book with ${customContents.pageCount} pages")
         }
 
-        customContents.pages.add(pageIndex, message)
+        customContents.pages().add(pageIndex, message)
         screen?.asMixin<BookScreenAccessor>()?.invokeUpdatePageButtons()
     }
 
@@ -57,11 +57,11 @@ class Book {
      * @return the current book to allow method chaining
      */
     fun setPage(pageIndex: Int, message: TextComponent) = apply {
-        require(pageIndex in customContents.pages.indices) {
+        require(pageIndex in customContents.pages().indices) {
             println("Invalid index $pageIndex for Book with ${customContents.pageCount} pages")
         }
 
-        customContents.pages[pageIndex] = message
+        customContents.pages()[pageIndex] = message
         screen?.asMixin<BookScreenAccessor>()?.invokeUpdatePageButtons()
     }
 
@@ -69,7 +69,7 @@ class Book {
 
     @JvmOverloads
     fun display(pageIndex: Int = 0) {
-        screen = BookScreen(customContents)
+        screen = BookViewScreen(customContents)
         Client.scheduleTask {
             Client.getMinecraft().setScreen(screen)
             screen!!.setPage(pageIndex)

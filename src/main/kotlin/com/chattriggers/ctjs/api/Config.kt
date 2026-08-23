@@ -2,6 +2,7 @@ package com.chattriggers.ctjs.api
 
 import com.chattriggers.ctjs.CTJS
 import com.chattriggers.ctjs.engine.Console
+import com.chattriggers.ctjs.internal.engine.module.ModuleManager
 import com.chattriggers.ctjs.internal.utils.CategorySorting
 import gg.essential.vigilance.Vigilant
 import gg.essential.vigilance.data.Property
@@ -11,6 +12,10 @@ import java.io.File
 import kotlin.reflect.KProperty
 
 object Config : Vigilant(File(CTJS.configLocation, "ChatTriggers.toml"), sortingBehavior = CategorySorting) {
+    @JvmStatic
+    val modulesFolder: String
+        get() = ModuleManager.modulesFolder.invariantSeparatorsPath
+
     @JvmStatic
     @Property(
         PropertyType.SWITCH,

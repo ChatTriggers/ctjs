@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "globals": [
+    { "name": "register", "source": "global.register" },
+    { "name": "createCustomTrigger", "source": "global.createCustomTrigger" },
+    { "name": "cancel", "source": "global.cancel" },
+    { "name": "GuiHandler", "source": "global.GuiHandler" },
+    { "name": "Keyboard", "source": "global.Keyboard" },
+    { "name": "Thread", "source": "\"com.chattriggers.ctjs.engine.WrappedThread\", \"Thread\"" },
+    { "name": "Message", "source": "\"com.chattriggers.ctjs.api.compat.Message\"" },
+    { "name": "Tessellator", "source": "\"com.chattriggers.ctjs.api.compat.Tessellator\"" },
+    { "name": "Hand", "source": "\"net.minecraft.world.InteractionHand\", \"Hand\"" },
+    { "name": "setTimeout", "source": "global.setTimeout" },
+    { "name": "clearTimeout", "source": "global.clearTimeout" },
+    { "name": "console", "source": "Object.defineProperty(globalObject, \"console\"" }
+  ],
+  "prototypeAliases": [
+    { "name": "String.addFormatting", "source": "String.prototype.addFormatting" },
+    { "name": "String.addColor", "source": "String.prototype.addColor" },
+    { "name": "String.removeFormatting", "source": "String.prototype.removeFormatting" },
+    { "name": "String.replaceFormatting", "source": "String.prototype.replaceFormatting" }
+  ],
+  "engineContracts": [
+    {
+      "name": "CommonJS default fallback",
+      "implementation": "com.chattriggers.ctjs.internal.engine.CommonJsExports.ensureDefault"
+    }
+  ]
+}

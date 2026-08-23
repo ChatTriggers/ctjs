@@ -1,12 +1,12 @@
 package com.chattriggers.ctjs.internal.mixins;
 
-import net.minecraft.client.world.ClientChunkManager;
-import net.minecraft.client.world.ClientWorld;
+import net.minecraft.client.multiplayer.ClientChunkCache;
+import net.minecraft.client.multiplayer.ClientLevel;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(ClientWorld.class)
+@Mixin(ClientLevel.class)
 public interface ClientWorldAccessor {
-    @Accessor
-    ClientChunkManager getChunkManager();
+    @Accessor("chunkSource")
+    ClientChunkCache getChunkManager();
 }

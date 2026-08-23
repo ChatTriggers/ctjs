@@ -113,8 +113,7 @@ internal class WrapOperationGenerator(
         }
     }
 
-    context(MethodAssembly)
-    override fun generateNotAttachedBehavior() {
+    override fun MethodAssembly.generateNotAttachedBehavior() {
         val operationType = Type.getType(Operation::class.java)
         val operationParameterIndex = signature.parameters.indexOfFirst {
             it.descriptor.toType() == operationType

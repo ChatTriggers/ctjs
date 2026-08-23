@@ -5,6 +5,9 @@ import net.minecraft.util.Util
 import java.io.*
 import java.net.UnknownHostException
 import java.nio.charset.Charset
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.StandardCopyOption
 import java.util.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
@@ -226,45 +229,74 @@ object FileLib {
     @Throws(IOException::class)
     @JvmStatic
     fun unzip(zipFilePath: String, destDirectory: String) {
-        val destDir = File(destDirectory)
-        if (!destDir.exists()) destDir.mkdir()
+        val destination = File(destDirectory).toPath().toAbsolutePath().normalize()
+        val parent = destination.parent ?: throw IOException("Destination has no parent: $destination")
+        Files.createDirectories(parent)
+        val staging = Files.createTempDirectory(parent, ".ctjs-unzip-")
 
-        val zipIn = ZipInputStream(FileInputStream(zipFilePath))
-        var entry: ZipEntry? = zipIn.nextEntry
-        // iterates over entries in the zip file
-        while (entry != null) {
-            val filePath = destDirectory + File.separator + entry.name
-            if (!entry.isDirectory) {
-                // if the entry is a file, extracts it
-                extractFile(zipIn, filePath)
-            } else {
-                // if the entry is a directory, make the directory
-                val dir = File(filePath)
-                dir.mkdir()
+        try {
+            var entries = 0
+            ZipInputStream(FileInputStream(zipFilePath)).use { zip ->
+                while (true) {
+                    val entry = zip.nextEntry ?: break
+                    entries++
+                    val output = safeZipDestination(staging, entry)
+                    if (entry.isDirectory) {
+                        Files.createDirectories(output)
+                    } else {
+                        output.parent?.let(Files::createDirectories)
+                        Files.newOutputStream(output).buffered().use { stream ->
+                            zip.copyTo(stream)
+                        }
+                    }
+                    zip.closeEntry()
+                }
             }
-            zipIn.closeEntry()
-            entry = zipIn.nextEntry
+            if (entries == 0)
+                throw IOException("Zip archive contains no entries")
+
+            commitExtractedFiles(staging, destination)
+        } catch (e: Exception) {
+            throw if (e is IOException) e else IOException("Failed to extract '$zipFilePath'", e)
+        } finally {
+            staging.toFile().deleteRecursively()
         }
-        zipIn.close()
     }
 
-    // helper method for unzipping
-    @Throws(IOException::class)
-    @JvmStatic
-    private fun extractFile(zipIn: ZipInputStream, filePath: String) {
-        val toWrite = File(filePath)
-        toWrite.parentFile.mkdirs()
-        toWrite.createNewFile()
-
-        val bos = BufferedOutputStream(FileOutputStream(filePath))
-        val bytesIn = ByteArray(4096)
-        var read = zipIn.read(bytesIn)
-        while (read != -1) {
-            bos.write(bytesIn, 0, read)
-            read = zipIn.read(bytesIn)
+    private fun safeZipDestination(root: Path, entry: ZipEntry): Path {
+        val name = entry.name.replace('\\', '/')
+        if (
+            name.startsWith('/') ||
+            name.startsWith("//") ||
+            WINDOWS_ABSOLUTE_PATH.matches(name)
+        ) {
+            throw IOException("Refusing absolute zip entry '${entry.name}'")
         }
-        bos.close()
+
+        val output = root.resolve(name).normalize()
+        if (!output.startsWith(root))
+            throw IOException("Refusing zip entry outside destination '${entry.name}'")
+        return output
     }
+
+    private fun commitExtractedFiles(staging: Path, destination: Path) {
+        Files.createDirectories(destination)
+        Files.walk(staging).use { paths ->
+            paths.sorted().forEach { source ->
+                if (source == staging)
+                    return@forEach
+                val target = destination.resolve(staging.relativize(source)).normalize()
+                if (Files.isDirectory(source)) {
+                    Files.createDirectories(target)
+                } else {
+                    target.parent?.let(Files::createDirectories)
+                    Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING)
+                }
+            }
+        }
+    }
+
+    private val WINDOWS_ABSOLUTE_PATH = Regex("^[A-Za-z]:/.*")
 
     private fun absoluteLocation(importName: String, fileLocation: String): String {
         return CTJS.MODULES_FOLDER + File.separator + importName + File.separator + fileLocation
@@ -299,7 +331,7 @@ object FileLib {
      */
     @JvmStatic
     fun open(url: String) {
-        Util.getOperatingSystem().open(url)
+        Util.getPlatform().openUri(url)
     }
 
     /**
@@ -309,6 +341,6 @@ object FileLib {
      */
     @JvmStatic
     fun open(path: File) {
-        Util.getOperatingSystem().open(path)
+        Util.getPlatform().openFile(path)
     }
 }

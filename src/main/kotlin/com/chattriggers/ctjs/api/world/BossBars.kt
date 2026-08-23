@@ -9,13 +9,13 @@ import com.chattriggers.ctjs.MCBossBarColor
 import com.chattriggers.ctjs.MCBossBarStyle
 import com.chattriggers.ctjs.internal.utils.asMixin
 import com.chattriggers.ctjs.internal.utils.getOption
-import net.minecraft.client.gui.hud.ClientBossBar
+import net.minecraft.client.gui.components.LerpingBossEvent
 import org.mozilla.javascript.NativeObject
 import java.util.*
 
 object BossBars {
     @JvmStatic
-    fun toMC() = Client.getMinecraft().inGameHud.bossBarHud
+    fun toMC() = Client.getMinecraft().gui.bossOverlay
 
     /**
      * Gets the list of currently shown [BossBar]s
@@ -67,7 +67,7 @@ object BossBars {
 
         val uuid = UUID.randomUUID()
 
-        val bossBar = ClientBossBar(
+        val bossBar = LerpingBossEvent(
             uuid,
             TextComponent(name),
             percent,
@@ -88,7 +88,7 @@ object BossBars {
      */
     @JvmStatic
     fun clearBossBars() {
-        toMC().clear()
+        toMC().reset()
     }
 
     /**
@@ -113,14 +113,14 @@ object BossBars {
         toMC().asMixin<BossBarHudAccessor>().bossBars.remove(bossBar.getUUID())
     }
 
-    class BossBar(override val mcValue: ClientBossBar) : CTWrapper<ClientBossBar> {
+    class BossBar(override val mcValue: LerpingBossEvent) : CTWrapper<LerpingBossEvent> {
         /**
          * Gets the UUID of this BossBar
          *
          * @return the uuid
          */
         fun getUUID(): UUID {
-            return mcValue.uuid
+            return mcValue.id
         }
 
         /**
@@ -146,7 +146,7 @@ object BossBars {
          *
          * @return how full the BossBar is
          */
-        fun getPercent(): Float = mcValue.percent
+        fun getPercent(): Float = mcValue.progress
 
         /**
          * Sets how full this BossBar is
@@ -154,7 +154,7 @@ object BossBars {
          * @param percent how full to set this BossBar. Must be between 0 and 1
          */
         fun setPercent(percent: Float) = apply {
-            mcValue.percent = percent.coerceIn(0f..1f)
+            mcValue.progress = percent.coerceIn(0f..1f)
         }
 
         /**
@@ -174,7 +174,7 @@ object BossBars {
         /**
          * Gets the style of this BossBar. e.g. how many notches are displayed
          */
-        fun getStyle(): Style = Style.fromMC(mcValue.style)
+        fun getStyle(): Style = Style.fromMC(mcValue.overlay)
 
         /**
          * Sets the style of this BossBar
@@ -183,13 +183,13 @@ object BossBars {
          * or a number of how many notches to put
          */
         fun setStyle(style: Any) = apply {
-            mcValue.style = Style.from(style).toMC()
+            mcValue.overlay = Style.from(style).toMC()
         }
 
         /**
          * Gets whether this BossBar darkens the sky
          */
-        fun shouldDarkenSky(): Boolean = mcValue.shouldDarkenSky()
+        fun shouldDarkenSky(): Boolean = mcValue.shouldDarkenScreen()
 
         /**
          * Sets whether this BossBar should darken the sky
@@ -197,14 +197,14 @@ object BossBars {
          * @param darken whether to darken the sky
          */
         fun setShouldDarkenSky(darken: Boolean) = apply {
-            mcValue.setDarkenSky(darken)
+            mcValue.setDarkenScreen(darken)
         }
 
         /**
          * Gets whether this BossBar will play dragon music.
          * This will do nothing when the player is not in the end dimension
          */
-        fun hasDragonMusic(): Boolean = mcValue.hasDragonMusic()
+        fun hasDragonMusic(): Boolean = mcValue.shouldPlayBossMusic()
 
         /**
          * Sets whether this BossBar will play dragon music
@@ -212,13 +212,13 @@ object BossBars {
          * @param music whether to play dragon music
          */
         fun setHasDragonMusic(music: Boolean) = apply {
-            mcValue.setDragonMusic(music)
+            mcValue.setPlayBossMusic(music)
         }
 
         /**
          * Gets whether this BossBar should thicken the fog around the player
          */
-        fun shouldThickenFog(): Boolean = mcValue.shouldThickenFog()
+        fun shouldThickenFog(): Boolean = mcValue.shouldCreateWorldFog()
 
         /**
          * Sets whether this BossBar should thicken the fog around the player
@@ -226,7 +226,7 @@ object BossBars {
          * @param fog whether to thicken the fog
          */
         fun setShouldThickenFog(fog: Boolean) = apply {
-            mcValue.setThickenFog(fog)
+            mcValue.setCreateWorldFog(fog)
         }
 
         override fun toString(): String {

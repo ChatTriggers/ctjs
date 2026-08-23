@@ -51,8 +51,7 @@ internal class ModifyArgsGenerator(
         }
     }
 
-    context(MethodAssembly)
-    override fun generateNotAttachedBehavior() {
+    override fun MethodAssembly.generateNotAttachedBehavior() {
         // This method is expected to leave something on the stack
         aconst_null
     }

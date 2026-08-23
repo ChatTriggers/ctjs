@@ -4,16 +4,15 @@ import com.chattriggers.ctjs.MCTeam
 import com.chattriggers.ctjs.api.CTWrapper
 import com.chattriggers.ctjs.api.entity.Team
 import com.chattriggers.ctjs.api.message.TextComponent
-import com.chattriggers.ctjs.internal.mixins.`Scoreboard$1Accessor`
-import com.chattriggers.ctjs.internal.utils.asMixin
 import gg.essential.elementa.state.BasicState
-import net.minecraft.scoreboard.ScoreAccess
-import net.minecraft.scoreboard.ScoreboardDisplaySlot
-import net.minecraft.scoreboard.ScoreboardObjective
-import net.minecraft.scoreboard.ScoreboardScore
-import net.minecraft.scoreboard.number.NumberFormat
-import net.minecraft.scoreboard.number.StyledNumberFormat
-import net.minecraft.text.Style
+import net.minecraft.world.scores.ScoreAccess
+import net.minecraft.world.scores.DisplaySlot
+import net.minecraft.world.scores.Objective
+import net.minecraft.world.scores.Score
+import net.minecraft.world.scores.ScoreHolder
+import net.minecraft.network.chat.numbers.NumberFormat
+import net.minecraft.network.chat.numbers.StyledFormat
+import net.minecraft.network.chat.Style
 import org.mozilla.javascript.NativeObject
 
 object Scoreboard {
@@ -31,7 +30,7 @@ object Scoreboard {
     fun getScoreboard() = toMC()
 
     @JvmStatic
-    fun getSidebar(): ScoreboardObjective? = toMC()?.getObjectiveForSlot(ScoreboardDisplaySlot.SIDEBAR)
+    fun getSidebar(): Objective? = toMC()?.getDisplayObjective(DisplaySlot.SIDEBAR)
 
     /**
      * Gets the top-most string which is displayed on the scoreboard. (doesn't have a score on the side).
@@ -125,10 +124,10 @@ object Scoreboard {
             return
         }
 
-        scoreboard.knownScoreHolders.forEach {
-            val scoreboardScore = scoreboard.getScore({ it.nameForScoreboard }, sidebarObjective) as? ScoreboardScore
-            if (scoreboardScore?.score == score) {
-                scoreboardScore.displayText = line
+        scoreboard.listPlayerScores(sidebarObjective).forEach {
+            if (it.value == score) {
+                val holder = ScoreHolder.forNameOnly(it.owner)
+                scoreboard.getOrCreatePlayerScore(holder, sidebarObjective, true).display(line)
             }
         }
     }
@@ -148,9 +147,9 @@ object Scoreboard {
         val scoreboard = toMC() ?: return
         val sidebarObjective = getSidebar() ?: return
 
-        val newLine = scoreboard.getOrCreateScore({ Math.random().toString() }, sidebarObjective, true)
-        newLine.displayText = line
-        newLine.score = score
+        val newLine = scoreboard.getOrCreatePlayerScore(ScoreHolder.forNameOnly(Math.random().toString()), sidebarObjective, true)
+        newLine.display(line)
+        newLine.set(score)
 
         updateNames()
     }
@@ -195,7 +194,7 @@ object Scoreboard {
      * @param name the name of the team
      */
     @JvmStatic
-    fun createTeam(name: String): Team = Team(toMC()!!.addTeam(name))
+    fun createTeam(name: String): Team = Team(toMC()!!.addPlayerTeam(name))
 
     private fun updateNames() {
         scoreboardNames.clear()
@@ -209,11 +208,15 @@ object Scoreboard {
         if (!customTitle)
             scoreboardTitle = TextComponent(objective.displayName)
 
-        val newScores = scoreboard.knownScoreHolders.asSequence().filter {
-            objective in scoreboard.getScoreHolderObjectives(it)
-        }.map {
-            scoreboard.getOrCreateScore(it, objective, true)
-        }.mapTo(mutableListOf(), ::Score)
+        val newScores = scoreboard.listPlayerScores(objective).mapTo(mutableListOf()) { entry ->
+            val holder = ScoreHolder.forNameOnly(entry.owner)
+            Score(
+                scoreboard.getOrCreatePlayerScore(holder, objective, true),
+                holder,
+                entry.display,
+                entry.numberFormatOverride,
+            )
+        }
 
         scoreboardNames = newScores.sortedWith(compareBy<Score> {
             it.getScore()
@@ -232,15 +235,20 @@ object Scoreboard {
         scoreboardTitle = TextComponent("")
     }
 
-    class Score(override val mcValue: ScoreAccess) : CTWrapper<ScoreAccess> {
-        private val scoreState = BasicState(mcValue.score)
-        private val nameState = BasicState(mcValue.displayText)
-        private val formatState = BasicState(mcValue.asMixin<`Scoreboard$1Accessor`>().score.numberFormat)
+    class Score(
+        override val mcValue: ScoreAccess,
+        private val holder: ScoreHolder,
+        initialDisplay: net.minecraft.network.chat.Component? = mcValue.display(),
+        initialNumberFormat: NumberFormat? = null,
+    ) : CTWrapper<ScoreAccess> {
+        private val scoreState = BasicState(mcValue.get())
+        private val nameState = BasicState(initialDisplay)
+        private val formatState = BasicState(initialNumberFormat)
         private val teamState = run {
             val scoreboard = Scoreboard.toMC()!!
-            val name = mcValue.asMixin<`Scoreboard$1Accessor`>().holder.nameForScoreboard
+            val name = holder.scoreboardName
 
-            BasicState(scoreboard.getScoreHolderTeam(name))
+            BasicState(scoreboard.getPlayersTeam(name))
         }
 
         /**
@@ -258,12 +266,12 @@ object Scoreboard {
          */
         fun setTeam(team: Team?) = apply {
             val scoreboard = Scoreboard.toMC()!!
-            val name = mcValue.asMixin<`Scoreboard$1Accessor`>().holder.nameForScoreboard
+            val name = holder.scoreboardName
 
             if (team == null) {
-                scoreboard.clearTeam(name)
+                scoreboard.removePlayerFromTeam(name)
             } else {
-                scoreboard.addScoreHolderToTeam(name, team.toMC())
+                scoreboard.addPlayerToTeam(name, team.toMC())
             }
 
             teamState.set(team?.toMC())
@@ -285,7 +293,7 @@ object Scoreboard {
          */
         fun setScore(score: Int) = apply {
             scoreState.set(score)
-            mcValue.score = score
+            mcValue.set(score)
         }
 
         /**
@@ -294,10 +302,10 @@ object Scoreboard {
          * @return the display name
          */
         fun getName(): TextComponent {
-            val name = mcValue.asMixin<`Scoreboard$1Accessor`>().holder.nameForScoreboard
+            val name = holder.scoreboardName
 
             return TextComponent(
-                MCTeam.decorateName(
+                MCTeam.formatNameForTeam(
                     getTeam()?.mcValue,
                     TextComponent(nameState.get() ?: name),
                 )
@@ -312,7 +320,7 @@ object Scoreboard {
          */
         fun setName(name: TextComponent?) = apply {
             nameState.set(name)
-            mcValue.displayText = name
+            mcValue.display(name)
         }
 
         /**
@@ -333,15 +341,15 @@ object Scoreboard {
          */
         fun setNumberFormat(format: Any?) = apply {
             val style = when (format) {
-                is CharSequence -> StyledNumberFormat(TextComponent(format.toString()).style)
-                is NativeObject -> StyledNumberFormat(TextComponent.jsObjectToStyle(format))
+                is CharSequence -> StyledFormat(TextComponent(format.toString()).style)
+                is NativeObject -> StyledFormat(TextComponent.jsObjectToStyle(format))
                 is NumberFormat -> format
-                is Number -> StyledNumberFormat(Style.EMPTY.withColor(format.toInt()))
+                is Number -> StyledFormat(Style.EMPTY.withColor(format.toInt()))
                 else -> null
             }
 
             formatState.set(style)
-            mcValue.setNumberFormat(style)
+            mcValue.numberFormatOverride(style)
         }
 
         /**
@@ -351,7 +359,7 @@ object Scoreboard {
             val scoreboard = Scoreboard.toMC() ?: return
             val sidebarObjective = getSidebar() ?: return
 
-            scoreboard.removeScore(toMC().asMixin<`Scoreboard$1Accessor`>().holder, sidebarObjective)
+            scoreboard.resetSinglePlayerScore(holder, sidebarObjective)
             updateNames()
         }
 

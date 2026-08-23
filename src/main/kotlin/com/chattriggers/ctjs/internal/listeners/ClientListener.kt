@@ -17,6 +17,8 @@ import com.chattriggers.ctjs.api.world.block.BlockPos
 import com.chattriggers.ctjs.internal.engine.CTEvents
 import com.chattriggers.ctjs.internal.engine.JSContextFactory
 import com.chattriggers.ctjs.internal.engine.JSLoader
+import com.chattriggers.ctjs.internal.lifecycle.GenerationTaskQueue
+import com.chattriggers.ctjs.internal.lifecycle.RuntimeOwner
 import com.chattriggers.ctjs.internal.utils.Initializer
 import gg.essential.universal.UMinecraft
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
@@ -25,9 +27,8 @@ import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents
 import net.fabricmc.fabric.api.client.screen.v1.ScreenKeyboardEvents
 import net.fabricmc.fabric.api.event.player.*
-import net.minecraft.text.Text
-import net.minecraft.util.ActionResult
-import net.minecraft.util.TypedActionResult
+import net.minecraft.network.chat.Component
+import net.minecraft.world.InteractionResult
 import org.lwjgl.glfw.GLFW
 import org.mozilla.javascript.Context
 
@@ -35,10 +36,8 @@ object ClientListener : Initializer {
     private var ticksPassed: Int = 0
     val chatHistory = mutableListOf<TextComponent>()
     val actionBarHistory = mutableListOf<TextComponent>()
-    private val tasks = mutableListOf<Task>()
+    private val tasks = GenerationTaskQueue()
     private lateinit var packetContext: Context
-
-    class Task(var delay: Int, val callback: () -> Unit)
 
     override fun init() {
         packetContext = JSContextFactory.enterContext()
@@ -53,16 +52,11 @@ object ClientListener : Initializer {
         }
 
         ClientTickEvents.START_CLIENT_TICK.register {
-            synchronized(tasks) {
-                tasks.removeAll {
-                    if (it.delay-- <= 0) {
-                        UMinecraft.getMinecraft().submit(it.callback)
-                        true
-                    } else false
-                }
+            tasks.tick { callback ->
+                UMinecraft.getMinecraft().submit(callback)
             }
 
-            if (World.isLoaded() && World.toMC()?.tickManager?.shouldTick() == true) {
+            if (World.isLoaded() && World.toMC()?.tickRateManager()?.runsNormally() == true) {
                 TriggerType.TICK.triggerAll(ticksPassed)
                 ticksPassed++
 
@@ -87,22 +81,28 @@ object ClientListener : Initializer {
 
         ScreenEvents.BEFORE_INIT.register { _, screen, _, _ ->
             // TODO: Why does Renderer.drawString not work in here?
-            ScreenEvents.beforeRender(screen).register { _, stack, mouseX, mouseY, partialTicks ->
-                Renderer.withMatrix(stack.matrices, partialTicks) {
+            ScreenEvents.beforeExtract(screen).register { _, extractor, mouseX, mouseY, partialTicks ->
+                Renderer.withGuiGraphics(extractor, partialTicks) {
                     TriggerType.GUI_RENDER.triggerAll(mouseX, mouseY, screen)
                 }
             }
 
             // TODO: Why does Renderer.drawString not work in here?
-            ScreenEvents.afterRender(screen).register { _, stack, mouseX, mouseY, partialTicks ->
-                Renderer.withMatrix(stack.matrices, partialTicks) {
+            ScreenEvents.afterExtract(screen).register { _, extractor, mouseX, mouseY, partialTicks ->
+                Renderer.withGuiGraphics(extractor, partialTicks) {
                     TriggerType.POST_GUI_RENDER.triggerAll(mouseX, mouseY, screen, partialTicks)
                 }
             }
 
-            ScreenKeyboardEvents.allowKeyPress(screen).register { _, key, scancode, _ ->
+            ScreenKeyboardEvents.allowKeyPress(screen).register { _, keyEvent ->
                 val event = CancellableEvent()
-                TriggerType.GUI_KEY.triggerAll(GLFW.glfwGetKeyName(key, scancode), key, screen, event)
+                TriggerType.GUI_KEY.triggerAll(
+                    // GLFW returns null for non-printable keys. This is the public nullable contract.
+                    GLFW.glfwGetKeyName(keyEvent.key, keyEvent.scancode),
+                    keyEvent.key,
+                    screen,
+                    event,
+                )
                 !event.isCancelled()
             }
         }
@@ -124,7 +124,7 @@ object ClientListener : Initializer {
         }
 
         CTEvents.RENDER_OVERLAY.register { stack, partialTicks ->
-            Renderer.withMatrix(stack, partialTicks) {
+            Renderer.withGuiGraphics(stack, partialTicks) {
                 TriggerType.RENDER_OVERLAY.triggerAll()
             }
         }
@@ -142,7 +142,7 @@ object ClientListener : Initializer {
         }
 
         AttackBlockCallback.EVENT.register { player, _, _, pos, direction ->
-            if (!player.world.isClient) return@register ActionResult.PASS
+            if (!player.level().isClientSide) return@register InteractionResult.PASS
             val event = CancellableEvent()
 
             TriggerType.PLAYER_INTERACT.triggerAll(
@@ -151,11 +151,11 @@ object ClientListener : Initializer {
                 event,
             )
 
-            if (event.isCancelled()) ActionResult.FAIL else ActionResult.PASS
+            if (event.isCancelled()) InteractionResult.FAIL else InteractionResult.PASS
         }
 
         AttackEntityCallback.EVENT.register { player, _, _, entity, _ ->
-            if (!player.world.isClient) return@register ActionResult.PASS
+            if (!player.level().isClientSide) return@register InteractionResult.PASS
             val event = CancellableEvent()
 
             TriggerType.PLAYER_INTERACT.triggerAll(
@@ -164,33 +164,30 @@ object ClientListener : Initializer {
                 event,
             )
 
-            if (event.isCancelled()) ActionResult.FAIL else ActionResult.PASS
+            if (event.isCancelled()) InteractionResult.FAIL else InteractionResult.PASS
         }
 
         CTEvents.BREAK_BLOCK.register { pos ->
             val event = CancellableEvent()
             TriggerType.PLAYER_INTERACT.triggerAll(PlayerInteraction.BreakBlock, World.getBlockAt(BlockPos(pos)), event)
-
-            check(!event.isCancelled()) {
-                "PlayerInteraction event of type BreakBlock is not cancellable"
-            }
+            !event.isCancelled()
         }
 
         UseBlockCallback.EVENT.register { player, _, hand, hitResult ->
-            if (!player.world.isClient) return@register ActionResult.PASS
+            if (!player.level().isClientSide) return@register InteractionResult.PASS
             val event = CancellableEvent()
 
             TriggerType.PLAYER_INTERACT.triggerAll(
                 PlayerInteraction.UseBlock(hand),
-                World.getBlockAt(BlockPos(hitResult.blockPos)).withFace(BlockFace.fromMC(hitResult.side)),
+                World.getBlockAt(BlockPos(hitResult.blockPos)).withFace(BlockFace.fromMC(hitResult.direction)),
                 event,
             )
 
-            if (event.isCancelled()) ActionResult.FAIL else ActionResult.PASS
+            if (event.isCancelled()) InteractionResult.FAIL else InteractionResult.PASS
         }
 
         UseEntityCallback.EVENT.register { player, _, hand, entity, _ ->
-            if (!player.world.isClient) return@register ActionResult.PASS
+            if (!player.level().isClientSide) return@register InteractionResult.PASS
             val event = CancellableEvent()
 
             TriggerType.PLAYER_INTERACT.triggerAll(
@@ -199,14 +196,14 @@ object ClientListener : Initializer {
                 event,
             )
 
-            if (event.isCancelled()) ActionResult.FAIL else ActionResult.PASS
+            if (event.isCancelled()) InteractionResult.FAIL else InteractionResult.PASS
         }
 
         UseItemCallback.EVENT.register { player, _, hand ->
-            if (!player.world.isClient) return@register TypedActionResult.pass(null)
+            if (!player.level().isClientSide) return@register InteractionResult.PASS
             val event = CancellableEvent()
 
-            val stack = player.getStackInHand(hand)
+            val stack = player.getItemInHand(hand)
 
             TriggerType.PLAYER_INTERACT.triggerAll(
                 PlayerInteraction.UseItem(hand),
@@ -214,17 +211,18 @@ object ClientListener : Initializer {
                 event,
             )
 
-            if (event.isCancelled()) TypedActionResult.fail(null) else TypedActionResult.pass(null)
+            if (event.isCancelled()) InteractionResult.FAIL else InteractionResult.PASS
         }
     }
 
-    fun addTask(delay: Int, callback: () -> Unit) {
-        synchronized(tasks) {
-            tasks.add(Task(delay, callback))
-        }
-    }
+    internal fun addTask(delay: Int, owner: RuntimeOwner, callback: () -> Unit) =
+        tasks.schedule(delay, owner, callback)
 
-    private fun handleChatMessage(message: Text, actionBar: Boolean): Boolean {
+    internal fun pruneInvalidatedTasks() = tasks.pruneInvalidated()
+
+    internal fun pendingTaskCount() = tasks.pendingCount()
+
+    private fun handleChatMessage(message: Component, actionBar: Boolean): Boolean {
         val textComponent = TextComponent(message)
         val event = ChatTrigger.Event(textComponent)
 

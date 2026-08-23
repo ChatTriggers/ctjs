@@ -10,13 +10,11 @@ import gg.essential.elementa.dsl.component2
 import gg.essential.elementa.dsl.component3
 import gg.essential.elementa.dsl.component4
 import gg.essential.universal.UGraphics
-import net.minecraft.client.MinecraftClient
-import net.minecraft.client.font.TextRenderer
-import net.minecraft.client.render.LightmapTextureManager
-import net.minecraft.client.render.Tessellator
-import net.minecraft.client.render.VertexConsumerProvider
-import net.minecraft.client.render.VertexFormat
-import org.joml.Vector3f
+import gg.essential.universal.render.URenderPipeline
+import gg.essential.universal.shader.BlendState
+import gg.essential.universal.vertex.UBufferBuilder
+import net.minecraft.client.gui.Font
+import net.minecraft.client.renderer.rendertype.RenderTypes
 import org.lwjgl.opengl.GL11
 import org.mozilla.javascript.NativeObject
 import java.awt.Color
@@ -25,8 +23,16 @@ object Renderer3d {
     private var firstVertex = true
     private var began = false
 
-    private val tessellator = Tessellator.getInstance()
-    private val worldRenderer = UGraphics.getFromTessellator()
+    private lateinit var worldRenderer: UBufferBuilder
+    private var drawMode = Renderer.DrawMode.QUADS
+    private var vertexFormat = Renderer.VertexFormat.POSITION
+    private var cullScope: ScopedRenderState.Scope<Boolean>? = null
+    private var frameMatrixPushed = false
+    private val pipelines = mutableMapOf<PipelineKey, URenderPipeline>()
+
+    internal fun isDrawing(): Boolean = began
+    internal fun hasCullScope(): Boolean = cullScope != null
+    internal fun pipelineCount(): Int = pipelines.size
 
     /**
      * Begin drawing with the world renderer
@@ -42,15 +48,26 @@ object Renderer3d {
         drawMode: Renderer.DrawMode = Renderer.DrawMode.QUADS,
         vertexFormat: Renderer.VertexFormat = Renderer.VertexFormat.POSITION,
     ) = apply {
-        Renderer.pushMatrix()
-            .enableBlend()
-            .disableCull()
-        Renderer.tryBlendFuncSeparate(770, 771, 1, 0)
+        if (began) {
+            val failure = IllegalStateException("Renderer3d.begin() called while already drawing")
+            throw cleanupFrame(failure) ?: failure
+        }
+        cullScope = Renderer.pushCullState(enabled = false)
+        try {
+            Renderer.pushMatrix()
+            frameMatrixPushed = true
+            Renderer.enableBlend()
+            Renderer.tryBlendFuncSeparate(770, 771, 1, 0)
 
-        worldRenderer.beginWithDefaultShader(drawMode.toUC(), vertexFormat.toMC())
+            this.drawMode = drawMode
+            this.vertexFormat = vertexFormat
+            worldRenderer = UBufferBuilder.create(drawMode.toUC(), vertexFormat.toMC())
 
-        firstVertex = true
-        began = true
+            firstVertex = true
+            began = true
+        } catch (failure: Throwable) {
+            throw cleanupFrame(failure) ?: failure
+        }
     }
 
     /**
@@ -62,12 +79,12 @@ object Renderer3d {
      * @return [Renderer3d] to allow for method chaining
      */
     @JvmStatic
-    fun pos(x: Float, y: Float, z: Float) = apply {
+    fun pos(x: Float, y: Float, z: Float) = mutateFrame {
         if (!began)
             begin()
         if (!firstVertex)
             worldRenderer.endVertex()
-        val camera = Client.getMinecraft().gameRenderer.camera.pos
+        val camera = Client.getMinecraft().gameRenderer.mainCamera.position()
         worldRenderer.pos(Renderer.matrixStack, x.toDouble() - camera.x, y.toDouble() - camera.y, z.toDouble() - camera.z)
         firstVertex = false
     }
@@ -80,7 +97,7 @@ object Renderer3d {
      * @return [Renderer3d] to allow for method chaining
      */
     @JvmStatic
-    fun tex(u: Float, v: Float) = apply {
+    fun tex(u: Float, v: Float) = mutateFrame {
         worldRenderer.tex(u.toDouble(), v.toDouble())
     }
 
@@ -95,7 +112,7 @@ object Renderer3d {
      */
     @JvmStatic
     @JvmOverloads
-    fun color(r: Float, g: Float, b: Float, a: Float = 1f) = apply {
+    fun color(r: Float, g: Float, b: Float, a: Float = 1f) = mutateFrame {
         worldRenderer.color(r, g, b, a)
     }
 
@@ -110,7 +127,7 @@ object Renderer3d {
      */
     @JvmStatic
     @JvmOverloads
-    fun color(r: Int, g: Int, b: Int, a: Int = 255) = apply {
+    fun color(r: Int, g: Int, b: Int, a: Int = 255) = mutateFrame {
         worldRenderer.color(r, g, b, a)
     }
 
@@ -135,7 +152,7 @@ object Renderer3d {
      * @return [Renderer3d] to allow for method chaining
      */
     @JvmStatic
-    fun normal(x: Float, y: Float, z: Float) = apply {
+    fun normal(x: Float, y: Float, z: Float) = mutateFrame {
         worldRenderer.norm(Renderer.matrixStack, x, y, z)
     }
 
@@ -147,7 +164,7 @@ object Renderer3d {
      * @return [Renderer3d] to allow for method chaining
      */
     @JvmStatic
-    fun overlay(u: Int, v: Int) = apply {
+    fun overlay(u: Int, v: Int) = mutateFrame {
         worldRenderer.overlay(u, v)
     }
 
@@ -159,7 +176,7 @@ object Renderer3d {
      * @return [Renderer3d] to allow for method chaining
      */
     @JvmStatic
-    fun light(u: Int, v: Int) = apply {
+    fun light(u: Int, v: Int) = mutateFrame {
         worldRenderer.light(u, v)
     }
 
@@ -171,7 +188,7 @@ object Renderer3d {
      */
     @JvmStatic
     fun lineWidth(width: Float) = apply {
-        RenderSystem.lineWidth(width)
+        // Line width is pipeline-defined in 26.1; keep accepting the legacy API value.
     }
 
     /**
@@ -183,13 +200,104 @@ object Renderer3d {
             return
         began = false
 
-        worldRenderer.endVertex()
+        var failure: Throwable? = null
+        try {
+            worldRenderer.endVertex()
 
-        worldRenderer.drawDirect()
-        Renderer.colorize(1f, 1f, 1f, 1f)
-            .disableBlend()
-            .enableCull()
-            .popMatrix()
+            val builtBuffer = worldRenderer.build()
+            if (builtBuffer != null) {
+                if (drawMode == Renderer.DrawMode.LINES && vertexFormat == Renderer.VertexFormat.LINES) {
+                    builtBuffer.drawAndClose(RenderTypes.lines())
+                } else {
+                    builtBuffer.drawAndClose(getPipeline(drawMode, vertexFormat, Renderer.isCullEnabled()))
+                }
+            }
+        } catch (caught: Throwable) {
+            failure = caught
+        } finally {
+            failure = cleanupFrame(failure)
+        }
+
+        failure?.let { throw it }
+    }
+
+    private fun getPipeline(
+        drawMode: Renderer.DrawMode,
+        vertexFormat: Renderer.VertexFormat,
+        culling: Boolean,
+    ): URenderPipeline {
+        val gui = Client.getMinecraft().screen != null
+        val key = PipelineKey(drawMode, vertexFormat, gui, culling)
+        return pipelines.getOrPut(key) {
+            val commonFormat = vertexFormat.toUC()
+                ?: error("No default UniversalCraft pipeline for vertex format $vertexFormat")
+            URenderPipeline.builderWithDefaultShader(
+                "ctjs:renderer/${drawMode.name.lowercase()}_${vertexFormat.name.lowercase()}_${if (gui) "gui" else "world"}",
+                drawMode.toUC(),
+                commonFormat,
+            ).apply {
+                blendState = BlendState.ALPHA
+                this.culling = culling
+                depthTest = if (gui) {
+                    URenderPipeline.DepthTest.Disabled
+                } else {
+                    URenderPipeline.DepthTest.LessOrEqual
+                }
+                depthMask = !gui
+            }.build()
+        }
+    }
+
+    private data class PipelineKey(
+        val drawMode: Renderer.DrawMode,
+        val vertexFormat: Renderer.VertexFormat,
+        val gui: Boolean,
+        val culling: Boolean,
+    )
+
+    private inline fun mutateFrame(block: () -> Unit) = apply {
+        try {
+            block()
+        } catch (failure: Throwable) {
+            throw cleanupFrame(failure) ?: failure
+        }
+    }
+
+    private fun cleanupFrame(existingFailure: Throwable?): Throwable? {
+        val hadFrame = began || cullScope != null || frameMatrixPushed
+        began = false
+        firstVertex = true
+        if (!hadFrame)
+            return existingFailure
+
+        var failure = existingFailure
+        failure = runCleanup(failure) { Renderer.colorize(1f, 1f, 1f, 1f) }
+        failure = runCleanup(failure) { Renderer.disableBlend() }
+
+        val scope = cullScope
+        cullScope = null
+        if (scope != null)
+            failure = runCleanup(failure) { Renderer.restoreCullState(scope) }
+
+        if (frameMatrixPushed) {
+            frameMatrixPushed = false
+            failure = runCleanup(failure) { Renderer.popMatrix() }
+        }
+
+        return failure
+    }
+
+    private fun runCleanup(existingFailure: Throwable?, cleanup: () -> Unit): Throwable? {
+        return try {
+            cleanup()
+            existingFailure
+        } catch (cleanupFailure: Throwable) {
+            if (existingFailure == null) {
+                cleanupFailure
+            } else {
+                existingFailure.apply { addSuppressed(cleanupFailure) }
+            }
+        }
     }
 
     /**
@@ -224,11 +332,11 @@ object Renderer3d {
         val (lines, width, height) = Renderer.splitText(text)
 
         val fontRenderer = Renderer.getFontRenderer()
-        val camera = Client.getMinecraft().gameRenderer.camera
+        val camera = Client.getMinecraft().gameRenderer.mainCamera
         val renderPos = Vec3f(
-            x - camera.pos.x.toFloat(),
-            y - camera.pos.y.toFloat(),
-            z - camera.pos.z.toFloat(),
+            x - camera.position().x.toFloat(),
+            y - camera.position().y.toFloat(),
+            z - camera.position().z.toFloat(),
         )
 
         val lScale = scale * if (increase) {
@@ -239,33 +347,33 @@ object Renderer3d {
 
         Renderer.pushMatrix()
         Renderer.translate(renderPos.x, renderPos.y, renderPos.z)
-        Renderer.multiply(camera.rotation)
+        Renderer.multiply(camera.rotation())
         Renderer.scale(-lScale, -lScale, lScale)
 
         if (renderThroughBlocks) {
             Renderer.depthMask(true)
             Renderer.depthFunc(GL11.GL_ALWAYS)
-            RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC)
+            UGraphics.glClear(GL11.GL_DEPTH_BUFFER_BIT)
         }
 
-        val opacity = (Settings.toMC().getTextBackgroundOpacity(0.25f) * 255).toInt() shl 24
+        val opacity = (Settings.toMC().getBackgroundOpacity(0.25f) * 255).toInt() shl 24
 
         val xShift = -width / 2
         val yShift = -height / 2
 
-        val vertexConsumers = Client.getMinecraft().bufferBuilders.entityVertexConsumers
+        val vertexConsumers = Client.getMinecraft().renderBuffers().bufferSource()
         var yOffset = 0
 
         for (line in lines) {
             val centerShift = if (centered) {
-                xShift + (fontRenderer.getWidth(line) / 2f)
+                xShift + (fontRenderer.width(line) / 2f)
             } else 0f
 
             Renderer.pushMatrix()
-            val matrix = Renderer.matrixStack.toMC().peek().positionMatrix
+            val matrix = Renderer.matrixStack.toMC().last().pose()
 
             if (renderBlackBox) {
-                fontRenderer.draw(
+                fontRenderer.drawInBatch(
                     line,
                     xShift - centerShift,
                     yShift + yOffset,
@@ -273,14 +381,14 @@ object Renderer3d {
                     false,
                     matrix,
                     vertexConsumers,
-                    TextRenderer.TextLayerType.NORMAL,
+                    Font.DisplayMode.NORMAL,
                     opacity,
-                    LightmapTextureManager.MAX_LIGHT_COORDINATE
+                    15728880
                 )
                 Renderer.translate(0f, 0f, -0.03f)
             }
 
-            fontRenderer.draw(
+            fontRenderer.drawInBatch(
                 line,
                 xShift - centerShift,
                 yShift + yOffset,
@@ -288,14 +396,14 @@ object Renderer3d {
                 false,
                 matrix,
                 vertexConsumers,
-                TextRenderer.TextLayerType.NORMAL,
+                Font.DisplayMode.NORMAL,
                 0,
-                LightmapTextureManager.MAX_LIGHT_COORDINATE
+                15728880
             )
-            vertexConsumers.draw()
+            vertexConsumers.endBatch()
             Renderer.popMatrix()
 
-            yOffset += fontRenderer.fontHeight + 1
+            yOffset += fontRenderer.lineHeight + 1
         }
 
         if (renderThroughBlocks) {
@@ -349,24 +457,34 @@ object Renderer3d {
         z2: Float,
         thickness: Float,
     ) {
-        Renderer.pushMatrix()
-            .disableDepth()
-            .disableCull()
-        RenderSystem.lineWidth(thickness)
+        val outerCullScope = Renderer.pushCullState()
+        var outerMatrixPushed = false
+        var failure: Throwable? = null
+        try {
+            Renderer.pushMatrix()
+            outerMatrixPushed = true
+            Renderer.disableDepth().disableCull()
+            lineWidth(thickness)
 
-        val (r, g, b, a) = Color(color.toInt(), true)
+            val (r, g, b, a) = Color(color.toInt(), true)
+            // The vanilla LINES format requires a per-vertex LineWidth element,
+            // which UniversalCraft's UBufferBuilder does not expose in 26.1.
+            // POSITION_COLOR uses the modern line primitive without emitting an
+            // incomplete vertex; the legacy thickness parameter remains accepted.
+            begin(Renderer.DrawMode.LINES, Renderer.VertexFormat.POSITION_COLOR)
+            pos(x1, y1, z1).color(r, g, b, a)
+            pos(x2, y2, z2).color(r, g, b, a)
+            draw()
+        } catch (caught: Throwable) {
+            failure = caught
+        } finally {
+            failure = runCleanup(failure) { lineWidth(1f) }
+            failure = runCleanup(failure) { Renderer.enableDepth() }
+            failure = runCleanup(failure) { Renderer.restoreCullState(outerCullScope) }
+            if (outerMatrixPushed)
+                failure = runCleanup(failure) { Renderer.popMatrix() }
+        }
 
-        val normalVec = Vector3f(x2 - x1, y2 - y1, z2 - z1).normalize()
-
-        begin(Renderer.DrawMode.LINES, Renderer.VertexFormat.LINES)
-        pos(x1, y1, z1).color(r, g, b, a).normal(normalVec.x, normalVec.y, normalVec.z)
-        pos(x2, y2, z2).color(r, g, b, a).normal(normalVec.x, normalVec.y, normalVec.z)
-        draw()
-
-        RenderSystem.lineWidth(1f)
-        Renderer
-            .enableCull()
-            .enableDepth()
-            .popMatrix()
+        failure?.let { throw it }
     }
 }

@@ -2,9 +2,12 @@ package com.chattriggers.ctjs.api.render
 
 import com.chattriggers.ctjs.CTJS
 import com.chattriggers.ctjs.api.client.Client
-import net.minecraft.client.texture.NativeImage
-import net.minecraft.client.texture.NativeImageBackedTexture
-import net.minecraft.util.Identifier
+import com.chattriggers.ctjs.internal.lifecycle.GenerationGuard
+import com.chattriggers.ctjs.internal.lifecycle.OwnedKind
+import com.chattriggers.ctjs.internal.utils.NetworkStreams
+import com.mojang.blaze3d.platform.NativeImage
+import net.minecraft.client.renderer.texture.DynamicTexture
+import net.minecraft.resources.Identifier
 import org.lwjgl.system.MemoryUtil
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
@@ -19,12 +22,18 @@ class Image(var image: BufferedImage?) {
     private val textureHeight = image?.height ?: 0
     private val aspectRatio = if (textureHeight != 0) textureHeight.toFloat() / textureWidth else 0f
     private var identifier: Identifier? = null
+    private var registered = false
+    private var registrationScheduled = false
+    private var destroyed = false
+    private val generation = GenerationGuard(OwnedKind.RESOURCE, onInvalidate = ::destroyInternal)
 
     init {
-        CTJS.images.add(this)
-
-        Client.scheduleTask {
-            texture = image!!.toNativeTexture()
+        if (generation.register()) {
+            Client.scheduleOwnedTask(generation.owner) {
+                val source = image ?: return@scheduleOwnedTask
+                if (!destroyed)
+                    texture = source.toNativeTexture()
+            }
         }
     }
 
@@ -32,21 +41,41 @@ class Image(var image: BufferedImage?) {
 
     fun getTextureHeight(): Int = textureHeight
 
-    fun getTexture(): NativeImageBackedTexture? = texture?.texture
+    fun getTexture(): DynamicTexture? = texture?.texture
 
     internal fun getIdOrRegister(): Identifier {
+        check(generation.isActive() && !destroyed) { "Image belongs to an inactive CTJS generation" }
         if (identifier == null) {
-            identifier = Identifier.of(CTJS.MOD_ID,"image${nextIdentifierIndex++}")
-            if (texture != null) {
-                Client.getMinecraft().textureManager.registerTexture(identifier!!, texture!!.texture)
-            } else {
-                Client.scheduleTask {
-                    Client.getMinecraft().textureManager.registerTexture(identifier!!, texture!!.texture)
-                }
-            }
+            identifier = Identifier.fromNamespaceAndPath(CTJS.MOD_ID,"image${nextIdentifierIndex++}")
+        }
+        if (!registered) {
+            registerTextureWhenReady()
         }
 
         return identifier!!
+    }
+
+    private fun registerTextureWhenReady() {
+        if (registered || registrationScheduled || destroyed)
+            return
+
+        val currentTexture = texture
+        if (currentTexture != null) {
+            Client.getMinecraft().textureManager.register(identifier!!, currentTexture.texture)
+            registered = true
+            return
+        }
+
+        registrationScheduled = true
+        Client.scheduleOwnedTask(generation.owner) {
+            registrationScheduled = false
+            val readyTexture = texture ?: return@scheduleOwnedTask
+            val id = identifier ?: return@scheduleOwnedTask
+            if (!destroyed && !registered) {
+                Client.getMinecraft().textureManager.register(id, readyTexture.texture)
+                registered = true
+            }
+        }
     }
 
     /**
@@ -54,10 +83,27 @@ class Image(var image: BufferedImage?) {
      * that way it can be garbage collected if not referenced in js code.
      */
     fun destroy() {
-        texture?.texture?.close()
+        generation.close()
+    }
+
+    @Synchronized
+    private fun destroyInternal() {
+        if (destroyed)
+            return
+        destroyed = true
+
+        val currentTexture = texture
+        val currentIdentifier = identifier
+        if (registered && currentIdentifier != null) {
+            Client.getMinecraft().textureManager.release(currentIdentifier)
+        } else {
+            currentTexture?.texture?.close()
+        }
         texture?.buffer?.let(MemoryUtil::memFree)
         texture = null
         image = null
+        registered = false
+        registrationScheduled = false
     }
 
     @JvmOverloads
@@ -74,11 +120,11 @@ class Image(var image: BufferedImage?) {
             else -> width to height
         }
 
-        if (texture != null)
+        if (generation.isActive() && texture != null)
             Renderer.drawImage(this, x, y, drawWidth, drawHeight)
     }
 
-    private data class Texture(val texture: NativeImageBackedTexture, val buffer: ByteBuffer)
+    private data class Texture(val texture: DynamicTexture, val buffer: ByteBuffer)
 
     companion object {
         private var nextIdentifierIndex = 0
@@ -128,10 +174,15 @@ class Image(var image: BufferedImage?) {
             val req = CTJS.makeWebRequest(url)
             if (req is HttpURLConnection) {
                 req.requestMethod = "GET"
-                req.doOutput = true
             }
 
-            return ImageIO.read(req.inputStream)
+            return try {
+                NetworkStreams.useInput(req) { input ->
+                    requireNotNull(ImageIO.read(input)) { "Response was not a supported image" }
+                }
+            } catch (e: Exception) {
+                throw IllegalArgumentException("Failed to load CTJS image URL '$url'", e)
+            }
         }
 
         private fun BufferedImage.toNativeTexture(): Texture {
@@ -140,7 +191,7 @@ class Image(var image: BufferedImage?) {
                 val buffer = MemoryUtil.memAlloc(it.size())
                 buffer.put(it.toByteArray())
                 buffer.rewind()
-                Texture(NativeImageBackedTexture(NativeImage.read(buffer)), buffer)
+                Texture(DynamicTexture({ "CTJS Reloaded image" }, NativeImage.read(buffer)), buffer)
             }
         }
     }

@@ -1,16 +1,20 @@
 package com.chattriggers.ctjs.internal.mixins;
 
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.client.multiplayer.PlayerInfo;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
-@Mixin(ClientPlayNetworkHandler.class)
+@Mixin(ClientPacketListener.class)
 public interface ClientPlayNetworkHandlerAccessor {
-    @Accessor
-    Map<UUID, PlayerListEntry> getPlayerListEntries();
+    @Accessor("playerInfoMap")
+    Map<UUID, PlayerInfo> getPlayerListEntries();
+
+    @Accessor("listedPlayers")
+    Set<PlayerInfo> getListedPlayers();
 }

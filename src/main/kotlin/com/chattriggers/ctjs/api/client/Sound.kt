@@ -7,24 +7,34 @@ import com.chattriggers.ctjs.internal.mixins.AbstractSoundInstanceAccessor
 import com.chattriggers.ctjs.internal.mixins.sound.SoundAccessor
 import com.chattriggers.ctjs.internal.mixins.sound.SoundManagerAccessor
 import com.chattriggers.ctjs.internal.mixins.sound.SoundSystemAccessor
+import com.chattriggers.ctjs.internal.lifecycle.GenerationGuard
+import com.chattriggers.ctjs.internal.lifecycle.OwnedKind
 import com.chattriggers.ctjs.MCAttenuationType
 import com.chattriggers.ctjs.MCSound
 import com.chattriggers.ctjs.internal.utils.asMixin
 import gg.essential.universal.UMinecraft
-import net.minecraft.client.sound.MovingSoundInstance
-import net.minecraft.client.sound.Sound.RegistrationType
-import net.minecraft.client.sound.WeightedSoundSet
-import net.minecraft.resource.*
-import net.minecraft.resource.metadata.ResourceMetadata
-import net.minecraft.resource.metadata.ResourceMetadataReader
-import net.minecraft.sound.SoundCategory
-import net.minecraft.sound.SoundEvent
-import net.minecraft.util.Identifier
-import net.minecraft.util.math.Vec3d
-import net.minecraft.util.math.random.Random
+import net.fabricmc.loader.api.FabricLoader
+import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance
+import net.minecraft.client.resources.sounds.Sound.Type
+import net.minecraft.client.sounds.WeighedSoundEvents
+import net.minecraft.server.packs.PackLocationInfo
+import net.minecraft.server.packs.PackResources
+import net.minecraft.server.packs.PackType
+import net.minecraft.server.packs.metadata.MetadataSectionType
+import net.minecraft.server.packs.repository.PackSource
+import net.minecraft.server.packs.resources.IoSupplier
+import net.minecraft.server.packs.resources.Resource
+import net.minecraft.server.packs.resources.ResourceMetadata
+import net.minecraft.sounds.SoundSource
+import net.minecraft.sounds.SoundEvent
+import net.minecraft.resources.Identifier
+import net.minecraft.network.chat.Component
+import net.minecraft.world.phys.Vec3
+import net.minecraft.util.RandomSource
 import org.mozilla.javascript.NativeObject
 import java.io.File
 import java.io.InputStream
+import java.util.Optional
 import kotlin.io.path.Path
 import kotlin.io.path.nameWithoutExtension
 
@@ -34,13 +44,14 @@ import kotlin.io.path.nameWithoutExtension
  *
  * REQUIRED:
  * - source (String) - a namespaced-identifier (e.g. `minecraft:music_disc.cat`) for a Minecraft sound, or a filename
- *                     relative to ChatTriggers assets directory
+ *                     relative to the ChatTriggers assets directory. If it does not exist there, it is resolved
+ *                     relative to Minecraft's game directory.
  *
  * OPTIONAL:
  * - stream (boolean) - whether to stream this sound rather than preload it (should be true for large files), defaults to false
  *
  * CONFIGURABLE (can be set in config object, or changed later):
- * - category (SoundCategory) - which category this sound should be a part of, see [setCategory].
+ * - category (SoundSource) - which category this sound should be a part of, see [setCategory].
  * - volume (float) - volume of the sound, see [setVolume]
  * - pitch (float) - pitch of the sound, see [setPitch]
  * - x, y, z (float) - location of the sound, see [setPosition]. Defaults to the players position.
@@ -56,6 +67,7 @@ class Sound(private val config: NativeObject) {
     private lateinit var soundImpl: SoundImpl
     private lateinit var sound: MCSound
     private var isCustom = false
+    private var destroyed = false
 
     private var isPaused = false
 
@@ -65,40 +77,44 @@ class Sound(private val config: NativeObject) {
     // derive the values from the actual sound object. This switches implementations at the
     // end of bootstrap()
     private var soundData: SoundData = InitialSoundData(config)
+    private val generation = GenerationGuard(OwnedKind.RESOURCE, onInvalidate = ::destroyInternal)
+
+    init {
+        generation.register()
+    }
 
     private fun bootstrap() {
+        check(generation.isActive() && !destroyed) { "Sound belongs to an inactive CTJS generation" }
         if (::sound.isInitialized)
             return
 
-        CTJS.sounds.add(this)
-
         val soundManagerAccessor = UMinecraft.getMinecraft().soundManager.asMixin<SoundManagerAccessor>()
-        val soundFile = File(CTJS.assetsDir, source)
-        if (soundFile.exists()) {
+        val soundFile = resolveSoundFile()
+        if (soundFile != null) {
             isCustom = true
             identifier = makeIdentifier(source)
-            val resource = Resource(CTResourcePack, soundFile::inputStream, ResourceMetadata::NONE)
-            soundManagerAccessor.soundResources[identifier.withPrefixedPath("sounds/").withSuffixedPath(".ogg")] =
+            val resource = Resource(CTResourcePack, soundFile::inputStream)
+            soundManagerAccessor.soundResources[identifier.withPrefix("sounds/").withSuffix(".ogg")] =
                 resource
         } else {
-            identifier = Identifier.of(source)
+            identifier = Identifier.parse(source)
         }
 
-        soundImpl = SoundImpl(SoundEvent.of(identifier), soundData.category.toMC(), soundData.attenuationType.toMC())
+        soundImpl = SoundImpl(SoundEvent.createVariableRangeEvent(identifier), soundData.category.toMC(), soundData.attenuationType.toMC())
         sound = MCSound(
             identifier,
             { 1f },
             { 1f },
             1,
-            RegistrationType.FILE,
+            Type.FILE,
             soundData.stream,
             false,
             soundData.attenuation,
         )
 
         if (isCustom) {
-            soundManagerAccessor.sounds[identifier] = WeightedSoundSet(identifier, null).apply {
-                add(sound)
+            soundManagerAccessor.sounds[identifier] = WeighedSoundEvents(identifier, null).apply {
+                addSound(sound)
             }
         }
 
@@ -119,12 +135,25 @@ class Sound(private val config: NativeObject) {
     }
 
     fun destroy() {
-        stop()
-        if (isCustom) {
+        generation.close()
+    }
+
+    @Synchronized
+    private fun destroyInternal() {
+        if (destroyed)
+            return
+        destroyed = true
+
+        if (::soundImpl.isInitialized) {
+            soundSystem.stop(soundImpl)
+            isPaused = false
+        }
+        if (isCustom && ::identifier.isInitialized && ::sound.isInitialized) {
             val soundManagerAccessor = UMinecraft.getMinecraft().soundManager.asMixin<SoundManagerAccessor>()
             soundManagerAccessor.sounds.remove(identifier)
-            soundManagerAccessor.soundResources.remove(identifier)
+            soundManagerAccessor.soundResources.remove(sound.path)
         }
+        isCustom = false
     }
 
     /**
@@ -149,6 +178,17 @@ class Sound(private val config: NativeObject) {
      * @return A float value (0.0f - 1.0f).
      */
     fun getVolume() = soundData.volume
+
+    /**
+     * Gets whether this sound currently has an active Minecraft sound channel.
+     * Paused sounds remain active until they are stopped or finish.
+     */
+    fun isPlaying(): Boolean {
+        if (destroyed || !generation.isActive() || !::soundImpl.isInitialized)
+            return false
+
+        return UMinecraft.getMinecraft().soundManager.isActive(soundImpl)
+    }
 
     /**
      * Sets this sound's volume.
@@ -177,7 +217,7 @@ class Sound(private val config: NativeObject) {
         soundData.z = z
     }
 
-    fun getPosition() = Vec3d(getX(), getY(), getZ())
+    fun getPosition() = Vec3(getX(), getY(), getZ())
 
     fun setPosition(x: Double, y: Double, z: Double) = apply {
         soundData.x = x
@@ -258,21 +298,26 @@ class Sound(private val config: NativeObject) {
      */
     @JvmOverloads
     fun play(delay: Int = 0) {
-        // TODO: Figure out how to work without a world
-        require (World.isLoaded()) { "Can not play a custom sound outside the world" }
+        generation.execute {
+            // TODO: Figure out how to work without a world
+            require (World.isLoaded()) { "Can not play a custom sound outside the world" }
 
-        bootstrap()
+            bootstrap()
 
-        // soundSystem.play() does a lot of setup and, most importantly, creates a new
-        // source for the sound. If we have previously paused, we avoid all that setup
-        // and instead directly invoke the play method from OpenAL via Source.play
-        if (!isPaused) {
-            soundSystem.play(soundImpl, delay)
-        } else {
-            Client.scheduleTask(delay) {
-                isPaused = false
-                soundSystem.asMixin<SoundSystemAccessor>().sources[soundImpl]?.run {
-                    it.resume()
+            // soundSystem.play() does a lot of setup and, most importantly, creates a new
+            // source for the sound. If we have previously paused, we avoid all that setup
+            // and instead directly invoke the play method from OpenAL via Source.play
+            if (!isPaused) {
+                Client.scheduleOwnedTask(generation.owner, delay) {
+                    if (!destroyed)
+                        soundSystem.play(soundImpl)
+                }
+            } else {
+                Client.scheduleOwnedTask(generation.owner, delay) {
+                    if (!destroyed) {
+                        isPaused = false
+                        soundSystem.asMixin<SoundSystemAccessor>().sources[soundImpl]?.execute { it.play() }
+                    }
                 }
             }
         }
@@ -282,15 +327,17 @@ class Sound(private val config: NativeObject) {
      * Pauses the sound, to be resumed later. This requires the world to be loaded
      */
     fun pause() {
-        // TODO: Figure out how to work without a world
-        require (World.isLoaded()) { "Can not pause a custom sound outside the world" }
+        generation.execute {
+            // TODO: Figure out how to work without a world
+            require (World.isLoaded()) { "Can not pause a custom sound outside the world" }
 
-        bootstrap()
+            bootstrap()
 
-        Client.scheduleTask {
-            isPaused = true
-            soundSystem.asMixin<SoundSystemAccessor>().sources[soundImpl]?.run {
-                it.pause()
+            Client.scheduleOwnedTask(generation.owner) {
+                if (!destroyed) {
+                    isPaused = true
+                    soundSystem.asMixin<SoundSystemAccessor>().sources[soundImpl]?.execute { it.pause() }
+                }
             }
         }
     }
@@ -299,12 +346,14 @@ class Sound(private val config: NativeObject) {
      * Completely stops the sound. This requires the world to be loaded
      */
     fun stop() {
-        // TODO: Figure out how to work without a world
-        require (World.isLoaded()) { "Can not stop a custom sound outside the world" }
+        generation.execute {
+            // TODO: Figure out how to work without a world
+            require (World.isLoaded()) { "Can not stop a custom sound outside the world" }
 
-        bootstrap()
-        soundSystem.stop(soundImpl)
-        isPaused = false
+            bootstrap()
+            soundSystem.stop(soundImpl)
+            isPaused = false
+        }
     }
 
     /**
@@ -316,10 +365,26 @@ class Sound(private val config: NativeObject) {
     }
 
     private fun makeIdentifier(source: String): Identifier {
-        return Identifier.of(
+        return Identifier.fromNamespaceAndPath(
             CTJS.MOD_ID,
             Path(source).nameWithoutExtension.lowercase().filter { it in validIdentChars } + "_${counter++}",
         )
+    }
+
+    private fun resolveSoundFile(): File? {
+        File(CTJS.assetsDir, source).takeIf(File::isFile)?.let { return it }
+
+        return runCatching {
+            val sourcePath = Path(source)
+            if (sourcePath.isAbsolute)
+                return@runCatching null
+
+            val gameDir = FabricLoader.getInstance().gameDir.normalize()
+            gameDir.resolve(sourcePath).normalize()
+                .takeIf { it.startsWith(gameDir) }
+                ?.toFile()
+                ?.takeIf(File::isFile)
+        }.getOrNull()
     }
 
     private interface SoundData {
@@ -361,13 +426,13 @@ class Sound(private val config: NativeObject) {
         override var pitch by impl::pitch
 
         override var loop: Boolean
-            get() = impl.isRepeatable
+            get() = impl.isLooping
             set(value) {
                 mixedImpl.setRepeat(value)
             }
 
         override var loopDelay: Int
-            get() = impl.repeatDelay
+            get() = impl.delay
             set(value) {
                 mixedImpl.setRepeatDelay(value)
             }
@@ -395,7 +460,7 @@ class Sound(private val config: NativeObject) {
             }
 
         override var attenuation: Int
-            get() = sound.attenuation
+            get() = sound.attenuationDistance
             set(value) {
                 mixedSound.setAttenuation(value)
             }
@@ -407,29 +472,29 @@ class Sound(private val config: NativeObject) {
             }
 
         override var attenuationType: AttenuationType
-            get() = AttenuationType.fromMC(impl.attenuationType)
+            get() = AttenuationType.fromMC(impl.attenuation)
             set(value) {
-                impl.attenuationType = value.toMC()
+                impl.setAttenuationType(value.toMC())
             }
     }
 
     private class SoundImpl(
         soundEvent: SoundEvent,
-        soundCategory: SoundCategory,
+        soundCategory: SoundSource,
         attenuationType: MCAttenuationType,
-    ) : MovingSoundInstance(soundEvent, soundCategory, Random.create()) {
-        var categoryOverride: SoundCategory = super.category
+    ) : AbstractTickableSoundInstance(soundEvent, soundCategory, RandomSource.create()) {
+        var categoryOverride: SoundSource = super.source
 
         init {
-            this.attenuationType = attenuationType
+            this.attenuation = attenuationType
         }
 
         override fun tick() {
             if (!World.isLoaded())
-                setDone()
+                stop()
         }
 
-        override fun getCategory(): SoundCategory {
+        override fun getSource(): SoundSource {
             return categoryOverride
         }
 
@@ -440,7 +505,7 @@ class Sound(private val config: NativeObject) {
         }
 
         fun setAttenuationType(attenuationType: MCAttenuationType) {
-            this.attenuationType = attenuationType
+            this.attenuation = attenuationType
         }
 
         fun setVolume(volume: Float) {
@@ -452,26 +517,26 @@ class Sound(private val config: NativeObject) {
         }
     }
 
-    enum class Category(override val mcValue: SoundCategory) : CTWrapper<SoundCategory> {
-        MASTER(SoundCategory.MASTER),
-        MUSIC(SoundCategory.MUSIC),
-        RECORDS(SoundCategory.RECORDS),
-        WEATHER(SoundCategory.WEATHER),
-        BLOCKS(SoundCategory.BLOCKS),
-        HOSTILE(SoundCategory.HOSTILE),
-        NEUTRAL(SoundCategory.NEUTRAL),
-        PLAYERS(SoundCategory.PLAYERS),
-        AMBIENT(SoundCategory.AMBIENT),
-        VOICE(SoundCategory.VOICE);
+    enum class Category(override val mcValue: SoundSource) : CTWrapper<SoundSource> {
+        MASTER(SoundSource.MASTER),
+        MUSIC(SoundSource.MUSIC),
+        RECORDS(SoundSource.RECORDS),
+        WEATHER(SoundSource.WEATHER),
+        BLOCKS(SoundSource.BLOCKS),
+        HOSTILE(SoundSource.HOSTILE),
+        NEUTRAL(SoundSource.NEUTRAL),
+        PLAYERS(SoundSource.PLAYERS),
+        AMBIENT(SoundSource.AMBIENT),
+        VOICE(SoundSource.VOICE);
 
         companion object {
             @JvmStatic
-            fun fromMC(mcValue: SoundCategory) = entries.first { it.mcValue == mcValue }
+            fun fromMC(mcValue: SoundSource) = entries.first { it.mcValue == mcValue }
 
             @JvmStatic
             fun from(value: Any) = when (value) {
                 is CharSequence -> valueOf(value.toString())
-                is SoundCategory -> fromMC(value)
+                is SoundSource -> fromMC(value)
                 is Category -> value
                 else -> throw IllegalArgumentException("Cannot create Sound.Category from $value")
             }
@@ -496,41 +561,28 @@ class Sound(private val config: NativeObject) {
         }
     }
 
-    private object CTResourcePack : ResourcePack {
-        override fun getId() = CTJS.MOD_ID
+    private object CTResourcePack : PackResources {
 
         override fun close() {
-            throw UnsupportedOperationException()
+            // Runtime sounds are backed by in-memory streams owned by each sound.
         }
 
-        override fun openRoot(vararg segments: String?): InputSupplier<InputStream>? {
-            throw UnsupportedOperationException()
-        }
+        override fun getRootResource(vararg segments: String): IoSupplier<InputStream>? = null
 
-        override fun open(type: ResourceType?, id: Identifier?): InputSupplier<InputStream>? {
-            throw UnsupportedOperationException()
-        }
+        override fun getResource(type: PackType, id: Identifier): IoSupplier<InputStream>? = null
 
-        override fun findResources(
-            type: ResourceType?,
-            namespace: String?,
-            prefix: String?,
-            consumer: ResourcePack.ResultConsumer?
-        ) {
-            throw UnsupportedOperationException()
-        }
+        override fun listResources(
+            type: PackType,
+            namespace: String,
+            prefix: String,
+            consumer: PackResources.ResourceOutput
+        ) = Unit
 
-        override fun getNamespaces(type: ResourceType?): MutableSet<String> {
-            throw UnsupportedOperationException()
-        }
+        override fun getNamespaces(type: PackType): Set<String> = setOf(CTJS.MOD_ID)
 
-        override fun <T : Any?> parseMetadata(metaReader: ResourceMetadataReader<T>?): T? {
-            throw UnsupportedOperationException()
-        }
+        override fun <T : Any> getMetadataSection(metaReader: MetadataSectionType<T>): T? = null
 
-        override fun getInfo(): ResourcePackInfo {
-            throw NotImplementedError()
-        }
+        override fun location() = PackLocationInfo(CTJS.MOD_ID, Component.literal("CTJS Reloaded runtime sounds"), PackSource.BUILT_IN, Optional.empty())
     }
 
     private companion object {

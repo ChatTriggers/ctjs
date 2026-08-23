@@ -2,37 +2,36 @@ package com.chattriggers.ctjs.internal.mixins;
 
 import com.chattriggers.ctjs.internal.engine.CTEvents;
 import com.chattriggers.ctjs.internal.listeners.MouseListener;
-import net.minecraft.client.Mouse;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.MouseHandler;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.MouseButtonInfo;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Mouse.class)
+@Mixin(MouseHandler.class)
 public class MouseMixin {
-    @Shadow
-    private int activeButton;
-
     @Inject(
-        method = "onMouseButton",
+        method = "onButton",
         at = @At(
             value = "FIELD",
-            target = "Lnet/minecraft/client/MinecraftClient;currentScreen:Lnet/minecraft/client/gui/screen/Screen;",
+            target = "Lnet/minecraft/client/Minecraft;screen:Lnet/minecraft/client/gui/screens/Screen;",
             opcode = Opcodes.GETFIELD
         )
     )
-    private void injectOnMouseButton(long window, int button, int action, int mods, CallbackInfo ci) {
-        MouseListener.onRawMouseInput(button, action);
+    private void injectOnMouseButton(long window, MouseButtonInfo buttonInfo, int action, CallbackInfo ci) {
+        MouseListener.onRawMouseInput(buttonInfo.button(), action);
     }
 
     @Inject(
-        method = "onMouseScroll",
+        method = "onScroll",
         at = @At(
             value = "FIELD",
-            target = "Lnet/minecraft/client/MinecraftClient;options:Lnet/minecraft/client/option/GameOptions;",
+            target = "Lnet/minecraft/client/Minecraft;options:Lnet/minecraft/client/Options;",
             opcode = Opcodes.GETFIELD
         )
     )
@@ -40,17 +39,20 @@ public class MouseMixin {
         MouseListener.onRawMouseScroll(vertical);
     }
 
-    @Inject(
-        method = "method_55795(Lnet/minecraft/client/gui/screen/Screen;DDDD)V",
+    @Redirect(
+        method = "handleAccumulatedMovement",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/client/gui/screen/Screen;mouseDragged(DDIDD)Z"
-        ),
-        cancellable = true
+            target = "Lnet/minecraft/client/gui/screens/Screen;mouseDragged(Lnet/minecraft/client/input/MouseButtonEvent;DD)Z"
+        )
     )
-    private void injectOnGuiMouseDrag(Screen screen, double d, double e, double f, double g, CallbackInfo ci) {
-        if (screen != null) {
-            CTEvents.GUI_MOUSE_DRAG.invoker().process(f, g, d, e, activeButton, screen, ci);
+    private boolean redirectGuiMouseDrag(Screen screen, MouseButtonEvent event, double dx, double dy) {
+        CallbackInfo ci = new CallbackInfo("mouseDragged", true);
+        CTEvents.GUI_MOUSE_DRAG.invoker().process(dx, dy, event.x(), event.y(), event.button(), screen, ci);
+        if (ci.isCancelled()) {
+            return false;
         }
+
+        return screen.mouseDragged(event, dx, dy);
     }
 }

@@ -1,3 +1,4 @@
-accessWidener v2 named
-accessible class net/minecraft/client/world/ClientChunkManager$ClientChunkMap
-accessible class net/minecraft/client/option/GameOptions$Visitor
+accessWidener v2 official
+accessible class net/minecraft/client/multiplayer/ClientChunkCache$Storage
+accessible class net/minecraft/client/Options$FieldAccess
+accessible method net/minecraft/client/Options$FieldAccess process (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;

@@ -5,7 +5,6 @@ import kotlinx.serialization.json.Json
 import java.awt.Color
 import java.io.*
 import java.net.Socket
-import java.util.concurrent.CompletableFuture
 
 /**
  * Runs in a separate process and is responsible for rendering the CT consoles.
@@ -17,7 +16,7 @@ import java.util.concurrent.CompletableFuture
  */
 class ConsoleClientProcess(private val port: Int, private val hostPid: Long) {
     private var frame: ConsoleFrame? = null
-    private val pendingEvalFutures = mutableMapOf<Int, CompletableFuture<String>>()
+    private val pendingEvalFutures = PendingRequestRegistry<String>()
     private var nextEvalId = 0
     private var running = true
 
@@ -32,6 +31,7 @@ class ConsoleClientProcess(private val port: Int, private val hostPid: Long) {
         }
 
         debug("Closing console process...")
+        pendingEvalFutures.failAll(IllegalStateException("CTJS console host stopped"))
     }
 
     private fun socketLoop() {
@@ -74,10 +74,9 @@ class ConsoleClientProcess(private val port: Int, private val hostPid: Long) {
                                 this,
                                 message,
                                 onEval = { text ->
-                                    val future = CompletableFuture<String>()
                                     val id = nextEvalId++
+                                    val future = pendingEvalFutures.create(id)
                                     socketOut.println(Json.encodeToString<C2HMessage>(EvalTextMessage(id, text)))
-                                    pendingEvalFutures[id] = future
                                     future
                                 },
                                 onReload = {
@@ -93,14 +92,16 @@ class ConsoleClientProcess(private val port: Int, private val hostPid: Long) {
                         frame?.setConfig(message) ?: error("Received ConfigUpdateMessage before InitMessage")
                     }
                     is EvalResultMessage -> {
-                        pendingEvalFutures[message.id]?.complete(message.result)
-                            ?: error("Unknown eval id ${message.id}")
+                        check(pendingEvalFutures.complete(message.id, message.result)) {
+                            "Unknown eval id ${message.id}"
+                        }
                     }
                     OpenMessage -> {
                         frame?.showConsole() ?: error("Received OpenMessage before InitMessage")
                     }
                     TerminateMessage -> {
                         running = false
+                        pendingEvalFutures.failAll(IllegalStateException("CTJS console terminated"))
                         return
                     }
                     ClearConsoleMessage -> {
@@ -132,6 +133,8 @@ class ConsoleClientProcess(private val port: Int, private val hostPid: Long) {
             debugOutput.appendText(sw.toString())
         }
     }
+
+    internal fun pendingEvalCount(): Int = pendingEvalFutures.size()
 
     // Since this is a separate process, the easiest way to print debug output is to just
     // write it to a file. Use the port number in the name to ensure its unique.

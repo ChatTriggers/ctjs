@@ -1,11 +1,8 @@
 package com.chattriggers.ctjs.internal.mixins;
 
 import com.chattriggers.ctjs.api.message.ChatLib;
-import net.minecraft.client.gui.hud.ChatHud;
-import net.minecraft.client.gui.hud.ChatHudLine;
-import net.minecraft.client.gui.hud.MessageIndicator;
-import net.minecraft.network.message.MessageSignatureData;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.components.ChatComponent;
+import net.minecraft.client.multiplayer.chat.GuiMessage;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -15,28 +12,28 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
 
-@Mixin(ChatHud.class)
+@Mixin(ChatComponent.class)
 public class ChatHudMixin {
     @Final
     @Shadow
-    private List<ChatHudLine> messages;
+    private List<GuiMessage> allMessages;
 
-    @Inject(method = "clear", at = @At("TAIL"))
+    @Inject(method = "clearMessages", at = @At("TAIL"))
     private void injectClear(boolean clearHistory, CallbackInfo ci) {
         ChatLib.INSTANCE.onChatHudClearChat$ctjs();
     }
 
     // TODO: is it this or addVisibleMessage
     @Inject(
-        method = "addMessage(Lnet/minecraft/client/gui/hud/ChatHudLine;)V",
+        method = "addMessageToQueue(Lnet/minecraft/client/multiplayer/chat/GuiMessage;)V",
         at = @At(
             value = "INVOKE",
-            target = "Ljava/util/List;remove(I)Ljava/lang/Object;",
+            target = "Ljava/util/List;removeLast()Ljava/lang/Object;",
             shift = At.Shift.BEFORE
         )
     )
-    private void injectMessageRemovedForChatLimit(ChatHudLine message, CallbackInfo ci) {
-        ChatLib.INSTANCE.onChatHudLineRemoved$ctjs(messages.getLast());
+    private void injectMessageRemovedForChatLimit(GuiMessage message, CallbackInfo ci) {
+        ChatLib.INSTANCE.onChatHudLineRemoved$ctjs(allMessages.getLast());
     }
 
     // Note: ChatHudLine objects are also removed in queueForRemoval, however those are signature based.

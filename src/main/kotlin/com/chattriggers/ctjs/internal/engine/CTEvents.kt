@@ -19,10 +19,11 @@ import com.mojang.brigadier.CommandDispatcher
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import net.fabricmc.fabric.api.event.Event
 import net.fabricmc.fabric.api.event.EventFactory
-import net.minecraft.client.gui.Drawable
-import net.minecraft.client.gui.screen.Screen
-import net.minecraft.client.util.math.MatrixStack
-import net.minecraft.network.packet.Packet
+import net.minecraft.client.gui.components.Renderable
+import net.minecraft.client.gui.GuiGraphicsExtractor
+import net.minecraft.client.gui.screens.Screen
+import com.mojang.blaze3d.vertex.PoseStack
+import net.minecraft.network.protocol.Packet
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 
 internal object CTEvents {
@@ -31,23 +32,23 @@ internal object CTEvents {
     }
 
     fun interface RenderScreenCallback {
-        fun render(matrixStack: MatrixStack, mouseX: Int, mouseY: Int, drawable: Drawable, partialTicks: Float)
+        fun render(matrixStack: PoseStack, mouseX: Int, mouseY: Int, drawable: Renderable, partialTicks: Float)
     }
 
     fun interface RenderWorldCallback {
-        fun render(matrixStack: MatrixStack, partialTicks: Float)
+        fun render(matrixStack: PoseStack, partialTicks: Float)
     }
 
     fun interface RenderEntityCallback {
-        fun render(matrixStack: MatrixStack, entity: MCEntity, partialTicks: Float, ci: CallbackInfo)
+        fun render(matrixStack: PoseStack, entity: MCEntity, partialTicks: Float, ci: CallbackInfo)
     }
 
     fun interface RenderBlockEntityCallback {
-        fun render(matrixStack: MatrixStack, entity: MCBlockEntity, partialTicks: Float, ci: CallbackInfo)
+        fun render(matrixStack: PoseStack, entity: MCBlockEntity, partialTicks: Float, ci: CallbackInfo)
     }
 
     fun interface RenderOverlayCallback {
-        fun render(matrixStack: MatrixStack, partialTicks: Float)
+        fun render(graphics: GuiGraphicsExtractor, partialTicks: Float)
     }
 
     fun interface PacketReceivedCallback {
@@ -71,7 +72,7 @@ internal object CTEvents {
     }
 
     fun interface BreakBlockCallback {
-        fun breakBlock(pos: MCBlockPos)
+        fun breakBlock(pos: MCBlockPos): Boolean
     }
 
     fun interface NetworkCommandDispatcherRegisterCallback {
@@ -159,7 +160,7 @@ internal object CTEvents {
     @JvmField
     val BREAK_BLOCK = make<BreakBlockCallback> { listeners ->
         BreakBlockCallback { pos ->
-            listeners.forEach { it.breakBlock(pos) }
+            listeners.all { it.breakBlock(pos) }
         }
     }
 
@@ -170,7 +171,7 @@ internal object CTEvents {
         }
     }
 
-    private inline fun <reified T> make(noinline reducer: (Array<T>) -> T): Event<T> {
+    private inline fun <reified T : Any> make(noinline reducer: (Array<T>) -> T): Event<T> {
         return EventFactory.createArrayBacked(T::class.java, reducer)
     }
 }

@@ -3,14 +3,15 @@ package com.chattriggers.ctjs.internal.mixins;
 import com.chattriggers.ctjs.api.inventory.Item;
 import com.chattriggers.ctjs.api.message.TextComponent;
 import com.chattriggers.ctjs.api.triggers.TriggerType;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.text.Text;
+import com.chattriggers.ctjs.internal.triggers.TriggerContractAdapters;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.inventory.ContainerInput;
+import net.minecraft.network.chat.Component;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -20,46 +21,46 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Objects;
 
-@Mixin(HandledScreen.class)
+@Mixin(AbstractContainerScreen.class)
 public class HandledScreenMixin extends Screen {
     @Shadow
-    protected Slot focusedSlot;
+    protected Slot hoveredSlot;
 
     @Shadow
     @Final
-    protected ScreenHandler handler;
+    protected AbstractContainerMenu menu;
 
-    private HandledScreenMixin(Text title) {
+    private HandledScreenMixin(Component title) {
         super(title);
     }
 
     @Inject(
-        method = "drawMouseoverTooltip",
-        at = @At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/client/gui/DrawContext;drawTooltip(Lnet/minecraft/client/font/TextRenderer;Ljava/util/List;Ljava/util/Optional;II)V"
-        ),
+        method = "extractTooltip",
+        at = @At("HEAD"),
         cancellable = true
     )
-    private void injectDrawMouseoverTooltip(DrawContext context, int x, int y, CallbackInfo ci) {
-        ItemStack stack = focusedSlot.getStack();
+    private void injectDrawMouseoverTooltip(GuiGraphicsExtractor context, int x, int y, CallbackInfo ci) {
+        if (hoveredSlot == null || !hoveredSlot.hasItem()) return;
+        ItemStack stack = hoveredSlot.getItem();
         TriggerType.ITEM_TOOLTIP.triggerAll(
-            getTooltipFromItem(Objects.requireNonNull(client), stack)
-                .stream()
-                .map(TextComponent::new)
-                .toList(),
+            TriggerContractAdapters.mutableList(
+                getTooltipFromItem(Objects.requireNonNull(minecraft), stack)
+                    .stream()
+                    .map(TextComponent::new)
+                    .toList()
+            ),
             Item.fromMC(stack),
             ci
         );
     }
 
-    @Inject(method = "onMouseClick(Lnet/minecraft/screen/slot/Slot;IILnet/minecraft/screen/slot/SlotActionType;)V", at = @At("HEAD"), cancellable = true)
-    private void injectOnMouseClick(Slot slot, int slotId, int button, SlotActionType actionType, CallbackInfo ci) {
+    @Inject(method = "slotClicked(Lnet/minecraft/world/inventory/Slot;IILnet/minecraft/world/inventory/ContainerInput;)V", at = @At("HEAD"), cancellable = true)
+    private void injectOnMouseClick(Slot slot, int slotId, int button, ContainerInput actionType, CallbackInfo ci) {
         if (
-            (slotId != -999 && actionType == SlotActionType.THROW) || // dropping item from slot
-                (slotId == -999 && actionType == SlotActionType.PICKUP) // dropping by clicking outside inventory
+            (slotId != -999 && actionType == ContainerInput.THROW) || // dropping item from slot
+                (slotId == -999 && actionType == ContainerInput.PICKUP) // dropping by clicking outside inventory
         ) {
-            TriggerType.DROP_ITEM.triggerAll(Item.fromMC(handler.getCursorStack()), button == 0, ci);
+            TriggerType.DROP_ITEM.triggerAll(Item.fromMC(menu.getCarried()), button == 0, ci);
         }
     }
 }

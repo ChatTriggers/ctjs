@@ -13,7 +13,7 @@ open class NBTBase(override val mcValue: MCNbtBase) : CTWrapper<MCNbtBase> {
      * Gets the type byte for the tag.
      */
     val id: Byte
-        get() = mcValue.type
+        get() = mcValue.id
 
     /**
      * Creates a clone of the tag.
@@ -47,17 +47,17 @@ open class NBTBase(override val mcValue: MCNbtBase) : CTWrapper<MCNbtBase> {
 
         fun MCNbtBase.toObject(): Any? {
             return when (this) {
-                is NbtString -> asString()
-                is NbtByte -> byteValue()
-                is NbtShort -> shortValue()
-                is NbtInt -> intValue()
-                is NbtLong -> longValue()
-                is NbtFloat -> floatValue()
-                is NbtDouble -> doubleValue()
+                is StringTag -> value()
+                is ByteTag -> byteValue()
+                is ShortTag -> shortValue()
+                is IntTag -> intValue()
+                is LongTag -> longValue()
+                is FloatTag -> floatValue()
+                is DoubleTag -> doubleValue()
                 is MCNbtCompound -> toObject()
                 is MCNbtList -> toObject()
-                is NbtByteArray -> NativeArray(byteArray.toTypedArray()).expose()
-                is NbtIntArray -> NativeArray(intArray.toTypedArray()).expose()
+                is ByteArrayTag -> NativeArray(asByteArray.toTypedArray()).expose()
+                is IntArrayTag -> NativeArray(asIntArray.toTypedArray()).expose()
                 else -> error("Unknown tag type $javaClass")
             }
         }
@@ -66,7 +66,7 @@ open class NBTBase(override val mcValue: MCNbtBase) : CTWrapper<MCNbtBase> {
             val o = NativeObject()
             o.expose()
 
-            for (key in keys) {
+            for (key in keySet()) {
                 val value = this[key]
                 if (value != null) {
                     o.put(key, o, value.toObject())
@@ -78,7 +78,7 @@ open class NBTBase(override val mcValue: MCNbtBase) : CTWrapper<MCNbtBase> {
 
         fun MCNbtList.toObject(): NativeArray {
             val tags = mutableListOf<Any?>()
-            for (i in 0 until count()) {
+            for (i in 0 until size) {
                 tags.add(get(i).toObject())
             }
             val array = NativeArray(tags.toTypedArray())

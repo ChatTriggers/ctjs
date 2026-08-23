@@ -1,11 +1,11 @@
 package com.chattriggers.ctjs.internal.mixins;
 
-import net.minecraft.client.world.ClientChunkManager;
+import net.minecraft.client.multiplayer.ClientChunkCache;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(ClientChunkManager.class)
+@Mixin(ClientChunkCache.class)
 public interface ClientChunkManagerAccessor {
-    @Accessor
-    ClientChunkManager.ClientChunkMap getChunks();
+    @Accessor("storage")
+    ClientChunkCache.Storage getChunks();
 }

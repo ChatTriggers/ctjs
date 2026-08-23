@@ -1,7 +1,12 @@
 (function(global) {
     global.Mappings = com.chattriggers.ctjs.api.Mappings;
 
+    let legacyCompatibility = null;
+    let compatibilityWarningsEnabled = false;
+
     function getJavaType(clazz) {
+        if (compatibilityWarningsEnabled && legacyCompatibility !== null)
+            legacyCompatibility.warnDirectJavaAccess(String(clazz));
         const mappedName = Mappings.mapClassName(clazz);
         if (mappedName)
             return Packages[mappedName.replaceAll("/", ".")]
@@ -22,13 +27,18 @@
         class: getJavaClass,
     };
 
+    legacyCompatibility = getJavaClass("com.chattriggers.ctjs.api.compat.LegacyCompatibility");
+
     global.sync = (func, lock) => new org.mozilla.javascript.Synchronizer(func, lock);
 
+    const GenerationTimeouts = getJavaClass("com.chattriggers.ctjs.internal.lifecycle.GenerationTimeouts");
+
     global.setTimeout = function (func, delay) {
-        new Thread(function () {
-            Thread.sleep(delay);
-            func();
-        }).start();
+        return GenerationTimeouts.schedule(Math.max(0, Number(delay) || 0), func);
+    };
+
+    global.clearTimeout = function (handle) {
+        GenerationTimeouts.cancel(handle);
     };
 
     const getClassName = path => path.substring(path.lastIndexOf('.') + 1)
@@ -37,14 +47,48 @@
         global[className] = Java.class(path);
     }
 
+    function createLegacyKeyboard(currentKeyboard) {
+        const legacyKeyboard = {};
+        const Modifier = Java.class("java.lang.reflect.Modifier");
+
+        function expose(name) {
+            if (Object.prototype.hasOwnProperty.call(legacyKeyboard, name)) return;
+            Object.defineProperty(legacyKeyboard, name, {
+                get: () => currentKeyboard[name],
+                enumerable: true,
+            });
+        }
+
+        const fields = currentKeyboard.class.getFields();
+        for (let i = 0; i < fields.length; i++) {
+            if (Modifier.isStatic(fields[i].getModifiers())) expose(String(fields[i].getName()));
+        }
+
+        const methods = currentKeyboard.class.getMethods();
+        for (let i = 0; i < methods.length; i++) {
+            if (Modifier.isStatic(methods[i].getModifiers())) expose(String(methods[i].getName()));
+        }
+
+        Object.defineProperty(legacyKeyboard, "class", {
+            get: () => currentKeyboard.class,
+        });
+        Object.defineProperty(legacyKeyboard, "KEY_BACK", {
+            get: () => currentKeyboard.KEY_BACKSPACE,
+            enumerable: true,
+        });
+        return legacyKeyboard;
+    }
+
     // API
 
     loadClass("java.util.ArrayList");
     loadClass("java.util.HashMap");
     loadClass("gg.essential.universal.UKeyboard", "Keyboard");
-    loadClass("net.minecraft.util.Hand");
+    global.Keyboard = createLegacyKeyboard(global.Keyboard);
+    loadClass("net.minecraft.world.InteractionHand", "Hand");
 
     loadClass("com.chattriggers.ctjs.api.client.Client");
+    const MinecraftScreen = getJavaClass("net.minecraft.client.gui.screens.Screen");
     loadClass("com.chattriggers.ctjs.api.client.CPS");
     loadClass("com.chattriggers.ctjs.api.client.FileLib");
     loadClass("com.chattriggers.ctjs.api.client.KeyBind");
@@ -79,14 +123,39 @@
 
     loadClass("com.chattriggers.ctjs.api.message.ChatLib");
     loadClass("com.chattriggers.ctjs.api.message.TextComponent");
+    loadClass("com.chattriggers.ctjs.api.compat.Message");
 
     loadClass("com.chattriggers.ctjs.api.render.Book");
     loadClass("com.chattriggers.ctjs.api.render.Display");
     loadClass("com.chattriggers.ctjs.api.render.Gui");
+
+    function unwrapLegacyScreen(value) {
+        if (value == null)
+            return null;
+
+        if (value instanceof MinecraftScreen)
+            return value;
+
+        if (typeof value.toMC === "function") {
+            const screen = value.toMC();
+            if (screen == null || screen instanceof MinecraftScreen)
+                return screen;
+        }
+
+        throw new TypeError("GuiHandler.openGui expects a Gui, Screen, Screen wrapper, or null");
+    }
+
+    global.GuiHandler = Object.freeze({
+        openGui: function (value) {
+            Client.currentGui.set(unwrapLegacyScreen(value));
+        },
+    });
+
     loadClass("com.chattriggers.ctjs.api.render.Image");
     loadClass("com.chattriggers.ctjs.api.render.Rectangle");
     loadClass("com.chattriggers.ctjs.api.render.Renderer");
     loadClass("com.chattriggers.ctjs.api.render.Renderer3d");
+    loadClass("com.chattriggers.ctjs.api.compat.Tessellator");
     loadClass("com.chattriggers.ctjs.api.render.Shape");
     loadClass("com.chattriggers.ctjs.api.render.Text");
     loadClass("com.chattriggers.ctjs.api.render.Toast");
@@ -139,6 +208,8 @@
     loadClass("org.lwjgl.opengl.GL43");
     loadClass("org.lwjgl.opengl.GL44");
     loadClass("org.lwjgl.opengl.GL45");
+
+    compatibilityWarningsEnabled = true;
 
     global.cancel = event => {
         if (event instanceof CancellableEvent) {

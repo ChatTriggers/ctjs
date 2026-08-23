@@ -1,12 +1,12 @@
 package com.chattriggers.ctjs.internal.mixins;
 
-import net.minecraft.client.option.GameOptions;
-import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.Options;
+import net.minecraft.client.KeyMapping;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(GameOptions.class)
+@Mixin(Options.class)
 public interface GameOptionsAccessor {
-    @Accessor
-    void setAllKeys(KeyBinding[] keys);
+    @Accessor("keyMappings")
+    void setAllKeys(KeyMapping[] keys);
 }

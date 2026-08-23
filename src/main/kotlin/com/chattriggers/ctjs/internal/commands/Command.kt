@@ -6,15 +6,15 @@ import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.arguments.ArgumentType
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.builder.RequiredArgumentBuilder
-import net.minecraft.command.CommandSource
+import net.minecraft.commands.SharedSuggestionProvider
 
 interface Command {
     val overrideExisting: Boolean
     val name: String
 
-    fun registerImpl(dispatcher: CommandDispatcher<CommandSource>)
+    fun registerImpl(dispatcher: CommandDispatcher<SharedSuggestionProvider>)
 
-    fun unregisterImpl(dispatcher: CommandDispatcher<CommandSource>) {
+    fun unregisterImpl(dispatcher: CommandDispatcher<SharedSuggestionProvider>) {
         dispatcher.root.asMixin<CommandNodeAccessor>().apply {
             childNodes.remove(name)
             literals.remove(name)
@@ -22,7 +22,7 @@ interface Command {
     }
 }
 
-fun literal(name: String) = LiteralArgumentBuilder.literal<CommandSource>(name)
+fun literal(name: String) = LiteralArgumentBuilder.literal<SharedSuggestionProvider>(name)
 
 fun <T> argument(name: String, argument: ArgumentType<T>) =
-    RequiredArgumentBuilder.argument<CommandSource, T>(name, argument)
+    RequiredArgumentBuilder.argument<SharedSuggestionProvider, T>(name, argument)

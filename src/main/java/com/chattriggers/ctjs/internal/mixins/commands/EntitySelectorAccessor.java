@@ -1,11 +1,11 @@
 package com.chattriggers.ctjs.internal.mixins.commands;
 
-import net.minecraft.command.EntitySelector;
-import net.minecraft.entity.Entity;
-import net.minecraft.predicate.NumberRange;
-import net.minecraft.util.TypeFilter;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.commands.arguments.selector.EntitySelector;
+import net.minecraft.advancements.criterion.MinMaxBounds;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.entity.EntityTypeTest;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
@@ -17,36 +17,36 @@ import java.util.function.Predicate;
 
 @Mixin(EntitySelector.class)
 public interface EntitySelectorAccessor {
-    @Accessor
+    @Accessor("maxResults")
     int getLimit();
 
-    @Accessor
+    @Accessor("includesEntities")
     boolean getIncludesNonPlayers();
 
-    @Accessor
+    @Accessor("contextFreePredicates")
     List<Predicate<Entity>> getPredicates();
 
-    @Accessor
-    NumberRange.DoubleRange getDistance();
+    @Accessor("range")
+    MinMaxBounds.Doubles getDistance();
 
-    @Accessor
-    Function<Vec3d, Vec3d> getPositionOffset();
+    @Accessor("position")
+    Function<Vec3, Vec3> getPositionOffset();
 
-    @Accessor
-    Box getBox();
+    @Accessor("aabb")
+    AABB getBox();
 
-    @Accessor
-    BiConsumer<Vec3d, List<? extends Entity>> getSorter();
+    @Accessor("order")
+    BiConsumer<Vec3, List<? extends Entity>> getSorter();
 
-    @Accessor
+    @Accessor("currentEntity")
     boolean getSenderOnly();
 
     @Accessor
     String getPlayerName();
 
-    @Accessor
+    @Accessor("entityUUID")
     UUID getUuid();
 
-    @Accessor
-    TypeFilter<Entity, ?> getEntityFilter();
+    @Accessor("type")
+    EntityTypeTest<Entity, ?> getEntityFilter();
 }

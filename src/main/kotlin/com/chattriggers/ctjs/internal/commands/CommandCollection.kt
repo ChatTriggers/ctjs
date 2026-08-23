@@ -9,50 +9,78 @@ import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents
-import net.minecraft.command.CommandSource
+import net.minecraft.commands.SharedSuggestionProvider
 
 abstract class CommandCollection : Initializer {
     private val allCommands = mutableSetOf<Command>()
 
-    private var clientDispatcher: CommandDispatcher<CommandSource>? = null
-    private var networkDispatcher: CommandDispatcher<CommandSource>? = null
+    private var clientDispatcher: CommandDispatcher<SharedSuggestionProvider>? = null
+    private var networkDispatcher: CommandDispatcher<SharedSuggestionProvider>? = null
 
     @Suppress("UNCHECKED_CAST")
     override fun init() {
         ClientCommandRegistrationCallback.EVENT.register { dispatcher, _ ->
-            clientDispatcher = dispatcher as CommandDispatcher<CommandSource>
-            allCommands.forEach { it.registerImpl(dispatcher) }
+            attachClientDispatcher(dispatcher as CommandDispatcher<SharedSuggestionProvider>)
         }
 
         CTEvents.NETWORK_COMMAND_DISPATCHER_REGISTER.register { dispatcher ->
-            networkDispatcher = dispatcher as CommandDispatcher<CommandSource>
-            allCommands.forEach { it.registerImpl(dispatcher) }
+            attachNetworkDispatcher(dispatcher as CommandDispatcher<SharedSuggestionProvider>)
         }
 
         ClientPlayConnectionEvents.DISCONNECT.register { _, _ ->
-            clientDispatcher = null
-            networkDispatcher = null
+            detachDispatchers()
         }
     }
 
     fun register(command: Command) {
-        allCommands.add(command)
-        if (clientDispatcher.hasConflict(command) || networkDispatcher.hasConflict(command)) {
-            existingCommandWarning(command.name).printToConsole(LogType.WARN)
-        } else {
-            clientDispatcher?.let { command.registerImpl(it) }
-            networkDispatcher?.let { command.registerImpl(it) }
+        if (!allCommands.add(command))
+            return
+        listOfNotNull(clientDispatcher, networkDispatcher).forEach { dispatcher ->
+            if (dispatcher.hasConflict(command))
+                warnConflict(command.name)
+            else
+                command.registerImpl(dispatcher)
         }
     }
 
     fun unregister(command: Command) {
+        allCommands.remove(command)
         for (dispatcher in listOfNotNull(clientDispatcher, networkDispatcher))
             command.unregisterImpl(dispatcher)
     }
 
     fun unregisterAll() {
-        allCommands.forEach(::unregister)
+        val commands = allCommands.toList()
         allCommands.clear()
+        for (dispatcher in listOfNotNull(clientDispatcher, networkDispatcher))
+            commands.forEach { it.unregisterImpl(dispatcher) }
+    }
+
+    internal fun registeredCount(): Int = synchronized(allCommands) { allCommands.size }
+
+    internal fun attachClientDispatcher(dispatcher: CommandDispatcher<SharedSuggestionProvider>) {
+        clientDispatcher = dispatcher
+        registerExisting(dispatcher)
+    }
+
+    internal fun attachNetworkDispatcher(dispatcher: CommandDispatcher<SharedSuggestionProvider>) {
+        networkDispatcher = dispatcher
+        registerExisting(dispatcher)
+    }
+
+    internal fun detachDispatchers() {
+        clientDispatcher = null
+        networkDispatcher = null
+    }
+
+    private fun registerExisting(dispatcher: CommandDispatcher<SharedSuggestionProvider>) {
+        allCommands.forEach { command ->
+            if (dispatcher.hasConflict(command)) {
+                warnConflict(command.name)
+            } else {
+                command.registerImpl(dispatcher)
+            }
+        }
     }
 
     fun <S, T : ArgumentBuilder<S, T>> ArgumentBuilder<S, T>.onExecute(block: (CommandContext<S>) -> Unit): T =
@@ -70,4 +98,8 @@ abstract class CommandCollection : Initializer {
         other command with the same name. To override the other command, set the 
         overrideExisting flag in setName() (the second argument) to true.
         """.trimIndent().replace("\n", "")
+
+    protected open fun warnConflict(name: String) {
+        existingCommandWarning(name).printToConsole(LogType.WARN)
+    }
 }

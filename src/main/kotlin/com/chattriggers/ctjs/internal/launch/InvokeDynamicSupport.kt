@@ -69,11 +69,11 @@ internal object InvokeDynamicSupport {
         val mixinCallback = JSLoader.invokeMixinLookup(mixinId)
 
         checkNotNull(mixinCallback.handle)
-        checkNotNull(mixinCallback.method)
 
         // Until we /ct load, however. When we reload, we need to re-resolve all JS invocation targets since our old
-        // engine context has been thrown away and recreated. It is also possible that the user has changed their code
-        // in the handler function.
+        // engine context has been thrown away and recreated. The target is now a stable
+        // trampoline; its generation-owned slot atomically selects the current handler
+        // and safely returns null while no ACTIVE generation owns one.
         val initTarget = callSite.target
 
         // This switch point will be our indicator to know if the user has reloaded. As soon as the user reloads, this

@@ -22,13 +22,18 @@ internal object DynamicMixinManager {
     internal const val GENERATED_MIXIN = "ct-generated.mixins.json"
     internal const val GENERATED_PACKAGE = "com/chattriggers/ctjs/generated_mixins"
 
-    lateinit var mixins: Map<Mixin, MixinDetails>
+    var mixins: Map<Mixin, MixinDetails> = emptyMap()
+        private set
+    private var initialized = false
 
     fun initialize() {
-        mixins = JSLoader.mixinSetup(ModuleManager.cachedModules.filter { it.metadata.mixinEntry != null })
+        val loadedMixins = JSLoader.mixinSetup(ModuleManager.cachedModules.filter { it.metadata.mixinEntry != null })
+        mixins = loadedMixins
+        initialized = true
     }
 
     fun applyAccessWideners() {
+        check(initialized) { "DynamicMixinManager.initialize() did not complete" }
         for ((mixin, details) in mixins) {
             val mappedClass = Mappings.getMappedClass(mixin.target) ?: run {
                 if (mixin.remap == false) {
@@ -46,6 +51,7 @@ internal object DynamicMixinManager {
     }
 
     fun applyMixins() {
+        check(initialized) { "DynamicMixinManager.initialize() did not complete" }
         val dynamicMixins = mutableListOf<String>()
 
         if (CTJS.isDevelopment) deleteOldMixinClasses()
@@ -67,7 +73,7 @@ internal object DynamicMixinManager {
             put("required", JsonPrimitive(true))
             put("minVersion", JsonPrimitive("0.8"))
             put("package", JsonPrimitive("com.chattriggers.ctjs.generated_mixins"))
-            put("compatibilityLevel", JsonPrimitive("JAVA_17"))
+            put("compatibilityLevel", JsonPrimitive("JAVA_25"))
             putJsonObject("injectors") {
                 put("defaultRequire", JsonPrimitive(1))
             }

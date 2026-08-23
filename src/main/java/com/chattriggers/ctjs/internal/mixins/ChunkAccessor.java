@@ -1,14 +1,14 @@
 package com.chattriggers.ctjs.internal.mixins;
 
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.chunk.ChunkAccess;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 import java.util.Map;
 
-@Mixin(Chunk.class)
+@Mixin(ChunkAccess.class)
 public interface ChunkAccessor {
     @Accessor
     Map<BlockPos, BlockEntity> getBlockEntities();

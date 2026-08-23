@@ -1,0 +1,7 @@
+{
+  "name": "CompatRuntimeAProbe",
+  "description": "CTJS 3.0.0 compatibility runtime A fixture",
+  "creator": "CTJS",
+  "entry": "index.js",
+  "version": "1.0.0"
+}

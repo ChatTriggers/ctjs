@@ -52,8 +52,7 @@ internal class ModifyReturnValueInjector(
         }
     }
 
-    context(MethodAssembly)
-    override fun generateNotAttachedBehavior() {
+    override fun MethodAssembly.generateNotAttachedBehavior() {
         generateParameterLoad(0)
     }
 }

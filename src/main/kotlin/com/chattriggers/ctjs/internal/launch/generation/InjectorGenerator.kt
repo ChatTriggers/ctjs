@@ -45,11 +45,11 @@ internal abstract class InjectorGenerator(protected val ctx: GenerationContext, 
 
     abstract fun attachAnnotation(node: MethodNode, signature: InjectionSignature)
 
-    context(MethodAssembly)
-    abstract fun generateNotAttachedBehavior()
+    abstract fun MethodAssembly.generateNotAttachedBehavior()
 
-    context(ClassAssembly)
-    fun generate() {
+    fun generateInto(classAssembly: ClassAssembly) = with(classAssembly) { generate() }
+
+    fun ClassAssembly.generate() {
         val (targetMethod, parameters, returnType, isStatic) = signature
 
         var modifiers = private
@@ -114,8 +114,7 @@ internal abstract class InjectorGenerator(protected val ctx: GenerationContext, 
         attachAnnotation(methodNode, signature)
     }
 
-    context(MethodAssembly)
-    private fun generateBoxIfNecessary(descriptor: Descriptor) {
+    private fun MethodAssembly.generateBoxIfNecessary(descriptor: Descriptor) {
         when (descriptor) {
             Descriptor.Primitive.VOID -> throw IllegalStateException("Cannot use Void as a parameter type")
             Descriptor.Primitive.BOOLEAN ->
@@ -138,8 +137,7 @@ internal abstract class InjectorGenerator(protected val ctx: GenerationContext, 
         }
     }
 
-    context(MethodAssembly)
-    private fun generateUnboxIfNecessary(descriptor: Descriptor) {
+    private fun MethodAssembly.generateUnboxIfNecessary(descriptor: Descriptor) {
         when (descriptor) {
             Descriptor.Primitive.VOID -> {}
             Descriptor.Primitive.BOOLEAN -> {
@@ -164,8 +162,7 @@ internal abstract class InjectorGenerator(protected val ctx: GenerationContext, 
         }
     }
 
-    context(MethodAssembly)
-    private fun generateReturn(returnType: Descriptor) {
+    private fun MethodAssembly.generateReturn(returnType: Descriptor) {
         when (returnType) {
             Descriptor.Primitive.VOID -> {
                 pop

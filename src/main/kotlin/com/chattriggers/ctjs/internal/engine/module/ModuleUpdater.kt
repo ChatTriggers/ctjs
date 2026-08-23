@@ -10,6 +10,7 @@ import com.chattriggers.ctjs.internal.engine.CTEvents
 import com.chattriggers.ctjs.internal.engine.module.ModuleManager.cachedModules
 import com.chattriggers.ctjs.internal.engine.module.ModuleManager.modulesFolder
 import com.chattriggers.ctjs.internal.utils.Initializer
+import com.chattriggers.ctjs.internal.utils.NetworkStreams
 import com.chattriggers.ctjs.internal.utils.toVersion
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents
 import org.apache.commons.io.FileUtils
@@ -18,9 +19,10 @@ import java.nio.file.FileSystems
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
+import java.util.concurrent.ConcurrentLinkedQueue
 
 object ModuleUpdater : Initializer {
-    private val changelogs = mutableListOf<ModuleMetadata>()
+    private val changelogs = ConcurrentLinkedQueue<ModuleMetadata>()
     private var shouldReportChangelog = false
 
     override fun init() {
@@ -28,18 +30,18 @@ object ModuleUpdater : Initializer {
 
         CTEvents.RENDER_OVERLAY.register { _, _ ->
             if (shouldReportChangelog) {
-                changelogs.forEach(::reportChangelog)
-                changelogs.clear()
+                while (true) {
+                    reportChangelog(changelogs.poll() ?: break)
+                }
             }
         }
     }
 
     private fun tryReportChangelog(module: ModuleMetadata) {
-        if (shouldReportChangelog) {
-            reportChangelog(module)
-        } else {
-            changelogs.add(module)
-        }
+        // updateModule runs during background setup (and once very early from the
+        // Mixin plugin), so only publish data here. RENDER_OVERLAY drains this queue
+        // on Minecraft's render thread once chat can safely be accessed.
+        changelogs.add(module)
     }
 
     private fun reportChangelog(module: ModuleMetadata) {
@@ -60,7 +62,9 @@ object ModuleUpdater : Initializer {
             val url = "${CTJS.WEBSITE_ROOT}/api/modules/${metadata.name}/metadata?modVersion=${CTJS.MOD_VERSION}"
             val connection = CTJS.makeWebRequest(url)
 
-            val newMetadataText = connection.getInputStream().bufferedReader().readText()
+            val newMetadataText = NetworkStreams.useInput(connection) { input ->
+                input.bufferedReader().readText()
+            }
             val newMetadata = CTJS.json.decodeFromString<ModuleMetadata>(newMetadataText)
 
             if (newMetadata.version == null) {
@@ -125,25 +129,34 @@ object ModuleUpdater : Initializer {
         try {
             val url = "${CTJS.WEBSITE_ROOT}/api/modules/$name/scripts?modVersion=${CTJS.MOD_VERSION}"
             val connection = CTJS.makeWebRequest(url)
-            FileUtils.copyInputStreamToFile(connection.getInputStream(), downloadZip)
+            val modVersion = NetworkStreams.useInput(connection) { input ->
+                Files.copy(input, downloadZip.toPath(), StandardCopyOption.REPLACE_EXISTING)
+                connection.getHeaderField("CT-Version")
+            }
             FileSystems.newFileSystem(downloadZip.toPath()).use {
-                val rootFolder = Files.newDirectoryStream(it.rootDirectories.first()).iterator()
-                if (!rootFolder.hasNext()) throw Exception("Too small")
-                val moduleFolder = rootFolder.next()
-                if (rootFolder.hasNext()) throw Exception("Too big")
+                val moduleFolder = Files.newDirectoryStream(it.rootDirectories.first()).use { roots ->
+                    val iterator = roots.iterator()
+                    if (!iterator.hasNext()) throw Exception("Module archive is empty")
+                    val root = iterator.next()
+                    if (iterator.hasNext()) throw Exception("Module archive has multiple root entries")
+                    root
+                }
 
                 val realName = moduleFolder.fileName.toString().trimEnd(File.separatorChar)
                 File(modulesFolder, realName).apply { mkdir() }
-                Files.walk(moduleFolder).forEach { path ->
-                    val resolvedPath = Paths.get(CTJS.MODULES_FOLDER, path.toString())
-                    if (Files.isDirectory(resolvedPath)) {
-                        return@forEach
+                Files.walk(moduleFolder).use { paths ->
+                    paths.forEach { path ->
+                        val resolvedPath = Paths.get(CTJS.MODULES_FOLDER, path.toString())
+                        if (!Files.isDirectory(path)) {
+                            resolvedPath.parent?.let(Files::createDirectories)
+                            Files.copy(path, resolvedPath, StandardCopyOption.REPLACE_EXISTING)
+                        }
                     }
-                    Files.copy(path, resolvedPath, StandardCopyOption.REPLACE_EXISTING)
                 }
-                return DownloadResult(realName, connection.getHeaderField("CT-Version"))
+                return DownloadResult(realName, modVersion)
             }
         } catch (exception: Exception) {
+            "Failed to download module '$name' from the CTJS module API".printToConsole(LogType.ERROR)
             exception.printTraceToConsole()
         } finally {
             downloadZip.delete()

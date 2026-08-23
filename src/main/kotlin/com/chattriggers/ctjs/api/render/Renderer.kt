@@ -5,7 +5,6 @@ import com.chattriggers.ctjs.api.client.Player
 import com.chattriggers.ctjs.api.entity.PlayerMP
 import com.chattriggers.ctjs.api.message.ChatLib
 import com.chattriggers.ctjs.api.vec.Vec3f
-import com.chattriggers.ctjs.internal.mixins.EntityRenderDispatcherAccessor
 import com.chattriggers.ctjs.MCVertexFormat
 import com.chattriggers.ctjs.engine.LogType
 import com.chattriggers.ctjs.engine.printToConsole
@@ -20,17 +19,21 @@ import gg.essential.elementa.dsl.component4
 import gg.essential.universal.UGraphics
 import gg.essential.universal.UMatrixStack
 import gg.essential.universal.UMinecraft
-import net.minecraft.client.MinecraftClient
-import net.minecraft.client.font.TextRenderer
-import net.minecraft.client.network.AbstractClientPlayerEntity
-import net.minecraft.client.render.DiffuseLighting
-import net.minecraft.client.render.Tessellator
-import net.minecraft.client.render.VertexConsumerProvider
-import net.minecraft.client.render.VertexFormats
-import net.minecraft.client.render.entity.EntityRendererFactory
-import net.minecraft.client.util.math.MatrixStack
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.Font
+import net.minecraft.client.gui.GuiGraphicsExtractor
+import net.minecraft.client.gui.screens.inventory.InventoryScreen
+import net.minecraft.client.player.AbstractClientPlayer
+import com.mojang.blaze3d.platform.Lighting
+import com.mojang.blaze3d.vertex.Tesselator
+import net.minecraft.client.renderer.MultiBufferSource
+import com.mojang.blaze3d.vertex.DefaultVertexFormat
+import net.minecraft.client.renderer.entity.EntityRendererProvider
+import com.mojang.blaze3d.vertex.PoseStack
 import org.joml.Matrix4f
 import org.joml.Quaternionf
+import org.joml.Vector3f
+import net.minecraft.client.renderer.RenderPipelines
 import org.mozilla.javascript.NativeObject
 import java.awt.Color
 import java.util.*
@@ -47,12 +50,18 @@ object Renderer {
     @JvmField
     var colorized: Long? = null
 
+    private var retainLegacyTransforms = false
+    private val cullState = ScopedRenderState(initialValue = true)
+
     // The currently-active matrix stack
     internal lateinit var matrixStack: UMatrixStack
     private val matrixStackStack = ArrayDeque<UMatrixStack>()
 
     private lateinit var slimCTRenderPlayer: CTPlayerRenderer
     private lateinit var normalCTRenderPlayer: CTPlayerRenderer
+
+    internal var guiGraphics: GuiGraphicsExtractor? = null
+        private set
 
     internal var matrixPushCounter = 0
 
@@ -135,7 +144,7 @@ object Renderer {
     }
 
     @JvmStatic
-    internal fun initializePlayerRenderers(context: EntityRendererFactory.Context) {
+    internal fun initializePlayerRenderers(context: EntityRendererProvider.Context) {
         normalCTRenderPlayer = CTPlayerRenderer(context, slim = false)
         slimCTRenderPlayer = CTPlayerRenderer(context, slim = true)
     }
@@ -144,10 +153,10 @@ object Renderer {
     fun getFontRenderer() = UMinecraft.getFontRenderer()
 
     @JvmStatic
-    fun getRenderManager() = UMinecraft.getMinecraft().worldRenderer
+    fun getRenderManager() = UMinecraft.getMinecraft().levelRenderer
 
     @JvmStatic
-    fun getStringWidth(text: String) = getFontRenderer().getWidth(ChatLib.addColor(text))
+    fun getStringWidth(text: String) = getFontRenderer().width(ChatLib.addColor(text))
 
     @JvmStatic
     @JvmOverloads
@@ -176,11 +185,51 @@ object Renderer {
         return intArrayOf(red, green, blue)
     }
 
+    /**
+     * CTJS 2.x compatibility switch controlling whether [finishDraw] resets transforms.
+     */
+    @Deprecated("Manage matrix state explicitly with pushMatrix/popMatrix")
     @JvmStatic
-    fun disableCull() = apply { RenderSystem.disableCull() }
+    fun retainTransforms(retain: Boolean) {
+        retainLegacyTransforms = retain
+        finishDraw()
+    }
+
+    /**
+     * CTJS 2.x compatibility reset for color and matrix state.
+     */
+    @Deprecated("Manage matrix state explicitly with pushMatrix/popMatrix")
+    @JvmStatic
+    fun finishDraw() {
+        if (retainLegacyTransforms)
+            return
+
+        colorized = null
+        if (::matrixStack.isInitialized && matrixPushCounter > 0) {
+            popMatrix()
+            pushMatrix()
+        }
+    }
 
     @JvmStatic
-    fun enableCull() = apply { RenderSystem.enableCull() }
+    fun disableCull() = apply { cullState.set(false) }
+
+    @JvmStatic
+    fun enableCull() = apply { cullState.set(true) }
+
+    internal fun isCullEnabled(): Boolean = cullState.current
+
+    internal fun cullScopeDepth(): Int = cullState.depth
+
+    internal fun pushCullState(enabled: Boolean = cullState.current): ScopedRenderState.Scope<Boolean> =
+        cullState.push(enabled)
+
+    internal fun restoreCullState(scope: ScopedRenderState.Scope<Boolean>) {
+        cullState.restore(scope)
+    }
+
+    internal fun <T> withCullState(enabled: Boolean, block: () -> T): T =
+        cullState.withValue(enabled, block)
 
     @JvmStatic
     fun disableLighting() = apply { UGraphics.disableLighting() }
@@ -222,12 +271,12 @@ object Renderer {
     @JvmStatic
     @JvmOverloads
     fun bindTexture(texture: Image, textureIndex: Int = 0) = apply {
-        UGraphics.bindTexture(textureIndex, texture.getTexture()?.glId ?: 0)
+        UGraphics.bindTexture(textureIndex, texture.getIdOrRegister())
     }
 
     @JvmStatic
     fun deleteTexture(texture: Image) = apply {
-        UGraphics.deleteTexture(texture.getTexture()?.glId ?: 0)
+        texture.getTexture()?.close()
     }
 
     @JvmStatic
@@ -237,6 +286,7 @@ object Renderer {
         matrixStackStack.addLast(stack)
         matrixStack = stack
         stack.push()
+        guiGraphics?.pose()?.pushMatrix()
     }
 
     @JvmStatic
@@ -244,24 +294,29 @@ object Renderer {
         matrixPushCounter--
         matrixStackStack.removeLast()
         matrixStack.pop()
+        guiGraphics?.pose()?.popMatrix()
     }
 
     @JvmStatic
     @JvmOverloads
     fun translate(x: Float, y: Float, z: Float = 0.0F) = apply {
         matrixStack.translate(x, y, z)
+        guiGraphics?.pose()?.translate(x, y)
     }
 
     @JvmStatic
     @JvmOverloads
     fun scale(scaleX: Float, scaleY: Float = scaleX, scaleZ: Float = 1f) = apply {
         matrixStack.scale(scaleX, scaleY, scaleZ)
+        guiGraphics?.pose()?.scale(scaleX, scaleY)
     }
 
     @JvmStatic
     @JvmOverloads
     fun rotate(angle: Float, x: Float = 0f, y: Float = 0f, z: Float = 1f) = apply {
         matrixStack.rotate(angle, x, y, z)
+        if (z != 0f)
+            guiGraphics?.pose()?.rotate(angle.toRadians())
     }
 
     @JvmStatic
@@ -285,7 +340,7 @@ object Renderer {
         colorized = fixAlpha(getColor(red, green, blue, alpha))
         val color = Color(colorized!!.toInt(), true)
 
-        RenderSystem.setShaderColor(
+        UGraphics.color4f(
             color.red / 255f,
             color.green / 255f,
             color.blue / 255f,
@@ -329,7 +384,7 @@ object Renderer {
     @JvmStatic
     @JvmOverloads
     fun pos(x: Float, y: Float, z: Float = 0f) = apply {
-        val camera = Client.getMinecraft().gameRenderer.camera.pos
+        val camera = Client.getMinecraft().gameRenderer.mainCamera.position()
         Renderer3d.pos(x + camera.x.toFloat(), y + camera.y.toFloat(), z + camera.z.toFloat())
     }
 
@@ -459,6 +514,10 @@ object Renderer {
 
     @JvmStatic
     fun drawRect(color: Long, x: Float, y: Float, width: Float, height: Float) = apply {
+        guiGraphics?.let {
+            it.fill(x.toInt(), y.toInt(), (x + width).toInt(), (y + height).toInt(), color.toInt())
+            return@apply
+        }
         val pos = mutableListOf(x, y, x + width, y + height)
         if (pos[0] > pos[2])
             Collections.swap(pos, 0, 2)
@@ -537,24 +596,32 @@ object Renderer {
         val fr = getFontRenderer()
         var newY = y
 
-        val immediate = Client.getMinecraft().bufferBuilders.entityVertexConsumers
+        guiGraphics?.let { graphics ->
+            splitText(text).lines.forEach {
+                graphics.text(fr, it, x.toInt(), newY.toInt(), color.toInt(), shadow)
+                newY += fr.lineHeight
+            }
+            return
+        }
+
+        val immediate = Client.getMinecraft().renderBuffers().bufferSource()
         splitText(text).lines.forEach {
-            fr.draw(
+            fr.drawInBatch(
                 it,
                 x,
                 newY,
                 color.toInt(),
                 shadow,
-                matrixStack.toMC().peek().positionMatrix,
+                matrixStack.toMC().last().pose(),
                 immediate,
-                TextRenderer.TextLayerType.NORMAL,
+                Font.DisplayMode.NORMAL,
                 0,
                 0xf000f0,
             )
 
-            newY += fr.fontHeight
+            newY += fr.lineHeight
         }
-        immediate.draw()
+        immediate.endBatch()
     }
 
     @JvmStatic
@@ -568,8 +635,8 @@ object Renderer {
         val lines = ChatLib.addColor(text).split(NEWLINE_REGEX)
         return TextLines(
             lines,
-            lines.maxOf { getFontRenderer().getWidth(it) }.toFloat(),
-            (getFontRenderer().fontHeight * lines.size + (lines.size - 1)).toFloat(),
+            lines.maxOf { getFontRenderer().width(it) }.toFloat(),
+            (getFontRenderer().lineHeight * lines.size + (lines.size - 1)).toFloat(),
         )
     }
 
@@ -580,7 +647,12 @@ object Renderer {
 
         scale(1f, 1f, 50f)
 
-        RenderSystem.setShaderTexture(0, image.getTexture()?.glId ?: 0)
+        guiGraphics?.let {
+            it.blit(image.getIdOrRegister(), x.toInt(), y.toInt(), (x + width).toInt(), (y + height).toInt(), 0f, 1f, 0f, 1f)
+            return
+        }
+
+        UGraphics.bindTexture(0, image.getIdOrRegister())
 
         begin(DrawMode.QUADS, VertexFormat.POSITION_TEXTURE)
         pos(x, y + height, 0f).tex(0f, 1f)
@@ -594,7 +666,7 @@ object Renderer {
      * Draws a player entity to the screen, similar to the one displayed in the inventory screen.
      *
      * Takes a parameter with the following options:
-     * - player: The player entity to draw. Can be a [PlayerMP] or [AbstractClientPlayerEntity].
+     * - player: The player entity to draw. Can be a [PlayerMP] or [AbstractClientPlayer].
      *           Defaults to Player.toMC()
      * - x: The x position on the screen to render the player
      * - y: The y position on the screen to render the player
@@ -616,8 +688,8 @@ object Renderer {
     @JvmStatic
     fun drawPlayer(obj: NativeObject) {
         val entity = obj["player"].let {
-            it as? AbstractClientPlayerEntity
-                ?: ((it as? PlayerMP)?.toMC() as? AbstractClientPlayerEntity)
+            it as? AbstractClientPlayer
+                ?: ((it as? PlayerMP)?.toMC() as? AbstractClientPlayer)
                 ?: Player.toMC()
                 ?: return
         }
@@ -638,107 +710,42 @@ object Renderer {
         val showParrot = obj.getOrDefault<Boolean>("showParrot", false)
         val showStingers = obj.getOrDefault<Boolean>("showBeeStinger", false)
 
-        matrixStack.push()
+        val graphics = guiGraphics ?: return
+        val halfWidth = (size / 2.0).coerceAtLeast(1.0).toInt()
+        val height = size.coerceAtLeast(1.0).toInt()
+        val centerX = x.toFloat()
+        val centerY = (y - height / 2f)
+        val targetMouseX: Float
+        val targetMouseY: Float
 
-        val (entityYaw, entityPitch) = if (rotate) {
-            val mouseX = x - Client.getMouseX()
-            val mouseY = y - Client.getMouseY() - (entity.standingEyeHeight * size)
-            atan((mouseX / 40.0f)).toFloat() to atan((mouseY / 40.0f)).toFloat()
+        if (rotate) {
+            targetMouseX = Client.getMouseX().toFloat()
+            targetMouseY = Client.getMouseY().toFloat()
         } else {
-            val scaleFactor = 130f / 180f
-            (yaw * scaleFactor).toRadians() to pitch.toRadians()
+            targetMouseX = centerX - kotlin.math.tan(Math.toRadians((yaw / 20f).toDouble())).toFloat() * 40f
+            targetMouseY = centerY + kotlin.math.tan(Math.toRadians((pitch / 20f).toDouble())).toFloat() * 40f
         }
 
-        val flipModelRotation = Quaternionf().rotateZ(Math.PI.toFloat())
-        val pitchModelRotation =
-            Quaternionf().rotateX(entityPitch * 20.0f * (Math.PI / 180.0).toFloat())
-        flipModelRotation.mul(pitchModelRotation)
-
-        val oldBodyYaw = entity.bodyYaw
-        val oldYaw = entity.yaw
-        val oldPitch = entity.pitch
-        val oldPrevHeadYaw = entity.prevHeadYaw
-        val oldHeadYaw = entity.headYaw
-
-        entity.bodyYaw = 180.0f + entityYaw * 20.0f
-        entity.yaw = 180.0f + entityYaw * 40.0f
-        entity.pitch = -entityPitch * 20.0f
-        entity.headYaw = entity.yaw
-        entity.prevHeadYaw = entity.yaw
-
-        matrixStack.push()
-        matrixStack.translate(0.0, 0.0, 1000.0)
-        matrixStack.push()
-        matrixStack.translate(x.toDouble(), y.toDouble(), -950.0)
-
-        // UC's version of multiplyPositionMatrix
-        matrixStack.peek().model.mul(
-            Matrix4f().scaling(
-                size.toFloat(),
-                size.toFloat(),
-                (-size).toFloat()
-            )
+        // 26.1 renders GUI entities from extracted render state. The vanilla helper
+        // keeps the public CTJS positioning/rotation behavior without mutating the player.
+        InventoryScreen.extractEntityInInventoryFollowsMouse(
+            graphics,
+            x - halfWidth,
+            y - height,
+            x + halfWidth,
+            y,
+            size.toInt(),
+            0.0625f,
+            targetMouseX,
+            targetMouseY,
+            entity,
         )
 
-        matrixStack.multiply(flipModelRotation)
-        DiffuseLighting.method_34742()
-
-        val entityRenderDispatcher = MinecraftClient.getInstance().entityRenderDispatcher
-
-        if (pitchModelRotation != null) {
-            pitchModelRotation.conjugate()
-            entityRenderDispatcher.rotation = pitchModelRotation
-        }
-
-        entityRenderDispatcher.setRenderShadows(false)
-        val vertexConsumers = MinecraftClient.getInstance().bufferBuilders.entityVertexConsumers
-
-        val light = 0xf000f0
-
-        val entityRenderer = if (slim) slimCTRenderPlayer else normalCTRenderPlayer
-        entityRenderer.setOptions(
-            showNametag,
-            showArmor,
-            showCape,
-            showHeldItem,
-            showArrows,
-            showElytra,
-            showParrot,
-            showStingers
-        )
-
-        val vec3d = entityRenderer.getPositionOffset(entity, partialTicks)
-        val d = vec3d.getX()
-        val e = vec3d.getY()
-        val f = vec3d.getZ()
-        matrixStack.push()
-        matrixStack.translate(d, e, f)
-        RenderSystem.runAsFancy {
-            entityRenderer.render(entity, 0.0f, 1.0f, matrixStack.toMC(), vertexConsumers, light)
-            if (entity.doesRenderOnFire()) {
-                entityRenderDispatcher.asMixin<EntityRenderDispatcherAccessor>()
-                    .invokeRenderFire(matrixStack.toMC(), vertexConsumers, entity, Quaternionf())
-            }
-        }
-
-        matrixStack.pop()
-
-        vertexConsumers.draw()
-        entityRenderDispatcher.setRenderShadows(true)
-        matrixStack.pop()
-        DiffuseLighting.enableGuiDepthLighting()
-        matrixStack.pop()
-
-        entity.bodyYaw = oldBodyYaw
-        entity.yaw = oldYaw
-        entity.pitch = oldPitch
-        entity.prevHeadYaw = oldPrevHeadYaw
-        entity.headYaw = oldHeadYaw
-
-        matrixStack.pop()
+        // Fine-grained layer visibility is retained in the API surface and will be
+        // applied once 26.1 exposes equivalent extracted avatar-layer state controls.
     }
 
-    internal fun withMatrix(stack: MatrixStack?, partialTicks: Float = Renderer.partialTicks, block: () -> Unit) {
+    internal fun withMatrix(stack: PoseStack?, partialTicks: Float = Renderer.partialTicks, block: () -> Unit) {
         Renderer.partialTicks = partialTicks
         matrixPushCounter = 0
 
@@ -759,6 +766,27 @@ object Renderer {
         }
     }
 
+    internal fun withGuiGraphics(extractor: GuiGraphicsExtractor, partialTicks: Float, block: () -> Unit) {
+        val previous = guiGraphics
+        guiGraphics = extractor
+        try {
+            withMatrix(PoseStack(), partialTicks) {
+                block()
+            }
+        } finally {
+            guiGraphics = previous
+        }
+    }
+
+    internal fun drawItemStack(item: net.minecraft.world.item.ItemStack, x: Float, y: Float, scale: Float) {
+        val graphics = guiGraphics ?: return
+        graphics.pose().pushMatrix()
+        graphics.pose().translate(x, y)
+        graphics.pose().scale(scale, scale)
+        graphics.item(item, 0, 0)
+        graphics.pose().popMatrix()
+    }
+
     enum class DrawMode(private val ucValue: UGraphics.DrawMode) {
         LINES(UGraphics.DrawMode.LINES),
         LINE_STRIP(UGraphics.DrawMode.LINE_STRIP),
@@ -775,18 +803,23 @@ object Renderer {
         }
     }
 
-    enum class VertexFormat(private val mcValue: MCVertexFormat) {
-        LINES(VertexFormats.LINES),
-        POSITION(VertexFormats.POSITION),
-        POSITION_COLOR(VertexFormats.POSITION_COLOR),
-        POSITION_TEXTURE(VertexFormats.POSITION_TEXTURE),
-        POSITION_TEXTURE_COLOR(VertexFormats.POSITION_TEXTURE_COLOR),
-        POSITION_COLOR_TEXTURE_LIGHT(VertexFormats.POSITION_COLOR_TEXTURE_LIGHT),
-        POSITION_TEXTURE_LIGHT_COLOR(VertexFormats.POSITION_TEXTURE_LIGHT_COLOR),
-        POSITION_TEXTURE_COLOR_LIGHT(VertexFormats.POSITION_TEXTURE_COLOR_LIGHT),
-        POSITION_TEXTURE_COLOR_NORMAL(VertexFormats.POSITION_TEXTURE_COLOR_NORMAL);
+    enum class VertexFormat(
+        private val mcValue: MCVertexFormat,
+        private val ucValue: UGraphics.CommonVertexFormats?,
+    ) {
+        LINES(DefaultVertexFormat.POSITION_COLOR_NORMAL_LINE_WIDTH, null),
+        POSITION(DefaultVertexFormat.POSITION, UGraphics.CommonVertexFormats.POSITION),
+        POSITION_COLOR(DefaultVertexFormat.POSITION_COLOR, UGraphics.CommonVertexFormats.POSITION_COLOR),
+        POSITION_TEXTURE(DefaultVertexFormat.POSITION_TEX, UGraphics.CommonVertexFormats.POSITION_TEXTURE),
+        POSITION_TEXTURE_COLOR(DefaultVertexFormat.POSITION_TEX_COLOR, UGraphics.CommonVertexFormats.POSITION_TEXTURE_COLOR),
+        POSITION_COLOR_TEXTURE_LIGHT(DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, UGraphics.CommonVertexFormats.POSITION_COLOR_TEXTURE_LIGHT),
+        POSITION_TEXTURE_LIGHT_COLOR(DefaultVertexFormat.POSITION_TEX_LIGHTMAP_COLOR, UGraphics.CommonVertexFormats.POSITION_TEXTURE_LIGHT_COLOR),
+        POSITION_TEXTURE_COLOR_LIGHT(DefaultVertexFormat.PARTICLE, UGraphics.CommonVertexFormats.POSITION_TEXTURE_COLOR_LIGHT),
+        POSITION_TEXTURE_COLOR_NORMAL(DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL, UGraphics.CommonVertexFormats.POSITION_TEXTURE_COLOR_NORMAL);
 
         fun toMC() = mcValue
+
+        internal fun toUC() = ucValue
 
         companion object {
             @JvmStatic
@@ -795,10 +828,10 @@ object Renderer {
     }
 
     class ScreenWrapper {
-        fun getWidth(): Int = UMinecraft.getMinecraft().window.scaledWidth
+        fun getWidth(): Int = UMinecraft.getMinecraft().window.guiScaledWidth
 
-        fun getHeight(): Int = UMinecraft.getMinecraft().window.scaledHeight
+        fun getHeight(): Int = UMinecraft.getMinecraft().window.guiScaledHeight
 
-        fun getScale(): Double = UMinecraft.getMinecraft().window.scaleFactor
+        fun getScale(): Double = UMinecraft.getMinecraft().window.guiScale.toDouble()
     }
 }

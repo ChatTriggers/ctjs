@@ -6,10 +6,10 @@ import com.chattriggers.ctjs.api.message.TextComponent
 
 object Server {
     @JvmStatic
-    fun toMC() = Client.getMinecraft().currentServerEntry
+    fun toMC() = Client.getMinecraft().currentServer
 
     @JvmStatic
-    fun isSingleplayer(): Boolean = Client.getMinecraft().isInSingleplayer
+    fun isSingleplayer(): Boolean = Client.getMinecraft().hasSingleplayerServer()
 
     /**
      * Gets the current server's IP, or "localhost" if the player
@@ -22,7 +22,7 @@ object Server {
         if (isSingleplayer())
             return "localhost"
 
-        return toMC()?.address ?: ""
+        return toMC()?.ip ?: ""
     }
 
     /**
@@ -50,7 +50,7 @@ object Server {
         if (isSingleplayer())
             return "SinglePlayer"
 
-        return toMC()?.label?.let { TextComponent(it) }?.formattedText ?: ""
+        return toMC()?.motd?.let { TextComponent(it) }?.formattedText ?: ""
     }
 
     /**
@@ -67,7 +67,7 @@ object Server {
 
         val player = Player.toMC() ?: return -1L
 
-        return Client.getConnection()?.getPlayerListEntry(player.uuid)?.latency?.toLong()
+        return Client.getConnection()?.getPlayerInfo(player.uuid)?.latency?.toLong()
             ?: toMC()?.ping
             ?: -1L
     }

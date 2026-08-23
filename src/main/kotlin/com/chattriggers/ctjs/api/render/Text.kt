@@ -2,7 +2,7 @@ package com.chattriggers.ctjs.api.render
 
 import com.chattriggers.ctjs.api.message.ChatLib
 import com.chattriggers.ctjs.internal.utils.getOption
-import net.minecraft.text.Style
+import net.minecraft.network.chat.Style
 import org.mozilla.javascript.NativeObject
 
 class Text {
@@ -196,7 +196,7 @@ class Text {
         string.split("\n").forEach { line ->
             if (maxWidth > 0) {
                 lines.addAll(
-                    Renderer.getFontRenderer().textHandler.wrapLines(line, maxWidth, Style.EMPTY).map { it.string }
+                    Renderer.getFontRenderer().splitter.splitLines(line, maxWidth, Style.EMPTY).map { it.string }
                 )
             } else {
                 lines.add(line)

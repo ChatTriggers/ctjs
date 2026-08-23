@@ -1,11 +1,11 @@
 package com.chattriggers.ctjs.internal.mixins;
 
-import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.client.multiplayer.PlayerInfo;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
-@Mixin(PlayerListEntry.class)
+@Mixin(PlayerInfo.class)
 public interface PlayerListEntryAccessor {
-    @Invoker
+    @Invoker("setLatency")
     void invokeSetLatency(int latency);
 }

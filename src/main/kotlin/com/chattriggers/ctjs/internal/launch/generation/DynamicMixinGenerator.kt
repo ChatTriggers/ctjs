@@ -14,17 +14,17 @@ internal class DynamicMixinGenerator(private val ctx: GenerationContext, private
         val mixinClassNode = assembleClass(public, ctx.generatedClassFullPath, version = Opcodes.V17) {
             for ((id, injector) in details.injectors) {
                 when (injector) {
-                    is Inject -> InjectGenerator(ctx, id, injector).generate()
-                    is Redirect -> RedirectGenerator(ctx, id, injector).generate()
-                    is ModifyArg -> ModifyArgGenerator(ctx, id, injector).generate()
-                    is ModifyArgs -> ModifyArgsGenerator(ctx, id, injector).generate()
-                    is ModifyConstant -> ModifyConstantGenerator(ctx, id, injector).generate()
-                    is ModifyExpressionValue -> ModifyExpressionValueGenerator(ctx, id, injector).generate()
-                    is ModifyReceiver -> ModifyReceiverGenerator(ctx, id, injector).generate()
-                    is ModifyReturnValue -> ModifyReturnValueInjector(ctx, id, injector).generate()
-                    is ModifyVariable -> ModifyVariableGenerator(ctx, id, injector).generate()
-                    is WrapOperation -> WrapOperationGenerator(ctx, id, injector).generate()
-                    is WrapWithCondition -> WrapWithConditionGenerator(ctx, id, injector).generate()
+                    is Inject -> InjectGenerator(ctx, id, injector).generateInto(this)
+                    is Redirect -> RedirectGenerator(ctx, id, injector).generateInto(this)
+                    is ModifyArg -> ModifyArgGenerator(ctx, id, injector).generateInto(this)
+                    is ModifyArgs -> ModifyArgsGenerator(ctx, id, injector).generateInto(this)
+                    is ModifyConstant -> ModifyConstantGenerator(ctx, id, injector).generateInto(this)
+                    is ModifyExpressionValue -> ModifyExpressionValueGenerator(ctx, id, injector).generateInto(this)
+                    is ModifyReceiver -> ModifyReceiverGenerator(ctx, id, injector).generateInto(this)
+                    is ModifyReturnValue -> ModifyReturnValueInjector(ctx, id, injector).generateInto(this)
+                    is ModifyVariable -> ModifyVariableGenerator(ctx, id, injector).generateInto(this)
+                    is WrapOperation -> WrapOperationGenerator(ctx, id, injector).generateInto(this)
+                    is WrapWithCondition -> WrapWithConditionGenerator(ctx, id, injector).generateInto(this)
                 }
             }
         }

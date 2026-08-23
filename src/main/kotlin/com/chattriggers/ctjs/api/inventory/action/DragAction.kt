@@ -1,6 +1,6 @@
 package com.chattriggers.ctjs.api.inventory.action
 
-import net.minecraft.screen.slot.SlotActionType
+import net.minecraft.world.inventory.ContainerInput as MCClickType
 
 class DragAction(slot: Int, windowId: Int) : Action(slot, windowId) {
     private lateinit var clickType: ClickType
@@ -61,7 +61,7 @@ class DragAction(slot: Int, windowId: Int) : Action(slot, windowId) {
             println("Enforcing slot of -999")
         }
 
-        doClick(button, SlotActionType.QUICK_CRAFT)
+        doClick(button, MCClickType.QUICK_CRAFT)
     }
 
     enum class ClickType(val button: Int) {

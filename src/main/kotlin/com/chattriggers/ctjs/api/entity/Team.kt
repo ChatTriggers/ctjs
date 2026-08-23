@@ -4,9 +4,9 @@ import com.chattriggers.ctjs.api.CTWrapper
 import com.chattriggers.ctjs.api.message.TextComponent
 import com.chattriggers.ctjs.MCTeam
 import com.chattriggers.ctjs.api.message.ChatLib
-import net.minecraft.scoreboard.AbstractTeam
-import net.minecraft.text.TextColor
-import net.minecraft.util.Formatting
+import net.minecraft.world.scores.Team
+import net.minecraft.network.chat.TextColor
+import net.minecraft.ChatFormatting
 
 class Team(override val mcValue: MCTeam) : CTWrapper<MCTeam> {
     /**
@@ -38,12 +38,12 @@ class Team(override val mcValue: MCTeam) : CTWrapper<MCTeam> {
     /**
      * Gets the list of names on the team
      */
-    fun getMembers(): List<String> = mcValue.playerList.toList()
+    fun getMembers(): List<String> = mcValue.players.toList()
 
     /**
      * Gets the team prefix
      */
-    fun getPrefix() = TextComponent(mcValue.prefix).formattedText
+    fun getPrefix() = TextComponent(mcValue.playerPrefix).formattedText
 
     /**
      * Sets the team prefix
@@ -51,7 +51,7 @@ class Team(override val mcValue: MCTeam) : CTWrapper<MCTeam> {
      * @return the team for method chaining
      */
     fun setPrefix(prefix: TextComponent) = apply {
-        mcValue.prefix = prefix
+        mcValue.setPlayerPrefix(prefix)
     }
 
     /**
@@ -64,7 +64,7 @@ class Team(override val mcValue: MCTeam) : CTWrapper<MCTeam> {
     /**
      * Gets the team suffix
      */
-    fun getSuffix() = TextComponent(mcValue.suffix).formattedText
+    fun getSuffix() = TextComponent(mcValue.playerSuffix).formattedText
 
     /**
      * Sets the team suffix
@@ -72,7 +72,7 @@ class Team(override val mcValue: MCTeam) : CTWrapper<MCTeam> {
      * @return the team for method chaining
      */
     fun setSuffix(suffix: TextComponent) = apply {
-        mcValue.suffix = suffix
+        mcValue.setPlayerSuffix(suffix)
     }
 
     /**
@@ -86,49 +86,49 @@ class Team(override val mcValue: MCTeam) : CTWrapper<MCTeam> {
 
     /**
      * Sets the team color
-     * @param color a string format of a [Formatting], or a hex value
+     * @param color a string format of a [ChatFormatting], or a hex value
      * @return the team for method chaining
      */
     fun setColor(color: Any?) = apply {
         mcValue.color = when (color) {
-            is Number -> Formatting.byColorIndex(color.toInt())
-            is CharSequence -> Formatting.entries.find {
+            is Number -> ChatFormatting.getById(color.toInt()) ?: ChatFormatting.RESET
+            is CharSequence -> ChatFormatting.entries.find {
                 it.toString() == ChatLib.addColor(color.toString())
-            } ?: Formatting.RESET
-            null -> Formatting.RESET
-            else -> throw IllegalArgumentException("Could not convert type ${color::class.simpleName} to a Formatting")
+            } ?: ChatFormatting.RESET
+            null -> ChatFormatting.RESET
+            else -> throw IllegalArgumentException("Could not convert type ${color::class.simpleName} to a ChatFormatting")
         }
     }
 
     /**
      * Gets the team's friendly fire setting
      */
-    fun getFriendlyFire(): Boolean = mcValue.isFriendlyFireAllowed
+    fun getFriendlyFire(): Boolean = mcValue.isAllowFriendlyFire
 
     /**
      * Gets whether the team can see invisible players on the same team
      */
-    fun canSeeInvisibleTeammates(): Boolean = mcValue.shouldShowFriendlyInvisibles()
+    fun canSeeInvisibleTeammates(): Boolean = mcValue.canSeeFriendlyInvisibles()
 
     /**
      * Gets the team's name tag visibility
      */
-    fun getNameTagVisibility() = Visibility.fromMC(mcValue.nameTagVisibilityRule)
+    fun getNameTagVisibility() = Visibility.fromMC(mcValue.nameTagVisibility)
 
     /**
      * Gets the team's death message visibility
      */
-    fun getDeathMessageVisibility() = Visibility.fromMC(mcValue.deathMessageVisibilityRule)
+    fun getDeathMessageVisibility() = Visibility.fromMC(mcValue.deathMessageVisibility)
 
-    enum class Visibility(override val mcValue: AbstractTeam.VisibilityRule) : CTWrapper<AbstractTeam.VisibilityRule> {
-        ALWAYS(AbstractTeam.VisibilityRule.ALWAYS),
-        NEVER(AbstractTeam.VisibilityRule.NEVER),
-        HIDE_FOR_OTHERS_TEAMS(AbstractTeam.VisibilityRule.HIDE_FOR_OTHER_TEAMS),
-        HIDE_FOR_OWN_TEAM(AbstractTeam.VisibilityRule.HIDE_FOR_OWN_TEAM);
+    enum class Visibility(override val mcValue: Team.Visibility) : CTWrapper<Team.Visibility> {
+        ALWAYS(Team.Visibility.ALWAYS),
+        NEVER(Team.Visibility.NEVER),
+        HIDE_FOR_OTHERS_TEAMS(Team.Visibility.HIDE_FOR_OTHER_TEAMS),
+        HIDE_FOR_OWN_TEAM(Team.Visibility.HIDE_FOR_OWN_TEAM);
 
         companion object {
             @JvmStatic
-            fun fromMC(mcValue: AbstractTeam.VisibilityRule) = entries.first { it.mcValue == mcValue }
+            fun fromMC(mcValue: Team.Visibility) = entries.first { it.mcValue == mcValue }
         }
     }
 }

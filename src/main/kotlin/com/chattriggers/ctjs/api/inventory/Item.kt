@@ -14,17 +14,18 @@ import com.chattriggers.ctjs.internal.Skippable
 import com.chattriggers.ctjs.internal.TooltipOverridable
 import com.chattriggers.ctjs.MCNbtCompound
 import com.chattriggers.ctjs.internal.utils.asMixin
-import net.minecraft.block.pattern.CachedBlockPosition
-import net.minecraft.client.render.DiffuseLighting
-import net.minecraft.client.render.OverlayTexture
-import net.minecraft.client.render.model.json.ModelTransformationMode
-import net.minecraft.component.DataComponentTypes
-import net.minecraft.enchantment.EnchantmentHelper
-import net.minecraft.item.Item.TooltipContext
-import net.minecraft.item.ItemStack
-import net.minecraft.item.tooltip.TooltipType
-import net.minecraft.util.crash.CrashException
-import net.minecraft.util.crash.CrashReport
+import net.minecraft.world.level.block.state.pattern.BlockInWorld
+import com.mojang.blaze3d.platform.Lighting
+import net.minecraft.client.renderer.texture.OverlayTexture
+import net.minecraft.world.item.ItemDisplayContext
+import net.minecraft.core.component.DataComponents
+import net.minecraft.world.item.enchantment.EnchantmentHelper
+import net.minecraft.world.item.enchantment.ItemEnchantments
+import net.minecraft.world.item.Item.TooltipContext
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.TooltipFlag
+import net.minecraft.ReportedException
+import net.minecraft.CrashReport
 import kotlin.jvm.optionals.getOrNull
 
 class Item(override val mcValue: ItemStack) : CTWrapper<ItemStack> {
@@ -36,9 +37,9 @@ class Item(override val mcValue: ItemStack) : CTWrapper<ItemStack> {
         }
     }
 
-    constructor(type: ItemType) : this(type.toMC().defaultStack)
+    constructor(type: ItemType) : this(type.toMC().defaultInstance)
 
-    fun getHolder(): Entity? = mcValue.holder?.let(Entity::fromMC)
+    fun getHolder(): Entity? = null // ItemStack no longer retains an owning entity in 26.1.
 
     fun getStackSize(): Int = mcValue.count
 
@@ -46,21 +47,21 @@ class Item(override val mcValue: ItemStack) : CTWrapper<ItemStack> {
         mcValue.count = size
     }
 
-    fun getEnchantments() = EnchantmentHelper.getEnchantments(mcValue).enchantments.associate {
-        it.key.getOrNull() to EnchantmentHelper.getLevel(it, mcValue)
+    fun getEnchantments() = mcValue.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY).entrySet().associate {
+        it.key.unwrapKey().getOrNull() to it.intValue
     }
 
     fun isEnchantable() = mcValue.isEnchantable
 
-    fun isEnchanted() = mcValue.hasEnchantments()
+    fun isEnchanted() = mcValue.isEnchanted
 
     fun canPlaceOn(pos: BlockPos) =
-        mcValue.canPlaceOn(CachedBlockPosition(World.toMC(), pos.toMC(), false))
+        World.toMC()?.let { mcValue.canPlaceOnBlockInAdventureMode(BlockInWorld(it, pos.toMC(), false)) } ?: false
 
     fun canPlaceOn(block: Block) = canPlaceOn(block.pos)
 
     fun canHarvest(pos: BlockPos) =
-        mcValue.canBreak(CachedBlockPosition(World.toMC(), pos.toMC(), false))
+        World.toMC()?.let { mcValue.canBreakBlockInAdventureMode(BlockInWorld(it, pos.toMC(), false)) } ?: false
 
     fun canHarvest(block: Block) = canHarvest(block.pos)
 
@@ -68,14 +69,14 @@ class Item(override val mcValue: ItemStack) : CTWrapper<ItemStack> {
 
     fun getMaxDamage() = mcValue.maxDamage
 
-    fun getDamage() = mcValue.damage
+    fun getDamage() = mcValue.damageValue
 
-    fun isDamageable() = mcValue.isDamageable
+    fun isDamageable() = mcValue.isDamageableItem
 
-    fun getName(): String = TextComponent(mcValue.name).formattedText
+    fun getName(): String = TextComponent(mcValue.hoverName).formattedText
 
     fun setName(name: TextComponent?) = apply {
-        mcValue.set(DataComponentTypes.CUSTOM_NAME, name)
+        mcValue.set(DataComponents.CUSTOM_NAME, name)
     }
 
     fun resetName() {
@@ -85,10 +86,10 @@ class Item(override val mcValue: ItemStack) : CTWrapper<ItemStack> {
     @JvmOverloads
     fun getLore(advanced: Boolean = false): List<TextComponent> {
         mcValue.asMixin<Skippable>().ctjs_setShouldSkip(true)
-        val tooltip = mcValue.getTooltip(
-            TooltipContext.DEFAULT,
+        val tooltip = mcValue.getTooltipLines(
+            TooltipContext.of(World.toMC()),
             Player.toMC(),
-            if (advanced) TooltipType.ADVANCED else TooltipType.BASIC,
+            if (advanced) TooltipFlag.ADVANCED else TooltipFlag.NORMAL,
         ).mapTo(mutableListOf()) { TextComponent(it) }
 
         mcValue.asMixin<Skippable>().ctjs_setShouldSkip(false)
@@ -120,53 +121,7 @@ class Item(override val mcValue: ItemStack) : CTWrapper<ItemStack> {
      */
     @JvmOverloads
     fun draw(x: Float = 0f, y: Float = 0f, scale: Float = 1f, z: Float = 200f) {
-        val itemRenderer = Client.getMinecraft().itemRenderer
-
-        Renderer.pushMatrix()
-            .scale(scale, scale, 1f)
-            .translate(x / scale, y / scale, z)
-
-        // The item draw method moved to DrawContext in 1.20, which we don't have access
-        // to here, so its drawItem method has been copy-pasted here instead
-        if (mcValue.isEmpty)
-            return
-        val bakedModel = itemRenderer.getModel(mcValue, World.toMC(), null, 0)
-        Renderer.pushMatrix()
-        Renderer.translate(x + 8, y + 8, (150f + if (bakedModel.hasDepth()) z else 0f))
-        try {
-            Renderer.scale(1.0f, -1.0f, 1.0f)
-            Renderer.scale(16.0f, 16.0f, 16.0f)
-            if (!bakedModel.isSideLit)
-                DiffuseLighting.disableGuiDepthLighting()
-            val vertexConsumers = Client.getMinecraft().bufferBuilders.entityVertexConsumers
-            itemRenderer.renderItem(
-                mcValue,
-                ModelTransformationMode.GUI,
-                false,
-                Renderer.matrixStack.toMC(),
-                vertexConsumers,
-                0xF000F0,
-                OverlayTexture.DEFAULT_UV,
-                bakedModel,
-            )
-            Renderer.disableDepth()
-            vertexConsumers.draw()
-            Renderer.enableDepth()
-            if (!bakedModel.isSideLit) {
-                DiffuseLighting.enableGuiDepthLighting()
-            }
-        } catch (e: Throwable) {
-            val crashReport = CrashReport.create(e, "Rendering item")
-            val crashReportSection = crashReport.addElement("Item being rendered")
-            crashReportSection.add("Item Type") { mcValue.item.toString() }
-            crashReportSection.add("Item Damage") { mcValue.damage.toString() }
-            crashReportSection.add("Item Components") { mcValue.components.toString() }
-            crashReportSection.add("Item Foil") { mcValue.hasGlint().toString() }
-            throw CrashException(crashReport)
-        } finally {
-            Renderer.popMatrix()
-            Renderer.popMatrix()
-        }
+        Renderer.drawItemStack(mcValue, x, y, scale)
     }
 
     override fun toString(): String = "Item{name=${getName()}, type=${type.getRegistryName()}, size=${getStackSize()}}"

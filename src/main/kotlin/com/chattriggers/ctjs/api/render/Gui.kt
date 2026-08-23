@@ -5,14 +5,17 @@ import com.chattriggers.ctjs.api.message.TextComponent
 import com.chattriggers.ctjs.api.triggers.RegularTrigger
 import com.chattriggers.ctjs.api.triggers.TriggerType
 import com.chattriggers.ctjs.internal.mixins.ClickableWidgetAccessor
+import com.chattriggers.ctjs.internal.lifecycle.GenerationGuard
+import com.chattriggers.ctjs.internal.lifecycle.OwnedKind
 import com.chattriggers.ctjs.internal.utils.asMixin
 import gg.essential.universal.UKeyboard
 import gg.essential.universal.UMatrixStack
 import gg.essential.universal.UScreen
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents
-import net.minecraft.client.gui.DrawContext
-import net.minecraft.client.gui.tooltip.Tooltip
-import net.minecraft.client.gui.widget.ButtonWidget
+import net.minecraft.client.gui.GuiGraphicsExtractor
+import net.minecraft.client.gui.components.Tooltip
+import net.minecraft.client.gui.components.Button
+import net.minecraft.client.input.MouseButtonEvent
 
 class Gui @JvmOverloads constructor(
     title: TextComponent = TextComponent(""),
@@ -30,20 +33,27 @@ class Gui @JvmOverloads constructor(
     private var mouseX = 0
     private var mouseY = 0
 
-    private val buttons = mutableMapOf<Int, ButtonWidget>()
+    private val buttons = mutableMapOf<Int, Button>()
     private var nextButtonId = 0
     private var doesPauseGame = false
+    private var tooltip: TextComponent? = null
+    private val generation = GenerationGuard(OwnedKind.UI, onInvalidate = ::invalidateGeneration)
+
+    init {
+        generation.register()
+    }
 
     fun open() {
-        Client.currentGui.set(this)
+        if (generation.isActive())
+            Client.currentGui.set(this)
     }
 
-    override fun close() {
-        Client.currentGui.set(null)
-
+    fun close() {
+        if (isOpen())
+            Client.currentGui.set(null)
     }
 
-    fun isOpen(): Boolean = Client.getMinecraft().currentScreen === this
+    fun isOpen(): Boolean = Client.getMinecraft().screen === this
 
     /**
      * Registers a method to be run while gui is open.
@@ -57,7 +67,7 @@ class Gui @JvmOverloads constructor(
      * @return the trigger
      */
     fun registerDraw(method: Any) = apply {
-        onDraw = RegularTrigger(method, TriggerType.OTHER)
+        onDraw = createCallback(method)
     }
 
     /**
@@ -72,7 +82,7 @@ class Gui @JvmOverloads constructor(
      * @return the trigger
      */
     fun registerClicked(method: Any) = apply {
-        onClick = RegularTrigger(method, TriggerType.OTHER)
+        onClick = createCallback(method)
     }
 
     /**
@@ -84,7 +94,7 @@ class Gui @JvmOverloads constructor(
      * - int scroll direction
      */
     fun registerScrolled(method: Any) = apply {
-        onScroll = RegularTrigger(method, TriggerType.OTHER)
+        onScroll = createCallback(method)
     }
 
     /**
@@ -98,23 +108,24 @@ class Gui @JvmOverloads constructor(
      * @return the trigger
      */
     fun registerKeyTyped(method: Any) = apply {
-        onKeyTyped = RegularTrigger(method, TriggerType.OTHER)
+        onKeyTyped = createCallback(method)
     }
 
     /**
      * Registers a method to be run while gui is open.
      * Registered method runs on key input.
      * Arguments passed through to method:
-     * - int mouseX
-     * - int mouseY
+     * - double deltaX
+     * - double deltaY
+     * - double mouseX
+     * - double mouseY
      * - int clickedMouseButton
-     * - long timeSinceLastClick
      *
      * @param method the method to run
      * @return the trigger
      */
     fun registerMouseDragged(method: Any) = apply {
-        onMouseDragged = RegularTrigger(method, TriggerType.OTHER)
+        onMouseDragged = createCallback(method)
     }
 
     /**
@@ -129,7 +140,7 @@ class Gui @JvmOverloads constructor(
      * @return the trigger
      */
     fun registerMouseReleased(method: Any) = apply {
-        onMouseReleased = RegularTrigger(method, TriggerType.OTHER)
+        onMouseReleased = createCallback(method)
     }
 
     /**
@@ -142,7 +153,7 @@ class Gui @JvmOverloads constructor(
      * @return the trigger
      */
     fun registerActionPerformed(method: Any) = apply {
-        onActionPerformed = RegularTrigger(method, TriggerType.OTHER)
+        onActionPerformed = createCallback(method)
     }
 
     /**
@@ -154,7 +165,7 @@ class Gui @JvmOverloads constructor(
      * @return the trigger
      */
     fun registerOpened(method: Any) = apply {
-        onOpened = RegularTrigger(method, TriggerType.OTHER)
+        onOpened = createCallback(method)
     }
 
     /**
@@ -166,7 +177,7 @@ class Gui @JvmOverloads constructor(
      * @return the trigger
      */
     fun registerClosed(method: Any) = apply {
-        onClosed = RegularTrigger(method, TriggerType.OTHER)
+        onClosed = createCallback(method)
     }
 
     fun unregisterDraw() = apply {
@@ -217,12 +228,13 @@ class Gui @JvmOverloads constructor(
     override fun initScreen(width: Int, height: Int) {
         super.initScreen(width, height)
 
-        ScreenMouseEvents.afterMouseScroll(this).register { _, x, y, _, dy ->
-            onScroll?.trigger(arrayOf(x, y, dy))
+        ScreenMouseEvents.afterMouseScroll(this).register { _, x, y, _, dy, consumed ->
+            generation.execute { onScroll?.trigger(arrayOf<Any>(x, y, dy)) }
+            consumed
         }
 
-        buttons.values.forEach(::addDrawableChild)
-        onOpened?.trigger(arrayOf(this))
+        buttons.values.forEach(::addRenderableWidget)
+        generation.execute { onOpened?.trigger(arrayOf(this)) }
     }
 
     /**
@@ -230,7 +242,7 @@ class Gui @JvmOverloads constructor(
      */
     override fun onScreenClose() {
         super.onScreenClose()
-        onClosed?.trigger(arrayOf(this))
+        generation.execute { onClosed?.trigger(arrayOf(this)) }
     }
 
     /**
@@ -238,7 +250,7 @@ class Gui @JvmOverloads constructor(
      */
     override fun onMouseClicked(mouseX: Double, mouseY: Double, mouseButton: Int) {
         super.onMouseClicked(mouseX, mouseY, mouseButton)
-        onClick?.trigger(arrayOf(mouseX, mouseY, mouseButton))
+        generation.execute { onClick?.trigger(arrayOf<Any>(mouseX, mouseY, mouseButton)) }
     }
 
     /**
@@ -248,7 +260,7 @@ class Gui @JvmOverloads constructor(
      */
     override fun onMouseReleased(mouseX: Double, mouseY: Double, state: Int) {
         super.onMouseReleased(mouseX, mouseY, state)
-        onMouseReleased?.trigger(arrayOf(mouseX, mouseY, state))
+        generation.execute { onMouseReleased?.trigger(arrayOf<Any>(mouseX, mouseY, state)) }
     }
 
     /**
@@ -261,7 +273,21 @@ class Gui @JvmOverloads constructor(
         timeSinceLastClick: Long,
     ) {
         super.onMouseDragged(x, y, clickedButton, timeSinceLastClick)
-        onMouseDragged?.trigger(arrayOf(mouseX, mouseY, clickedButton))
+    }
+
+    /**
+     * Uses the modern input event directly so drag deltas and absolute coordinates
+     * always belong to the same event. In particular, this must not fall back to
+     * coordinates last observed by a render callback.
+     */
+    override fun mouseDragged(click: MouseButtonEvent, offsetX: Double, offsetY: Double): Boolean {
+        val consumed = super.mouseDragged(click, offsetX, offsetY)
+        generation.execute {
+            onMouseDragged?.trigger(
+                GuiInputArguments.mouseDragged(offsetX, offsetY, click.x, click.y, click.button())
+            )
+        }
+        return consumed
     }
 
     /**
@@ -276,16 +302,13 @@ class Gui @JvmOverloads constructor(
         super.onDrawScreen(matrixStack, mouseX, mouseY, partialTicks)
 
         @Suppress("UNCHECKED_CAST")
-        val drawContexts = drawContextsField.get(this) as List<DrawContext>
-        Renderer.pushMatrix(UMatrixStack(drawContexts.last().matrices))
-
-        Renderer.partialTicks = partialTicks
-
-        this.mouseX = mouseX
-        this.mouseY = mouseY
-        onDraw?.trigger(arrayOf(mouseX, mouseY, partialTicks))
-
-        Renderer.popMatrix()
+        val drawContexts = drawContextsField.get(this) as List<GuiGraphicsExtractor>
+        Renderer.withGuiGraphics(drawContexts.last(), partialTicks) {
+            this.mouseX = mouseX
+            this.mouseY = mouseY
+            generation.execute { onDraw?.trigger(arrayOf<Any>(mouseX, mouseY, partialTicks)) }
+            tooltip?.let { drawContexts.last().setTooltipForNextFrame(it, mouseX, mouseY) }
+        }
     }
 
     /**
@@ -298,7 +321,7 @@ class Gui @JvmOverloads constructor(
             var char = keyCode.toChar()
             if (modifiers?.isShift != true)
                 char = char.lowercaseChar()
-            onKeyTyped?.trigger(arrayOf(char, keyCode))
+            generation.execute { onKeyTyped?.trigger(arrayOf<Any>(char, keyCode)) }
         }
     }
 
@@ -306,7 +329,7 @@ class Gui @JvmOverloads constructor(
      * Internal method to run trigger. Not meant for public use
      */
 
-    override fun shouldPause() = doesPauseGame
+    override fun isPauseScreen() = doesPauseGame
 
     fun setDoesPauseGame(doesPauseGame: Boolean) = apply { this.doesPauseGame = doesPauseGame }
 
@@ -316,10 +339,10 @@ class Gui @JvmOverloads constructor(
      * @param button the button to add
      * @return the button ID for use in actionPerformed
      */
-    fun addButton(button: ButtonWidget): Int {
+    fun addButton(button: Button): Int {
         val id = nextButtonId++
         buttons[id] = button
-        addDrawableChild(button)
+        addRenderableWidget(button)
         return id
     }
 
@@ -342,11 +365,11 @@ class Gui @JvmOverloads constructor(
         buttonText: TextComponent,
     ): Int {
         val id = nextButtonId++
-        val button = ButtonWidget.builder(buttonText) {
-            onActionPerformed?.trigger(arrayOf(id))
-        }.dimensions(x, y, width, height).build()
+        val button = Button.builder(buttonText) {
+            generation.execute { onActionPerformed?.trigger(arrayOf(id)) }
+        }.bounds(x, y, width, height).build()
         buttons[id] = button
-        addDrawableChild(button)
+        addRenderableWidget(button)
         return id
     }
 
@@ -360,12 +383,12 @@ class Gui @JvmOverloads constructor(
      * @return the Gui for method chaining
      */
     fun removeButton(buttonId: Int) = apply {
-        remove(buttons[buttonId] ?: return@apply)
+        removeWidget(buttons[buttonId] ?: return@apply)
         buttons.remove(buttonId)
     }
 
     fun clearButtons() = apply {
-        buttons.values.forEach(::remove)
+        buttons.values.forEach(::removeWidget)
         buttons.clear()
     }
 
@@ -487,7 +510,7 @@ class Gui @JvmOverloads constructor(
      * @param text the contents of the tooltip
      */
     fun setTooltip(text: TextComponent) = apply {
-        setTooltip(Tooltip.wrapLines(Client.getMinecraft(), text))
+        tooltip = text
     }
 
     /**
@@ -497,6 +520,40 @@ class Gui @JvmOverloads constructor(
      * @param text the contents of the tooltip
      */
     fun setTooltip(text: String) = setTooltip(TextComponent(text))
+
+    private fun createCallback(method: Any): RegularTrigger? =
+        if (generation.isActive()) RegularTrigger(method, TriggerType.OTHER) else null
+
+    private fun invalidateGeneration() {
+        listOfNotNull(
+            onDraw,
+            onClick,
+            onScroll,
+            onKeyTyped,
+            onMouseReleased,
+            onMouseDragged,
+            onActionPerformed,
+            onOpened,
+            onClosed,
+        ).forEach(RegularTrigger::unregister)
+        onDraw = null
+        onClick = null
+        onScroll = null
+        onKeyTyped = null
+        onMouseReleased = null
+        onMouseDragged = null
+        onActionPerformed = null
+        onOpened = null
+        onClosed = null
+
+        val minecraft = Client.getMinecraft()
+        if (minecraft.screen === this) {
+            if (minecraft.isSameThread)
+                minecraft.setScreen(null)
+            else
+                minecraft.execute { if (minecraft.screen === this) minecraft.setScreen(null) }
+        }
+    }
 
     private companion object {
         private val drawContextsField = UScreen::class.java.getDeclaredField("drawContexts").also {
